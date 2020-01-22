@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^2.0.5",
+    "elm-git-install": "^0.1.2",
+    "elm-live": "^4.0.1",
+    "postcss-cli": "^7.1.0",
+    "postcss-csso": "^4.0.0",
+    "postcss-elm-tailwind": "file:../../Code/postcss-elm-tailwind",
+    "tailwindcss": "^1.2.0-canary.5"
+  },
+  "scripts": {
+    "elm-dev": "elm-live"
+  }
+}
