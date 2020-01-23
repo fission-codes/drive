@@ -14,12 +14,14 @@ environment := "dev"
 # -----
 
 @default: dev
-@build: clean css-large html elm javascript (_report "Build success")
+@build: clean css-large html elm javascript-dependencies javascript (_report "Build success")
 
 
 @build-production:
 	just environment=production build css-small
+
 	# TODO: Minify stuff
+	# {{node_bin}}/snowpack --optimize --nomodule
 
 
 @clean:
@@ -45,6 +47,8 @@ environment := "dev"
 
 @install-deps: (_report "Installing required dependencies")
 	pnpm install
+	{{node_bin}}/snowpack --clean
+	curl https://unpkg.com/ipfs@0.40.0/dist/index.js -o web_modules/ipfs.js
 
 
 
@@ -81,6 +85,11 @@ environment := "dev"
 	cp {{src_dir}}/Javascript/* {{build_dir}}/
 
 
+@javascript-dependencies:
+	echo "⚙️  Copying Javascript Dependencies"
+	cp -rf web_modules {{build_dir}}/web_modules/
+
+
 
 # Watch
 # -----
@@ -88,7 +97,8 @@ environment := "dev"
 @watch:
 	echo "👀  Watching for changes"
 	just watch-css & \
-	just watch-html
+	just watch-html & \
+	just watch-js
 
 
 @watch-css:
@@ -96,12 +106,16 @@ environment := "dev"
 	watchexec -p -f "tailwind.config.js" -- just css
 
 
+@watch-elm:
+	watchexec -p -w {{src_dir}} -e "elm" -- just elm
+
+
 @watch-html:
 	watchexec -p -w {{src_dir}} -e "html" -- just html
 
 
-@watch-elm:
-	watchexec -p -w {{src_dir}} -e "elm" -- just elm
+@watch-js:
+	watchexec -p -w {{src_dir}} -e "js" -- just javascript
 
 
 
