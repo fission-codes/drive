@@ -6,7 +6,7 @@
     "elm-live": "^4.0.1",
     "postcss-cli": "^7.1.0",
     "postcss-csso": "^4.0.0",
-    "postcss-elm-tailwind": "file:../../Code/postcss-elm-tailwind",
+    "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#6b10210ce9dc0ea90f32786ca385c651bf6fb089",
     "tailwindcss": "^1.2.0-canary.5"
   },
   "scripts": {
