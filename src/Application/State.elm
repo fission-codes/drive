@@ -2,6 +2,7 @@ module State exposing (init, subscriptions, update)
 
 import Browser.Navigation as Nav
 import Ports
+import Return exposing (return)
 import State.Url
 import Types exposing (..)
 import Url exposing (Url)
@@ -31,19 +32,19 @@ init flags url navKey =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg =
     case msg of
         Bypass ->
-            ( model, Cmd.none )
+            Return.singleton
 
         -----------------------------------------
         -- URL
         -----------------------------------------
         LinkClicked urlRequest ->
-            State.Url.linkClicked model urlRequest
+            State.Url.linkClicked urlRequest
 
         UrlChanged url ->
-            State.Url.urlChanged model url
+            State.Url.urlChanged url
 
 
 

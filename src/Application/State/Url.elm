@@ -3,6 +3,7 @@ module State.Url exposing (..)
 import Browser
 import Browser.Navigation as Nav
 import Return exposing (return)
+import Return.Extra as Return exposing (returnWith)
 import Types exposing (Model, Msg)
 import Url exposing (Url)
 
@@ -11,16 +12,16 @@ import Url exposing (Url)
 -- 🛠
 
 
-linkClicked : Model -> Browser.UrlRequest -> ( Model, Cmd Msg )
-linkClicked model urlRequest =
+linkClicked : Browser.UrlRequest -> Model -> ( Model, Cmd Msg )
+linkClicked urlRequest model =
     case urlRequest of
         Browser.Internal url ->
-            return model (Nav.pushUrl model.navKey <| Url.toString url)
+            returnWith (Nav.pushUrl model.navKey <| Url.toString url) model
 
         Browser.External href ->
-            return model (Nav.load href)
+            returnWith (Nav.load href) model
 
 
-urlChanged : Model -> Url -> ( Model, Cmd Msg )
-urlChanged model url =
+urlChanged : Url -> Model -> ( Model, Cmd Msg )
+urlChanged url model =
     Return.singleton { model | url = url }
