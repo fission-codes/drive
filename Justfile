@@ -1,3 +1,5 @@
+export NODE_OPTIONS := "--no-warnings"
+
 
 # Variables
 # ---------
@@ -5,6 +7,7 @@
 build_dir 	:= "./build"
 node_bin 		:= "./node_modules/.bin"
 src_dir 		:= "./src"
+sys_dir			:= "./system"
 
 environment := "dev"
 
@@ -58,14 +61,12 @@ environment := "dev"
 @css-large:
 	echo "⚙️  Compiling CSS & Elm Tailwind Module"
 	mkdir -p {{src_dir}}/Library
-	{{node_bin}}/postcss {{src_dir}}/Css/Application.css \
-		--output {{build_dir}}/application.css
+	node {{sys_dir}}/Css/build.js
 
 
 @css-small:
 	echo "⚙️  Compiling Minified CSS"
-	NODE_ENV=production {{node_bin}}/postcss {{src_dir}}/Css/Application.css \
-		--output {{build_dir}}/application.css
+	NODE_ENV=production node {{sys_dir}}/Css/build.js
 
 
 @elm:
