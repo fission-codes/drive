@@ -1,10 +1,11 @@
 dependencies:
+  fission-kit: github.com/fission-suite/kit/ed6e266871d6148bda7963b01e5f2f15c36c50ad
   get-ipfs: 1.0.1
-  postcss: 7.0.26
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.0.5
   elm-git-install: 0.1.2
   elm-live: 4.0.1
+  postcss: 7.0.26
   postcss-csso: 4.0.0_postcss@7.0.26
   postcss-elm-tailwind: github.com/icidasset/postcss-elm-tailwind/6b10210ce9dc0ea90f32786ca385c651bf6fb089_postcss@7.0.26
   snowpack: 1.1.0
@@ -926,6 +927,7 @@ packages:
   /ansi-styles/3.2.1:
     dependencies:
       color-convert: 1.9.3
+    dev: true
     engines:
       node: '>=4'
     resolution:
@@ -1075,6 +1077,7 @@ packages:
       ansi-styles: 3.2.1
       escape-string-regexp: 1.0.5
       supports-color: 5.5.0
+    dev: true
     engines:
       node: '>=4'
     resolution:
@@ -1131,6 +1134,7 @@ packages:
   /color-convert/1.9.3:
     dependencies:
       color-name: 1.1.3
+    dev: true
     resolution:
       integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==
   /color-convert/2.0.1:
@@ -1142,6 +1146,7 @@ packages:
     resolution:
       integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==
   /color-name/1.1.3:
+    dev: true
     resolution:
       integrity: sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=
   /color-name/1.1.4:
@@ -1403,6 +1408,7 @@ packages:
     resolution:
       integrity: sha1-Aljq5NPQwJdN4cFpGI7wBR0dGYg=
   /escape-string-regexp/1.0.5:
+    dev: true
     engines:
       node: '>=0.8.0'
     resolution:
@@ -1568,6 +1574,7 @@ packages:
     resolution:
       integrity: sha1-NPUEnOHs3ysGSa8+8k5F7TVBbZE=
   /has-flag/3.0.0:
+    dev: true
     engines:
       node: '>=4'
     resolution:
@@ -2119,6 +2126,7 @@ packages:
       chalk: 2.4.2
       source-map: 0.6.1
       supports-color: 6.1.0
+    dev: true
     engines:
       node: '>=6.0.0'
     resolution:
@@ -2421,6 +2429,7 @@ packages:
     resolution:
       integrity: sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
   /source-map/0.6.1:
+    dev: true
     engines:
       node: '>=0.10.0'
     resolution:
@@ -2466,6 +2475,7 @@ packages:
   /supports-color/5.5.0:
     dependencies:
       has-flag: 3.0.0
+    dev: true
     engines:
       node: '>=4'
     resolution:
@@ -2473,6 +2483,7 @@ packages:
   /supports-color/6.1.0:
     dependencies:
       has-flag: 3.0.0
+    dev: true
     engines:
       node: '>=6'
     resolution:
@@ -2629,6 +2640,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-H/V41UNZQPkUMIT5h5hiwg4QKIY1RPvoBV4XcjUbRM8Bk2oKqqyZ0DIEbTFZB0XjbtSPG8SAa/0DxCQmiRgzKg==
+  github.com/fission-suite/kit/ed6e266871d6148bda7963b01e5f2f15c36c50ad:
+    dev: false
+    name: fission-kit
+    resolution:
+      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/ed6e266871d6148bda7963b01e5f2f15c36c50ad'
+    version: 0.2.0
   github.com/icidasset/postcss-elm-tailwind/6b10210ce9dc0ea90f32786ca385c651bf6fb089_postcss@7.0.26:
     dependencies:
       postcss: 7.0.26
@@ -2647,6 +2664,7 @@ specifiers:
   '@fullhuman/postcss-purgecss': ^2.0.5
   elm-git-install: ^0.1.2
   elm-live: ^4.0.1
+  fission-kit: fission-suite/kit
   get-ipfs: ^1.0.1
   postcss: ^7.0.26
   postcss-csso: ^4.0.0

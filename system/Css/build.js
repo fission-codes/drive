@@ -12,8 +12,9 @@ import tailwindConfig from "./tailwind.js"
 
 // 🏔
 
+
 const INPUT = "src/Css/Application.css"
-const OUTPUT = "build/Css/Application.css"
+const OUTPUT = "build/application.css"
 
 const isProduction = (process.env.NODE_ENV === "production")
 

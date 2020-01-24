@@ -17,7 +17,7 @@ environment := "dev"
 # -----
 
 @default: dev
-@build: clean css-large html elm javascript-dependencies javascript (_report "Build success")
+@build: clean css-large html elm javascript-dependencies javascript images (_report "Build success")
 
 
 @build-production:
@@ -81,6 +81,11 @@ environment := "dev"
 	cp {{build_dir}}/index.html {{build_dir}}/200.html
 
 
+@images:
+	echo "⚙️  Copying Images"
+	cp -r node_modules/fission-kit/images {{build_dir}}/images/
+
+
 @javascript:
 	echo "⚙️  Copying Javascript"
 	cp {{src_dir}}/Javascript/* {{build_dir}}/
@@ -88,7 +93,7 @@ environment := "dev"
 
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
-	cp -rf web_modules {{build_dir}}/web_modules/
+	cp -r web_modules {{build_dir}}/web_modules/
 
 
 
@@ -103,8 +108,8 @@ environment := "dev"
 
 
 @watch-css:
-	watchexec -p -w {{src_dir}} -f "Css/**/*.css" -- just css & \
-	watchexec -p -f "tailwind.config.js" -- just css
+	watchexec -p -w {{src_dir}}/Css -f "**/*.css" -- just css-large & \
+	watchexec -p -w {{sys_dir}}/Css -f "**/*.js" -- just css-large
 
 
 @watch-elm:
