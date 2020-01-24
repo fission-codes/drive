@@ -7,16 +7,15 @@ import postcss from "postcss"
 import purgecss from "@fullhuman/postcss-purgecss"
 import tailwind from "tailwindcss"
 
+import tailwindConfig from "./tailwind.js"
+
 
 // 🏔
 
+const INPUT = "src/Css/Application.css"
+const OUTPUT = "build/Css/Application.css"
 
-import tailwindConfig from "./tailwind.js"
-
-const inputPath = "src/Css/Application.css"
-const outputPath = "build/Css/Application.css"
-
-const isProduction = process.env.NODE_ENV === "production"
+const isProduction = (process.env.NODE_ENV === "production")
 
 
 
@@ -54,8 +53,8 @@ const flow = [
 // BUILD
 
 
-fs.readFile(inputPath, (_err, css) => {
+fs.readFile(INPUT, (_err, css) => {
   postcss(flow)
-    .process(css, { from: inputPath, to: outputPath })
-    .then(result => fs.writeFile(outputPath, result.css, () => true))
+    .process(css, { from: INPUT, to: OUTPUT })
+    .then(result => fs.writeFile(OUTPUT, result.css, () => true))
 })
