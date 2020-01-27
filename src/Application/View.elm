@@ -85,7 +85,7 @@ header _ =
                 , T.items_center
                 , T.text_gray_400
                 ]
-                [ FeatherIcons.anchor
+                [ FeatherIcons.moreVertical
                     |> FeatherIcons.withSize 23
                     |> FeatherIcons.toHtml []
                     |> List.singleton
