@@ -3,7 +3,8 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit",
-    "get-ipfs": "^1.0.1"
+    "get-ipfs": "^1.0.1",
+    "tailwindcss-gradients": "^2.3.1"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.0.5",
@@ -11,8 +12,8 @@
     "elm-live": "^4.0.1",
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
-    "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#6b10210ce9dc0ea90f32786ca385c651bf6fb089",
-    "snowpack": "^1.1.0",
+    "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#9960dd3710dd0651019aef755a032549084036ce",
+    "snowpack": "^1.1.2",
     "tailwindcss": "^1.2.0-canary.5"
   },
   "scripts": {

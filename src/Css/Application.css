@@ -3,3 +3,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+
+
+/* Utilities
+   --------- */
+
+.underline-thick {
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
