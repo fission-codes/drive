@@ -6,6 +6,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Item exposing (Kind(..))
 import List.Extra as List
+import Styling as S
 import Tailwind as T
 import Types exposing (..)
 
@@ -48,6 +49,7 @@ header _ =
         ]
         [ Html.div
             [ T.container
+            , S.container_padding
             , T.flex
             , T.items_center
             , T.mx_auto
@@ -150,13 +152,14 @@ staticList =
 list _ =
     Html.div
         [ T.container
+        , S.container_padding
         , T.flex_1
         , T.mx_auto
         , T.my_6
         , T.text_lg
         ]
         [ Html.div
-            [ T.w_1over2 ]
+            [ T.lg__w_1over2 ]
             (List.indexedMap
                 listItem
                 staticList
@@ -248,6 +251,7 @@ footer _ =
         ]
         [ Html.div
             [ T.container
+            , S.container_padding
             , T.flex
             , T.items_center
             , T.mx_auto
