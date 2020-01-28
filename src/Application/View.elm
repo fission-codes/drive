@@ -25,7 +25,7 @@ view model =
 body : Model -> List (Html Msg)
 body m =
     [ header m
-    , list m
+    , content m
     , footer m
     ]
         |> Html.div
@@ -42,8 +42,7 @@ body m =
 
 header _ =
     Html.header
-        [ T.bg_gray_100
-        , T.bg_gradient_b_gray_100_200
+        [ T.bg_gray_200
         , T.py_8
         , T.text_white
         ]
@@ -52,23 +51,25 @@ header _ =
             , S.container_padding
             , T.flex
             , T.items_center
+            , T.mb_px
             , T.mx_auto
-            , T.pb_px
+            , T.pb_1
             ]
             [ -----------------------------------------
               -- Icon
               -----------------------------------------
               FeatherIcons.hardDrive
-                |> FeatherIcons.withSize 23
+                |> FeatherIcons.withSize iconSize
                 |> FeatherIcons.toHtml []
                 |> List.singleton
-                |> Html.div [ T.mr_5, T.text_gray_200 ]
+                |> Html.div [ T.mr_5, T.text_gray_300 ]
 
             -----------------------------------------
             -- Path
             -----------------------------------------
             , Html.div
                 [ T.flex_auto
+                , T.italic
                 , T.text_2xl
                 , T.tracking_tight
                 ]
@@ -83,17 +84,37 @@ header _ =
             , Html.div
                 [ T.flex
                 , T.items_center
+                , T.ml_4
                 , T.text_gray_400
                 ]
-                [ FeatherIcons.moreVertical
-                    |> FeatherIcons.withSize 23
-                    |> FeatherIcons.toHtml []
-                    |> List.singleton
-                    |> Html.div
-                        [ T.cursor_pointer
-                        , T.ml_3
-                        , T.text_gray_300
-                        ]
+                [ Html.div
+                    [ T.border_2
+                    , T.border_gray_300
+                    , T.pl_8
+                    , T.pr_3
+                    , T.py_1
+                    , T.relative
+                    , T.rounded_full
+                    , T.text_gray_300
+                    , T.w_48
+                    ]
+                    [ FeatherIcons.search
+                        |> FeatherIcons.withSize 20
+                        |> FeatherIcons.toHtml []
+                        |> List.singleton
+                        |> Html.span
+                            [ T.absolute
+                            , T.left_0
+                            , T.ml_2
+                            , T.neg_translate_y_1over2
+                            , T.text_gray_300
+                            , T.top_1over2
+                            , T.transform
+                            ]
+
+                    --
+                    , Html.text "Search"
+                    ]
                 ]
             ]
         ]
@@ -106,60 +127,97 @@ inactivePathPart text =
         --
         , T.cursor_pointer
         , T.pb_px
-        , T.tdc_gray_200
+        , T.tdc_gray_300
         , T.text_gray_500
         , T.underline
         ]
         [ Html.text text ]
 
 
-activePathPart =
-    Html.text
+activePathPart text =
+    Html.span
+        [ T.text_pink ]
+        [ Html.text text ]
 
 
 pathSeparator =
-    Html.span [ T.antialiased, T.mx_3, T.text_gray_200 ] [ Html.text "/" ]
+    Html.span [ T.antialiased, T.mx_3, T.text_gray_300 ] [ Html.text "/" ]
 
 
 
--- LIST
+-- MAIN
+
+
+content m =
+    Html.div
+        [ T.container
+        , S.container_padding
+        , T.flex
+        , T.flex_auto
+        , T.items_stretch
+        , T.mx_auto
+        , T.my_8
+        ]
+        [ list m
+        , details m
+        ]
+
+
+
+-- MAIN  /  LIST
 
 
 staticList =
     [ { kind = Directory
       , name = "Drum n' Bass"
+      , active = False
       }
     , { kind = Directory
       , name = "Metal"
+      , active = False
       }
     , { kind = Directory
       , name = "Techno & Minimal"
+      , active = True
       }
     , { kind = Directory
       , name = "Trip Hop & Lo-Fi"
+      , active = False
       }
 
     --
     , { kind = Audio
       , name = "Aretha Franklin - Save Me.m4a"
+      , active = False
       }
     , { kind = Audio
       , name = "IAMNOBODI - Mad World.mp3"
+      , active = False
       }
     ]
 
 
 list _ =
     Html.div
-        [ T.container
-        , S.container_padding
-        , T.flex_1
-        , T.mx_auto
-        , T.my_6
+        [ T.flex_auto
         , T.text_lg
+        , T.w_1over2
         ]
         [ Html.div
-            [ T.lg__w_1over2 ]
+            [ T.antialiased
+            , T.font_semibold
+            , T.mb_1
+            , T.text_gray_400
+            , T.text_xs
+            , T.tracking_wider
+            ]
+            [ Html.text "NAME" ]
+
+        -----------------------------------------
+        -- Tree
+        -----------------------------------------
+        , Html.div
+            []
             (List.indexedMap
                 listItem
                 staticList
@@ -177,7 +235,7 @@ list _ =
         ]
 
 
-listItem idx { kind, name } =
+listItem idx { kind, name, active } =
     let
         withoutDots =
             String.split "." name
@@ -194,26 +252,32 @@ listItem idx { kind, name } =
     in
     Html.div
         [ T.border_b
-        , T.border_near_white
+        , T.border_gray_700
         , T.flex
         , T.items_center
+        , T.mt_px
         , T.py_4
+
+        --
+        , if active then
+            T.text_pink
+
+          else
+            T.text_inherit
         ]
         [ -----------------------------------------
           -- Icon
           -----------------------------------------
           kind
             |> Item.kindIcon
-            |> FeatherIcons.withSize 23
+            |> FeatherIcons.withSize iconSize
             |> FeatherIcons.toHtml []
-            |> List.singleton
-            |> Html.span [ T.text_gray_300 ]
 
         -----------------------------------------
         -- Label & Extensions
         -----------------------------------------
         , Html.span
-            [ T.ml_5 ]
+            [ T.flex_auto, T.ml_5 ]
             [ Html.text label
 
             --
@@ -236,6 +300,91 @@ listItem idx { kind, name } =
                         , T.uppercase
                         ]
                         [ Html.text ext ]
+            ]
+
+        --
+        , if active then
+            FeatherIcons.arrowRight
+                |> FeatherIcons.withSize iconSize
+                |> FeatherIcons.toHtml []
+                |> List.singleton
+                |> Html.span [ T.opacity_50 ]
+
+          else
+            Html.text ""
+        ]
+
+
+
+-- MAIN  /  DETAILS
+
+
+details _ =
+    Html.div
+        [ T.bg_gray_900
+        , T.flex
+        , T.flex_auto
+        , T.flex_col
+        , T.items_center
+        , T.justify_center
+        , T.ml_12
+        , T.px_4
+        , T.py_6
+        , T.rounded_md
+        , T.w_1over2
+
+        --
+        , T.lg__ml_24
+        ]
+        [ FeatherIcons.folder
+            |> FeatherIcons.withSize 128
+            |> FeatherIcons.withStrokeWidth 0.5
+            |> FeatherIcons.toHtml []
+            |> List.singleton
+            |> Html.div
+                [ T.flex
+                , T.flex_col
+                , T.items_center
+                ]
+
+        --
+        , Html.div
+            [ T.font_semibold
+            , T.mt_1
+            , T.text_center
+            , T.tracking_tight
+            ]
+            [ Html.text "Techno & Minimal" ]
+
+        --
+        , Html.div
+            [ T.mt_px
+            , T.text_center
+            , T.text_gray_300
+            , T.text_sm
+            ]
+            [ Html.text "5 items, modified yesterday" ]
+
+        --
+        , Html.div
+            [ T.mt_5
+            ]
+            [ Html.div
+                [ T.antialiased
+                , T.bg_purple
+                , T.font_semibold
+                , T.px_2
+                , T.py_1
+                , T.rounded
+                , T.text_gray_900
+                , T.text_sm
+                , T.tracking_wider
+                , T.uppercase
+                ]
+                [ Html.span
+                    [ T.block, T.pt_px ]
+                    [ Html.text "Open" ]
+                ]
             ]
         ]
 
@@ -318,7 +467,7 @@ htmlWithIcon icon nodes =
         , T.items_center
         ]
         [ icon
-            |> FeatherIcons.withSize 23
+            |> FeatherIcons.withSize iconSize
             |> FeatherIcons.toHtml []
 
         --
@@ -326,3 +475,7 @@ htmlWithIcon icon nodes =
             [ T.ml_2 ]
             nodes
         ]
+
+
+iconSize =
+    22

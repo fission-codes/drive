@@ -19,7 +19,7 @@ export default {
       ...kit.colors,
 
       "current-color": "currentColor",
-      "near-white": "hsl(240, 33.3%, 96%)",
+      "inherit": "inherit",
       "transparent": "transparent"
     },
 
@@ -43,8 +43,19 @@ export default {
 
       return { colors: {
         "gray-100-200": [ colors.gray_100, colors.gray_200 ],
+        "gray-200-300": [ colors.gray_200, colors.gray_300 ],
       }}
     },
+
+    // Inset
+    // -----
+
+    inset: {
+      "auto": "auto",
+      "0": 0,
+      "1/2": "50%",
+      "full": "100%"
+    }
 
   },
 

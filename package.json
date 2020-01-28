@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "fission-kit": "fission-suite/kit",
+    "fission-kit": "fission-suite/kit#1a7fc9877aeeab319661c050fc05d0ae49d69882",
     "get-ipfs": "^1.0.1",
     "tailwindcss-gradients": "^2.3.1"
   },
