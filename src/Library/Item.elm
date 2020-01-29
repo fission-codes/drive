@@ -23,8 +23,10 @@ type Kind
 
 type alias Item =
     { kind : Kind
+    , loading : Bool
     , name : String
     , nameProperties : NameProperties
+    , selected : Bool
     , size : Int
     }
 
@@ -67,38 +69,47 @@ fromIpfs : Ipfs.ListItem -> Item
 fromIpfs { name, path, size, typ } =
     let
         nameProps =
-            nameProperties name
-    in
-    { kind =
-        case typ of
-            "dir" ->
-                Directory
+            case typ of
+                "dir" ->
+                    { base = name
+                    , extension = ""
+                    }
 
-            "file" ->
-                if List.member nameProps.extension audioFileExtensions then
-                    Audio
+                _ ->
+                    nameProperties name
 
-                else if List.member nameProps.extension codeFileExtensions then
-                    Code
+        kind =
+            case typ of
+                "dir" ->
+                    Directory
 
-                else if List.member nameProps.extension imageFileExtensions then
-                    Image
+                "file" ->
+                    if List.member nameProps.extension audioFileExtensions then
+                        Audio
 
-                else if List.member nameProps.extension textFileExtensions then
-                    Text
+                    else if List.member nameProps.extension codeFileExtensions then
+                        Code
 
-                else if List.member nameProps.extension videoFileExtensions then
-                    Video
+                    else if List.member nameProps.extension imageFileExtensions then
+                        Image
 
-                else
+                    else if List.member nameProps.extension textFileExtensions then
+                        Text
+
+                    else if List.member nameProps.extension videoFileExtensions then
+                        Video
+
+                    else
+                        Other
+
+                _ ->
                     Other
-
-            _ ->
-                Other
-
-    --
+    in
+    { kind = kind
+    , loading = False
     , name = name
     , nameProperties = nameProps
+    , selected = False
     , size = size
     }
 

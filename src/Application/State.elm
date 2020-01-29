@@ -4,7 +4,9 @@ import Browser.Navigation as Nav
 import Ipfs
 import Ports
 import Return exposing (return)
+import Routing
 import State.Ipfs
+import State.Traversal
 import State.Url
 import Types exposing (..)
 import Url exposing (Url)
@@ -22,6 +24,7 @@ init flags url navKey =
       { directoryList = Nothing
       , ipfs = Ipfs.Connecting
       , navKey = navKey
+      , page = Routing.pageFromUrl url
       , rootCid = flags.rootCid
       , url = url
       }
@@ -38,7 +41,7 @@ init flags url navKey =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg =
-    case Debug.log "" msg of
+    case msg of
         Bypass ->
             Return.singleton
 
@@ -50,6 +53,15 @@ update msg =
 
         IpfsSetupCompleted ->
             State.Ipfs.setupCompleted
+
+        -----------------------------------------
+        -- Traversal
+        -----------------------------------------
+        DigDeeper directoryName ->
+            State.Traversal.digDeeper directoryName
+
+        GoUp args ->
+            State.Traversal.goUp args
 
         -----------------------------------------
         -- URL

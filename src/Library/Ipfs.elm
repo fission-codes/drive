@@ -32,3 +32,7 @@ listItemDecoder =
         (Json.Decode.field "path" Json.Decode.string)
         (Json.Decode.field "size" Json.Decode.int)
         (Json.Decode.field "type" Json.Decode.string)
+
+
+
+-- 🛠

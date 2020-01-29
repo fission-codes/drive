@@ -4,12 +4,15 @@ import Browser
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
+import Html.Events as E
 import Ipfs
-import Item exposing (Kind(..))
+import Item exposing (Item, Kind(..))
 import List.Extra as List
+import Routing exposing (Page(..))
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
+import Url.Builder
 
 
 
@@ -19,7 +22,10 @@ import Types exposing (..)
 view : Model -> Browser.Document Msg
 view model =
     { title = "Fission Drive"
-    , body = body model
+    , body =
+        body model
+
+    -- TODO: IPNS/...
     }
 
 
@@ -56,7 +62,8 @@ body m =
 -- HEADER
 
 
-header _ =
+header : Model -> Html Msg
+header model =
     Html.header
         [ T.bg_gray_200
         , T.py_8
@@ -78,22 +85,49 @@ header _ =
                 |> FeatherIcons.withSize iconSize
                 |> FeatherIcons.toHtml []
                 |> List.singleton
-                |> Html.div [ T.mr_5, T.text_gray_300 ]
+                |> Html.div
+                    [ T.mr_5
+                    , T.opacity_50
+                    , T.text_pink
+                    ]
 
             -----------------------------------------
             -- Path
             -----------------------------------------
-            , Html.div
-                [ T.flex_auto
-                , T.italic
-                , T.text_2xl
-                , T.tracking_tight
-                ]
-                -- [ inactivePathPart "My Drive"
-                -- , pathSeparator
-                -- , activePathPart "Music"
-                -- ]
-                [ inactivePathPart "My Drive" ]
+            , let
+                segments =
+                    Routing.drivePathSegments model.page
+
+                amountOfSegments =
+                    List.length segments
+              in
+              segments
+                |> List.reverse
+                |> List.indexedMap
+                    (\idx ->
+                        if idx == 0 then
+                            activePathPart
+
+                        else
+                            inactivePathPart (amountOfSegments - idx + 1)
+                    )
+                |> List.reverse
+                |> List.append
+                    [ case segments of
+                        [] ->
+                            activePathPart "My Drive"
+
+                        _ ->
+                            inactivePathPart 0 "My Drive"
+                    ]
+                |> List.intersperse pathSeparator
+                |> Html.div
+                    [ T.flex_auto
+                    , T.italic
+                    , T.leading_snug
+                    , T.text_2xl
+                    , T.tracking_tight
+                    ]
 
             -----------------------------------------
             -- Actions
@@ -107,6 +141,7 @@ header _ =
                 [ Html.div
                     [ T.border_2
                     , T.border_gray_300
+                    , T.cursor_not_allowed
                     , T.pl_8
                     , T.pr_3
                     , T.py_1
@@ -137,9 +172,10 @@ header _ =
         ]
 
 
-inactivePathPart text =
+inactivePathPart idx text =
     Html.span
         [ A.class "underline-thick"
+        , E.onClick (GoUp { floor = idx })
 
         --
         , T.cursor_pointer
@@ -186,6 +222,7 @@ content m =
 -- MAIN  /  LIST
 
 
+list : Model -> Html Msg
 list model =
     Html.div
         [ T.flex_auto
@@ -221,7 +258,7 @@ list model =
                         ( _, _ ) ->
                             compare a.name b.name
                 )
-            |> List.map listItem
+            |> List.map (listItem model)
             |> Html.div []
 
         -----------------------------------------
@@ -241,7 +278,7 @@ list model =
                     (Maybe.withDefault [] model.directoryList)
 
             sizeString =
-                if toFloat size / 1000000 > 1000 then
+                if toFloat size / 1000000 > 2 then
                     String.fromInt (size // 1000000) ++ "MB"
 
                 else
@@ -283,21 +320,38 @@ list model =
         ]
 
 
-listItem { kind, name, nameProperties } =
-    let
-        active =
-            False
-    in
-    Html.div
-        [ T.border_b
+listItem : Model -> Item -> Html Msg
+listItem model { kind, loading, name, nameProperties, selected } =
+    (case kind of
+        Directory ->
+            Html.div
+
+        _ ->
+            Html.a
+    )
+        [ case kind of
+            Directory ->
+                E.onClick (DigDeeper name)
+
+            _ ->
+                [ name ]
+                    |> List.append (Routing.drivePathSegments model.page)
+                    |> (::) model.rootCid
+                    |> String.join "/"
+                    |> String.append "https://ipfs.runfission.com/ipfs/"
+                    |> A.href
+
+        --
+        , T.border_b
         , T.border_gray_700
+        , T.cursor_pointer
         , T.flex
         , T.items_center
         , T.mt_px
         , T.py_4
 
         --
-        , if active then
+        , if selected then
             T.text_pink
 
           else
@@ -341,12 +395,23 @@ listItem { kind, name, nameProperties } =
             ]
 
         --
-        , if active then
+        , if loading then
+            FeatherIcons.loader
+                |> FeatherIcons.withSize iconSize
+                |> FeatherIcons.toHtml []
+                |> List.singleton
+                |> Html.span [ T.animation_spin, T.ml_2 ]
+
+          else
+            Html.text ""
+
+        --
+        , if selected then
             FeatherIcons.arrowRight
                 |> FeatherIcons.withSize iconSize
                 |> FeatherIcons.toHtml []
                 |> List.singleton
-                |> Html.span [ T.opacity_50 ]
+                |> Html.span [ T.ml_2, T.opacity_50 ]
 
           else
             Html.text ""

@@ -5,11 +5,21 @@ import Item
 import Json.Decode as Json
 import Ports
 import Return exposing (return)
+import Routing
 import Types exposing (..)
 
 
 
 -- DIRECTORY LIST
+
+
+getDirectoryListCmd : Model -> Cmd Msg
+getDirectoryListCmd model =
+    model.page
+        |> Routing.drivePathSegments
+        |> (::) model.rootCid
+        |> String.join "/"
+        |> Ports.ipfsListDirectory
 
 
 gotDirectoryList : Json.Value -> Model -> ( Model, Cmd Msg )
@@ -31,4 +41,4 @@ setupCompleted : Model -> ( Model, Cmd Msg )
 setupCompleted model =
     return
         { model | ipfs = Ipfs.Ready }
-        (Ports.ipfsListDirectory model.rootCid)
+        (getDirectoryListCmd model)

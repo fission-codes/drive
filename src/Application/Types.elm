@@ -8,6 +8,7 @@ import Browser.Navigation as Nav
 import Ipfs
 import Item exposing (Item)
 import Json.Decode as Json
+import Routing exposing (Page)
 import Url exposing (Url)
 
 
@@ -32,6 +33,7 @@ type alias Model =
     { directoryList : Maybe (List Item)
     , ipfs : Ipfs.State
     , navKey : Nav.Key
+    , page : Page
     , rootCid : String
     , url : Url
     }
@@ -50,6 +52,11 @@ type Msg
       -----------------------------------------
     | IpfsGotDirectoryList Json.Value
     | IpfsSetupCompleted
+      -----------------------------------------
+      -- Traversal
+      -----------------------------------------
+    | DigDeeper String
+    | GoUp { floor : Int }
       -----------------------------------------
       -- URL
       -----------------------------------------
