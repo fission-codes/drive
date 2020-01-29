@@ -133,10 +133,13 @@ header model =
             -- Actions
             -----------------------------------------
             , Html.div
-                [ T.flex
+                [ T.hidden
                 , T.items_center
                 , T.ml_4
                 , T.text_gray_400
+
+                --
+                , T.lg__flex
                 ]
                 [ Html.div
                     [ T.border_2
