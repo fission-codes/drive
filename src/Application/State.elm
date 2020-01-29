@@ -1,8 +1,10 @@
 module State exposing (init, subscriptions, update)
 
 import Browser.Navigation as Nav
+import Ipfs
 import Ports
 import Return exposing (return)
+import State.Ipfs
 import State.Url
 import Types exposing (..)
 import Url exposing (Url)
@@ -17,13 +19,16 @@ init flags url navKey =
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { navKey = navKey
+      { directoryList = Nothing
+      , ipfs = Ipfs.Connecting
+      , navKey = navKey
+      , rootCid = flags.rootCid
       , url = url
       }
       -----------------------------------------
       -- Command
       -----------------------------------------
-    , Cmd.none
+    , Ports.ipfsSetup ()
     )
 
 
@@ -33,9 +38,18 @@ init flags url navKey =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg =
-    case msg of
+    case Debug.log "" msg of
         Bypass ->
             Return.singleton
+
+        -----------------------------------------
+        -- IPFS
+        -----------------------------------------
+        IpfsGotDirectoryList encodedDirList ->
+            State.Ipfs.gotDirectoryList encodedDirList
+
+        IpfsSetupCompleted ->
+            State.Ipfs.setupCompleted
 
         -----------------------------------------
         -- URL
@@ -53,4 +67,7 @@ update msg =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Sub.batch
+        [ Ports.ipfsCompletedSetup (\_ -> IpfsSetupCompleted)
+        , Ports.ipfsGotDirectoryList IpfsGotDirectoryList
+        ]

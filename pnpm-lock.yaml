@@ -1,6 +1,7 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/1a7fc9877aeeab319661c050fc05d0ae49d69882
   get-ipfs: 1.0.1
+  tailwindcss-animations: 1.0.0
   tailwindcss-gradients: 2.3.1
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.0.5
@@ -2525,6 +2526,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-oRSIpR8pxT1Wr2FquTNnGet79b3BWljqOuoW/h4oBhxJ/HUbX5nX6JSruTkvXDCFMwDPvsaTTbvMLKZWSy0R5g==
+  /tailwindcss-animations/1.0.0:
+    dependencies:
+      lodash: 4.17.15
+    dev: false
+    resolution:
+      integrity: sha512-dPAo/rRC2Cqupte3tVjoR8gTXyZjyApAmPD6LdiTRRQ79lNx0aCCMTDo86T8Ulif7N48mrMcj/eebf/a3QV6TQ==
   /tailwindcss-gradients/2.3.1:
     dependencies:
       color: 3.1.2
@@ -2680,6 +2687,7 @@ packages:
     dev: false
     name: fission-kit
     resolution:
+      registry: 'https://registry.npmjs.org/'
       tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/1a7fc9877aeeab319661c050fc05d0ae49d69882'
     version: 0.2.0
   github.com/icidasset/postcss-elm-tailwind/9960dd3710dd0651019aef755a032549084036ce_postcss@7.0.26:
@@ -2707,4 +2715,5 @@ specifiers:
   postcss-elm-tailwind: 'icidasset/postcss-elm-tailwind#9960dd3710dd0651019aef755a032549084036ce'
   snowpack: ^1.1.2
   tailwindcss: ^1.2.0-canary.5
+  tailwindcss-animations: ^1.0.0
   tailwindcss-gradients: ^2.3.1

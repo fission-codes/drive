@@ -8,7 +8,7 @@
 
   <title>Fission Drive</title>
 
-  <!-- Favicons & Mobile -->
+  <!-- Favicons & Mobile settings -->
   <!-- TODO -->
 
   <!-- Stylesheets -->
@@ -34,13 +34,15 @@
 
 
   <!-- Insert loader -->
-  <!-- TODO -->
   <script>
+    const loader = document.createElement("img")
+    loader.setAttribute("src", "images/loader.svg")
+    loader.className = "absolute animation-spin left-1/2 top-1/2 -translate-1/2"
+    document.getElementById("elm").appendChild(loader)
   </script>
 
 
   <!-- Scripts -->
-  <!-- TODO -->
   <script src="application.js"></script>
   <script src="index.js" type="module"></script>
 

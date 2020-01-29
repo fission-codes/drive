@@ -4,6 +4,7 @@ import Browser
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
+import Ipfs
 import Item exposing (Kind(..))
 import List.Extra as List
 import Styling as S
@@ -24,16 +25,31 @@ view model =
 
 body : Model -> List (Html Msg)
 body m =
-    [ header m
-    , content m
-    , footer m
-    ]
-        |> Html.div
-            [ T.flex
-            , T.flex_col
-            , T.min_h_screen
+    if m.ipfs == Ipfs.Connecting || m.directoryList == Nothing then
+        [ Html.img
+            [ A.src "images/loader.svg"
+
+            --
+            , T.absolute
+            , T.animation_spin
+            , T.left_1over2
+            , T.neg_translate_y_1over2
+            , T.top_1over2
             ]
-        |> List.singleton
+            []
+        ]
+
+    else
+        [ header m
+        , content m
+        , footer m
+        ]
+            |> Html.div
+                [ T.flex
+                , T.flex_col
+                , T.min_h_screen
+                ]
+            |> List.singleton
 
 
 
@@ -73,10 +89,11 @@ header _ =
                 , T.text_2xl
                 , T.tracking_tight
                 ]
-                [ inactivePathPart "My Drive"
-                , pathSeparator
-                , activePathPart "Music"
-                ]
+                -- [ inactivePathPart "My Drive"
+                -- , pathSeparator
+                -- , activePathPart "Music"
+                -- ]
+                [ inactivePathPart "My Drive" ]
 
             -----------------------------------------
             -- Actions
@@ -159,7 +176,9 @@ content m =
         , T.my_8
         ]
         [ list m
-        , details m
+
+        -- TODO
+        -- , details m
         ]
 
 
@@ -167,37 +186,7 @@ content m =
 -- MAIN  /  LIST
 
 
-staticList =
-    [ { kind = Directory
-      , name = "Drum n' Bass"
-      , active = False
-      }
-    , { kind = Directory
-      , name = "Metal"
-      , active = False
-      }
-    , { kind = Directory
-      , name = "Techno & Minimal"
-      , active = True
-      }
-    , { kind = Directory
-      , name = "Trip Hop & Lo-Fi"
-      , active = False
-      }
-
-    --
-    , { kind = Audio
-      , name = "Aretha Franklin - Save Me.m4a"
-      , active = False
-      }
-    , { kind = Audio
-      , name = "IAMNOBODI - Mad World.mp3"
-      , active = False
-      }
-    ]
-
-
-list _ =
+list model =
     Html.div
         [ T.flex_auto
         , T.text_lg
@@ -216,39 +205,88 @@ list _ =
         -----------------------------------------
         -- Tree
         -----------------------------------------
-        , Html.div
-            []
-            (List.indexedMap
-                listItem
-                staticList
-            )
+        , model.directoryList
+            |> Maybe.withDefault []
+            |> List.sortWith
+                (\a b ->
+                    -- Put directories on top,
+                    -- and then sort alphabetically by name
+                    case ( a.kind, b.kind ) of
+                        ( Directory, _ ) ->
+                            LT
+
+                        ( _, Directory ) ->
+                            GT
+
+                        ( _, _ ) ->
+                            compare a.name b.name
+                )
+            |> List.map listItem
+            |> Html.div []
 
         -----------------------------------------
         -- Stats
         -----------------------------------------
-        , Html.div
+        , let
+            ( amountOfDirs, amountOfFiles, size ) =
+                List.foldl
+                    (\i ( d, f, s ) ->
+                        if i.kind == Directory then
+                            ( d + 1, f, s + i.size )
+
+                        else
+                            ( d, f + 1, s + i.size )
+                    )
+                    ( 0, 0, 0 )
+                    (Maybe.withDefault [] model.directoryList)
+
+            sizeString =
+                if toFloat size / 1000000 > 1000 then
+                    String.fromInt (size // 1000000) ++ "MB"
+
+                else
+                    String.fromInt (size // 1000) ++ "KB"
+          in
+          Html.div
             [ T.mt_8
             , T.text_gray_400
             , T.text_sm
             ]
-            [ Html.text "4 Directories and 2 files, 80MB" ]
+            [ case amountOfDirs of
+                0 ->
+                    Html.text ""
+
+                1 ->
+                    Html.text (String.fromInt amountOfDirs ++ " Directory")
+
+                _ ->
+                    Html.text (String.fromInt amountOfDirs ++ " Directories")
+
+            --
+            , if amountOfDirs > 0 && amountOfFiles > 0 then
+                Html.text " and "
+
+              else
+                Html.text ""
+
+            --
+            , case amountOfFiles of
+                0 ->
+                    Html.text ""
+
+                1 ->
+                    Html.text (String.fromInt amountOfFiles ++ " File (" ++ sizeString ++ ")")
+
+                _ ->
+                    Html.text (String.fromInt amountOfFiles ++ " Files (" ++ sizeString ++ ")")
+            ]
         ]
 
 
-listItem idx { kind, name, active } =
+listItem { kind, name, nameProperties } =
     let
-        withoutDots =
-            String.split "." name
-
-        ( extension, label ) =
-            if List.length withoutDots > 1 then
-                withoutDots
-                    |> List.unconsLast
-                    |> Maybe.map (Tuple.mapSecond <| String.join ".")
-                    |> Maybe.withDefault ( "", name )
-
-            else
-                ( "", name )
+        active =
+            False
     in
     Html.div
         [ T.border_b
@@ -278,10 +316,10 @@ listItem idx { kind, name, active } =
         -----------------------------------------
         , Html.span
             [ T.flex_auto, T.ml_5 ]
-            [ Html.text label
+            [ Html.text nameProperties.base
 
             --
-            , case extension of
+            , case nameProperties.extension of
                 "" ->
                     Html.text ""
 

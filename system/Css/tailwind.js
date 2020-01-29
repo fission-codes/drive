@@ -1,3 +1,4 @@
+import animations from "tailwindcss-animations"
 import defaultTheme from "tailwindcss/defaultTheme.js"
 import gradients from "tailwindcss-gradients"
 import plugin from "tailwindcss/plugin.js"
@@ -11,6 +12,16 @@ export default {
   /////////////////////////////////////////
 
   theme: {
+
+    // Animations
+    // ----------
+
+    animations: {
+      "spin": {
+        from: { transform: "rotate(0deg)" },
+        to: { transform: "rotate(360deg)" },
+      },
+    },
 
     // Colors
     // ------
@@ -77,6 +88,7 @@ export default {
 
   plugins: [
 
+    animations(),
     gradients(),
 
     // Add text-decoration-color classes

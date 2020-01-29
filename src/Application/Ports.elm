@@ -1,4 +1,4 @@
-port module Ports exposing (listDirectory)
+port module Ports exposing (..)
 
 import Json.Decode as Json
 
@@ -7,11 +7,17 @@ import Json.Decode as Json
 -- 📣
 
 
-port listDirectory : String -> Cmd msg
+port ipfsListDirectory : String -> Cmd msg
+
+
+port ipfsSetup : () -> Cmd msg
 
 
 
 -- 📰
 
 
-port gotDirectoryList : (Json.Value -> msg) -> Sub msg
+port ipfsCompletedSetup : (() -> msg) -> Sub msg
+
+
+port ipfsGotDirectoryList : (Json.Value -> msg) -> Sub msg

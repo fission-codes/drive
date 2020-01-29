@@ -5,6 +5,9 @@ module Types exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
+import Ipfs
+import Item exposing (Item)
+import Json.Decode as Json
 import Url exposing (Url)
 
 
@@ -15,7 +18,8 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    {}
+    { rootCid : String
+    }
 
 
 
@@ -25,7 +29,10 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { navKey : Nav.Key
+    { directoryList : Maybe (List Item)
+    , ipfs : Ipfs.State
+    , navKey : Nav.Key
+    , rootCid : String
     , url : Url
     }
 
@@ -38,6 +45,11 @@ type alias Model =
 -}
 type Msg
     = Bypass
+      -----------------------------------------
+      -- IPFS
+      -----------------------------------------
+    | IpfsGotDirectoryList Json.Value
+    | IpfsSetupCompleted
       -----------------------------------------
       -- URL
       -----------------------------------------

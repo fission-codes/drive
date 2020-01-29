@@ -83,7 +83,8 @@ environment := "dev"
 
 @images:
 	echo "⚙️  Copying Images"
-	cp -r node_modules/fission-kit/images {{build_dir}}/images/
+	cp -r node_modules/fission-kit/images/ {{build_dir}}/images/
+	cp -r {{src_dir}}/Static/Images/ {{build_dir}}/images/
 
 
 @javascript:
@@ -104,6 +105,7 @@ environment := "dev"
 	echo "👀  Watching for changes"
 	just watch-css & \
 	just watch-html & \
+	just watch-images & \
 	just watch-js
 
 
@@ -118,6 +120,10 @@ environment := "dev"
 
 @watch-html:
 	watchexec -p -w {{src_dir}} -e "html" -- just html
+
+
+@watch-images:
+	watchexec -p -w {{src_dir}}/Static/Images -- just images
 
 
 @watch-js:
