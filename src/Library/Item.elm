@@ -13,6 +13,7 @@ type Kind
     = Directory
       --
     | Audio
+    | Code
     | Image
     | Text
     | Video
@@ -42,12 +43,16 @@ audioFileExtensions =
     [ "flac", "m4a", "mp3", "ogg", "wav" ]
 
 
+codeFileExtensions =
+    [ "css", "dhall", "elm", "hs", "html", "js", "ts", "xml" ]
+
+
 imageFileExtensions =
-    [ "bmp", "gif", "jpg", "jpeg", "png", "webp" ]
+    [ "bmp", "gif", "ico", "jpg", "jpeg", "png", "webp" ]
 
 
 textFileExtensions =
-    [ "css", "dhall", "doc", "html", "js", "json", "text", "toml", "xml", "yaml" ]
+    [ "doc", "json", "txt", "toml", "yaml" ]
 
 
 videoFileExtensions =
@@ -73,6 +78,9 @@ fromIpfs { name, path, size, typ } =
                 if List.member nameProps.extension audioFileExtensions then
                     Audio
 
+                else if List.member nameProps.extension codeFileExtensions then
+                    Code
+
                 else if List.member nameProps.extension imageFileExtensions then
                     Image
 
@@ -97,16 +105,23 @@ fromIpfs { name, path, size, typ } =
 
 nameProperties : String -> NameProperties
 nameProperties name =
-    name
-        |> String.split "."
-        |> List.uncons
-        |> Maybe.withDefault ( name, [] )
-        |> Tuple.mapSecond (String.join " . ")
-        |> (\( base, extension ) ->
-                { base = base
-                , extension = extension
-                }
-           )
+    let
+        withoutDots =
+            String.split "." name
+
+        ( extension, base ) =
+            if List.length withoutDots > 1 then
+                withoutDots
+                    |> List.unconsLast
+                    |> Maybe.map (Tuple.mapSecond <| String.join ".")
+                    |> Maybe.withDefault ( "", name )
+
+            else
+                ( "", name )
+    in
+    { base = base
+    , extension = extension
+    }
 
 
 
@@ -122,6 +137,9 @@ kindIcon kind =
         --
         Audio ->
             FeatherIcons.music
+
+        Code ->
+            FeatherIcons.code
 
         Image ->
             FeatherIcons.image
