@@ -33,7 +33,8 @@ adjustUrl : Url -> Page -> Url
 adjustUrl url page =
     case page of
         Drive pathSegments ->
-            { url | path = Url.Builder.absolute pathSegments [] }
+            -- To switch to path-based routing, use { url | path = ... }
+            { url | fragment = Just (Url.Builder.absolute pathSegments []) }
 
         NotFound ->
             url
@@ -44,7 +45,12 @@ adjustUrl url page =
 
 
 basePath : Url -> String
-basePath { path } =
+basePath url =
+    let
+        path =
+            -- To switch to path-based routing, use url.path
+            Maybe.withDefault "" url.fragment
+    in
     if String.startsWith "/ipns/" path then
         path
             |> String.chopStart "/"
