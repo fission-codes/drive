@@ -17,7 +17,13 @@ getDirectoryListCmd : Model -> Cmd Msg
 getDirectoryListCmd model =
     model.page
         |> Routing.drivePathSegments
-        |> (::) model.rootCid
+        |> (case model.rootCid of
+                Just rootCid ->
+                    (::) rootCid
+
+                Nothing ->
+                    identity
+           )
         |> String.join "/"
         |> Ports.ipfsListDirectory
 
@@ -41,4 +47,10 @@ setupCompleted : Model -> ( Model, Cmd Msg )
 setupCompleted model =
     return
         { model | ipfs = Ipfs.Ready }
-        (getDirectoryListCmd model)
+        (case model.rootCid of
+            Just _ ->
+                getDirectoryListCmd model
+
+            Nothing ->
+                Cmd.none
+        )

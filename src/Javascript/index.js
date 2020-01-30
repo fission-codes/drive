@@ -23,7 +23,7 @@ const queryParams =
 const app = Elm.Main.init({
   node: document.getElementById("elm"),
   flags: {
-    rootCid: queryParams.get("cid") || "QmdPqtqMZ4h8SJNwBeJWNYcHQTeECdTtm56SuTqBn6dLZs"
+    rootCid: localStorage.getItem("fissionDrive.rootCid") || null
   }
 })
 
@@ -39,4 +39,14 @@ app.ports.ipfsListDirectory.subscribe(cid => {
 
 app.ports.ipfsSetup.subscribe(_ => {
   ipfs.setup().then(app.ports.ipfsCompletedSetup.send)
+})
+
+
+app.ports.removeStoredRootCid.subscribe(_ => {
+  localStorage.removeItem("fissionDrive.rootCid")
+})
+
+
+app.ports.storeRootCid.subscribe(cid => {
+  localStorage.setItem("fissionDrive.rootCid", cid)
 })

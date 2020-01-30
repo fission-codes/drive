@@ -19,7 +19,7 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { rootCid : String
+    { rootCid : Maybe String
     }
 
 
@@ -31,10 +31,11 @@ type alias Flags =
 -}
 type alias Model =
     { directoryList : Maybe (List Item)
+    , exploreInput : Maybe String
     , ipfs : Ipfs.State
     , navKey : Nav.Key
     , page : Page
-    , rootCid : String
+    , rootCid : Maybe String
     , url : Url
     }
 
@@ -47,6 +48,12 @@ type alias Model =
 -}
 type Msg
     = Bypass
+      -----------------------------------------
+      -- Explore
+      -----------------------------------------
+    | Explore
+    | GotExploreInput String
+    | Reset
       -----------------------------------------
       -- IPFS
       -----------------------------------------

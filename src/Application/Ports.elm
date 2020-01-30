@@ -13,6 +13,12 @@ port ipfsListDirectory : String -> Cmd msg
 port ipfsSetup : () -> Cmd msg
 
 
+port removeStoredRootCid : () -> Cmd msg
+
+
+port storeRootCid : String -> Cmd msg
+
+
 
 -- 📰
 

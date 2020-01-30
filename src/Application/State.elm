@@ -5,6 +5,7 @@ import Ipfs
 import Ports
 import Return exposing (return)
 import Routing
+import State.Explore
 import State.Ipfs
 import State.Traversal
 import State.Url
@@ -27,6 +28,15 @@ init flags url navKey =
       , page = Routing.pageFromUrl url
       , rootCid = flags.rootCid
       , url = url
+
+      --
+      , exploreInput =
+            case flags.rootCid of
+                Just _ ->
+                    Nothing
+
+                Nothing ->
+                    Just ""
       }
       -----------------------------------------
       -- Command
@@ -44,6 +54,18 @@ update msg =
     case msg of
         Bypass ->
             Return.singleton
+
+        -----------------------------------------
+        -- Explore
+        -----------------------------------------
+        Explore ->
+            State.Explore.explore
+
+        GotExploreInput input ->
+            State.Explore.gotExploreInput input
+
+        Reset ->
+            State.Explore.reset
 
         -----------------------------------------
         -- IPFS
