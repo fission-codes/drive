@@ -9,6 +9,10 @@ import View.Common as Common
 import View.Common.Footer as Footer
 
 
+
+-- 🖼
+
+
 view : Model -> Html Msg
 view model =
     Html.div
@@ -52,7 +56,7 @@ inputScreen m =
             , T.mt_6
             ]
             [ Html.text """
-                This is a prototype which later evolve into your personal Fission Drive. For now though, you can use it to browse through IPFS content. Put an IPFS Hash below and explore.
+                This is a prototype which'll later evolve into your personal Fission Drive. For now though, you can use it to browse through IPFS content. Put an IPFS Hash below and explore.
               """
             ]
 
