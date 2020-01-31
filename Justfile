@@ -17,7 +17,7 @@ environment := "dev"
 # -----
 
 @default: dev
-@build: clean css-large html elm javascript-dependencies javascript images (_report "Build success")
+@build: clean css-large html elm javascript-dependencies javascript meta images (_report "Build success")
 
 
 @build-production:
@@ -95,6 +95,11 @@ environment := "dev"
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
 	cp -r web_modules {{build_dir}}/web_modules/
+
+
+@meta:
+	echo "⚙️  Copying Meta files"
+	cp -p {{src_dir}}/Static/Meta/* {{build_dir}}/
 
 
 
