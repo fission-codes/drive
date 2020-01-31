@@ -1,6 +1,7 @@
 module State.Traversal exposing (..)
 
 import Browser.Navigation as Nav
+import Result.Extra as Result
 import Return
 import Routing exposing (Page(..))
 import Types exposing (..)
@@ -15,14 +16,14 @@ import Url.Builder
 digDeeper : String -> Model -> ( Model, Cmd Msg )
 digDeeper directoryName model =
     let
+        directoryList =
+            Result.withDefault [] model.directoryList
+
+        shouldntDig =
+            Result.isErr model.directoryList || List.any .loading directoryList
+
         newPage =
             Routing.addDrivePathSegments [ directoryName ] model.page
-
-        directoryList =
-            Maybe.withDefault [] model.directoryList
-
-        alreadyDigging =
-            List.any .loading directoryList
 
         updatedDirectoryList =
             List.map
@@ -35,7 +36,7 @@ digDeeper directoryName model =
                 )
                 directoryList
     in
-    if alreadyDigging then
+    if shouldntDig then
         Return.singleton model
 
     else
@@ -43,7 +44,7 @@ digDeeper directoryName model =
             |> Routing.adjustUrl model.url
             |> Url.toString
             |> Nav.pushUrl model.navKey
-            |> Return.return { model | directoryList = Just updatedDirectoryList }
+            |> Return.return { model | directoryList = Ok updatedDirectoryList }
 
 
 goUp : { floor : Int } -> Model -> ( Model, Cmd Msg )

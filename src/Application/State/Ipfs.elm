@@ -30,13 +30,25 @@ getDirectoryListCmd model =
 
 gotDirectoryList : Json.Value -> Model -> ( Model, Cmd Msg )
 gotDirectoryList encodedDirList model =
-    -- TODO: Error handling
     encodedDirList
         |> Json.decodeValue (Json.list Ipfs.listItemDecoder)
-        |> Result.withDefault []
-        |> List.map Item.fromIpfs
-        |> (\directoryList -> { model | directoryList = Just directoryList })
+        |> Result.map (List.map Item.fromIpfs)
+        |> Result.mapError Json.errorToString
+        |> (\result -> { model | directoryList = result, ipfs = Ipfs.Ready })
         |> Return.singleton
+
+
+
+-- ERRORS
+
+
+gotError : String -> Model -> ( Model, Cmd Msg )
+gotError error model =
+    Return.singleton
+        { model
+            | exploreInput = Maybe.withDefault "" model.rootCid
+            , ipfs = Ipfs.Error error
+        }
 
 
 
@@ -45,12 +57,9 @@ gotDirectoryList encodedDirList model =
 
 setupCompleted : Model -> ( Model, Cmd Msg )
 setupCompleted model =
-    return
-        { model | ipfs = Ipfs.Ready }
-        (case model.rootCid of
-            Just _ ->
-                getDirectoryListCmd model
+    case model.rootCid of
+        Just _ ->
+            return { model | ipfs = Ipfs.Listing } (getDirectoryListCmd model)
 
-            Nothing ->
-                Cmd.none
-        )
+        Nothing ->
+            Return.singleton { model | ipfs = Ipfs.Ready }

@@ -33,7 +33,9 @@ const app = Elm.Main.init({
 // -----
 
 app.ports.ipfsListDirectory.subscribe(cid => {
-  ipfs.listDirectory(cid).then(app.ports.ipfsGotDirectoryList.send)
+  ipfs.listDirectory(cid)
+    .then(app.ports.ipfsGotDirectoryList.send)
+    .catch(reportIpfsError)
 })
 
 
@@ -50,3 +52,12 @@ app.ports.removeStoredRootCid.subscribe(_ => {
 app.ports.storeRootCid.subscribe(cid => {
   localStorage.setItem("fissionDrive.rootCid", cid)
 })
+
+
+
+// 🛠
+// -
+
+function reportIpfsError(err) {
+  app.ports.ipfsGotError.send(err.message || err)
+}

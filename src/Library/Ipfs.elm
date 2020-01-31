@@ -17,6 +17,8 @@ type alias ListItem =
 
 type State
     = Connecting
+    | Error String
+    | Listing
     | Ready
 
 

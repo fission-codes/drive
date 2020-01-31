@@ -1,5 +1,5 @@
 dependencies:
-  fission-kit: github.com/fission-suite/kit/1a7fc9877aeeab319661c050fc05d0ae49d69882
+  fission-kit: github.com/fission-suite/kit/b33d27acc84564a0483ef9d0e895a6613e45c9b2
   get-ipfs: 1.0.1
   tailwindcss-animations: 1.0.0
   tailwindcss-gradients: 2.3.1
@@ -2683,12 +2683,11 @@ packages:
     dev: true
     resolution:
       integrity: sha512-H/V41UNZQPkUMIT5h5hiwg4QKIY1RPvoBV4XcjUbRM8Bk2oKqqyZ0DIEbTFZB0XjbtSPG8SAa/0DxCQmiRgzKg==
-  github.com/fission-suite/kit/1a7fc9877aeeab319661c050fc05d0ae49d69882:
+  github.com/fission-suite/kit/b33d27acc84564a0483ef9d0e895a6613e45c9b2:
     dev: false
     name: fission-kit
     resolution:
-      registry: 'https://registry.npmjs.org/'
-      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/1a7fc9877aeeab319661c050fc05d0ae49d69882'
+      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/b33d27acc84564a0483ef9d0e895a6613e45c9b2'
     version: 0.2.0
   github.com/icidasset/postcss-elm-tailwind/9960dd3710dd0651019aef755a032549084036ce_postcss@7.0.26:
     dependencies:
@@ -2708,7 +2707,7 @@ specifiers:
   '@fullhuman/postcss-purgecss': ^2.0.5
   elm-git-install: ^0.1.2
   elm-live: ^4.0.1
-  fission-kit: 'fission-suite/kit#1a7fc9877aeeab319661c050fc05d0ae49d69882'
+  fission-kit: 'fission-suite/kit#b33d27acc84564a0483ef9d0e895a6613e45c9b2'
   get-ipfs: ^1.0.1
   postcss: ^7.0.26
   postcss-csso: ^4.0.0

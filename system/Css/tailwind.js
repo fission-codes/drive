@@ -29,8 +29,6 @@ export default {
     colors: {
       ...kit.colors,
 
-      "light-purple": "hsl(250, 94.7%, 91%)",
-
       "current-color": "currentColor",
       "inherit": "inherit",
       "transparent": "transparent"

@@ -3,6 +3,7 @@ module View.Explore exposing (view)
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Ipfs
 import Tailwind as T
 import Types exposing (..)
 import View.Common as Common
@@ -69,11 +70,20 @@ inputScreen m =
             ]
             [ Html.input
                 [ A.placeholder "QmPx36eeZypeZvfHgHo1H59udrhuJhMksg8PBvKn3B7JCA"
-                , A.value (Maybe.withDefault "" m.exploreInput)
+                , A.value m.exploreInput
                 , E.onInput GotExploreInput
 
                 --
+                , case m.ipfs of
+                    Ipfs.Error _ ->
+                        T.border_pink_tint
+
+                    _ ->
+                        T.border_gray_500
+
+                --
                 , T.appearance_none
+                , T.bg_transparent
                 , T.border_2
                 , T.border_gray_500
                 , T.flex_auto
@@ -83,23 +93,38 @@ inputScreen m =
                 , T.text_lg
 
                 --
-                , T.focus__border_light_purple
+                , case m.ipfs of
+                    Ipfs.Error _ ->
+                        T.focus__border_dark_pink
+
+                    _ ->
+                        T.focus__border_purple_tint
                 ]
                 []
 
             --
             , Html.button
-                [ case m.rootCid of
-                    Just _ ->
+                [ case m.ipfs of
+                    Ipfs.Connecting ->
                         E.onClick Bypass
 
-                    Nothing ->
+                    Ipfs.Listing ->
+                        E.onClick Reset
+
+                    _ ->
                         E.onClick Explore
+
+                --
+                , case m.ipfs of
+                    Ipfs.Error _ ->
+                        T.bg_dark_pink
+
+                    _ ->
+                        T.bg_purple
 
                 --
                 , T.antialiased
                 , T.appearance_none
-                , T.bg_purple
                 , T.font_semibold
                 , T.ml_3
                 , T.px_6
@@ -114,12 +139,12 @@ inputScreen m =
                 --
                 , T.focus__shadow_outline
                 ]
-                [ case m.rootCid of
-                    Just _ ->
+                [ case m.ipfs of
+                    Ipfs.Listing ->
                         Common.loadingAnimation
 
-                    Nothing ->
-                        Html.text "Explore"
+                    _ ->
+                        Html.span [ T.block, T.mt_px ] [ Html.text "Explore" ]
                 ]
             ]
         ]

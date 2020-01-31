@@ -30,8 +30,8 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { directoryList : Maybe (List Item)
-    , exploreInput : Maybe String
+    { directoryList : Result String (List Item)
+    , exploreInput : String
     , ipfs : Ipfs.State
     , navKey : Nav.Key
     , page : Page
@@ -58,6 +58,7 @@ type Msg
       -- IPFS
       -----------------------------------------
     | IpfsGotDirectoryList Json.Value
+    | IpfsGotError String
     | IpfsSetupCompleted
       -----------------------------------------
       -- Traversal

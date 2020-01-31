@@ -4,6 +4,8 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Ipfs
+import Maybe.Extra as Maybe
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -13,6 +15,7 @@ import Types exposing (..)
 -- 🖼
 
 
+view : Model -> Html Msg
 view model =
     Html.footer
         [ T.bg_gray_600
@@ -42,6 +45,7 @@ view model =
 -- ㊙️
 
 
+left : Html Msg
 left =
     Html.div
         [ T.flex, T.items_center ]
@@ -71,21 +75,21 @@ left =
         ]
 
 
+right : Model -> Html Msg
 right model =
     Html.div
         [ T.flex
         , T.items_center
         , T.text_gray_300
         ]
-        [ case model.rootCid of
-            Just _ ->
-                action
-                    [ E.onClick Reset, T.cursor_pointer ]
-                    FeatherIcons.hash
-                    [ Html.text "Change CID" ]
+        [ if model.ipfs == Ipfs.Ready && Maybe.isJust model.rootCid then
+            action
+                [ E.onClick Reset, T.cursor_pointer ]
+                FeatherIcons.hash
+                [ Html.text "Change CID" ]
 
-            Nothing ->
-                Html.text ""
+          else
+            Html.text ""
 
         --
         , action

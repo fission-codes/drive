@@ -27,3 +27,6 @@ port ipfsCompletedSetup : (() -> msg) -> Sub msg
 
 
 port ipfsGotDirectoryList : (Json.Value -> msg) -> Sub msg
+
+
+port ipfsGotError : (String -> msg) -> Sub msg

@@ -32,7 +32,7 @@ view model =
 
 body : Model -> List (Html Msg)
 body m =
-    if m.ipfs == Ipfs.Connecting || (Maybe.isNothing m.exploreInput && Maybe.isNothing m.directoryList) then
+    if m.ipfs == Ipfs.Connecting || (Maybe.isJust m.rootCid && m.ipfs == Ipfs.Listing) then
         [ Html.div
             [ T.absolute
             , T.left_1over2
@@ -42,7 +42,7 @@ body m =
             [ Common.loadingAnimation ]
         ]
 
-    else if Maybe.isNothing m.rootCid || Maybe.isNothing m.directoryList then
+    else if m.ipfs /= Ipfs.Ready || Maybe.isNothing m.rootCid then
         [ Explore.view m ]
 
     else

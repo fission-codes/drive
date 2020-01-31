@@ -1,5 +1,6 @@
 module State.Explore exposing (..)
 
+import Ipfs
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
@@ -13,27 +14,33 @@ import Types exposing (..)
 
 explore : Model -> ( Model, Cmd Msg )
 explore model =
-    let
-        input =
-            Maybe.unwrap "" String.trim model.exploreInput
-    in
-    { model | rootCid = Just input }
-        |> Return.singleton
-        |> Return.effect_ State.Ipfs.getDirectoryListCmd
-        |> Return.command (Ports.storeRootCid input)
+    case String.trim model.exploreInput of
+        "" ->
+            Return.singleton model
+
+        input ->
+            { model | ipfs = Ipfs.Listing, rootCid = Just input }
+                |> Return.singleton
+                |> Return.effect_ State.Ipfs.getDirectoryListCmd
+                |> Return.command (Ports.storeRootCid input)
 
 
 gotExploreInput : String -> Model -> ( Model, Cmd Msg )
 gotExploreInput input model =
-    Return.singleton { model | exploreInput = Just input }
+    Return.singleton
+        { model
+            | ipfs = Ipfs.Ready
+            , exploreInput = input
+            , rootCid = Nothing
+        }
 
 
 reset : Model -> ( Model, Cmd Msg )
 reset model =
     return
         { model
-            | directoryList = Nothing
-            , exploreInput = Just ""
+            | directoryList = Ok []
+            , exploreInput = ""
             , rootCid = Nothing
         }
         (Ports.removeStoredRootCid ())

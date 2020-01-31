@@ -243,6 +243,9 @@ list model =
                             identity
                    )
                 |> String.join "/"
+
+        directoryList =
+            Result.withDefault [] model.directoryList
     in
     Html.div
         [ T.flex_auto
@@ -262,8 +265,7 @@ list model =
         -----------------------------------------
         -- Tree
         -----------------------------------------
-        , model.directoryList
-            |> Maybe.withDefault []
+        , directoryList
             |> List.sortWith
                 (\a b ->
                     -- Put directories on top,
@@ -295,7 +297,7 @@ list model =
                             ( d, f + 1, s + i.size )
                     )
                     ( 0, 0, 0 )
-                    (Maybe.withDefault [] model.directoryList)
+                    directoryList
 
             sizeString =
                 if toFloat size / 1000000 > 2 then

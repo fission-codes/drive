@@ -22,21 +22,13 @@ init flags url navKey =
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { directoryList = Nothing
+      { directoryList = Ok []
+      , exploreInput = ""
       , ipfs = Ipfs.Connecting
       , navKey = navKey
       , page = Routing.pageFromUrl url
       , rootCid = flags.rootCid
       , url = url
-
-      --
-      , exploreInput =
-            case flags.rootCid of
-                Just _ ->
-                    Nothing
-
-                Nothing ->
-                    Just ""
       }
       -----------------------------------------
       -- Command
@@ -73,6 +65,9 @@ update msg =
         IpfsGotDirectoryList encodedDirList ->
             State.Ipfs.gotDirectoryList encodedDirList
 
+        IpfsGotError error ->
+            State.Ipfs.gotError error
+
         IpfsSetupCompleted ->
             State.Ipfs.setupCompleted
 
@@ -104,4 +99,5 @@ subscriptions model =
     Sub.batch
         [ Ports.ipfsCompletedSetup (\_ -> IpfsSetupCompleted)
         , Ports.ipfsGotDirectoryList IpfsGotDirectoryList
+        , Ports.ipfsGotError IpfsGotError
         ]
