@@ -14,14 +14,14 @@ fadeOutLeft : Html.Attribute msg
 fadeOutLeft =
     A.style
         "-webkit-mask-image"
-        "linear-gradient(90deg, rgba(0, 0, 0, 0.325) 0%, rgb(0, 0, 0) 20%, rgb(0, 0, 0) 100%)"
+        "linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 25%, rgb(0, 0, 0) 100%)"
 
 
 fadeOutRight : Html.Attribute msg
 fadeOutRight =
     A.style
         "-webkit-mask-image"
-        "linear-gradient(90deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 80%, rgb(0, 0, 0, 0.325) 100%)"
+        "linear-gradient(90deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 75%, rgb(0, 0, 0, 0) 100%)"
 
 
 

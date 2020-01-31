@@ -27,7 +27,7 @@ view model =
     Html.div
         [ T.flex
         , T.flex_col
-        , T.min_h_screen
+        , T.h_screen
         ]
         [ header model
         , content model
@@ -169,7 +169,12 @@ activePathPart text =
 
 
 pathSeparator =
-    Html.span [ T.antialiased, T.mx_3, T.text_gray_300 ] [ Html.text "/" ]
+    Html.span
+        [ T.antialiased
+        , T.mx_3
+        , T.text_gray_300
+        ]
+        [ Html.text "/" ]
 
 
 rootPathPart model segments =
@@ -208,20 +213,25 @@ rootPathPart model segments =
 -- MAIN
 
 
+content : Model -> Html Msg
 content m =
     Html.div
-        [ T.container
-        , S.container_padding
-        , T.flex
-        , T.flex_auto
-        , T.items_stretch
-        , T.mx_auto
-        , T.my_8
+        [ T.flex_auto
+        , T.overflow_y_scroll
         ]
-        [ list m
+        [ Html.div
+            [ T.container
+            , S.container_padding
+            , T.flex
+            , T.items_stretch
+            , T.mx_auto
+            , T.my_8
+            ]
+            [ list m
 
-        -- TODO
-        -- , details m
+            -- TODO
+            -- , details m
+            ]
         ]
 
 

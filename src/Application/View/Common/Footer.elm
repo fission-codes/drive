@@ -116,7 +116,8 @@ action attributes icon nodes =
             , T.tracking_tight
 
             --
-            , T.md__ml_6
+            , T.sm__ml_5
+            , T.md__ml_8
             ]
         )
         [ icon
