@@ -64,6 +64,7 @@ left =
         , Html.span
             [ T.font_display
             , T.font_medium
+            , T.leading_tight
             , T.ml_3
             , T.pl_px
             , T.text_gray_300
@@ -93,7 +94,7 @@ right model =
 
         --
         , action
-            [ T.cursor_not_allowed, T.ml_6 ]
+            [ T.cursor_not_allowed ]
             FeatherIcons.helpCircle
             [ Html.text "Help" ]
         ]
@@ -110,7 +111,12 @@ action attributes icon nodes =
             attributes
             [ T.inline_flex
             , T.items_center
+            , T.leading_tight
+            , T.ml_3
             , T.tracking_tight
+
+            --
+            , T.md__ml_6
             ]
         )
         [ icon

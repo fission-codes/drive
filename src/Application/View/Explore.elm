@@ -4,6 +4,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Ipfs
+import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import View.Common as Common
@@ -33,7 +34,8 @@ view model =
 inputScreen : Model -> Html Msg
 inputScreen m =
     Html.div
-        [ T.flex
+        [ S.container_padding
+        , T.flex
         , T.flex_auto
         , T.flex_col
         , T.items_center
@@ -91,6 +93,7 @@ inputScreen m =
                 , T.py_3
                 , T.rounded_full
                 , T.text_lg
+                , T.w_0
 
                 --
                 , case m.ipfs of

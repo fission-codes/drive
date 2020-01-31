@@ -45,7 +45,7 @@ environment := "dev"
 		--path-to-elm=`which elm` \
 		--pushstate \
 		--start-page=index.html \
-		-- --debug --output={{build_dir}}/application.js \
+		-- --output={{build_dir}}/application.js \
 
 
 @install-deps: (_report "Installing required dependencies")
