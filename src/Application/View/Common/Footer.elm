@@ -115,7 +115,7 @@ action attributes icon nodes =
             [ T.inline_flex
             , T.items_center
             , T.leading_tight
-            , T.ml_3
+            , T.ml_4
             , T.tracking_tight
 
             --
