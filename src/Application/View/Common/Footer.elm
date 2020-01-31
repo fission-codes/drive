@@ -18,7 +18,7 @@ import Types exposing (..)
 view : Model -> Html Msg
 view model =
     Html.footer
-        [ T.bg_gray_600
+        [ T.bg_gray_900
         , T.pt_px
         ]
         [ Html.div
@@ -55,6 +55,9 @@ left =
           Html.img
             [ A.src "images/badge-solid-faded.svg"
             , A.width 28
+
+            --
+            , T.opacity_70
             ]
             []
 
@@ -67,7 +70,7 @@ left =
             , T.leading_tight
             , T.ml_3
             , T.pl_px
-            , T.text_gray_300
+            , T.text_gray_400
             , T.text_sm
             , T.tracking_wider
             , T.uppercase

@@ -42,7 +42,7 @@ view model =
 header : Model -> Html Msg
 header model =
     Html.header
-        [ T.bg_gray_200
+        [ T.bg_gray_600
         , T.py_8
         , T.text_white
         ]
@@ -65,7 +65,7 @@ header model =
                 |> Html.div
                     [ T.mr_5
                     , T.opacity_50
-                    , T.text_pink
+                    , T.text_purple
                     ]
 
             -----------------------------------------
@@ -108,21 +108,20 @@ header model =
                 [ T.hidden
                 , T.items_center
                 , T.ml_4
-                , T.text_gray_400
 
                 --
                 , T.lg__flex
                 ]
                 [ Html.div
                     [ T.border_2
-                    , T.border_gray_300
+                    , T.border_gray_500
                     , T.cursor_not_allowed
                     , T.pl_8
                     , T.pr_3
                     , T.py_1
                     , T.relative
                     , T.rounded_full
-                    , T.text_gray_300
+                    , T.text_gray_500
                     , T.w_48
                     ]
                     [ FeatherIcons.search
@@ -134,7 +133,7 @@ header model =
                             , T.left_0
                             , T.ml_2
                             , T.neg_translate_y_1over2
-                            , T.text_gray_300
+                            , T.text_gray_500
                             , T.top_1over2
                             , T.transform
                             ]
@@ -147,6 +146,7 @@ header model =
         ]
 
 
+inactivePathPart : Int -> String -> Html Msg
 inactivePathPart idx text =
     Html.span
         [ A.class "underline-thick"
@@ -155,28 +155,31 @@ inactivePathPart idx text =
         --
         , T.cursor_pointer
         , T.pb_px
-        , T.tdc_gray_300
-        , T.text_gray_500
+        , T.tdc_gray_500
+        , T.text_gray_300
         , T.underline
         ]
         [ Html.text text ]
 
 
+activePathPart : String -> Html Msg
 activePathPart text =
     Html.span
-        [ T.text_pink ]
+        [ T.text_purple ]
         [ Html.text text ]
 
 
+pathSeparator : Html Msg
 pathSeparator =
     Html.span
         [ T.antialiased
         , T.mx_3
-        , T.text_gray_300
+        , T.text_gray_500
         ]
         [ Html.text "/" ]
 
 
+rootPathPart : Model -> List String -> Html Msg
 rootPathPart model segments =
     let
         rootCid =
@@ -189,7 +192,7 @@ rootPathPart model segments =
             case segments of
                 [] ->
                     [ T.pb_px
-                    , T.text_pink
+                    , T.text_purple
                     ]
 
                 _ ->
@@ -199,8 +202,8 @@ rootPathPart model segments =
                     --
                     , T.cursor_pointer
                     , T.pb_px
-                    , T.tdc_gray_300
-                    , T.text_gray_500
+                    , T.tdc_gray_500
+                    , T.text_gray_300
                     , T.underline
                     ]
     in
@@ -383,7 +386,7 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
 
         --
         , if selected then
-            T.text_pink
+            T.text_purple
 
           else
             T.text_inherit
