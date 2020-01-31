@@ -11,11 +11,13 @@
     "@fullhuman/postcss-purgecss": "^2.0.5",
     "elm-git-install": "^0.1.2",
     "elm-live": "^4.0.1",
+    "html-minifier-terser": "^5.0.2",
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
     "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#9960dd3710dd0651019aef755a032549084036ce",
     "snowpack": "^1.1.2",
-    "tailwindcss": "^1.2.0-canary.5"
+    "tailwindcss": "^1.2.0-canary.5",
+    "terser-folder": "^2.0.0"
   },
   "scripts": {
     "elm-dev": "elm-live"

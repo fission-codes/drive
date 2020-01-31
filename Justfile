@@ -23,7 +23,23 @@ environment := "dev"
 @build-production:
 	just environment=production build css-small
 
-	# TODO: Minify stuff
+	echo "⚙️  Minifying Javascript Files"
+	{{node_bin}}/terser-folder \
+		{{build_dir}} \
+		--each --extension .js --output {{build_dir}} \
+		-- --compress --mangle
+
+	echo "⚙️  Minifying HTML Files"
+	{{node_bin}}/html-minifier-terser \
+		--input-dir {{build_dir}} \
+		--output-dir {{build_dir}} \
+		--file-ext html \
+		\
+		--collapse-whitespace --remove-comments --remove-optional-tags \
+		--remove-redundant-attributes --remove-script-type-attributes \
+		--remove-tag-whitespace --use-short-doctype \
+		--minify-css true --minify-js true
+
 	# {{node_bin}}/snowpack --optimize --nomodule
 
 

@@ -1,3 +1,4 @@
+.deploy
 .fission.yaml
 build
 elm-stuff
