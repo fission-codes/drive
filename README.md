@@ -13,8 +13,9 @@ The Drive application that lives on your `fission.name` domain.
 # 🍱
 # 1. Install Elm (eg. using https://github.com/asdf-community/asdf-elm)
 # 2. Install https://github.com/casey/just
-# 3. Install https://github.com/pnpm/pnpm
-# 4. Install dependencies
+# 3. Install https://github.com/watchexec/watchexec
+# 4. Install https://github.com/pnpm/pnpm
+# 5. Install dependencies
 just install-deps
 
 # 🛠
