@@ -14,7 +14,7 @@ import Types exposing (..)
 
 explore : Model -> ( Model, Cmd Msg )
 explore model =
-    case String.trim model.exploreInput of
+    case Maybe.unwrap "" String.trim model.exploreInput of
         "" ->
             Return.singleton model
 
@@ -30,7 +30,7 @@ gotExploreInput input model =
     Return.singleton
         { model
             | ipfs = Ipfs.Ready
-            , exploreInput = input
+            , exploreInput = Just input
             , rootCid = Nothing
         }
 
@@ -40,7 +40,7 @@ reset model =
     return
         { model
             | directoryList = Ok []
-            , exploreInput = ""
+            , exploreInput = Just ""
             , rootCid = Nothing
         }
         (Ports.removeStoredRootCid ())

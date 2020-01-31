@@ -32,7 +32,7 @@ view model =
 
 body : Model -> List (Html Msg)
 body m =
-    if m.ipfs == Ipfs.Connecting || (Maybe.isJust m.rootCid && m.ipfs == Ipfs.Listing) then
+    if m.ipfs == Ipfs.Connecting || (Maybe.isNothing m.exploreInput && m.ipfs == Ipfs.Listing) then
         [ Html.div
             [ T.absolute
             , T.left_1over2

@@ -72,7 +72,7 @@ inputScreen m =
             ]
             [ Html.input
                 [ A.placeholder "QmPx36eeZypeZvfHgHo1H59udrhuJhMksg8PBvKn3B7JCA"
-                , A.value m.exploreInput
+                , A.value (Maybe.withDefault "" m.exploreInput)
                 , E.onInput GotExploreInput
 
                 --

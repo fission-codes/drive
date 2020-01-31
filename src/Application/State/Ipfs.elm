@@ -46,7 +46,7 @@ gotError : String -> Model -> ( Model, Cmd Msg )
 gotError error model =
     Return.singleton
         { model
-            | exploreInput = Maybe.withDefault "" model.rootCid
+            | exploreInput = model.rootCid
             , ipfs = Ipfs.Error error
         }
 

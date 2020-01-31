@@ -31,7 +31,7 @@ type alias Flags =
 -}
 type alias Model =
     { directoryList : Result String (List Item)
-    , exploreInput : String
+    , exploreInput : Maybe String
     , ipfs : Ipfs.State
     , navKey : Nav.Key
     , page : Page

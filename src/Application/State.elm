@@ -23,7 +23,7 @@ init flags url navKey =
       -- Model
       -----------------------------------------
       { directoryList = Ok []
-      , exploreInput = ""
+      , exploreInput = Nothing
       , ipfs = Ipfs.Connecting
       , navKey = navKey
       , page = Routing.pageFromUrl url
