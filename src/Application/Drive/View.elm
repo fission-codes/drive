@@ -1,5 +1,6 @@
-module View.Drive exposing (view)
+module Drive.View exposing (view)
 
+import Explore.View as Explore
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
@@ -9,6 +10,7 @@ import Ipfs
 import Item exposing (Item, Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Navigation.Types as Navigation
 import Routing exposing (Page(..))
 import Styling as S
 import Tailwind as T
@@ -16,7 +18,6 @@ import Types exposing (..)
 import Url.Builder
 import View.Common
 import View.Common.Footer as Footer
-import View.Explore
 
 
 
@@ -164,7 +165,12 @@ inactivePathPart : Int -> String -> Html Msg
 inactivePathPart idx text =
     Html.span
         [ A.class "underline-thick"
-        , E.onClick (GoUp { floor = idx })
+
+        --
+        , { floor = idx }
+            |> Navigation.GoUp
+            |> NavigationMsg
+            |> E.onClick
 
         --
         , T.cursor_pointer
@@ -220,7 +226,12 @@ rootPathPart model segments =
 
                 _ ->
                     [ A.class "underline-thick"
-                    , E.onClick (GoUp { floor = 0 })
+
+                    --
+                    , { floor = 9 }
+                        |> Navigation.GoUp
+                        |> NavigationMsg
+                        |> E.onClick
 
                     --
                     , T.cursor_pointer
@@ -393,7 +404,10 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
     )
         [ case kind of
             Directory ->
-                E.onClick (DigDeeper name)
+                name
+                    |> Navigation.DigDeeper
+                    |> NavigationMsg
+                    |> E.onClick
 
             _ ->
                 name

@@ -1,6 +1,8 @@
 module View exposing (view)
 
 import Browser
+import Drive.View as Drive
+import Explore.View as Explore
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
@@ -15,8 +17,6 @@ import Tailwind as T
 import Types exposing (..)
 import Url.Builder
 import View.Common as Common
-import View.Drive as Drive
-import View.Explore as Explore
 
 
 
