@@ -586,6 +586,9 @@ sortingFunction a b =
     -- Put directories on top,
     -- and then sort alphabetically by name
     case ( a.kind, b.kind ) of
+        ( Directory, Directory ) ->
+            compare (String.toLower a.name) (String.toLower b.name)
+
         ( Directory, _ ) ->
             LT
 
@@ -593,4 +596,4 @@ sortingFunction a b =
             GT
 
         ( _, _ ) ->
-            compare a.name b.name
+            compare (String.toLower a.name) (String.toLower b.name)
