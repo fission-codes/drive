@@ -1,18 +1,36 @@
-module State.Explore exposing (..)
+module Explore.State exposing (..)
 
+import Explore.Types as Explore exposing (..)
 import Ipfs
+import Ipfs.State
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
-import State.Ipfs
-import Types exposing (..)
+import Types as Root exposing (..)
+
+
+
+-- 📣
+
+
+update : Explore.Msg -> Root.Manager
+update msg =
+    case msg of
+        Explore ->
+            explore
+
+        GotInput a ->
+            gotInput a
+
+        Reset ->
+            reset
 
 
 
 -- 🛠
 
 
-explore : Model -> ( Model, Cmd Msg )
+explore : Root.Manager
 explore model =
     case Maybe.unwrap "" String.trim model.exploreInput of
         "" ->
@@ -21,12 +39,12 @@ explore model =
         input ->
             { model | ipfs = Ipfs.Listing, rootCid = Just input }
                 |> Return.singleton
-                |> Return.effect_ State.Ipfs.getDirectoryListCmd
+                |> Return.effect_ Ipfs.State.getDirectoryListCmd
                 |> Return.command (Ports.storeRootCid input)
 
 
-gotExploreInput : String -> Model -> ( Model, Cmd Msg )
-gotExploreInput input model =
+gotInput : String -> Root.Manager
+gotInput input model =
     Return.singleton
         { model
             | ipfs = Ipfs.Ready
@@ -35,7 +53,7 @@ gotExploreInput input model =
         }
 
 
-reset : Model -> ( Model, Cmd Msg )
+reset : Root.Manager
 reset model =
     return
         { model

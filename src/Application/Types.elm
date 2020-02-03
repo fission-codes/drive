@@ -3,11 +3,13 @@ module Types exposing (..)
 {-| Root-level types.
 -}
 
-import Browser
-import Browser.Navigation as Nav
+import Browser.Navigation as Navigation
+import Explore.Types as Explore
 import Ipfs
+import Ipfs.Types as Ipfs
 import Item exposing (Item)
-import Json.Decode as Json
+import Management
+import Navigation.Types as Navigation
 import Routing exposing (Page)
 import Url exposing (Url)
 
@@ -33,7 +35,7 @@ type alias Model =
     { directoryList : Result String (List Item)
     , exploreInput : Maybe String
     , ipfs : Ipfs.State
-    , navKey : Nav.Key
+    , navKey : Navigation.Key
     , page : Page
     , rootCid : Maybe String
     , url : Url
@@ -48,28 +50,16 @@ type alias Model =
 -}
 type Msg
     = Bypass
-      -----------------------------------------
-      -- Explore
-      -----------------------------------------
-    | Explore
-    | GotExploreInput String
-    | Reset
-      -----------------------------------------
-      -- IPFS
-      -----------------------------------------
-    | IpfsGotDirectoryList Json.Value
-    | IpfsGotError String
-    | IpfsSetupCompleted
-      -----------------------------------------
-      -- Traversal
-      -----------------------------------------
-    | DigDeeper String
-    | GoUp { floor : Int }
-      -----------------------------------------
-      -- URL
-      -----------------------------------------
-    | LinkClicked Browser.UrlRequest
-    | UrlChanged Url
+      --
+    | ExploreMsg Explore.Msg
+    | IpfsMsg Ipfs.Msg
+    | NavigationMsg Navigation.Msg
+
+
+{-| State manager.
+-}
+type alias Manager =
+    Management.Manager Msg Model
 
 
 

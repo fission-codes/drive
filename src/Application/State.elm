@@ -1,14 +1,14 @@
 module State exposing (init, subscriptions, update)
 
-import Browser.Navigation as Nav
+import Browser.Navigation as Navigation
+import Explore.State as Explore
 import Ipfs
+import Ipfs.State as Ipfs
+import Ipfs.Types as Ipfs
+import Navigation.State as Navigation
 import Ports
 import Return exposing (return)
 import Routing
-import State.Explore
-import State.Ipfs
-import State.Traversal
-import State.Url
 import Types exposing (..)
 import Url exposing (Url)
 
@@ -17,7 +17,7 @@ import Url exposing (Url)
 -- 🌱
 
 
-init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     ( -----------------------------------------
       -- Model
@@ -47,47 +47,15 @@ update msg =
         Bypass ->
             Return.singleton
 
-        -----------------------------------------
-        -- Explore
-        -----------------------------------------
-        Explore ->
-            State.Explore.explore
+        --
+        ExploreMsg a ->
+            Explore.update a
 
-        GotExploreInput input ->
-            State.Explore.gotExploreInput input
+        IpfsMsg a ->
+            Ipfs.update a
 
-        Reset ->
-            State.Explore.reset
-
-        -----------------------------------------
-        -- IPFS
-        -----------------------------------------
-        IpfsGotDirectoryList encodedDirList ->
-            State.Ipfs.gotDirectoryList encodedDirList
-
-        IpfsGotError error ->
-            State.Ipfs.gotError error
-
-        IpfsSetupCompleted ->
-            State.Ipfs.setupCompleted
-
-        -----------------------------------------
-        -- Traversal
-        -----------------------------------------
-        DigDeeper directoryName ->
-            State.Traversal.digDeeper directoryName
-
-        GoUp args ->
-            State.Traversal.goUp args
-
-        -----------------------------------------
-        -- URL
-        -----------------------------------------
-        LinkClicked urlRequest ->
-            State.Url.linkClicked urlRequest
-
-        UrlChanged url ->
-            State.Url.urlChanged url
+        NavigationMsg a ->
+            Navigation.update a
 
 
 
@@ -97,7 +65,7 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Ports.ipfsCompletedSetup (\_ -> IpfsSetupCompleted)
-        , Ports.ipfsGotDirectoryList IpfsGotDirectoryList
-        , Ports.ipfsGotError IpfsGotError
+        [ Ports.ipfsCompletedSetup (IpfsMsg << always Ipfs.SetupCompleted)
+        , Ports.ipfsGotDirectoryList (IpfsMsg << Ipfs.GotDirectoryList)
+        , Ports.ipfsGotError (IpfsMsg << Ipfs.GotError)
         ]

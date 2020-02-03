@@ -1,5 +1,6 @@
-module View.Explore exposing (view)
+module Explore.View exposing (view)
 
+import Explore.Types as Explore
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
@@ -78,7 +79,7 @@ inputScreen m =
             [ Html.input
                 [ A.placeholder "QmPx36eeZypeZvfHgHo1H59udrhuJhMksg8PBvKn3B7JCA"
                 , A.value (Maybe.withDefault "" m.exploreInput)
-                , E.onInput GotExploreInput
+                , E.onInput (ExploreMsg << Explore.GotInput)
 
                 --
                 , case m.ipfs of
@@ -130,10 +131,10 @@ inputScreen m =
                         E.onClick Bypass
 
                     Ipfs.Listing ->
-                        E.onClick Reset
+                        E.onClick (ExploreMsg Explore.Reset)
 
                     _ ->
-                        E.onClick Explore
+                        E.onClick (ExploreMsg Explore.Explore)
 
                 --
                 , case m.ipfs of
