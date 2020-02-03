@@ -469,6 +469,11 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
                         , T.text_gray_200
                         , T.text_xs
                         , T.uppercase
+
+                        -- Dark mode
+                        ------------
+                        , T.dark__bg_gray_200
+                        , T.dark__text_gray_500
                         ]
                         [ Html.text ext ]
             ]
