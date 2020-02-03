@@ -228,7 +228,7 @@ rootPathPart model segments =
                     [ A.class "underline-thick"
 
                     --
-                    , { floor = 9 }
+                    , { floor = 0 }
                         |> Navigation.GoUp
                         |> NavigationMsg
                         |> E.onClick
