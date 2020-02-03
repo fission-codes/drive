@@ -54,8 +54,11 @@ const flow = [
 // BUILD
 
 
-fs.readFile(INPUT, (_err, css) => {
+fs.readFile(INPUT, (err, css) => {
+  if (err) console.error(err)
+
   postcss(flow)
     .process(css, { from: INPUT, to: OUTPUT })
     .then(result => fs.writeFile(OUTPUT, result.css, () => true))
+    .catch(console.error)
 })

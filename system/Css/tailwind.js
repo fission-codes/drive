@@ -29,6 +29,9 @@ export default {
     colors: {
       ...kit.colors,
 
+      "darkness": "hsl(232.7, 20.3%, 12%)",
+      "touch-of-darkness": "hsl(232.7, 20.3%, 18%)",
+
       "current-color": "currentColor",
       "inherit": "inherit",
       "transparent": "transparent"
@@ -85,13 +88,24 @@ export default {
       "80": ".8",
       "90": ".9",
       "100": "1",
-    }
+    },
+
+    // Extensions
+    // ==========
+
+    extend: {
+
+      screens: {
+        dark: { raw: '(prefers-color-scheme: dark)' }
+      },
+
+    },
 
   },
 
 
   /////////////////////////////////////////
-  // VARIANT //////////////////////////////
+  // VARIANTS /////////////////////////////
   /////////////////////////////////////////
 
   variants: {
@@ -113,11 +127,26 @@ export default {
     // Add text-decoration-color classes
     plugin(function ({ addUtilities, variants, theme }) {
       const colors = theme("colors", {})
-      const utilities = Object.keys(colors).reduce((acc, k) => {
-        return { ...acc, [`.tdc-${k}`]: { textDecorationColor: colors[k] }}
-      }, {})
+      const classes = Object.keys(colors).map(k => {
+        return [ `tdc-${k}`, { textDecorationColor: colors[k] } ]
+      })
 
-      addUtilities(utilities, [])
+      const utilities = classes.reduce(
+        (acc, [k, v]) => ({ ...acc, [`.${k}`]: v }),
+        {}
+      )
+
+      const utilitiesDark = {
+        [`@media (prefers-color-scheme: dark)`]: classes.reduce(
+          (acc, [k, v]) => ({ ...acc, [`.dark__${k}`]: v }),
+          {}
+        )
+      }
+
+      addUtilities([
+        utilities,
+        utilitiesDark
+      ], [])
     })
 
   ]

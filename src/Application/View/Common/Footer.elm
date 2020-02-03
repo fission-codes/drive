@@ -20,6 +20,10 @@ view model =
     Html.footer
         [ T.bg_gray_900
         , T.pt_px
+
+        -- Dark mode
+        ------------
+        , T.dark__bg_darkness
         ]
         [ Html.div
             [ T.container

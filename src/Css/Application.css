@@ -6,7 +6,15 @@
 
 
 body {
+  @apply font-body min-h-screen text-gray_100;
   text-rendering: optimizeLegibility;
+}
+
+
+@screen dark {
+  body {
+    @apply bg-darkness text-gray_500;
+  }
 }
 
 

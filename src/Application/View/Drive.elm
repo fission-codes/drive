@@ -4,6 +4,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Extra as Html exposing (nothing)
 import Ipfs
 import Item exposing (Item, Kind(..))
 import List.Extra as List
@@ -45,6 +46,10 @@ header model =
         [ T.bg_gray_600
         , T.py_8
         , T.text_white
+
+        -- Dark mode
+        ------------
+        , T.dark__bg_gray_100
         ]
         [ Html.div
             [ T.container
@@ -123,6 +128,11 @@ header model =
                     , T.rounded_full
                     , T.text_gray_500
                     , T.w_48
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__border_gray_200
+                    , T.dark__text_gray_200
                     ]
                     [ FeatherIcons.search
                         |> FeatherIcons.withSize 20
@@ -136,6 +146,10 @@ header model =
                             , T.text_gray_500
                             , T.top_1over2
                             , T.transform
+
+                            -- Dark mode
+                            ------------
+                            , T.dark__text_gray_200
                             ]
 
                     --
@@ -158,6 +172,11 @@ inactivePathPart idx text =
         , T.tdc_gray_500
         , T.text_gray_300
         , T.underline
+
+        -- Dark mode
+        ------------
+        , T.dark__tdc_gray_200
+        , T.dark__text_gray_400
         ]
         [ Html.text text ]
 
@@ -175,6 +194,10 @@ pathSeparator =
         [ T.antialiased
         , T.mx_3
         , T.text_gray_500
+
+        -- Dark mode
+        ------------
+        , T.dark__text_gray_200
         ]
         [ Html.text "/" ]
 
@@ -205,6 +228,11 @@ rootPathPart model segments =
                     , T.tdc_gray_500
                     , T.text_gray_300
                     , T.underline
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__tdc_gray_200
+                    , T.dark__text_gray_400
                     ]
     in
     Html.span
@@ -219,20 +247,29 @@ rootPathPart model segments =
 content : Model -> Html Msg
 content m =
     Html.div
-        [ T.flex_auto
-        , T.overflow_y_scroll
+        [ T.flex
+        , T.flex_auto
+        , T.overflow_hidden
         ]
         [ Html.div
             [ T.container
             , S.container_padding
             , T.flex
+            , T.flex_auto
             , T.items_stretch
             , T.mx_auto
             , T.my_8
             ]
-            [ list m
+            [ Html.div
+                [ T.flex_auto
+                , T.overflow_x_hidden
+                , T.overflow_y_scroll
+                , T.w_1over2
+                ]
+                [ list m
+                ]
 
-            -- TODO
+            -- TODO:
             -- , details m
             ]
         ]
@@ -261,10 +298,7 @@ list model =
             Result.withDefault [] model.directoryList
     in
     Html.div
-        [ T.flex_auto
-        , T.text_lg
-        , T.w_1over2
-        ]
+        [ T.text_lg ]
         [ Html.div
             [ T.antialiased
             , T.font_semibold
@@ -272,6 +306,10 @@ list model =
             , T.text_gray_400
             , T.text_xs
             , T.tracking_wider
+
+            -- Dark mode
+            ------------
+            , T.dark__text_gray_300
             ]
             [ Html.text "NAME" ]
 
@@ -279,20 +317,7 @@ list model =
         -- Tree
         -----------------------------------------
         , directoryList
-            |> List.sortWith
-                (\a b ->
-                    -- Put directories on top,
-                    -- and then sort alphabetically by name
-                    case ( a.kind, b.kind ) of
-                        ( Directory, _ ) ->
-                            LT
-
-                        ( _, Directory ) ->
-                            GT
-
-                        ( _, _ ) ->
-                            compare a.name b.name
-                )
+            |> List.sortWith sortingFunction
             |> List.map (listItem parentPath)
             |> Html.div []
 
@@ -323,10 +348,14 @@ list model =
             [ T.mt_8
             , T.text_gray_400
             , T.text_sm
+
+            -- Dark mode
+            ------------
+            , T.dark__text_gray_300
             ]
             [ case amountOfDirs of
                 0 ->
-                    Html.text ""
+                    nothing
 
                 1 ->
                     Html.text (String.fromInt amountOfDirs ++ " Directory")
@@ -335,16 +364,14 @@ list model =
                     Html.text (String.fromInt amountOfDirs ++ " Directories")
 
             --
-            , if amountOfDirs > 0 && amountOfFiles > 0 then
-                Html.text " and "
-
-              else
-                Html.text ""
+            , Html.viewIf
+                (amountOfDirs > 0 && amountOfFiles > 0)
+                (Html.text " and ")
 
             --
             , case amountOfFiles of
                 0 ->
-                    Html.text ""
+                    nothing
 
                 1 ->
                     Html.text (String.fromInt amountOfFiles ++ " File (" ++ sizeString ++ ")")
@@ -390,6 +417,10 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
 
           else
             T.text_inherit
+
+        -- Dark mode
+        ------------
+        , T.dark__border_touch_of_darkness
         ]
         [ -----------------------------------------
           -- Icon
@@ -409,7 +440,7 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
             --
             , case nameProperties.extension of
                 "" ->
-                    Html.text ""
+                    nothing
 
                 ext ->
                     Html.span
@@ -437,7 +468,7 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
                 |> Html.span [ T.animation_spin, T.ml_2 ]
 
           else
-            Html.text ""
+            nothing
 
         --
         , if selected then
@@ -448,7 +479,7 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
                 |> Html.span [ T.ml_2, T.opacity_50 ]
 
           else
-            Html.text ""
+            nothing
         ]
 
 
@@ -456,6 +487,7 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
 -- MAIN  /  DETAILS
 
 
+details : Model -> Html Msg
 details _ =
     Html.div
         [ T.bg_gray_900
@@ -524,3 +556,22 @@ details _ =
                 ]
             ]
         ]
+
+
+
+-- 🛠
+
+
+sortingFunction : Item -> Item -> Order
+sortingFunction a b =
+    -- Put directories on top,
+    -- and then sort alphabetically by name
+    case ( a.kind, b.kind ) of
+        ( Directory, _ ) ->
+            LT
+
+        ( _, Directory ) ->
+            GT
+
+        ( _, _ ) ->
+            compare a.name b.name

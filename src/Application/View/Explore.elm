@@ -56,7 +56,12 @@ inputScreen m =
         --
         , Html.div
             [ T.max_w_md
-            , T.mt_6
+            , T.mt_5
+            , T.text_gray_300
+
+            -- Dark mode
+            ------------
+            , T.dark__text_gray_400
             ]
             [ Html.text """
                 This is a prototype which'll later evolve into your personal Fission Drive. For now though, you can use it to browse through IPFS content. Put an IPFS Hash below and explore.
@@ -92,6 +97,7 @@ inputScreen m =
                 , T.px_6
                 , T.py_3
                 , T.rounded_full
+                , T.text_inherit
                 , T.text_lg
                 , T.w_0
 
@@ -102,6 +108,18 @@ inputScreen m =
 
                     _ ->
                         T.focus__border_purple_tint
+
+                -- Dark mode
+                ------------
+                , T.dark__border_gray_300
+
+                --
+                , case m.ipfs of
+                    Ipfs.Error _ ->
+                        T.dark__focus__border_dark_pink
+
+                    _ ->
+                        T.dark__focus__border_purple
                 ]
                 []
 
