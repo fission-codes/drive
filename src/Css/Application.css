@@ -26,3 +26,21 @@ body {
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
+
+
+
+/* Forms
+   ----- */
+
+input::placeholder,
+textarea::placeholder {
+  @apply text-gray_400 opacity-75;
+}
+
+
+@screen dark {
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray_300 opacity-75;
+  }
+}
