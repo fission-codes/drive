@@ -473,7 +473,7 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
 
         -- Dark mode
         ------------
-        , T.dark__border_touch_of_darkness
+        , T.dark__border_darkness_above
         ]
         [ -----------------------------------------
           -- Icon

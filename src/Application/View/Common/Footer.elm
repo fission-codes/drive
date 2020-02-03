@@ -17,14 +17,18 @@ import Types exposing (..)
 
 
 view : Model -> Html Msg
-view model =
+view m =
     Html.footer
         [ T.bg_gray_900
         , T.pt_px
 
         -- Dark mode
         ------------
-        , T.dark__bg_darkness
+        , if m.ipfs /= Ipfs.Ready || Maybe.isNothing m.rootCid then
+            T.dark__bg_darkness_below
+
+          else
+            T.dark__bg_darkness
         ]
         [ Html.div
             [ T.container
@@ -41,7 +45,7 @@ view model =
             , Html.div [ T.flex_auto ] []
 
             --
-            , right model
+            , right m
             ]
         ]
 

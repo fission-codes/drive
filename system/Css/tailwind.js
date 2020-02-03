@@ -29,8 +29,9 @@ export default {
     colors: {
       ...kit.colors,
 
+      "darkness-below": "hsl(232.7, 20.3%, 11%)",
       "darkness": "hsl(232.7, 20.3%, 12%)",
-      "touch-of-darkness": "hsl(232.7, 20.3%, 18%)",
+      "darkness-above": "hsl(232.7, 20.3%, 18%)",
 
       "current-color": "currentColor",
       "inherit": "inherit",
