@@ -131,8 +131,8 @@ environment := "dev"
 
 
 @watch-css:
-	# TODO: watchexec -p -w {{src_dir}}/Css -f "**/*.css" -- just css-large & \
-	watchexec -p -w {{sys_dir}}/Css -f "**/*.js" -- just css-large
+	watchexec -p -w {{src_dir}}/Css -e "css" -- just css-large & \
+	watchexec -p -w {{sys_dir}}/Css -e "js" -- just css-large
 
 
 @watch-elm:
