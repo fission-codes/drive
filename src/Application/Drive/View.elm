@@ -256,7 +256,49 @@ rootPathPart model segments =
 
 
 content : Model -> Html Msg
-content m =
+content model =
+    case model.directoryList of
+        Ok [] ->
+            empty
+
+        Ok directoryList ->
+            contentAvailable model directoryList
+
+        Err err ->
+            -- Error is handled by the root view,
+            -- which will render the explore view.
+            empty
+
+
+empty : Html Msg
+empty =
+    Html.div
+        [ T.flex
+        , T.flex_auto
+        , T.flex_col
+        , T.items_center
+        , T.justify_center
+        , T.leading_snug
+        , T.text_center
+        ]
+        [ FeatherIcons.folder
+            |> FeatherIcons.withSize 88
+            |> FeatherIcons.toHtml []
+            |> List.singleton
+            |> Html.div [ T.opacity_50 ]
+
+        --
+        , Html.div
+            [ T.mt_4, T.text_lg ]
+            [ Html.text "Nothing to see here,"
+            , Html.br [] []
+            , Html.text "empty directory"
+            ]
+        ]
+
+
+contentAvailable : Model -> List Item -> Html Msg
+contentAvailable model directoryList =
     Html.div
         [ T.flex
         , T.flex_auto
@@ -277,7 +319,7 @@ content m =
                 , T.overflow_y_scroll
                 , T.w_1over2
                 ]
-                [ list m
+                [ list model directoryList
                 ]
 
             -- TODO:
@@ -290,8 +332,8 @@ content m =
 -- MAIN  /  LIST
 
 
-list : Model -> Html Msg
-list model =
+list : Model -> List Item -> Html Msg
+list model directoryList =
     let
         parentPath =
             model.page
@@ -304,9 +346,6 @@ list model =
                             identity
                    )
                 |> String.join "/"
-
-        directoryList =
-            Result.withDefault [] model.directoryList
     in
     Html.div
         [ T.text_lg ]

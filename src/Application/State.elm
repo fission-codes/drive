@@ -47,7 +47,9 @@ update msg =
         Bypass ->
             Return.singleton
 
-        --
+        -----------------------------------------
+        -- Message Categories
+        -----------------------------------------
         ExploreMsg a ->
             Explore.update a
 
