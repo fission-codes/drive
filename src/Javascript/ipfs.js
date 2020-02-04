@@ -24,7 +24,6 @@ const LOCAL_TCP = "/ip4/127.0.0.1/tcp/0"
 
 
 export async function setup() {
-  // TODO: Error handling
   ipfs = await Ipfs.create({
     config: { Addresses: { Swarm: [ LOCAL_TCP, PEER_WSS ] }}
   })

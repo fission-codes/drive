@@ -3,6 +3,7 @@ module Item exposing (..)
 import FeatherIcons
 import Ipfs
 import List.Extra as List
+import Time
 
 
 
@@ -26,7 +27,8 @@ type alias Item =
     , loading : Bool
     , name : String
     , nameProperties : NameProperties
-    , selected : Bool
+    , path : String
+    , posixTime : Maybe Time.Posix
     , size : Int
     }
 
@@ -66,7 +68,7 @@ videoFileExtensions =
 
 
 fromIpfs : Ipfs.ListItem -> Item
-fromIpfs { name, path, size, typ } =
+fromIpfs { name, path, posixTime, size, typ } =
     let
         nameProps =
             case typ of
@@ -109,7 +111,8 @@ fromIpfs { name, path, size, typ } =
     , loading = False
     , name = name
     , nameProperties = nameProps
-    , selected = False
+    , path = path
+    , posixTime = posixTime
     , size = size
     }
 

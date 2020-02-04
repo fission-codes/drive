@@ -40,7 +40,9 @@ app.ports.ipfsListDirectory.subscribe(cid => {
 
 
 app.ports.ipfsSetup.subscribe(_ => {
-  ipfs.setup().then(app.ports.ipfsCompletedSetup.send)
+  ipfs.setup()
+    .then(app.ports.ipfsCompletedSetup.send)
+    .catch(reportIpfsError)
 })
 
 

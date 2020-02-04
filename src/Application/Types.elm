@@ -3,14 +3,16 @@ module Types exposing (..)
 {-| Root-level types.
 -}
 
+import Browser
 import Browser.Navigation as Navigation
+import Drive.Types as Drive
 import Explore.Types as Explore
 import Ipfs
 import Ipfs.Types as Ipfs
 import Item exposing (Item)
 import Management
-import Navigation.Types as Navigation
 import Routing exposing (Page)
+import Time
 import Url exposing (Url)
 
 
@@ -32,12 +34,14 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { directoryList : Result String (List Item)
+    { currentTime : Time.Posix
+    , directoryList : Result String (List Item)
     , exploreInput : Maybe String
     , ipfs : Ipfs.Status
     , navKey : Navigation.Key
     , page : Page
     , rootCid : Maybe String
+    , selectedCid : Maybe String
     , url : Url
     }
 
@@ -50,10 +54,18 @@ type alias Model =
 -}
 type Msg
     = Bypass
-      --
+      -----------------------------------------
+      -- Bits
+      -----------------------------------------
+    | DriveMsg Drive.Msg
     | ExploreMsg Explore.Msg
     | IpfsMsg Ipfs.Msg
-    | NavigationMsg Navigation.Msg
+      -----------------------------------------
+      -- Other
+      -----------------------------------------
+    | LinkClicked Browser.UrlRequest
+    | SetCurrentTime Time.Posix
+    | UrlChanged Url
 
 
 {-| State management.

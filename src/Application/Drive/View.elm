@@ -2,6 +2,7 @@ module Drive.View exposing (view)
 
 import Common.View
 import Common.View.Footer as Footer
+import Drive.Types as Drive
 import Explore.View as Explore
 import FeatherIcons
 import Html exposing (Html)
@@ -12,10 +13,10 @@ import Ipfs
 import Item exposing (Item, Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
-import Navigation.Types as Navigation
 import Routing exposing (Page(..))
 import Styling as S
 import Tailwind as T
+import Time.Distance
 import Types exposing (..)
 import Url.Builder
 
@@ -168,8 +169,8 @@ inactivePathPart idx text =
 
         --
         , { floor = idx }
-            |> Navigation.GoUp
-            |> NavigationMsg
+            |> Drive.GoUp
+            |> DriveMsg
             |> E.onClick
 
         --
@@ -229,8 +230,8 @@ rootPathPart model segments =
 
                     --
                     , { floor = 0 }
-                        |> Navigation.GoUp
-                        |> NavigationMsg
+                        |> Drive.GoUp
+                        |> DriveMsg
                         |> E.onClick
 
                     --
@@ -322,8 +323,11 @@ contentAvailable model directoryList =
                 [ list model directoryList
                 ]
 
-            -- TODO:
-            -- , details m
+            --
+            , model.selectedCid
+                |> Maybe.andThen (\cid -> List.find (.path >> (==) cid) directoryList)
+                |> Maybe.map (details model)
+                |> Maybe.withDefault nothing
             ]
         ]
 
@@ -368,7 +372,7 @@ list model directoryList =
         -----------------------------------------
         , directoryList
             |> List.sortWith sortingFunction
-            |> List.map (listItem parentPath)
+            |> List.map (listItem model.selectedCid parentPath)
             |> Html.div []
 
         -----------------------------------------
@@ -432,28 +436,25 @@ list model directoryList =
         ]
 
 
-listItem : String -> Item -> Html Msg
-listItem parentPath { kind, loading, name, nameProperties, selected } =
-    (case kind of
-        Directory ->
-            Html.div
-
-        _ ->
-            Html.a
-    )
+listItem : Maybe String -> String -> Item -> Html Msg
+listItem selectedCid parentPath { kind, loading, name, nameProperties, path } =
+    let
+        selected =
+            selectedCid == Just path
+    in
+    Html.div
         [ case kind of
             Directory ->
-                name
-                    |> Navigation.DigDeeper
-                    |> NavigationMsg
+                { directoryName = name }
+                    |> Drive.DigDeeper
+                    |> DriveMsg
                     |> E.onClick
 
             _ ->
-                name
-                    |> String.append "/"
-                    |> String.append parentPath
-                    |> String.append "https://ipfs.runfission.com/ipfs/"
-                    |> A.href
+                { cid = path }
+                    |> Drive.Select
+                    |> DriveMsg
+                    |> E.onClick
 
         --
         , T.border_b
@@ -474,6 +475,13 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
         -- Dark mode
         ------------
         , T.dark__border_darkness_above
+
+        --
+        , if selected then
+            T.dark__text_white
+
+          else
+            T.dark__text_inherit
         ]
         [ -----------------------------------------
           -- Icon
@@ -545,8 +553,8 @@ listItem parentPath { kind, loading, name, nameProperties, selected } =
 -- MAIN  /  DETAILS
 
 
-details : Model -> Html Msg
-details _ =
+details : Model -> Item -> Html Msg
+details model item =
     Html.div
         [ T.bg_gray_900
         , T.flex
@@ -562,8 +570,13 @@ details _ =
 
         --
         , T.lg__ml_24
+
+        -- Dark mode
+        ------------
+        , T.dark__bg_darkness_below
         ]
-        [ FeatherIcons.folder
+        [ item.kind
+            |> Item.kindIcon
             |> FeatherIcons.withSize 128
             |> FeatherIcons.withStrokeWidth 0.5
             |> FeatherIcons.toHtml []
@@ -581,7 +594,7 @@ details _ =
             , T.text_center
             , T.tracking_tight
             ]
-            [ Html.text "Techno & Minimal" ]
+            [ Html.text item.name ]
 
         --
         , Html.div
@@ -590,29 +603,32 @@ details _ =
             , T.text_gray_300
             , T.text_sm
             ]
-            [ Html.text "5 items, modified yesterday" ]
+            [ item.posixTime
+                |> Maybe.map (Time.Distance.inWords model.currentTime)
+                |> Maybe.unwrap Html.nothing Html.text
+            ]
 
         --
-        , Html.div
-            [ T.mt_5
-            ]
-            [ Html.div
-                [ T.antialiased
-                , T.bg_purple
-                , T.font_semibold
-                , T.px_2
-                , T.py_1
-                , T.rounded
-                , T.text_gray_900
-                , T.text_sm
-                , T.tracking_wider
-                , T.uppercase
-                ]
-                [ Html.span
-                    [ T.block, T.pt_px ]
-                    [ Html.text "Open" ]
-                ]
-            ]
+        -- , Html.div
+        --     [ T.mt_5
+        --     ]
+        --     [ Html.div
+        --         [ T.antialiased
+        --         , T.bg_purple
+        --         , T.font_semibold
+        --         , T.px_2
+        --         , T.py_1
+        --         , T.rounded
+        --         , T.text_gray_900
+        --         , T.text_sm
+        --         , T.tracking_wider
+        --         , T.uppercase
+        --         ]
+        --         [ Html.span
+        --             [ T.block, T.pt_px ]
+        --             [ Html.text "Open" ]
+        --         ]
+        --     ]
         ]
 
 

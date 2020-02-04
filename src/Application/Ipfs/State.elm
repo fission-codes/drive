@@ -50,6 +50,7 @@ gotDirectoryList : Json.Value -> Root.Manager
 gotDirectoryList encodedDirList model =
     encodedDirList
         |> Json.decodeValue (Json.list Ipfs.listItemDecoder)
+        |> Debug.log ""
         |> Result.map (List.map Item.fromIpfs)
         |> Result.mapError Json.errorToString
         |> (\result -> { model | directoryList = result, ipfs = Ipfs.Ready })

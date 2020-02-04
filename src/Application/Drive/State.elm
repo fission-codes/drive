@@ -1,24 +1,19 @@
-module Navigation.State exposing (..)
+module Drive.State exposing (..)
 
-import Browser
 import Browser.Navigation as Navigation
-import Ipfs.State
-import Navigation.Types as Navigation exposing (..)
-import Ports
+import Drive.Types as Drive exposing (..)
 import Result.Extra as Result
 import Return exposing (return)
-import Return.Extra as Return
-import Routing exposing (Page(..))
-import Types as Root exposing (Model, Msg)
-import Url exposing (Url)
-import Url.Builder
+import Routing
+import Types as Root
+import Url
 
 
 
 -- 📣
 
 
-update : Navigation.Msg -> Root.Manager
+update : Drive.Msg -> Root.Manager
 update msg =
     case msg of
         DigDeeper a ->
@@ -27,19 +22,16 @@ update msg =
         GoUp a ->
             goUp a
 
-        LinkClicked a ->
-            linkClicked a
-
-        UrlChanged a ->
-            urlChanged a
+        Select a ->
+            select a
 
 
 
--- TRAVERSAL
+-- 🛠
 
 
-digDeeper : String -> Root.Manager
-digDeeper directoryName model =
+digDeeper : { directoryName : String } -> Root.Manager
+digDeeper { directoryName } model =
     let
         directoryList =
             Result.withDefault [] model.directoryList
@@ -81,36 +73,13 @@ goUp { floor } model =
         x ->
             List.take (x - 1) (Routing.drivePathSegments model.page)
     )
-        |> Drive
+        |> Routing.Drive
         |> Routing.adjustUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
-        |> Return.return model
+        |> Return.return { model | selectedCid = Nothing }
 
 
-
--- URL
-
-
-linkClicked : Browser.UrlRequest -> Root.Manager
-linkClicked urlRequest model =
-    case urlRequest of
-        Browser.Internal url ->
-            return model (Navigation.pushUrl model.navKey <| Url.toString url)
-
-        Browser.External href ->
-            return model (Navigation.load href)
-
-
-urlChanged : Url -> Root.Manager
-urlChanged url old =
-    { old | page = Routing.pageFromUrl url, url = url }
-        |> Return.singleton
-        |> Return.effect_
-            (\new ->
-                if new.page /= old.page then
-                    Ipfs.State.getDirectoryListCmd new
-
-                else
-                    Cmd.none
-            )
+select : { cid : String } -> Root.Manager
+select { cid } model =
+    Return.singleton { model | selectedCid = Just cid }
