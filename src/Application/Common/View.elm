@@ -1,4 +1,4 @@
-module View.Common exposing (..)
+module Common.View exposing (..)
 
 import FeatherIcons
 import Html exposing (Html)

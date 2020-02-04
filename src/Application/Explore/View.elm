@@ -8,8 +8,8 @@ import Ipfs
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
-import View.Common as Common
-import View.Common.Footer as Footer
+import Common.View as Common
+import Common.View.Footer as Footer
 
 
 

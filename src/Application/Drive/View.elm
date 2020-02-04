@@ -1,5 +1,7 @@
 module Drive.View exposing (view)
 
+import Common.View
+import Common.View.Footer as Footer
 import Explore.View as Explore
 import FeatherIcons
 import Html exposing (Html)
@@ -16,8 +18,6 @@ import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import Url.Builder
-import View.Common
-import View.Common.Footer as Footer
 
 
 
@@ -247,7 +247,7 @@ rootPathPart model segments =
                     ]
     in
     Html.span
-        (View.Common.fadeOutLeft :: attributes)
+        (Common.View.fadeOutLeft :: attributes)
         [ Html.text text ]
 
 

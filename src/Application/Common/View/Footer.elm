@@ -1,4 +1,4 @@
-module View.Common.Footer exposing (view)
+module Common.View.Footer exposing (view)
 
 import Explore.Types as Explore
 import FeatherIcons

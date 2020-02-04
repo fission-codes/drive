@@ -16,7 +16,7 @@ import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import Url.Builder
-import View.Common as Common
+import Common.View as Common
 
 
 

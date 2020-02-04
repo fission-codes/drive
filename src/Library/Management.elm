@@ -17,8 +17,8 @@ type alias Manager msg model =
 
 {-| For working with nested models.
 
-    manage : Manager Msg NestedModel -> Manager Msg Model
-    manage =
+    organize : Manager Msg NestedModel -> Manager Msg Model
+    organize =
         { get = .nested
         , set = \nested ui -> { ui | nested = nested }
         }
@@ -29,7 +29,7 @@ type alias Manager msg model =
     update msg =
         case msg of
             NestedMsg ->
-                manage handleNestedMsg
+                organize handleNestedMsg
 
 -}
 organize :
