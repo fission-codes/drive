@@ -24,11 +24,7 @@ view m =
 
         -- Dark mode
         ------------
-        , if m.ipfs /= Ipfs.Ready || Maybe.isNothing m.rootCid then
-            T.dark__bg_darkness_below
-
-          else
-            T.dark__bg_darkness
+        , T.dark__bg_darkness_below
         ]
         [ Html.div
             [ T.container
