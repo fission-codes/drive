@@ -34,7 +34,7 @@ type alias Flags =
 type alias Model =
     { directoryList : Result String (List Item)
     , exploreInput : Maybe String
-    , ipfs : Ipfs.State
+    , ipfs : Ipfs.Status
     , navKey : Navigation.Key
     , page : Page
     , rootCid : Maybe String
@@ -56,10 +56,14 @@ type Msg
     | NavigationMsg Navigation.Msg
 
 
-{-| State manager.
+{-| State management.
 -}
+type alias Organizer model =
+    Management.Manager Msg model
+
+
 type alias Manager =
-    Management.Manager Msg Model
+    Organizer Model
 
 
 

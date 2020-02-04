@@ -6,10 +6,10 @@ module Return.Extra exposing (..)
 
 {-| Flipped version of `Return.return`.
 
-    >>> returnWith Cmd.none ()
+    >>> communicate Cmd.none ()
     ( (), Cmd.none )
 
 -}
-returnWith : Cmd msg -> model -> ( model, Cmd msg )
-returnWith cmd model =
+communicate : Cmd msg -> model -> ( model, Cmd msg )
+communicate cmd model =
     ( model, cmd )

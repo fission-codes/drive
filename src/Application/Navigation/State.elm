@@ -7,7 +7,7 @@ import Navigation.Types as Navigation exposing (..)
 import Ports
 import Result.Extra as Result
 import Return exposing (return)
-import Return.Extra as Return exposing (returnWith)
+import Return.Extra as Return
 import Routing exposing (Page(..))
 import Types as Root exposing (Model, Msg)
 import Url exposing (Url)
@@ -96,26 +96,21 @@ linkClicked : Browser.UrlRequest -> Root.Manager
 linkClicked urlRequest model =
     case urlRequest of
         Browser.Internal url ->
-            returnWith (Navigation.pushUrl model.navKey <| Url.toString url) model
+            return model (Navigation.pushUrl model.navKey <| Url.toString url)
 
         Browser.External href ->
-            returnWith (Navigation.load href) model
+            return model (Navigation.load href)
 
 
 urlChanged : Url -> Root.Manager
-urlChanged url oldModel =
-    let
-        newPage =
-            Routing.pageFromUrl url
+urlChanged url old =
+    { old | page = Routing.pageFromUrl url, url = url }
+        |> Return.singleton
+        |> Return.effect_
+            (\new ->
+                if new.page /= old.page then
+                    Ipfs.State.getDirectoryListCmd new
 
-        newModel =
-            { oldModel | page = newPage, url = url }
-    in
-    return
-        newModel
-        (if newPage /= oldModel.page then
-            Ipfs.State.getDirectoryListCmd newModel
-
-         else
-            Cmd.none
-        )
+                else
+                    Cmd.none
+            )

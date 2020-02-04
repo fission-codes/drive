@@ -1,5 +1,9 @@
 module Management exposing (..)
 
+import Monocle.Lens as Lens exposing (Lens)
+
+
+
 -- 📣
 
 
@@ -13,28 +17,27 @@ type alias Manager msg model =
 
 {-| For working with nested models.
 
-    manage : Nested.Manager -> UI.Manager
+    manage : Manager Msg NestedModel -> Manager Msg Model
     manage =
-        Management.supervise
-            { getter = .nested
-            , setter = \ui nested -> { ui | nested = nested }
-            }
+        { get = .nested
+        , set = \nested ui -> { ui | nested = nested }
+        }
+            |> Monocle.Lens.Lens
+            |> Management.organize
 
-    update : Nested.Msg -> UI.Manager
+    update : Nested.Msg -> Manager Msg Model
     update msg =
         case msg of
             NestedMsg ->
                 manage handleNestedMsg
 
 -}
-supervise :
-    { getter : parent -> nested
-    , setter : parent -> nested -> parent
-    }
+organize :
+    Lens parent nested
     -> Manager msg nested
     -> Manager msg parent
-supervise { getter, setter } manager parent =
+organize lens manager parent =
     parent
-        |> getter
+        |> lens.get
         |> manager
-        |> Tuple.mapFirst (setter parent)
+        |> Tuple.mapFirst (\nested -> lens.set nested parent)
