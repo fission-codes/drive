@@ -3,6 +3,7 @@ module Item exposing (..)
 import FeatherIcons
 import Ipfs
 import List.Extra as List
+import Murmur3
 import Time
 
 
@@ -23,7 +24,8 @@ type Kind
 
 
 type alias Item =
-    { kind : Kind
+    { id : String
+    , kind : Kind
     , loading : Bool
     , name : String
     , nameProperties : NameProperties
@@ -107,7 +109,13 @@ fromIpfs { name, path, posixTime, size, typ } =
                 _ ->
                     Other
     in
-    { kind = kind
+    { id =
+        path
+            |> Murmur3.hashString 0
+            |> String.fromInt
+
+    --
+    , kind = kind
     , loading = False
     , name = name
     , nameProperties = nameProps

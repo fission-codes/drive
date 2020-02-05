@@ -39,16 +39,9 @@
   </main>
 
 
-  <!-- Insert loader -->
-  <script>
-    const loader = document.createElement("img")
-    loader.setAttribute("src", "images/loader.svg")
-    loader.className = "absolute animation-spin left-1/2 top-1/2 -translate-1/2"
-    document.getElementById("elm").appendChild(loader)
-  </script>
-
-
   <!-- Scripts -->
+  <script src="loaders.js"></script>
+  <script>addLoaders( document.getElementById("elm") )</script>
   <script src="application.js"></script>
   <script src="index.js" type="module"></script>
 

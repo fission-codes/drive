@@ -1,18 +1,17 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/b33d27acc84564a0483ef9d0e895a6613e45c9b2
-  get-ipfs: 1.0.1
-  tailwindcss-animations: 1.0.0
-  tailwindcss-gradients: 2.3.1
 devDependencies:
-  '@fullhuman/postcss-purgecss': 2.0.5
+  '@fullhuman/postcss-purgecss': 2.0.6
+  autoprefixer: 9.7.4
   elm-git-install: 0.1.2
   elm-live: 4.0.1
   html-minifier-terser: 5.0.2
   postcss: 7.0.26
   postcss-csso: 4.0.0_postcss@7.0.26
   postcss-elm-tailwind: github.com/icidasset/postcss-elm-tailwind/9960dd3710dd0651019aef755a032549084036ce_postcss@7.0.26
-  snowpack: 1.1.2
-  tailwindcss: 1.2.0-canary.5
+  snowpack: 1.1.4
+  tailwindcss: 1.2.0
+  tailwindcss-animations: 1.0.0
   terser-folder: 2.0.0
 lockfileVersion: 5.1
 packages:
@@ -800,13 +799,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-jBD+G8+LWpMBBWvVcdr4QysjUE4mU/syrhN17o1u3gx0/WzJB1kwiVZAXRtWbsIPOwW8pF/YJV5+nmetPzepXg==
-  /@fullhuman/postcss-purgecss/2.0.5:
+  /@fullhuman/postcss-purgecss/2.0.6:
     dependencies:
       postcss: 7.0.26
-      purgecss: 2.0.5
+      purgecss: 2.0.6
     dev: true
     resolution:
-      integrity: sha512-lWSnRiLfI3dGowZkPBfFOVkWlBP+Wk12u91mtjCTmA3hJ+d5+MyizVsTAOB1e52QJww6BRSD4g6XpknF+dEPnA==
+      integrity: sha512-RgD05Yd1VFudo1H1b2inb+10AS1mexp1edHfdoJvoeKaoMVoi/9DWrbWOpIrDmKq1CO82oQrb5wf4V64oaNkKQ==
   /@rollup/plugin-commonjs/11.0.1_rollup@1.30.1:
     dependencies:
       '@rollup/pluginutils': 3.0.6_rollup@1.30.1
@@ -980,8 +979,8 @@ packages:
       integrity: sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
   /autoprefixer/9.7.4:
     dependencies:
-      browserslist: 4.8.4
-      caniuse-lite: 1.0.30001022
+      browserslist: 4.8.6
+      caniuse-lite: 1.0.30001025
       chalk: 2.4.2
       normalize-range: 0.1.2
       num2fraction: 1.2.2
@@ -1028,15 +1027,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==
-  /browserslist/4.8.4:
-    dependencies:
-      caniuse-lite: 1.0.30001022
-      electron-to-chromium: 1.3.338
-      node-releases: 1.1.46
-    dev: true
-    hasBin: true
-    resolution:
-      integrity: sha512-3qv/Ar3nRnRTpwGD+LZc7F4YHDBb3NAEIn+DesNa8TcBhyxf8eDqYwTOa70kiWXwvFjQQz+abbykJcyOlfBfNg==
   /browserslist/4.8.5:
     dependencies:
       caniuse-lite: 1.0.30001023
@@ -1046,6 +1036,15 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-4LMHuicxkabIB+n9874jZX/az1IaZ5a+EUuvD7KFOu9x/Bd5YHyO0DIz2ls/Kl8g0ItS4X/ilEgf4T1Br0lgSg==
+  /browserslist/4.8.6:
+    dependencies:
+      caniuse-lite: 1.0.30001025
+      electron-to-chromium: 1.3.345
+      node-releases: 1.1.47
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha512-ZHao85gf0eZ0ESxLfCp73GG9O/VTytYDIkIiZDlURppLTI9wErSM/5yAKEq6rcUdxBLjMELmrYUJGg5sxGKMHg==
   /buffer-equal/1.0.0:
     dev: true
     engines:
@@ -1102,14 +1101,14 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
-  /caniuse-lite/1.0.30001022:
-    dev: true
-    resolution:
-      integrity: sha512-FjwPPtt/I07KyLPkBQ0g7/XuZg6oUkYBVnPHNj3VHJbOjmmJ/GdSo/GUY6MwINEQvjhP6WZVbX8Tvms8xh0D5A==
   /caniuse-lite/1.0.30001023:
     dev: true
     resolution:
       integrity: sha512-C5TDMiYG11EOhVOA62W1p3UsJ2z4DsHtMBQtjzp3ZsUglcQn62WOUgW0y795c7A5uZ+GCEIvzkMatLIlAsbNTA==
+  /caniuse-lite/1.0.30001025:
+    dev: true
+    resolution:
+      integrity: sha512-SKyFdHYfXUZf5V85+PJgLYyit27q4wgvZuf8QTOk1osbypcROihMBlx9GRar2/pIcKH2r4OehdlBr9x6PXetAQ==
   /chalk/1.1.3:
     dependencies:
       ansi-styles: 2.2.1
@@ -1192,6 +1191,7 @@ packages:
   /color-convert/1.9.3:
     dependencies:
       color-name: 1.1.3
+    dev: true
     resolution:
       integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==
   /color-convert/2.0.1:
@@ -1203,25 +1203,13 @@ packages:
     resolution:
       integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==
   /color-name/1.1.3:
+    dev: true
     resolution:
       integrity: sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=
   /color-name/1.1.4:
+    dev: true
     resolution:
       integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
-  /color-string/1.5.3:
-    dependencies:
-      color-name: 1.1.4
-      simple-swizzle: 0.2.2
-    dev: false
-    resolution:
-      integrity: sha512-dC2C5qeWoYkxki5UAXapdjqO672AM4vZuPGRQfO8b5HKuKGBbKWpITyDYN7TOFKvRW7kOgAn3746clDBMDJyQw==
-  /color/3.1.2:
-    dependencies:
-      color-convert: 1.9.3
-      color-string: 1.5.3
-    dev: false
-    resolution:
-      integrity: sha512-vXTJhHebByxZn3lDvDJYw4lR5+uB3vuoHsuYA5AKuxRVn5wzzIfQKGLBmgdVRHKTJYeK5rvJcHnrd0Li49CFpg==
   /colors/1.0.3:
     dev: true
     engines:
@@ -1418,14 +1406,14 @@ packages:
     dev: true
     resolution:
       integrity: sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
-  /electron-to-chromium/1.3.338:
-    dev: true
-    resolution:
-      integrity: sha512-wlmfixuHEc9CkfOKgcqdtzBmRW4NStM9ptl5oPILY2UDyHuSXb3Yit+yLVyLObTgGuMMU36hhnfs2GDJId7ctA==
   /electron-to-chromium/1.3.340:
     dev: true
     resolution:
       integrity: sha512-hRFBAglhcj5iVYH+o8QU0+XId1WGoc0VGowJB1cuJAt3exHGrivZvWeAO5BRgBZqwZtwxjm8a5MQeGoT/Su3ww==
+  /electron-to-chromium/1.3.345:
+    dev: true
+    resolution:
+      integrity: sha512-f8nx53+Z9Y+SPWGg3YdHrbYYfIJAtbUjpFfW4X1RwTZ94iUG7geg9tV8HqzAXX7XTNgyWgAFvce4yce8ZKxKmg==
   /elm-git-install/0.1.2:
     dependencies:
       is-git-url: 1.0.0
@@ -1618,12 +1606,6 @@ packages:
       node: '>=6.9.0'
     resolution:
       integrity: sha512-r8EC6NO1sngH/zdD9fiRDLdcgnbayXah+mLgManTaIZJqEC1MZstmnox8KpnI2/fxQwrp5OpCOYWLp4rBl4Jcg==
-  /get-ipfs/1.0.1:
-    dev: false
-    engines:
-      node: '>=6.0.0'
-    resolution:
-      integrity: sha512-GjzEcIbI2Kx6tn7jAImPhb69xk+uecZH2M4qT+EsAafROXs6FDtJNtAnuvwwiRCzuAbrePn/aOcNKdEWfXR+2Q==
   /get-stdin/4.0.1:
     dev: true
     engines:
@@ -1809,10 +1791,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-d8mYQFJ6qOyxqLppe4BkWnqSap0=
-  /is-arrayish/0.3.2:
-    dev: false
-    resolution:
-      integrity: sha512-eVRqCvVlZbuw3GrM63ovNSNAeA1K16kaR/LRY/92w0zxQ5/1YzwblUX652i4Xs9RwAGjW9d9y6X88t8OaAJfWQ==
   /is-binary-path/2.1.0:
     dependencies:
       binary-extensions: 2.0.0
@@ -1968,6 +1946,7 @@ packages:
     resolution:
       integrity: sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
   /lodash/4.17.15:
+    dev: true
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /log-symbols/2.2.0:
@@ -2125,12 +2104,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-Yt3384If5H6BYGVHiHwTL+99OzJKHhgp82S8/dktEK73T26BazdgZ4JZh92xSVtGNJvz9UbXdNAc5hcrXV42vw==
-  /node-releases/1.1.46:
-    dependencies:
-      semver: 6.3.0
-    dev: true
-    resolution:
-      integrity: sha512-YOjdx+Uoh9FbRO7yVYbnbt1puRWPQMemR3SutLeyv2XfxKs1ihpe0OLAUwBPEP2ImNH/PZC7SEiC6j32dwRZ7g==
   /node-releases/1.1.47:
     dependencies:
       semver: 6.3.0
@@ -2444,7 +2417,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==
-  /purgecss/2.0.5:
+  /purgecss/2.0.6:
     dependencies:
       commander: 4.1.0
       glob: 7.1.6
@@ -2453,7 +2426,7 @@ packages:
     dev: true
     hasBin: true
     resolution:
-      integrity: sha512-VwQoDXImH0pabZ6ivLPCsWuRGd979NEzACaT/P3pWzDVCwHXSgXUM4QDbnMklMawU0r4MrCvdaORM84KJvsCIA==
+      integrity: sha512-Xab72ykpWtg+j/dTphz9HCrychRNbMebNBrI+pOU0mC7mG5OlwRksEEpNAdOLb1jg9oRHDDu6Exe+nlM9ZLp5Q==
   /range-parser/1.2.1:
     dev: true
     engines:
@@ -2569,12 +2542,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==
-  /resolve/1.14.2:
-    dependencies:
-      path-parse: 1.0.6
-    dev: true
-    resolution:
-      integrity: sha512-EjlOBLBO1kxsUxsKjLt7TAECyKW6fOh1VRkykQkKGzcBbjjPIxBqGh0jf7GJ3k/f5mxMqW3htMD3WdTUVtW8HQ==
   /resolve/1.15.0:
     dependencies:
       path-parse: 1.0.6
@@ -2719,13 +2686,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-gQsPA1uuAkGUa6S+yG4NRknKHVEV+Vnp437w8dJpDpzjtEH566WRSz5z6DoIxlBFaLC7Xwypznsuf1S/J0gtFg==
-  /simple-swizzle/0.2.2:
-    dependencies:
-      is-arrayish: 0.3.2
-    dev: false
-    resolution:
-      integrity: sha1-pNprY1/8zMoz9w0Xy5JZLeleVXo=
-  /snowpack/1.1.2:
+  /snowpack/1.1.4:
     dependencies:
       '@babel/core': 7.8.3
       '@babel/parser': 7.8.3
@@ -2752,7 +2713,7 @@ packages:
     dev: true
     hasBin: true
     resolution:
-      integrity: sha512-yHbCxYjhoGmWHYawn82MXOT8iXkgPpFR+LHBltEDVEfSa0VQpwYtKbTV16WAyd5fWsNYqC3cLVvY0vf7TrX3Lw==
+      integrity: sha512-TPJ/9KebPR5brXUZm74RC7Jw65YmaEV4p9HiGV/ctYtvlDcTHfliV29BTAMM/ee6K2s892Yq1Zi9bFCNi/VqTw==
   /source-map-support/0.5.16:
     dependencies:
       buffer-from: 1.1.1
@@ -2876,17 +2837,10 @@ packages:
   /tailwindcss-animations/1.0.0:
     dependencies:
       lodash: 4.17.15
-    dev: false
+    dev: true
     resolution:
       integrity: sha512-dPAo/rRC2Cqupte3tVjoR8gTXyZjyApAmPD6LdiTRRQ79lNx0aCCMTDo86T8Ulif7N48mrMcj/eebf/a3QV6TQ==
-  /tailwindcss-gradients/2.3.1:
-    dependencies:
-      color: 3.1.2
-      lodash: 4.17.15
-    dev: false
-    resolution:
-      integrity: sha512-SNOxVILGMShTxozdgKYrKv3AoqF9P4n+n3iKeLYQCboeeKVU5mzcRM02mDYNEFyAQ70xuFT0qbaQ5cjFOP5rgQ==
-  /tailwindcss/1.2.0-canary.5:
+  /tailwindcss/1.2.0:
     dependencies:
       autoprefixer: 9.7.4
       bytes: 3.1.0
@@ -2903,13 +2857,13 @@ packages:
       postcss-selector-parser: 6.0.2
       pretty-hrtime: 1.0.3
       reduce-css-calc: 2.1.7
-      resolve: 1.14.2
+      resolve: 1.15.0
     dev: true
     engines:
       node: '>=8.9.0'
     hasBin: true
     resolution:
-      integrity: sha512-pIXsrTzzdErbU+unyl4vSDEydtr0iJ9OZ18RqaQdW5QGu3/XsoMHCQk3amn5Y23YEGwQcs9+wWnDqa0Yu5MUcg==
+      integrity: sha512-CKvY0ytB3ze5qvynG7qv4XSpQtFNGPbu9pUn8qFdkqgD8Yo/vGss8mhzbqls44YCXTl4G62p3qVZBj45qrd6FQ==
   /terser-folder/2.0.0:
     dependencies:
       extend: 3.0.0
@@ -3092,17 +3046,16 @@ packages:
       tarball: 'https://codeload.github.com/icidasset/postcss-elm-tailwind/tar.gz/9960dd3710dd0651019aef755a032549084036ce'
     version: 0.3.0
 specifiers:
-  '@fullhuman/postcss-purgecss': ^2.0.5
+  '@fullhuman/postcss-purgecss': ^2.0.6
+  autoprefixer: ^9.7.4
   elm-git-install: ^0.1.2
   elm-live: ^4.0.1
   fission-kit: 'fission-suite/kit#b33d27acc84564a0483ef9d0e895a6613e45c9b2'
-  get-ipfs: ^1.0.1
   html-minifier-terser: ^5.0.2
   postcss: ^7.0.26
   postcss-csso: ^4.0.0
   postcss-elm-tailwind: 'icidasset/postcss-elm-tailwind#9960dd3710dd0651019aef755a032549084036ce'
-  snowpack: ^1.1.2
-  tailwindcss: ^1.2.0-canary.5
+  snowpack: ^1.1.4
+  tailwindcss: ^1.2.0
   tailwindcss-animations: ^1.0.0
-  tailwindcss-gradients: ^2.3.1
   terser-folder: ^2.0.0

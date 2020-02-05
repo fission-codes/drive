@@ -1,6 +1,6 @@
 module Drive.View exposing (view)
 
-import Common.View
+import Common.View as Common
 import Common.View.Footer as Footer
 import Drive.Types as Drive
 import Explore.View as Explore
@@ -9,6 +9,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html exposing (nothing)
+import Html.Lazy
 import Ipfs
 import Item exposing (Item, Kind(..))
 import List.Extra as List
@@ -16,6 +17,7 @@ import Maybe.Extra as Maybe
 import Routing exposing (Page(..))
 import Styling as S
 import Tailwind as T
+import Time
 import Time.Distance
 import Types exposing (..)
 import Url.Builder
@@ -248,7 +250,7 @@ rootPathPart model segments =
                     ]
     in
     Html.span
-        (Common.View.fadeOutLeft :: attributes)
+        (Common.fadeOutLeft :: attributes)
         [ Html.text text ]
 
 
@@ -326,7 +328,7 @@ contentAvailable model directoryList =
             --
             , model.selectedCid
                 |> Maybe.andThen (\cid -> List.find (.path >> (==) cid) directoryList)
-                |> Maybe.map (details model)
+                |> Maybe.map (Html.Lazy.lazy2 details model.currentTime)
                 |> Maybe.withDefault nothing
             ]
         ]
@@ -437,7 +439,7 @@ list model directoryList =
 
 
 listItem : Maybe String -> String -> Item -> Html Msg
-listItem selectedCid parentPath { kind, loading, name, nameProperties, path } =
+listItem selectedCid parentPath ({ kind, loading, name, nameProperties, path } as item) =
     let
         selected =
             selectedCid == Just path
@@ -451,7 +453,7 @@ listItem selectedCid parentPath { kind, loading, name, nameProperties, path } =
                     |> E.onClick
 
             _ ->
-                { cid = path }
+                item
                     |> Drive.Select
                     |> DriveMsg
                     |> E.onClick
@@ -553,8 +555,8 @@ listItem selectedCid parentPath { kind, loading, name, nameProperties, path } =
 -- MAIN  /  DETAILS
 
 
-details : Model -> Item -> Html Msg
-details model item =
+details : Time.Posix -> Item -> Html Msg
+details currentTime item =
     Html.div
         [ T.bg_gray_900
         , T.flex
@@ -563,8 +565,10 @@ details model item =
         , T.items_center
         , T.justify_center
         , T.ml_12
+        , T.overflow_hidden
         , T.px_4
         , T.py_6
+        , T.relative
         , T.rounded_md
         , T.w_1over2
 
@@ -575,6 +579,57 @@ details model item =
         ------------
         , T.dark__bg_darkness_below
         ]
+        [ detailsOverlay currentTime item
+        , detailsDataContainer item
+        , detailsExtra item
+        ]
+
+
+detailsDataContainer : Item -> Html Msg
+detailsDataContainer item =
+    Html.div
+        (case item.kind of
+            Item.Audio ->
+                [ A.id item.id
+
+                --
+                , T.mt_4
+                ]
+
+            _ ->
+                [ A.id item.id
+
+                --
+                , T.absolute
+                , T.flex
+                , T.inset_0
+                , T.items_center
+                , T.justify_center
+                , T.z_10
+                ]
+        )
+        [ case item.kind of
+            Item.Image ->
+                Html.nothing
+
+            _ ->
+                Common.loadingAnimation
+        ]
+
+
+detailsOverlay : Time.Posix -> Item -> Html Msg
+detailsOverlay currentTime item =
+    Html.div
+        (case item.kind of
+            Item.Audio ->
+                []
+
+            _ ->
+                --  TODO
+                [ T.hidden
+                , T.z_50
+                ]
+        )
         [ item.kind
             |> Item.kindIcon
             |> FeatherIcons.withSize 128
@@ -604,32 +659,42 @@ details model item =
             , T.text_sm
             ]
             [ item.posixTime
-                |> Maybe.map (Time.Distance.inWords model.currentTime)
-                |> Maybe.unwrap Html.nothing Html.text
+                |> Maybe.map (Time.Distance.inWords currentTime)
+                |> Maybe.unwrap (Html.text "No metadata found") Html.text
             ]
 
         --
-        -- , Html.div
-        --     [ T.mt_5
-        --     ]
-        --     [ Html.div
-        --         [ T.antialiased
-        --         , T.bg_purple
-        --         , T.font_semibold
-        --         , T.px_2
-        --         , T.py_1
-        --         , T.rounded
-        --         , T.text_gray_900
-        --         , T.text_sm
-        --         , T.tracking_wider
-        --         , T.uppercase
-        --         ]
-        --         [ Html.span
-        --             [ T.block, T.pt_px ]
-        --             [ Html.text "Open" ]
-        --         ]
-        --     ]
+        , Html.div
+            []
+            -- [ Html.div
+            --     [ T.antialiased
+            --     , T.bg_purple
+            --     , T.font_semibold
+            --     , T.px_2
+            --     , T.py_1
+            --     , T.rounded
+            --     , T.text_gray_900
+            --     , T.text_sm
+            --     , T.tracking_wider
+            --     , T.uppercase
+            --     ]
+            --     [ Html.span
+            --         [ T.block, T.pt_px ]
+            --         [ Html.text "Open" ]
+            --     ]
+            -- ]
+            []
         ]
+
+
+detailsExtra : Item -> Html Msg
+detailsExtra item =
+    case item.kind of
+        Item.Image ->
+            Common.loadingAnimation
+
+        _ ->
+            Html.nothing
 
 
 

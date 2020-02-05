@@ -23,6 +23,11 @@ const LOCAL_TCP = "/ip4/127.0.0.1/tcp/0"
 // 🛠
 
 
+export async function listDirectory(address) {
+  return await ipfs.ls(address)
+}
+
+
 export async function setup() {
   ipfs = await Ipfs.create({
     config: { Addresses: { Swarm: [ LOCAL_TCP, PEER_WSS ] }}
@@ -33,6 +38,6 @@ export async function setup() {
 }
 
 
-export async function listDirectory(address) {
-  return await ipfs.ls(address)
+export function stream(cid, opts) {
+  return ipfs.catReadableStream(cid, opts)
 }

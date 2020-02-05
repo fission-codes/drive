@@ -13,6 +13,9 @@ port ipfsListDirectory : String -> Cmd msg
 port ipfsSetup : () -> Cmd msg
 
 
+port renderMedia : { id : String, name : String, path : String } -> Cmd msg
+
+
 port removeStoredRootCid : () -> Cmd msg
 
 

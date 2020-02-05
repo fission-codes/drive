@@ -44,3 +44,12 @@ textarea::placeholder {
     @apply text-gray_300 opacity-75;
   }
 }
+
+
+
+/* Misc
+   ---- */
+
+iframe {
+  @apply h-full p-4 w-full;
+}

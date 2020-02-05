@@ -2,24 +2,24 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "fission-kit": "fission-suite/kit#b33d27acc84564a0483ef9d0e895a6613e45c9b2",
-    "get-ipfs": "^1.0.1",
-    "tailwindcss-animations": "^1.0.0",
-    "tailwindcss-gradients": "^2.3.1"
+    "fission-kit": "fission-suite/kit#b33d27acc84564a0483ef9d0e895a6613e45c9b2"
   },
   "devDependencies": {
-    "@fullhuman/postcss-purgecss": "^2.0.5",
+    "@fullhuman/postcss-purgecss": "^2.0.6",
+    "autoprefixer": "^9.7.4",
     "elm-git-install": "^0.1.2",
     "elm-live": "^4.0.1",
     "html-minifier-terser": "^5.0.2",
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
     "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#9960dd3710dd0651019aef755a032549084036ce",
-    "snowpack": "^1.1.2",
-    "tailwindcss": "^1.2.0-canary.5",
+    "snowpack": "^1.1.4",
+    "tailwindcss": "^1.2.0",
+    "tailwindcss-animations": "^1.0.0",
     "terser-folder": "^2.0.0"
   },
   "scripts": {
-    "elm-dev": "elm-live"
+    "elm-dev": "elm-live",
+    "snowpack": "snowpack --clean"
   }
 }

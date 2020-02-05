@@ -34,4 +34,4 @@ loadingAnimation =
         |> FeatherIcons.withSize 24
         |> FeatherIcons.toHtml []
         |> List.singleton
-        |> Html.div [ T.animation_spin ]
+        |> Html.div [ T.animation_spin, T.z_0 ]

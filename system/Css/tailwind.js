@@ -1,6 +1,5 @@
 import animations from "tailwindcss-animations"
 import defaultTheme from "tailwindcss/defaultTheme.js"
-import gradients from "tailwindcss-gradients"
 import plugin from "tailwindcss/plugin.js"
 import * as kit from "fission-kit"
 
@@ -47,19 +46,6 @@ export default {
       body: [ kit.fonts.body, ...defaultTheme.fontFamily.sans ],
       display: [ kit.fonts.display, ...defaultTheme.fontFamily.serif ],
       mono: [ kit.fonts.mono, ...defaultTheme.fontFamily.mono ],
-    },
-
-    // Gradients
-    // ---------
-    // https://github.com/benface/tailwindcss-gradients
-
-    linearGradients: theme => {
-      const colors = theme("colors")
-
-      return { colors: {
-        "gray-100-200": [ colors.gray_100, colors.gray_200 ],
-        "gray-200-300": [ colors.gray_200, colors.gray_300 ],
-      }}
     },
 
     // Inset
@@ -123,7 +109,6 @@ export default {
   plugins: [
 
     animations(),
-    gradients(),
 
     // Add text-decoration-color classes
     plugin(function ({ addUtilities, variants, theme }) {

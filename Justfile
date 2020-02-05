@@ -26,7 +26,10 @@ environment := "dev"
 	echo "⚙️  Minifying Javascript Files"
 	{{node_bin}}/terser-folder \
 		{{build_dir}} \
-		--each --extension .js --output {{build_dir}} \
+		--each --extension .js \
+		--pattern "**/*.js, !**/*.min.js" \
+		--pseparator ", " \
+		--output {{build_dir}} \
 		-- --compress --mangle
 
 	echo "⚙️  Minifying HTML Files"
@@ -66,8 +69,11 @@ environment := "dev"
 
 @install-deps: (_report "Installing required dependencies")
 	pnpm install
-	{{node_bin}}/snowpack --clean
+	# pnpm run snowpack
+	mkdir -p web_modules
 	curl https://unpkg.com/ipfs@0.40.0/dist/index.js -o web_modules/ipfs.js
+	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
+	curl https://wzrd.in/debug-standalone/render-media@3.4.0 -o web_modules/render-media.js
 
 
 

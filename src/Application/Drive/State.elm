@@ -2,6 +2,8 @@ module Drive.State exposing (..)
 
 import Browser.Navigation as Navigation
 import Drive.Types as Drive exposing (..)
+import Item exposing (Item)
+import Ports
 import Result.Extra as Result
 import Return exposing (return)
 import Routing
@@ -80,6 +82,13 @@ goUp { floor } model =
         |> Return.return { model | selectedCid = Nothing }
 
 
-select : { cid : String } -> Root.Manager
-select { cid } model =
-    Return.singleton { model | selectedCid = Just cid }
+select : Item -> Root.Manager
+select item model =
+    return
+        { model | selectedCid = Just item.path }
+        (Ports.renderMedia
+            { id = item.id
+            , name = item.name
+            , path = item.path
+            }
+        )
