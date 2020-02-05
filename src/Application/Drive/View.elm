@@ -317,7 +317,10 @@ contentAvailable model directoryList =
             , T.my_8
             ]
             [ Html.div
-                [ T.flex_auto
+                [ A.id "drive-items"
+
+                --
+                , T.flex_auto
                 , T.overflow_x_hidden
                 , T.overflow_y_scroll
                 , T.w_1over2

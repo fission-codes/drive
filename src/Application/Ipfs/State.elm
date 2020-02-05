@@ -1,5 +1,6 @@
 module Ipfs.State exposing (..)
 
+import Browser.Dom as Dom
 import Ipfs
 import Ipfs.Types as Ipfs exposing (..)
 import Item
@@ -7,6 +8,7 @@ import Json.Decode as Json
 import Ports
 import Return exposing (return)
 import Routing
+import Task
 import Types as Root exposing (..)
 
 
@@ -54,6 +56,11 @@ gotDirectoryList encodedDirList model =
         |> Result.mapError Json.errorToString
         |> (\result -> { model | directoryList = result, ipfs = Ipfs.Ready })
         |> Return.singleton
+        |> Return.command
+            (Task.attempt
+                (always Bypass)
+                (Dom.setViewportOf "drive-items" 0 0)
+            )
 
 
 
