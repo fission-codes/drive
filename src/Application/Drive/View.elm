@@ -492,12 +492,14 @@ listItem selectedCid parentPath ({ kind, loading, name, nameProperties, path } a
             |> Item.kindIcon
             |> FeatherIcons.withSize S.iconSize
             |> FeatherIcons.toHtml []
+            |> List.singleton
+            |> Html.div [ T.flex_shrink_0 ]
 
         -----------------------------------------
         -- Label & Extensions
         -----------------------------------------
         , Html.span
-            [ T.flex_auto, T.ml_5 ]
+            [ T.flex_auto, T.ml_5, T.truncate ]
             [ Html.text nameProperties.base
 
             --
