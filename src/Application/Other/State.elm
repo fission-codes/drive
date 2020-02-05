@@ -3,6 +3,7 @@ module Other.State exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Ipfs.State
+import Maybe.Extra as Maybe
 import Return exposing (return)
 import Routing exposing (Page(..))
 import Time
@@ -39,7 +40,7 @@ urlChanged url old =
         |> Return.singleton
         |> Return.effect_
             (\new ->
-                if new.page /= old.page then
+                if new.page /= old.page && Maybe.isJust old.rootCid then
                     Ipfs.State.getDirectoryListCmd new
 
                 else

@@ -1,12 +1,15 @@
 module Explore.State exposing (..)
 
+import Browser.Navigation as Navigation
 import Explore.Types as Explore exposing (..)
 import Ipfs
 import Ipfs.State
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
+import Routing
 import Types as Root exposing (..)
+import Url
 
 
 
@@ -60,5 +63,15 @@ reset model =
             | directoryList = Ok []
             , exploreInput = Just ""
             , rootCid = Nothing
+            , selectedCid = Nothing
         }
-        (Ports.removeStoredRootCid ())
+        (Cmd.batch
+            [ Ports.removeStoredRootCid ()
+
+            --
+            , Routing.Blank
+                |> Routing.adjustUrl model.url
+                |> Url.toString
+                |> Navigation.pushUrl model.navKey
+            ]
+        )

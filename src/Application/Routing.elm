@@ -11,8 +11,8 @@ import Url.Parser as Url exposing (..)
 
 
 type Page
-    = Drive (List String)
-    | NotFound
+    = Blank
+    | Drive (List String)
 
 
 
@@ -32,12 +32,12 @@ pageFromUrl url =
 adjustUrl : Url -> Page -> Url
 adjustUrl url page =
     case page of
+        Blank ->
+            { url | fragment = Nothing }
+
         Drive pathSegments ->
             -- To switch to path-based routing, use { url | path = ... }
             { url | fragment = Just (Url.Builder.absolute pathSegments []) }
-
-        NotFound ->
-            url
 
 
 
