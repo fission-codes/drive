@@ -30,6 +30,9 @@ update msg =
         Select a ->
             select a
 
+        ShowPreviewOverlay ->
+            showPreviewOverlay
+
         ToggleLargePreview ->
             toggleLargePreview
 
@@ -90,7 +93,12 @@ goUp { floor } model =
 
 removeSelection : Root.Manager
 removeSelection model =
-    Return.singleton { model | largePreview = False, selectedCid = Nothing }
+    Return.singleton
+        { model
+            | largePreview = False
+            , selectedCid = Nothing
+            , showPreviewOverlay = False
+        }
 
 
 select : Item -> Root.Manager
@@ -107,6 +115,11 @@ select item model =
          else
             Cmd.none
         )
+
+
+showPreviewOverlay : Root.Manager
+showPreviewOverlay model =
+    Return.singleton { model | showPreviewOverlay = True }
 
 
 toggleLargePreview : Root.Manager

@@ -360,7 +360,7 @@ contentAvailable model directoryList =
             --
             , model.selectedCid
                 |> Maybe.andThen (\cid -> List.find (.path >> (==) cid) directoryList)
-                |> Maybe.map (Html.Lazy.lazy4 details model.currentTime parentPath model.largePreview)
+                |> Maybe.map (Html.Lazy.lazy5 details model.currentTime parentPath model.largePreview model.showPreviewOverlay)
                 |> Maybe.withDefault nothing
             ]
         ]
@@ -572,8 +572,8 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
 -- MAIN  /  DETAILS
 
 
-details : Time.Posix -> String -> Bool -> Item -> Html Msg
-details currentTime parentPath largePreview item =
+details : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
+details currentTime parentPath largePreview showPreviewOverlay item =
     Html.div
         [ T.bg_gray_900
         , T.flex
@@ -593,7 +593,7 @@ details currentTime parentPath largePreview item =
         ------------
         , T.dark__bg_darkness_below
         ]
-        [ detailsOverlay currentTime parentPath largePreview item
+        [ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item
         , detailsDataContainer item
         , detailsExtra item
         ]
@@ -601,6 +601,16 @@ details currentTime parentPath largePreview item =
 
 detailsDataContainer : Item -> Html Msg
 detailsDataContainer item =
+    let
+        defaultStyles =
+            [ T.absolute
+            , T.flex
+            , T.inset_0
+            , T.items_center
+            , T.justify_center
+            , T.z_10
+            ]
+    in
     Html.div
         (List.append
             [ A.id item.id
@@ -611,14 +621,15 @@ detailsDataContainer item =
                     [ T.mt_8
                     ]
 
+                Item.Image ->
+                    List.append
+                        defaultStyles
+                        [ E.onClick (DriveMsg Drive.ShowPreviewOverlay)
+                        , T.cursor_pointer
+                        ]
+
                 _ ->
-                    [ T.absolute
-                    , T.flex
-                    , T.inset_0
-                    , T.items_center
-                    , T.justify_center
-                    , T.z_10
-                    ]
+                    defaultStyles
             )
         )
         [ case item.kind of
@@ -630,8 +641,8 @@ detailsDataContainer item =
         ]
 
 
-detailsOverlay : Time.Posix -> String -> Bool -> Item -> Html Msg
-detailsOverlay currentTime parentPath largePreview item =
+detailsOverlay : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
+detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
     let
         defaultAttributes =
             [ T.absolute
@@ -662,9 +673,16 @@ detailsOverlay currentTime parentPath largePreview item =
             Item.Image ->
                 List.append
                     defaultAttributes
-                    [ T.opacity_0
-                    , T.group_hover__opacity_80
-                    ]
+                    (if showPreviewOverlay then
+                        []
+
+                     else
+                        [ T.opacity_0
+                        , T.pointer_events_none
+                        , T.group_hover__opacity_80
+                        , T.group_hover__pointer_events_auto
+                        ]
+                    )
 
             _ ->
                 defaultAttributes

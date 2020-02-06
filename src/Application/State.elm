@@ -34,6 +34,7 @@ init flags url navKey =
       , page = Routing.pageFromUrl url
       , rootCid = flags.rootCid
       , selectedCid = Nothing
+      , showPreviewOverlay = False
       , url = url
       }
       -----------------------------------------

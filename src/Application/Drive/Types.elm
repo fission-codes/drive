@@ -12,4 +12,5 @@ type Msg
     | GoUp { floor : Int }
     | RemoveSelection
     | Select Item
+    | ShowPreviewOverlay
     | ToggleLargePreview

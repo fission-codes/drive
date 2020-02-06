@@ -43,6 +43,7 @@ type alias Model =
     , page : Page
     , rootCid : Maybe String
     , selectedCid : Maybe String
+    , showPreviewOverlay : Bool
     , url : Url
     }
 

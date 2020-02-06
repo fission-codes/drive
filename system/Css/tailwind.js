@@ -99,6 +99,7 @@ export default {
 
     borderWidth: [ "first", "last" ],
     opacity: [ "group-hover" ],
+    pointerEvents: [ "group-hover" ],
 
   },
 
