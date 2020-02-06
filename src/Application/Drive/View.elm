@@ -1,5 +1,6 @@
 module Drive.View exposing (view)
 
+import Common
 import Common.View as Common
 import Common.View.Footer as Footer
 import Drive.Types as Drive
@@ -412,11 +413,7 @@ list model directoryList =
                     directoryList
 
             sizeString =
-                if toFloat size / 1000000 > 2 then
-                    String.fromInt (size // 1000000) ++ "MB"
-
-                else
-                    String.fromInt (size // 1000) ++ "KB"
+                Common.sizeInWords size
           in
           Html.div
             [ T.mt_8
@@ -701,9 +698,10 @@ detailsOverlay currentTime parentPath largePreview item =
             , T.text_gray_300
             , T.text_sm
             ]
-            [ item.posixTime
+            [ -- TODO
+              item.posixTime
                 |> Maybe.map (Time.Distance.inWords currentTime)
-                |> Maybe.unwrap (Html.text "No metadata found") Html.text
+                |> Maybe.unwrap (Html.text <| Common.sizeInWords item.size) Html.text
             ]
 
         --
