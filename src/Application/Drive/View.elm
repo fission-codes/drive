@@ -49,6 +49,7 @@ header : Model -> Html Msg
 header model =
     Html.header
         [ T.bg_gray_600
+        , T.break_all
         , T.py_8
         , T.text_white
 
