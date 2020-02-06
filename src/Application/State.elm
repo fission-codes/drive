@@ -29,6 +29,7 @@ init flags url navKey =
       , directoryList = Ok []
       , exploreInput = flags.rootCid
       , ipfs = Ipfs.Connecting
+      , largePreview = False
       , navKey = navKey
       , page = Routing.pageFromUrl url
       , rootCid = flags.rootCid

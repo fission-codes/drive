@@ -38,6 +38,7 @@ type alias Model =
     , directoryList : Result String (List Item)
     , exploreInput : Maybe String
     , ipfs : Ipfs.Status
+    , largePreview : Bool
     , navKey : Navigation.Key
     , page : Page
     , rootCid : Maybe String

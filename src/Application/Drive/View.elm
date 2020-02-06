@@ -330,21 +330,36 @@ contentAvailable model directoryList =
             , T.my_8
             ]
             [ Html.div
-                [ A.id "drive-items"
+                (List.append
+                    [ A.id "drive-items"
 
-                --
-                , T.flex_auto
-                , T.overflow_x_hidden
-                , T.overflow_y_scroll
-                , T.w_1over2
-                ]
+                    --
+                    , T.flex_auto
+                    , T.overflow_x_hidden
+                    , T.overflow_y_scroll
+                    , T.pr_12
+                    , T.w_1over2
+
+                    --
+                    , T.lg__pr_24
+                    ]
+                    (if model.largePreview then
+                        [ T.hidden ]
+
+                     else if Maybe.isJust model.selectedCid then
+                        [ T.hidden, T.md__block ]
+
+                     else
+                        []
+                    )
+                )
                 [ list model directoryList
                 ]
 
             --
             , model.selectedCid
                 |> Maybe.andThen (\cid -> List.find (.path >> (==) cid) directoryList)
-                |> Maybe.map (Html.Lazy.lazy3 details model.currentTime parentPath)
+                |> Maybe.map (Html.Lazy.lazy4 details model.currentTime parentPath model.largePreview)
                 |> Maybe.withDefault nothing
             ]
         ]
@@ -560,8 +575,8 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
 -- MAIN  /  DETAILS
 
 
-details : Time.Posix -> String -> Item -> Html Msg
-details currentTime parentPath item =
+details : Time.Posix -> String -> Bool -> Item -> Html Msg
+details currentTime parentPath largePreview item =
     Html.div
         [ T.bg_gray_900
         , T.flex
@@ -570,7 +585,6 @@ details currentTime parentPath item =
         , T.group
         , T.items_center
         , T.justify_center
-        , T.ml_12
         , T.overflow_hidden
         , T.px_4
         , T.py_6
@@ -578,14 +592,11 @@ details currentTime parentPath item =
         , T.rounded_md
         , T.w_1over2
 
-        --
-        , T.lg__ml_24
-
         -- Dark mode
         ------------
         , T.dark__bg_darkness_below
         ]
-        [ detailsOverlay currentTime parentPath item
+        [ detailsOverlay currentTime parentPath largePreview item
         , detailsDataContainer item
         , detailsExtra item
         ]
@@ -622,8 +633,8 @@ detailsDataContainer item =
         ]
 
 
-detailsOverlay : Time.Posix -> String -> Item -> Html Msg
-detailsOverlay currentTime parentPath item =
+detailsOverlay : Time.Posix -> String -> Bool -> Item -> Html Msg
+detailsOverlay currentTime parentPath largePreview item =
     let
         defaultAttributes =
             [ T.absolute
@@ -635,8 +646,9 @@ detailsOverlay currentTime parentPath item =
             , T.inset_0
             , T.items_center
             , T.justify_center
+            , T.px_4
             , T.transition_opacity
-            , T.z_50
+            , T.z_20
 
             --
             , T.dark__bg_darkness_below
@@ -648,7 +660,7 @@ detailsOverlay currentTime parentPath item =
                 []
 
             Item.Video ->
-                []
+                [ T.hidden ]
 
             Item.Image ->
                 List.append
@@ -678,6 +690,7 @@ detailsOverlay currentTime parentPath item =
             , T.mt_1
             , T.text_center
             , T.tracking_tight
+            , T.truncate
             ]
             [ Html.text item.name ]
 
@@ -695,7 +708,11 @@ detailsOverlay currentTime parentPath item =
 
         --
         , Html.div
-            [ T.mt_5 ]
+            [ T.flex
+            , T.items_center
+            , T.justify_center
+            , T.mt_5
+            ]
             [ Html.a
                 [ item.name
                     |> String.append "/"
@@ -724,6 +741,9 @@ detailsOverlay currentTime parentPath item =
                     [ Html.text "Open in new tab" ]
                 ]
             ]
+
+        --
+        , detailsActions largePreview
         ]
 
 
@@ -735,6 +755,54 @@ detailsExtra item =
 
         _ ->
             Html.nothing
+
+
+detailsActions : Bool -> Html Msg
+detailsActions largePreview =
+    Html.div
+        [ T.absolute
+        , T.flex
+        , T.items_center
+        , T.pr_4
+        , T.pt_4
+        , T.right_0
+        , T.top_0
+        , T.z_30
+        ]
+        [ (if largePreview then
+            FeatherIcons.minimize2
+
+           else
+            FeatherIcons.maximize2
+          )
+            |> FeatherIcons.withSize 16
+            |> FeatherIcons.toHtml []
+            |> List.singleton
+            |> Html.div
+                [ E.onClick (DriveMsg Drive.ToggleLargePreview)
+
+                --
+                , T.cursor_pointer
+                , T.hidden
+                , T.ml_2
+
+                --
+                , T.lg__block
+                ]
+
+        --
+        , FeatherIcons.x
+            |> FeatherIcons.withSize 20
+            |> FeatherIcons.toHtml []
+            |> List.singleton
+            |> Html.div
+                [ E.onClick (DriveMsg Drive.RemoveSelection)
+
+                --
+                , T.cursor_pointer
+                , T.ml_2
+                ]
+        ]
 
 
 

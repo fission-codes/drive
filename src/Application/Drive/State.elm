@@ -24,8 +24,14 @@ update msg =
         GoUp a ->
             goUp a
 
+        RemoveSelection ->
+            removeSelection
+
         Select a ->
             select a
+
+        ToggleLargePreview ->
+            toggleLargePreview
 
 
 
@@ -82,6 +88,11 @@ goUp { floor } model =
         |> Return.return { model | selectedCid = Nothing }
 
 
+removeSelection : Root.Manager
+removeSelection model =
+    Return.singleton { model | largePreview = False, selectedCid = Nothing }
+
+
 select : Item -> Root.Manager
 select item model =
     return
@@ -96,3 +107,8 @@ select item model =
          else
             Cmd.none
         )
+
+
+toggleLargePreview : Root.Manager
+toggleLargePreview model =
+    Return.singleton { model | largePreview = not model.largePreview }
