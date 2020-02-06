@@ -1,5 +1,7 @@
 module Explore.View exposing (view)
 
+import Common.View as Common
+import Common.View.Footer as Footer
 import Explore.Types as Explore
 import Html exposing (Html)
 import Html.Attributes as A
@@ -8,8 +10,6 @@ import Ipfs
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
-import Common.View as Common
-import Common.View.Footer as Footer
 
 
 
@@ -95,6 +95,7 @@ inputScreen m =
                 , T.border_2
                 , T.border_gray_500
                 , T.flex_auto
+                , T.outline_none
                 , T.px_6
                 , T.py_3
                 , T.rounded_full

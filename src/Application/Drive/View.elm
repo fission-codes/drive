@@ -608,7 +608,7 @@ detailsDataContainer item =
             ]
             (case item.kind of
                 Item.Audio ->
-                    [ T.mt_4
+                    [ T.mt_8
                     ]
 
                 _ ->
