@@ -98,6 +98,7 @@ export default {
   variants: {
 
     borderWidth: [ "first", "last" ],
+    opacity: [ "group-hover" ],
 
   },
 

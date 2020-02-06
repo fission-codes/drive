@@ -54,7 +54,7 @@ codeFileExtensions =
 
 
 imageFileExtensions =
-    [ "bmp", "gif", "ico", "jpg", "jpeg", "png", "webp" ]
+    [ "bmp", "gif", "jpg", "jpeg", "png", "svg", "webp" ]
 
 
 textFileExtensions =
@@ -67,6 +67,33 @@ videoFileExtensions =
 
 
 -- 🛠
+
+
+canRenderKind : Kind -> Bool
+canRenderKind kind =
+    case kind of
+        Directory ->
+            False
+
+        --
+        Audio ->
+            True
+
+        Code ->
+            False
+
+        Image ->
+            True
+
+        Text ->
+            False
+
+        Video ->
+            True
+
+        --
+        Other ->
+            False
 
 
 fromIpfs : Ipfs.ListItem -> Item

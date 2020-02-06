@@ -302,6 +302,19 @@ empty =
 
 contentAvailable : Model -> List Item -> Html Msg
 contentAvailable model directoryList =
+    let
+        parentPath =
+            model.page
+                |> Routing.drivePathSegments
+                |> (case model.rootCid of
+                        Just rootCid ->
+                            (::) rootCid
+
+                        Nothing ->
+                            identity
+                   )
+                |> String.join "/"
+    in
     Html.div
         [ T.flex
         , T.flex_auto
@@ -331,7 +344,7 @@ contentAvailable model directoryList =
             --
             , model.selectedCid
                 |> Maybe.andThen (\cid -> List.find (.path >> (==) cid) directoryList)
-                |> Maybe.map (Html.Lazy.lazy2 details model.currentTime)
+                |> Maybe.map (Html.Lazy.lazy3 details model.currentTime parentPath)
                 |> Maybe.withDefault nothing
             ]
         ]
@@ -343,19 +356,6 @@ contentAvailable model directoryList =
 
 list : Model -> List Item -> Html Msg
 list model directoryList =
-    let
-        parentPath =
-            model.page
-                |> Routing.drivePathSegments
-                |> (case model.rootCid of
-                        Just rootCid ->
-                            (::) rootCid
-
-                        Nothing ->
-                            identity
-                   )
-                |> String.join "/"
-    in
     Html.div
         [ T.text_lg ]
         [ Html.div
@@ -377,7 +377,7 @@ list model directoryList =
         -----------------------------------------
         , directoryList
             |> List.sortWith sortingFunction
-            |> List.map (listItem model.selectedCid parentPath)
+            |> List.map (listItem model.selectedCid)
             |> Html.div []
 
         -----------------------------------------
@@ -441,8 +441,8 @@ list model directoryList =
         ]
 
 
-listItem : Maybe String -> String -> Item -> Html Msg
-listItem selectedCid parentPath ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Maybe String -> Item -> Html Msg
+listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
     let
         selected =
             selectedCid == Just path
@@ -560,13 +560,14 @@ listItem selectedCid parentPath ({ kind, loading, name, nameProperties, path } a
 -- MAIN  /  DETAILS
 
 
-details : Time.Posix -> Item -> Html Msg
-details currentTime item =
+details : Time.Posix -> String -> Item -> Html Msg
+details currentTime parentPath item =
     Html.div
         [ T.bg_gray_900
         , T.flex
         , T.flex_auto
         , T.flex_col
+        , T.group
         , T.items_center
         , T.justify_center
         , T.ml_12
@@ -584,7 +585,7 @@ details currentTime item =
         ------------
         , T.dark__bg_darkness_below
         ]
-        [ detailsOverlay currentTime item
+        [ detailsOverlay currentTime parentPath item
         , detailsDataContainer item
         , detailsExtra item
         ]
@@ -593,25 +594,24 @@ details currentTime item =
 detailsDataContainer : Item -> Html Msg
 detailsDataContainer item =
     Html.div
-        (case item.kind of
-            Item.Audio ->
-                [ A.id item.id
+        (List.append
+            [ A.id item.id
+            , A.class "drive-item__preview"
+            ]
+            (case item.kind of
+                Item.Audio ->
+                    [ T.mt_4
+                    ]
 
-                --
-                , T.mt_4
-                ]
-
-            _ ->
-                [ A.id item.id
-
-                --
-                , T.absolute
-                , T.flex
-                , T.inset_0
-                , T.items_center
-                , T.justify_center
-                , T.z_10
-                ]
+                _ ->
+                    [ T.absolute
+                    , T.flex
+                    , T.inset_0
+                    , T.items_center
+                    , T.justify_center
+                    , T.z_10
+                    ]
+            )
         )
         [ case item.kind of
             Item.Image ->
@@ -622,18 +622,43 @@ detailsDataContainer item =
         ]
 
 
-detailsOverlay : Time.Posix -> Item -> Html Msg
-detailsOverlay currentTime item =
+detailsOverlay : Time.Posix -> String -> Item -> Html Msg
+detailsOverlay currentTime parentPath item =
+    let
+        defaultAttributes =
+            [ T.absolute
+            , T.bg_gray_900
+            , S.default_transition_duration
+            , S.default_transition_easing
+            , T.flex
+            , T.flex_col
+            , T.inset_0
+            , T.items_center
+            , T.justify_center
+            , T.transition_opacity
+            , T.z_50
+
+            --
+            , T.dark__bg_darkness_below
+            ]
+    in
     Html.div
         (case item.kind of
             Item.Audio ->
                 []
 
+            Item.Video ->
+                []
+
+            Item.Image ->
+                List.append
+                    defaultAttributes
+                    [ T.opacity_0
+                    , T.group_hover__opacity_80
+                    ]
+
             _ ->
-                --  TODO
-                [ T.hidden
-                , T.z_50
-                ]
+                defaultAttributes
         )
         [ item.kind
             |> Item.kindIcon
@@ -670,25 +695,35 @@ detailsOverlay currentTime item =
 
         --
         , Html.div
-            []
-            -- [ Html.div
-            --     [ T.antialiased
-            --     , T.bg_purple
-            --     , T.font_semibold
-            --     , T.px_2
-            --     , T.py_1
-            --     , T.rounded
-            --     , T.text_gray_900
-            --     , T.text_sm
-            --     , T.tracking_wider
-            --     , T.uppercase
-            --     ]
-            --     [ Html.span
-            --         [ T.block, T.pt_px ]
-            --         [ Html.text "Open" ]
-            --     ]
-            -- ]
-            []
+            [ T.mt_5 ]
+            [ Html.a
+                [ item.name
+                    |> String.append "/"
+                    |> String.append parentPath
+                    |> String.append "https://ipfs.runfission.com/ipfs/"
+                    |> A.href
+
+                --
+                , A.target "_blank"
+
+                --
+                , T.antialiased
+                , T.bg_purple
+                , T.font_semibold
+                , T.inline_block
+                , T.px_2
+                , T.py_1
+                , T.rounded
+                , T.text_gray_900
+                , T.text_sm
+                , T.tracking_wider
+                , T.uppercase
+                ]
+                [ Html.span
+                    [ T.block, T.pt_px ]
+                    [ Html.text "Open in new tab" ]
+                ]
+            ]
         ]
 
 

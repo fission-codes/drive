@@ -8,7 +8,7 @@ devDependencies:
   html-minifier-terser: 5.0.2
   postcss: 7.0.26
   postcss-csso: 4.0.0_postcss@7.0.26
-  postcss-elm-tailwind: github.com/icidasset/postcss-elm-tailwind/9960dd3710dd0651019aef755a032549084036ce_postcss@7.0.26
+  postcss-elm-tailwind: github.com/icidasset/postcss-elm-tailwind/8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a_postcss@7.0.26
   snowpack: 1.1.4
   tailwindcss: 1.2.0
   tailwindcss-animations: 1.0.0
@@ -3031,20 +3031,19 @@ packages:
       registry: 'https://registry.npmjs.org/'
       tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/b33d27acc84564a0483ef9d0e895a6613e45c9b2'
     version: 0.2.0
-  github.com/icidasset/postcss-elm-tailwind/9960dd3710dd0651019aef755a032549084036ce_postcss@7.0.26:
+  github.com/icidasset/postcss-elm-tailwind/8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a_postcss@7.0.26:
     dependencies:
       postcss: 7.0.26
     dev: true
     engines:
       node: '>=8.0.0'
-    id: github.com/icidasset/postcss-elm-tailwind/9960dd3710dd0651019aef755a032549084036ce
+    id: github.com/icidasset/postcss-elm-tailwind/8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a
     name: postcss-elm-tailwind
     peerDependencies:
       postcss: ^7.0.18
     resolution:
-      registry: 'https://registry.npmjs.org/'
-      tarball: 'https://codeload.github.com/icidasset/postcss-elm-tailwind/tar.gz/9960dd3710dd0651019aef755a032549084036ce'
-    version: 0.3.0
+      tarball: 'https://codeload.github.com/icidasset/postcss-elm-tailwind/tar.gz/8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a'
+    version: 0.4.0
 specifiers:
   '@fullhuman/postcss-purgecss': ^2.0.6
   autoprefixer: ^9.7.4
@@ -3054,7 +3053,7 @@ specifiers:
   html-minifier-terser: ^5.0.2
   postcss: ^7.0.26
   postcss-csso: ^4.0.0
-  postcss-elm-tailwind: 'icidasset/postcss-elm-tailwind#9960dd3710dd0651019aef755a032549084036ce'
+  postcss-elm-tailwind: 'icidasset/postcss-elm-tailwind#8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a'
   snowpack: ^1.1.4
   tailwindcss: ^1.2.0
   tailwindcss-animations: ^1.0.0

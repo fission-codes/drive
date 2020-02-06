@@ -86,9 +86,13 @@ select : Item -> Root.Manager
 select item model =
     return
         { model | selectedCid = Just item.path }
-        (Ports.renderMedia
-            { id = item.id
-            , name = item.name
-            , path = item.path
-            }
+        (if Item.canRenderKind item.kind then
+            Ports.renderMedia
+                { id = item.id
+                , name = item.name
+                , path = item.path
+                }
+
+         else
+            Cmd.none
         )

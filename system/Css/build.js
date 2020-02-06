@@ -33,7 +33,8 @@ const flow = [
 
   ? purgecss({
     content: [ "./build/**/*.html", "./build/application.js" ],
-    defaultExtractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || []
+    defaultExtractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || [],
+    whitelist: [ "iframe" ]
   })
 
   : elmTailwind({

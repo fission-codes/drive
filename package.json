@@ -12,7 +12,7 @@
     "html-minifier-terser": "^5.0.2",
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
-    "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#9960dd3710dd0651019aef755a032549084036ce",
+    "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a",
     "snowpack": "^1.1.4",
     "tailwindcss": "^1.2.0",
     "tailwindcss-animations": "^1.0.0",

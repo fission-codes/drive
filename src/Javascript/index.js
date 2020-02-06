@@ -104,19 +104,12 @@ function mediaRenderer({ id, name, path }) {
   renderMedia.append(file, container, (err, elem) => {
     if (err) return console.error(err.message)
 
-    // Style iframe content
-    // TODO: Doesn't work
-    if (elem && elem.tagName === "IFRAME") {
-      elem.sandbox += " allow-same-origin"
-
-      const doc = elem.contentDocument
-      const link = document.createElement("link")
-      link.rel = "stylesheet"
-      link.href = "application.css"
-      link.type = "text/css"
-
-      doc.head.appendChild(link)
-      doc.body.className = "text-gray-100 dark:text-gray-500"
+    if (elem.tagName === "IMG") {
+      elem.addEventListener("load", e => {
+        if (e.target.height < 32 || e.target.width < 32) {
+          e.target.className = "p-4"
+        }
+      })
     }
   })
 }
