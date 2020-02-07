@@ -36,7 +36,11 @@ linkClicked urlRequest model =
 
 urlChanged : Url -> Root.Manager
 urlChanged url old =
-    { old | page = Routing.pageFromUrl url, url = url }
+    { old
+        | page = Routing.pageFromUrl url
+        , selectedCid = Nothing
+        , url = url
+    }
         |> Return.singleton
         |> Return.effect_
             (\new ->

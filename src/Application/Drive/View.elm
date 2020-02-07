@@ -47,6 +47,13 @@ view model =
 
 header : Model -> Html Msg
 header model =
+    let
+        segments =
+            Routing.drivePathSegments model.page
+
+        amountOfSegments =
+            List.length segments
+    in
     Html.header
         [ T.bg_gray_600
         , T.break_all
@@ -82,14 +89,8 @@ header model =
             -----------------------------------------
             -- Path
             -----------------------------------------
-            , let
-                segments =
-                    Routing.drivePathSegments model.page
-
-                amountOfSegments =
-                    List.length segments
-              in
-              segments
+            -- Tablet and bigger screens
+            , segments
                 |> List.reverse
                 |> List.indexedMap
                     (\idx ->
@@ -106,10 +107,46 @@ header model =
                 |> List.intersperse pathSeparator
                 |> Html.div
                     [ T.flex_auto
+                    , T.hidden
                     , T.italic
                     , T.leading_snug
                     , T.text_2xl
                     , T.tracking_tight
+
+                    --
+                    , T.md__block
+                    ]
+
+            -- Mobile
+            , segments
+                |> List.append [ "ROOT" ]
+                |> List.reverse
+                |> List.indexedMap
+                    (\idx segment ->
+                        if idx == 0 && amountOfSegments == 0 then
+                            Just <| rootPathPart model segments
+
+                        else if idx == 0 then
+                            Just <| activePathPart segment
+
+                        else if idx == 1 then
+                            Just <| inactivePathPart (amountOfSegments - idx + 1) "…"
+
+                        else
+                            Nothing
+                    )
+                |> List.filterMap identity
+                |> List.reverse
+                |> List.intersperse pathSeparator
+                |> Html.div
+                    [ T.flex_auto
+                    , T.italic
+                    , T.leading_snug
+                    , T.text_2xl
+                    , T.tracking_tight
+
+                    --
+                    , T.md__hidden
                     ]
 
             -----------------------------------------
@@ -766,12 +803,17 @@ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
 
 detailsExtra : Item -> Html Msg
 detailsExtra item =
-    case item.kind of
-        Item.Image ->
-            Common.loadingAnimation
+    Html.div
+        [ T.relative
+        , T.z_0
+        ]
+        [ case item.kind of
+            Item.Image ->
+                Common.loadingAnimation
 
-        _ ->
-            Html.nothing
+            _ ->
+                Html.nothing
+        ]
 
 
 detailsActions : Bool -> Html Msg

@@ -38,7 +38,9 @@ view m =
             [ left
 
             --
-            , Html.div [ T.flex_auto ] []
+            , Html.div
+                [ T.flex_auto, T.hidden, T.md__block ]
+                []
 
             --
             , right m
@@ -53,7 +55,12 @@ view m =
 left : Html Msg
 left =
     Html.div
-        [ T.flex, T.items_center ]
+        [ T.hidden
+        , T.items_center
+
+        --
+        , T.md__flex
+        ]
         [ -----------------------------------------
           -- Logo
           -----------------------------------------
@@ -120,12 +127,11 @@ action attributes icon nodes =
             [ T.inline_flex
             , T.items_center
             , T.leading_tight
-            , T.ml_4
+            , T.ml_8
             , T.tracking_tight
 
             --
-            , T.sm__ml_5
-            , T.md__ml_8
+            , T.first__ml_0
             ]
         )
         [ icon

@@ -98,7 +98,8 @@ export default {
   variants: {
 
     borderWidth: [ "first", "last" ],
-    opacity: [ "group-hover" ],
+    margin: [ "first", "last", "responsive" ],
+    opacity: [ "group-hover", "responsive" ],
     pointerEvents: [ "group-hover" ],
 
   },

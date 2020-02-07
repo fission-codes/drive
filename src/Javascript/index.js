@@ -78,7 +78,10 @@ function mediaRenderer({ id, name, path }) {
   // Get container node
   const container = document.getElementById(containerId)
   if (!container) return
-  container.innerHTML = ""
+
+  container.childNodes.forEach(c => {
+    container.removeChild(c)
+  })
 
   // Initialize stream
   const file = {
@@ -111,7 +114,19 @@ function mediaRenderer({ id, name, path }) {
         }
       })
     }
+
+    // For some weird reason Chrome has a rendering issue here
+    forceRedraw(container)
   })
+}
+
+
+function forceRedraw(node) {
+  node.parentNode.style["min-height"] = node.parentNode.offsetHeight + "px"
+  node.style.display = "none"
+  node.offsetHeight
+  node.style.display = ""
+  setTimeout(_ => node.parentNode.style["min-height"] = "", 0)
 }
 
 
