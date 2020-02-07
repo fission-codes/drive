@@ -21,7 +21,8 @@
             "elm-community/maybe-extra": "5.1.0",
             "elm-community/result-extra": "2.3.0",
             "feathericons/elm-feather": "1.4.0",
-            "gingko/time-distance": "2.2.0"
+            "gingko/time-distance": "2.2.0",
+            "myrho/elm-round": "1.0.4"
         },
         "indirect": {
             "elm/svg": "1.0.1",

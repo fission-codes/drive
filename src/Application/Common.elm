@@ -1,10 +1,32 @@
 module Common exposing (..)
 
+import Round
+import String.Ext as String
+
+
+
+-- 🛠
+
 
 sizeInWords : Int -> String
 sizeInWords sizeInBytes =
-    if toFloat sizeInBytes / 1000000 > 2 then
-        String.fromInt (sizeInBytes // 1000000) ++ "MB"
+    let
+        size =
+            toFloat sizeInBytes
+    in
+    if size / 1000000000 > 1.05 then
+        humanReadableFloat (size / 1000000000) ++ " GB"
+
+    else if size / 1000000 > 1.05 then
+        humanReadableFloat (size / 1000000) ++ " MB"
+
+    else if size / 1000 > 1.05 then
+        humanReadableFloat (size / 1000) ++ " KB"
 
     else
-        String.fromInt (sizeInBytes // 1000) ++ "KB"
+        humanReadableFloat size ++ " B"
+
+
+humanReadableFloat : Float -> String
+humanReadableFloat =
+    Round.round 2 >> String.chopEnd ".00"
