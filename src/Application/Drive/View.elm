@@ -376,17 +376,13 @@ contentAvailable model directoryList =
                     , T.flex_auto
                     , T.overflow_x_hidden
                     , T.overflow_y_scroll
-                    , T.pr_12
                     , T.w_1over2
-
-                    --
-                    , T.lg__pr_24
                     ]
                     (if model.largePreview then
                         [ T.hidden ]
 
                      else if Maybe.isJust model.selectedCid then
-                        [ T.hidden, T.md__block ]
+                        [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
 
                      else
                         []
