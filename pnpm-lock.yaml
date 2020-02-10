@@ -1,5 +1,5 @@
 dependencies:
-  fission-kit: github.com/fission-suite/kit/b33d27acc84564a0483ef9d0e895a6613e45c9b2
+  fission-kit: github.com/fission-suite/kit/2f878513ea7524ab977a957d03cfcbc91a4cf9fa
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.0.6
   autoprefixer: 9.7.4
@@ -13,6 +13,7 @@ devDependencies:
   tailwindcss: 1.2.0
   tailwindcss-animations: 1.0.0
   terser-folder: 2.0.0
+  tubo: 1.1.3
 lockfileVersion: 5.1
 packages:
   /@babel/code-frame/7.8.3:
@@ -2924,6 +2925,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-WIeWa7WCpFA6QetST301ARgVphM=
+  /tubo/1.1.3:
+    dev: true
+    resolution:
+      integrity: sha512-WwLSQQKZmvRg+Za+lXBBZfYv4IgIh0wbBBMsW+cEaob3eQCbhmNO53+5x7y1C1JuJzb+2of9GNpLHSdBC/EJTA==
   /unicode-canonical-property-names-ecmascript/1.0.4:
     dev: true
     engines:
@@ -3024,12 +3029,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-H/V41UNZQPkUMIT5h5hiwg4QKIY1RPvoBV4XcjUbRM8Bk2oKqqyZ0DIEbTFZB0XjbtSPG8SAa/0DxCQmiRgzKg==
-  github.com/fission-suite/kit/b33d27acc84564a0483ef9d0e895a6613e45c9b2:
+  github.com/fission-suite/kit/2f878513ea7524ab977a957d03cfcbc91a4cf9fa:
     dev: false
     name: fission-kit
     resolution:
       registry: 'https://registry.npmjs.org/'
-      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/b33d27acc84564a0483ef9d0e895a6613e45c9b2'
+      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/2f878513ea7524ab977a957d03cfcbc91a4cf9fa'
     version: 0.2.0
   github.com/icidasset/postcss-elm-tailwind/8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a_postcss@7.0.26:
     dependencies:
@@ -3042,6 +3047,7 @@ packages:
     peerDependencies:
       postcss: ^7.0.18
     resolution:
+      registry: 'https://registry.npmjs.org/'
       tarball: 'https://codeload.github.com/icidasset/postcss-elm-tailwind/tar.gz/8037636d034cbdd9dd43c8e8d45c24c8a6b23b0a'
     version: 0.4.0
 specifiers:
@@ -3049,7 +3055,7 @@ specifiers:
   autoprefixer: ^9.7.4
   elm-git-install: ^0.1.2
   elm-live: ^4.0.1
-  fission-kit: 'fission-suite/kit#b33d27acc84564a0483ef9d0e895a6613e45c9b2'
+  fission-kit: 'fission-suite/kit#2f878513ea7524ab977a957d03cfcbc91a4cf9fa'
   html-minifier-terser: ^5.0.2
   postcss: ^7.0.26
   postcss-csso: ^4.0.0
@@ -3058,3 +3064,4 @@ specifiers:
   tailwindcss: ^1.2.0
   tailwindcss-animations: ^1.0.0
   terser-folder: ^2.0.0
+  tubo: ^1.1.3

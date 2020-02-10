@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "fission-kit": "fission-suite/kit#b33d27acc84564a0483ef9d0e895a6613e45c9b2"
+    "fission-kit": "fission-suite/kit#2f878513ea7524ab977a957d03cfcbc91a4cf9fa"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.0.6",
@@ -16,7 +16,8 @@
     "snowpack": "^1.1.4",
     "tailwindcss": "^1.2.0",
     "tailwindcss-animations": "^1.0.0",
-    "terser-folder": "^2.0.0"
+    "terser-folder": "^2.0.0",
+    "tubo": "^1.1.3"
   },
   "scripts": {
     "elm-dev": "elm-live",

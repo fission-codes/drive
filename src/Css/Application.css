@@ -6,14 +6,14 @@
 
 
 body {
-  @apply font-body min-h-screen text-gray_100;
+  @apply font-body min-h-screen text-gray-100;
   text-rendering: optimizeLegibility;
 }
 
 
 @screen dark {
   body {
-    @apply bg-darkness text-gray_500;
+    @apply bg-darkness text-gray-500;
   }
 }
 
@@ -33,7 +33,7 @@ body {
    ----- */
 
 .drive-item__preview img {
-  @apply bg-gray_900;
+  @apply bg-gray-900;
 }
 
 
@@ -50,14 +50,14 @@ body {
 
 input::placeholder,
 textarea::placeholder {
-  @apply text-gray_400 opacity-75;
+  @apply text-gray-400 opacity-75;
 }
 
 
 @screen dark {
   input::placeholder,
   textarea::placeholder {
-    @apply text-gray_300 opacity-75;
+    @apply text-gray-300 opacity-75;
   }
 }
 

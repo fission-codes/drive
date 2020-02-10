@@ -1,6 +1,7 @@
 import animations from "tailwindcss-animations"
 import defaultTheme from "tailwindcss/defaultTheme.js"
 import plugin from "tailwindcss/plugin.js"
+import tubo from "tubo"
 import * as kit from "fission-kit"
 
 
@@ -26,11 +27,14 @@ export default {
     // ------
 
     colors: {
-      ...kit.colors,
-
-      "darkness-below": "hsl(232.7, 20.3%, 11%)",
-      "darkness": "hsl(232.7, 20.3%, 12%)",
-      "darkness-above": "hsl(232.7, 20.3%, 18%)",
+      ...tubo(
+        kit.colors,
+        Object.entries,
+        entries => entries.map(
+          ([k, v]) => [ k.replace(/_/g, "-"), v ]
+        ),
+        Object.fromEntries
+      ),
 
       "current-color": "currentColor",
       "inherit": "inherit",
