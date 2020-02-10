@@ -821,8 +821,13 @@ detailsActions largePreview =
         , T.pr_4
         , T.pt_4
         , T.right_0
+        , T.text_gray_200
         , T.top_0
         , T.z_30
+
+        -- Dark mode
+        ------------
+        , T.dark__text_gray_400
         ]
         [ (if largePreview then
             FeatherIcons.minimize2
@@ -842,7 +847,7 @@ detailsActions largePreview =
                 , T.ml_2
 
                 --
-                , T.lg__block
+                , T.md__block
                 ]
 
         --
