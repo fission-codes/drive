@@ -890,9 +890,13 @@ detailsActions largePreview =
         , Html.span
             [ T.border_gray_500
             , T.border_l
+            , T.hidden
             , T.opacity_50
             , T.self_stretch
             , T.w_0
+
+            --
+            , T.md__block
 
             -- Dark mode
             ------------
