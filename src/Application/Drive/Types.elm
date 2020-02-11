@@ -8,7 +8,8 @@ import Item exposing (Item)
 
 
 type Msg
-    = DigDeeper { directoryName : String }
+    = CopyLink Item
+    | DigDeeper { directoryName : String }
     | GoUp { floor : Int }
     | RemoveSelection
     | Select Item

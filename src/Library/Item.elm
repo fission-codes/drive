@@ -4,6 +4,7 @@ import FeatherIcons
 import Ipfs
 import List.Extra as List
 import Murmur3
+import String.Ext as String
 import Time
 
 
@@ -171,6 +172,14 @@ nameProperties name =
     { base = base
     , extension = extension
     }
+
+
+publicUrl : String -> Item -> String
+publicUrl directoryPath item =
+    item.name
+        |> String.append "/"
+        |> String.append (String.chop "/" directoryPath)
+        |> String.append "https://ipfs.runfission.com/ipfs/"
 
 
 

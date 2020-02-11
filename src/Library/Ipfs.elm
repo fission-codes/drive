@@ -46,7 +46,3 @@ listItemDecoder =
 convertTime : Int -> Time.Posix
 convertTime int =
     Time.millisToPosix (int // 1000)
-
-
-
--- 🛠

@@ -341,19 +341,6 @@ empty =
 
 contentAvailable : Model -> List Item -> Html Msg
 contentAvailable model directoryList =
-    let
-        parentPath =
-            model.page
-                |> Routing.drivePathSegments
-                |> (case model.rootCid of
-                        Just rootCid ->
-                            (::) rootCid
-
-                        Nothing ->
-                            identity
-                   )
-                |> String.join "/"
-    in
     Html.div
         [ T.flex
         , T.flex_auto
@@ -394,7 +381,14 @@ contentAvailable model directoryList =
             --
             , model.selectedCid
                 |> Maybe.andThen (\cid -> List.find (.path >> (==) cid) directoryList)
-                |> Maybe.map (Html.Lazy.lazy5 details model.currentTime parentPath model.largePreview model.showPreviewOverlay)
+                |> Maybe.map
+                    (Html.Lazy.lazy5
+                        details
+                        model.currentTime
+                        (Common.directoryPath model)
+                        model.largePreview
+                        model.showPreviewOverlay
+                    )
                 |> Maybe.withDefault nothing
             ]
         ]
@@ -680,7 +674,6 @@ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
     let
         defaultAttributes =
             [ T.absolute
-            , T.bg_gray_900
             , S.default_transition_duration
             , S.default_transition_easing
             , T.flex
@@ -691,9 +684,6 @@ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
             , T.px_4
             , T.transition_opacity
             , T.z_20
-
-            --
-            , T.dark__bg_darkness_below
             ]
     in
     Html.div
@@ -713,7 +703,7 @@ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
                      else
                         [ T.opacity_0
                         , T.pointer_events_none
-                        , T.group_hover__opacity_80
+                        , T.group_hover__opacity_100
                         , T.group_hover__pointer_events_auto
                         ]
                     )
@@ -721,80 +711,119 @@ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
             _ ->
                 defaultAttributes
         )
-        [ item.kind
-            |> Item.kindIcon
-            |> FeatherIcons.withSize 128
-            |> FeatherIcons.withStrokeWidth 0.5
-            |> FeatherIcons.toHtml []
-            |> List.singleton
-            |> Html.div
-                [ T.flex
-                , T.flex_col
-                , T.items_center
-                ]
+        [ Html.div
+            [ T.relative
+            , T.z_10
+            ]
+            (detailsOverlayContents currentTime parentPath item)
 
         --
         , Html.div
-            [ T.font_semibold
-            , T.mt_1
-            , T.text_center
-            , T.tracking_tight
-            , T.truncate
-            ]
-            [ Html.text item.name ]
+            [ T.absolute
+            , T.bg_gray_900
+            , T.inset_0
+            , T.z_0
 
-        --
-        , Html.div
-            [ T.mt_px
-            , T.text_center
-            , T.text_gray_300
-            , T.text_sm
-            ]
-            [ -- TODO
-              item.posixTime
-                |> Maybe.map (Time.Distance.inWords currentTime)
-                |> Maybe.unwrap (Html.text <| Common.sizeInWords item.size) Html.text
-            ]
+            --
+            , case item.kind of
+                Item.Image ->
+                    T.opacity_80
 
-        --
-        , Html.div
-            [ T.flex
-            , T.items_center
-            , T.justify_center
-            , T.mt_5
-            ]
-            [ Html.a
-                [ item.name
-                    |> String.append "/"
-                    |> String.append parentPath
-                    |> String.append "https://ipfs.runfission.com/ipfs/"
-                    |> A.href
+                _ ->
+                    T.opacity_100
 
-                --
-                , A.target "_blank"
-
-                --
-                , T.antialiased
-                , T.bg_purple
-                , T.font_semibold
-                , T.inline_block
-                , T.px_2
-                , T.py_1
-                , T.rounded
-                , T.text_gray_900
-                , T.text_sm
-                , T.tracking_wider
-                , T.uppercase
-                ]
-                [ Html.span
-                    [ T.block, T.pt_px ]
-                    [ Html.text "Open in new tab" ]
-                ]
+            -- Dark mode
+            ------------
+            , T.dark__bg_darkness_below
             ]
+            []
 
         --
         , detailsActions largePreview
         ]
+
+
+detailsOverlayContents : Time.Posix -> String -> Item -> List (Html Msg)
+detailsOverlayContents currentTime parentPath item =
+    [ item.kind
+        |> Item.kindIcon
+        |> FeatherIcons.withSize 128
+        |> FeatherIcons.withStrokeWidth 0.5
+        |> FeatherIcons.toHtml []
+        |> List.singleton
+        |> Html.div
+            [ T.flex
+            , T.flex_col
+            , T.items_center
+            ]
+
+    --
+    , Html.div
+        [ T.font_semibold
+        , T.mt_1
+        , T.text_center
+        , T.tracking_tight
+        , T.truncate
+        ]
+        [ Html.text item.name ]
+
+    --
+    , Html.div
+        [ T.mt_px
+        , T.text_center
+        , T.text_gray_300
+        , T.text_sm
+        ]
+        [ -- TODO
+          item.posixTime
+            |> Maybe.map (Time.Distance.inWords currentTime)
+            |> Maybe.unwrap (Html.text <| Common.sizeInWords item.size) Html.text
+        ]
+
+    --
+    , Html.div
+        [ T.flex
+        , T.items_center
+        , T.justify_center
+        , T.mt_5
+        ]
+        [ Html.a
+            [ A.href (Item.publicUrl parentPath item)
+            , A.target "_blank"
+
+            --
+            , T.antialiased
+            , T.bg_purple
+            , T.font_semibold
+            , T.inline_block
+            , T.px_2
+            , T.py_1
+            , T.rounded
+            , T.text_gray_900
+            , T.text_sm
+            , T.tracking_wider
+            , T.uppercase
+            ]
+            [ Html.span
+                [ T.block, T.pt_px ]
+                [ Html.text "Open in new tab" ]
+            ]
+
+        --
+        , Html.button
+            [ E.onClick (DriveMsg <| Drive.CopyLink item)
+
+            --
+            , T.appearance_none
+            , T.ml_3
+            , T.text_purple
+            ]
+            [ FeatherIcons.share
+                |> FeatherIcons.withSize 18
+                |> FeatherIcons.toHtml []
+            ]
+        ]
+    ]
 
 
 detailsExtra : Item -> Html Msg
@@ -816,18 +845,22 @@ detailsActions : Bool -> Html Msg
 detailsActions largePreview =
     Html.div
         [ T.absolute
+        , T.bg_gray_400
+        , T.border_b
+        , T.border_t_2
+        , T.border_transparent
         , T.flex
         , T.items_center
-        , T.pr_4
-        , T.pt_4
         , T.right_0
-        , T.text_gray_200
+        , T.rounded_bl
+        , T.text_gray_900
         , T.top_0
         , T.z_30
 
         -- Dark mode
         ------------
-        , T.dark__text_gray_400
+        , T.dark__bg_darkness_above
+        , T.dark__text_gray_300
         ]
         [ (if largePreview then
             FeatherIcons.minimize2
@@ -836,31 +869,51 @@ detailsActions largePreview =
             FeatherIcons.maximize2
           )
             |> FeatherIcons.withSize 16
-            |> FeatherIcons.toHtml []
+            |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
             |> List.singleton
             |> Html.div
                 [ E.onClick (DriveMsg Drive.ToggleLargePreview)
 
                 --
+                , T.box_content
                 , T.cursor_pointer
                 , T.hidden
-                , T.ml_2
+                , T.px_3
+                , T.py_2
+                , T.w_6
 
                 --
                 , T.md__block
                 ]
 
         --
+        , Html.span
+            [ T.border_gray_500
+            , T.border_l
+            , T.opacity_50
+            , T.self_stretch
+            , T.w_0
+
+            -- Dark mode
+            ------------
+            , T.dark__border_gray_200
+            ]
+            []
+
+        --
         , FeatherIcons.x
             |> FeatherIcons.withSize 20
-            |> FeatherIcons.toHtml []
+            |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
             |> List.singleton
             |> Html.div
                 [ E.onClick (DriveMsg Drive.RemoveSelection)
 
                 --
+                , T.box_content
                 , T.cursor_pointer
-                , T.ml_2
+                , T.px_3
+                , T.py_2
+                , T.w_6
                 ]
         ]
 

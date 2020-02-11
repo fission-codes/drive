@@ -1,11 +1,27 @@
 module Common exposing (..)
 
 import Round
+import Routing
 import String.Ext as String
+import Types exposing (Model)
 
 
 
 -- 🛠
+
+
+directoryPath : Model -> String
+directoryPath model =
+    model.page
+        |> Routing.drivePathSegments
+        |> (case model.rootCid of
+                Just rootCid ->
+                    (::) rootCid
+
+                Nothing ->
+                    identity
+           )
+        |> String.join "/"
 
 
 sizeInWords : Int -> String

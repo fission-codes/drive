@@ -1,6 +1,7 @@
 module Drive.State exposing (..)
 
 import Browser.Navigation as Navigation
+import Common
 import Drive.Types as Drive exposing (..)
 import Item exposing (Item)
 import Ports
@@ -18,6 +19,9 @@ import Url
 update : Drive.Msg -> Root.Manager
 update msg =
     case msg of
+        CopyLink a ->
+            copyLink a
+
         DigDeeper a ->
             digDeeper a
 
@@ -39,6 +43,15 @@ update msg =
 
 
 -- 🛠
+
+
+copyLink : Item -> Root.Manager
+copyLink item model =
+    item
+        |> Item.publicUrl (Common.directoryPath model)
+        |> Ports.copyToClipboard
+        |> Return.return model
+        |> Return.command (Ports.showNotification "Copied shareable link to clipboard.")
 
 
 digDeeper : { directoryName : String } -> Root.Manager
@@ -88,7 +101,8 @@ goUp { floor } model =
         |> Routing.adjustUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
-        |> Return.return { model | selectedCid = Nothing }
+        |> Return.return model
+        |> Return.andThen removeSelection
 
 
 removeSelection : Root.Manager

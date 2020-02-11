@@ -37,3 +37,10 @@ chopStart needle str =
 
     else
         str
+
+
+{-| Chop something from the beginning and end until it's not there anymore.
+-}
+chop : String -> String -> String
+chop needle =
+    chopStart needle >> chopEnd needle
