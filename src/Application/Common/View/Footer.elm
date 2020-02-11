@@ -33,6 +33,7 @@ view m =
             , T.items_center
             , T.mx_auto
             , T.mt_px
+            , T.overflow_hidden
             , T.py_8
             ]
             [ left
@@ -96,7 +97,13 @@ right model =
     Html.div
         [ T.flex
         , T.items_center
+        , T.origin_left
+        , T.scale_90
         , T.text_gray_300
+        , T.transform
+
+        --
+        , T.sm__scale_100
         ]
         [ if model.ipfs == Ipfs.Ready && Maybe.isJust model.rootCid then
             action
@@ -111,11 +118,20 @@ right model =
         --
         , action
             Link
+            [ A.href "https://fission.codes/support"
+            , A.target "_blank"
+            ]
+            FeatherIcons.lifeBuoy
+            [ Html.text "Support" ]
+
+        --
+        , action
+            Link
             [ A.href "https://guide.fission.codes/drive"
             , A.target "_blank"
             ]
-            FeatherIcons.helpCircle
-            [ Html.text "Help" ]
+            FeatherIcons.book
+            [ Html.text "Guide" ]
         ]
 
 
@@ -155,6 +171,6 @@ action a attributes icon nodes =
 
         --
         , Html.span
-            [ T.ml_2 ]
+            [ T.ml_2, T.truncate ]
             nodes
         ]
