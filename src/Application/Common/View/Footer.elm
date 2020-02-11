@@ -100,6 +100,7 @@ right model =
         ]
         [ if model.ipfs == Ipfs.Ready && Maybe.isJust model.rootCid then
             action
+                Button
                 [ E.onClick (ExploreMsg Explore.Reset), T.cursor_pointer ]
                 FeatherIcons.hash
                 [ Html.text "Change CID" ]
@@ -109,7 +110,10 @@ right model =
 
         --
         , action
-            [ T.cursor_not_allowed ]
+            Link
+            [ A.href "https://guide.fission.codes/drive"
+            , A.target "_blank"
+            ]
             FeatherIcons.helpCircle
             [ Html.text "Help" ]
         ]
@@ -119,9 +123,20 @@ right model =
 -- 🛠
 
 
-action : List (Html.Attribute Msg) -> FeatherIcons.Icon -> List (Html Msg) -> Html Msg
-action attributes icon nodes =
-    Html.span
+type Action
+    = Button
+    | Link
+
+
+action : Action -> List (Html.Attribute Msg) -> FeatherIcons.Icon -> List (Html Msg) -> Html Msg
+action a attributes icon nodes =
+    (case a of
+        Button ->
+            Html.span
+
+        Link ->
+            Html.a
+    )
         (List.append
             attributes
             [ T.inline_flex

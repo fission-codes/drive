@@ -152,53 +152,54 @@ header model =
             -----------------------------------------
             -- Actions
             -----------------------------------------
-            , Html.div
-                [ T.hidden
-                , T.items_center
-                , T.ml_4
-
-                --
-                , T.lg__flex
-                ]
-                [ Html.div
-                    [ T.border_2
-                    , T.border_gray_500
-                    , T.cursor_not_allowed
-                    , T.pl_8
-                    , T.pr_3
-                    , T.py_1
-                    , T.relative
-                    , T.rounded_full
-                    , T.text_gray_500
-                    , T.w_48
-
-                    -- Dark mode
-                    ------------
-                    , T.dark__border_gray_200
-                    , T.dark__text_gray_200
-                    ]
-                    [ FeatherIcons.search
-                        |> FeatherIcons.withSize 20
-                        |> FeatherIcons.toHtml []
-                        |> List.singleton
-                        |> Html.span
-                            [ T.absolute
-                            , T.left_0
-                            , T.ml_2
-                            , T.neg_translate_y_1over2
-                            , T.text_gray_500
-                            , T.top_1over2
-                            , T.transform
-
-                            -- Dark mode
-                            ------------
-                            , T.dark__text_gray_200
-                            ]
-
-                    --
-                    , Html.text "Search"
-                    ]
-                ]
+            -- , Html.div
+            --     [ T.hidden
+            --     , T.items_center
+            --     , T.ml_4
+            --
+            --     --
+            --     , T.lg__flex
+            --     ]
+            --     [ Html.div
+            --         [ T.border_2
+            --         , T.border_gray_500
+            --         , T.cursor_not_allowed
+            --         , T.pl_8
+            --         , T.pr_3
+            --         , T.py_1
+            --         , T.relative
+            --         , T.rounded_full
+            --         , T.text_gray_500
+            --         , T.w_48
+            --
+            --         -- Dark mode
+            --         ------------
+            --         , T.dark__border_gray_200
+            --         , T.dark__text_gray_200
+            --         ]
+            --         [ FeatherIcons.search
+            --             |> FeatherIcons.withSize 20
+            --             |> FeatherIcons.toHtml []
+            --             |> List.singleton
+            --             |> Html.span
+            --                 [ T.absolute
+            --                 , T.left_0
+            --                 , T.ml_2
+            --                 , T.neg_translate_y_1over2
+            --                 , T.text_gray_500
+            --                 , T.top_1over2
+            --                 , T.transform
+            --
+            --                 -- Dark mode
+            --                 ------------
+            --                 , T.dark__text_gray_200
+            --                 ]
+            --
+            --         --
+            --         , Html.text "Search"
+            --         ]
+            --     ]
+            , Html.nothing
             ]
         ]
 
