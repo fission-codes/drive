@@ -71,7 +71,7 @@ header model =
             , T.items_center
             , T.mb_px
             , T.mx_auto
-            , T.pb_1
+            , T.pb_px
             ]
             [ -----------------------------------------
               -- Icon
