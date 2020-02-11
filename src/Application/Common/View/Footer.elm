@@ -98,7 +98,7 @@ right model =
         [ T.flex
         , T.items_center
         , T.origin_left
-        , T.scale_90
+        , T.scale_95
         , T.text_gray_300
         , T.transform
 
