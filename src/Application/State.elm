@@ -1,6 +1,7 @@
 module State exposing (init, subscriptions, update)
 
 import Browser.Navigation as Navigation
+import Common exposing (defaultCid)
 import Drive.State as Drive
 import Explore.State as Explore
 import Ipfs
@@ -27,7 +28,7 @@ init flags url navKey =
       -----------------------------------------
       { currentTime = Time.millisToPosix 0
       , directoryList = Ok []
-      , exploreInput = flags.rootCid
+      , exploreInput = Just (Maybe.withDefault defaultCid flags.rootCid)
       , ipfs = Ipfs.Connecting
       , largePreview = False
       , navKey = navKey

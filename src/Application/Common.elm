@@ -10,6 +10,11 @@ import Types exposing (Model)
 -- 🛠
 
 
+defaultCid : String
+defaultCid =
+    "QmbCLefkFuXbhHBWSW7PWmJzBL7W7e8zm41HK4DGJ1RDwV"
+
+
 directoryPath : Model -> String
 directoryPath model =
     model.page

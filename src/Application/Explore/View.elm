@@ -1,5 +1,6 @@
 module Explore.View exposing (view)
 
+import Common
 import Common.View as Common
 import Common.View.Footer as Footer
 import Explore.Types as Explore
@@ -65,7 +66,7 @@ inputScreen m =
             , T.dark__text_gray_400
             ]
             [ Html.text """
-                This is a Preview release which will evolve into your personal Fission Drive. Enter any public IPFS hash or use the example hash. 
+                This is a Preview release which will evolve into your personal Fission Drive. Enter any public IPFS hash or use the example hash.
               """
             ]
 
@@ -77,7 +78,7 @@ inputScreen m =
             , T.w_full
             ]
             [ Html.input
-                [ A.placeholder "QmbCLefkFuXbhHBWSW7PWmJzBL7W7e8zm41HK4DGJ1RDwV"
+                [ A.placeholder Common.defaultCid
                 , A.value (Maybe.withDefault "" m.exploreInput)
                 , E.onInput (ExploreMsg << Explore.GotInput)
 
