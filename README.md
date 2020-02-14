@@ -14,11 +14,14 @@ The Drive application that lives on your `fission.name` domain.
 # 1. Install programming languages
 #    (or install manually, see .tool-versions)
 #    (https://asdf-vm.com)
+# Install asdf https://asdf-vm.com/#/core-manage-asdf-vm
+# `asdf plugin-add elm`
+# `asdf plugin-add nodejs` and `bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring`
 asdf install
 
 # 2. Install https://github.com/casey/just
-# 3. Install https://github.com/watchexec/watchexec
-# 4. Install https://github.com/pnpm/pnpm
+# 3. Install https://github.com/watchexec/watchexec -- `brew install watchexec` or download from Github releases tab
+# 4. Install https://github.com/pnpm/pnpm -- if you already have npm installed, `npm add -g pnpm`
 
 # 5. Install dependencies
 just install-deps
