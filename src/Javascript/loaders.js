@@ -1,3 +1,9 @@
+/*
+
+(づ￣ ³￣)づ
+
+*/
+
 function addLoaders(node) {
   const a = document.createElement("img")
   a.setAttribute("src", "images/loader-dark.svg")

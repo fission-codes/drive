@@ -9,9 +9,11 @@
 
 */
 
-import * as ipfs from  "./ipfs.js"
 // TODO: import "./web_modules/it-to-stream.js"
 import "./web_modules/render-media.js"
+
+import "./analytics.js"
+import * as ipfs from "./ipfs.js"
 
 
 const queryParams =
