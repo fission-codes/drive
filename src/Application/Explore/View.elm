@@ -65,7 +65,7 @@ inputScreen m =
             , T.dark__text_gray_400
             ]
             [ Html.text """
-                This is a prototype which'll later evolve into your personal Fission Drive. For now though, you can use it to browse through IPFS content. Put an IPFS Hash below and explore.
+                This is a Preview release which will evolve into your personal Fission Drive. Enter any public IPFS hash or use the example hash. 
               """
             ]
 
@@ -77,7 +77,7 @@ inputScreen m =
             , T.w_full
             ]
             [ Html.input
-                [ A.placeholder "QmPx36eeZypeZvfHgHo1H59udrhuJhMksg8PBvKn3B7JCA"
+                [ A.placeholder "QmbCLefkFuXbhHBWSW7PWmJzBL7W7e8zm41HK4DGJ1RDwV"
                 , A.value (Maybe.withDefault "" m.exploreInput)
                 , E.onInput (ExploreMsg << Explore.GotInput)
 
