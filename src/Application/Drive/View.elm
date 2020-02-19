@@ -323,12 +323,17 @@ empty =
         , T.justify_center
         , T.leading_snug
         , T.text_center
+        , T.text_gray_300
+
+        -- Dark mode
+        ------------
+        , T.dark__text_gray_400
         ]
         [ FeatherIcons.folder
             |> FeatherIcons.withSize 88
             |> FeatherIcons.toHtml []
             |> List.singleton
-            |> Html.div [ T.opacity_50 ]
+            |> Html.div [ T.opacity_30 ]
 
         --
         , Html.div
