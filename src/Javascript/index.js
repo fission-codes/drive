@@ -9,7 +9,6 @@
 
 */
 
-// TODO: import "./web_modules/it-to-stream.js"
 import "./web_modules/render-media.js"
 
 import "./analytics.js"
@@ -180,4 +179,5 @@ function forceRedraw(node) {
 
 function reportIpfsError(err) {
   app.ports.ipfsGotError.send(err.message || err)
+  console.error(err)
 }
