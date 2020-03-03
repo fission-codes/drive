@@ -72,7 +72,7 @@ environment := "dev"
 	# yarn run snowpack
 	cp ../get-ipfs/dist/get-ipfs.es5.js web_modules/get-ipfs.js
 	mkdir -p web_modules
-	curl https://unpkg.com/ipfs@0.41.1/dist/index.js -o web_modules/ipfs.js
+	curl https://unpkg.com/ipfs@0.41.2/dist/index.js -o web_modules/ipfs.js
 	curl https://unpkg.com/multiaddr@7.3.1/dist/index.js -o web_modules/multiaddr.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
 	curl https://wzrd.in/debug-standalone/render-media@3.4.0 -o web_modules/render-media.js
