@@ -39,7 +39,7 @@ environment := "dev"
 		--file-ext html \
 		\
 		--collapse-whitespace --remove-comments --remove-optional-tags \
-		--remove-redundant-attributes --remove-script-type-attributes \
+		--remove-redundant-attributes \
 		--remove-tag-whitespace --use-short-doctype \
 		--minify-css true --minify-js true
 
@@ -66,7 +66,7 @@ environment := "dev"
 @elm-dev:
 	# Uses https://github.com/wking-io/elm-live
 	# NOTE: Uses hot-module reloading
-	yarn run elm-dev -- {{src_dir}}/Application/Main.elm \
+	pnpm run elm-dev -- {{src_dir}}/Application/Main.elm \
 		--dir={{build_dir}} \
 		--path-to-elm=`which elm` \
 		--pushstate \
@@ -75,8 +75,8 @@ environment := "dev"
 
 
 @install-deps: (_report "Installing required dependencies")
-	yarn install
-	yarn run snowpack
+	pnpm install
+	pnpm run snowpack
 	mkdir -p web_modules
 	curl https://unpkg.com/ipfs@0.41.2/dist/index.js -o web_modules/ipfs.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js

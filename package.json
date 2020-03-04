@@ -10,7 +10,7 @@
     "autoprefixer": "^9.7.4",
     "elm-git-install": "^0.1.2",
     "elm-live": "^4.0.1",
-    "html-minifier-terser": "^5.0.2",
+    "html-minifier-terser": "^5.0.4",
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
     "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#c2997991aa9b74e2fd886654ef6cb75a3efdbfe6",

@@ -23,8 +23,8 @@ asdf install
 #    `brew install just`
 # 3. Install https://github.com/watchexec/watchexec
 #    `brew install watchexec`
-# 4. Install https://yarnpkg.com
-#    `brew install yarn`
+# 4. Install https://pnpm.js.org/
+#    `brew install pnpm`
 
 # 5. Install dependencies
 just install-deps
