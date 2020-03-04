@@ -24,10 +24,10 @@ environment := "dev"
 	just environment=production build css-small
 
 	echo "⚙️  Minifying Javascript Files"
-	{{node_bin}}/terser-folder \
+	{{node_bin}}/terser-dir \
 		{{build_dir}} \
 		--each --extension .js \
-		--pattern "**/*.js, !**/*.min.js" \
+		--patterns "**/*.js, !**/*.min.js" \
 		--pseparator ", " \
 		--output {{build_dir}} \
 		-- --compress --mangle
@@ -43,7 +43,14 @@ environment := "dev"
 		--remove-tag-whitespace --use-short-doctype \
 		--minify-css true --minify-js true
 
-	# {{node_bin}}/snowpack --optimize --nomodule
+	echo "⚙️  Creating a nomodule build"
+	{{node_bin}}/snowpack \
+		--dest {{build_dir}}/web_modules \
+		--optimize \
+		--nomodule {{src_dir}}/Javascript/index.js \
+		--nomodule-output nomodule.min.js
+
+	rm {{build_dir}}/web_modules/*.map
 
 
 @clean:
@@ -59,7 +66,7 @@ environment := "dev"
 @elm-dev:
 	# Uses https://github.com/wking-io/elm-live
 	# NOTE: Uses hot-module reloading
-	pnpm run elm-dev -- {{src_dir}}/Application/Main.elm \
+	yarn run elm-dev -- {{src_dir}}/Application/Main.elm \
 		--dir={{build_dir}} \
 		--path-to-elm=`which elm` \
 		--pushstate \
@@ -69,11 +76,9 @@ environment := "dev"
 
 @install-deps: (_report "Installing required dependencies")
 	yarn install
-	# yarn run snowpack
-	cp ../get-ipfs/dist/get-ipfs.es5.js web_modules/get-ipfs.js
+	yarn run snowpack
 	mkdir -p web_modules
 	curl https://unpkg.com/ipfs@0.41.2/dist/index.js -o web_modules/ipfs.js
-	curl https://unpkg.com/multiaddr@7.3.1/dist/index.js -o web_modules/multiaddr.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
 	curl https://wzrd.in/debug-standalone/render-media@3.4.0 -o web_modules/render-media.js
 
@@ -95,8 +100,11 @@ environment := "dev"
 
 @elm:
 	echo "⚙️  Compiling Elm"
-	elm make {{src_dir}}/Application/Main.elm \
-		--output={{build_dir}}/application.js
+	if [ "{{environment}}" == "production" ]; then \
+		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize ; \
+	else \
+		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js ; \
+	fi
 
 
 @html:
