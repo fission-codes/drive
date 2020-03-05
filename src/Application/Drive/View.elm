@@ -556,7 +556,8 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
                         [ T.antialiased
                         , T.bg_gray_600
                         , T.font_semibold
-                        , T.leading_loose
+                        , T.inline_block
+                        , T.leading_snug
                         , T.ml_2
                         , T.px_1
                         , T.py_px
