@@ -1,6 +1,5 @@
 module Common.View.Footer exposing (view)
 
-import Explore.Types as Explore
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
@@ -108,7 +107,7 @@ right model =
         [ if model.ipfs == Ipfs.Ready && Maybe.isJust model.rootCid then
             action
                 Button
-                [ E.onClick (ExploreMsg Explore.Reset), T.cursor_pointer ]
+                [ E.onClick Reset, T.cursor_pointer ]
                 FeatherIcons.hash
                 [ Html.text "Change CID" ]
 

@@ -7,7 +7,7 @@ import Maybe.Extra as Maybe
 import Return exposing (return)
 import Routing exposing (Page(..))
 import Time
-import Types as Root
+import Types exposing (..)
 import Url exposing (Url)
 
 
@@ -15,7 +15,7 @@ import Url exposing (Url)
 -- 🛠
 
 
-setCurrentTime : Time.Posix -> Root.Manager
+setCurrentTime : Time.Posix -> Manager
 setCurrentTime time model =
     Return.singleton { model | currentTime = time }
 
@@ -24,7 +24,7 @@ setCurrentTime time model =
 -- URL
 
 
-linkClicked : Browser.UrlRequest -> Root.Manager
+linkClicked : Browser.UrlRequest -> Manager
 linkClicked urlRequest model =
     case urlRequest of
         Browser.Internal url ->
@@ -34,7 +34,7 @@ linkClicked urlRequest model =
             return model (Navigation.load href)
 
 
-urlChanged : Url -> Root.Manager
+urlChanged : Url -> Manager
 urlChanged url old =
     { old
         | page = Routing.pageFromUrl url

@@ -3,7 +3,6 @@ module Explore.View exposing (view)
 import Common
 import Common.View as Common
 import Common.View.Footer as Footer
-import Explore.Types as Explore
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
@@ -80,7 +79,7 @@ inputScreen m =
             [ Html.input
                 [ A.placeholder Common.defaultCid
                 , A.value (Maybe.withDefault "" m.exploreInput)
-                , E.onInput (ExploreMsg << Explore.GotInput)
+                , E.onInput GotInput
 
                 --
                 , case m.ipfs of
@@ -133,10 +132,10 @@ inputScreen m =
                         E.onClick Bypass
 
                     Ipfs.Listing ->
-                        E.onClick (ExploreMsg Explore.Reset)
+                        E.onClick Reset
 
                     _ ->
-                        E.onClick (ExploreMsg Explore.Explore)
+                        E.onClick Explore
 
                 --
                 , case m.ipfs of

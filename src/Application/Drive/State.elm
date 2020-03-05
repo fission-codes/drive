@@ -2,13 +2,12 @@ module Drive.State exposing (..)
 
 import Browser.Navigation as Navigation
 import Common
-import Drive.Types as Drive exposing (..)
 import Item exposing (Item)
 import Ports
 import Result.Extra as Result
 import Return exposing (return)
 import Routing
-import Types as Root
+import Types exposing (..)
 import Url
 
 
@@ -16,36 +15,7 @@ import Url
 -- 📣
 
 
-update : Drive.Msg -> Root.Manager
-update msg =
-    case msg of
-        CopyLink a ->
-            copyLink a
-
-        DigDeeper a ->
-            digDeeper a
-
-        GoUp a ->
-            goUp a
-
-        RemoveSelection ->
-            removeSelection
-
-        Select a ->
-            select a
-
-        ShowPreviewOverlay ->
-            showPreviewOverlay
-
-        ToggleLargePreview ->
-            toggleLargePreview
-
-
-
--- 🛠
-
-
-copyLink : Item -> Root.Manager
+copyLink : Item -> Manager
 copyLink item model =
     item
         |> Item.publicUrl (Common.directoryPath model)
@@ -54,7 +24,7 @@ copyLink item model =
         |> Return.command (Ports.showNotification "Copied shareable link to clipboard.")
 
 
-digDeeper : { directoryName : String } -> Root.Manager
+digDeeper : { directoryName : String } -> Manager
 digDeeper { directoryName } model =
     let
         directoryList =
@@ -88,7 +58,7 @@ digDeeper { directoryName } model =
             |> Return.return { model | directoryList = Ok updatedDirectoryList }
 
 
-goUp : { floor : Int } -> Root.Manager
+goUp : { floor : Int } -> Manager
 goUp { floor } model =
     (case floor of
         0 ->
@@ -105,7 +75,7 @@ goUp { floor } model =
         |> Return.andThen removeSelection
 
 
-removeSelection : Root.Manager
+removeSelection : Manager
 removeSelection model =
     Return.singleton
         { model
@@ -115,7 +85,7 @@ removeSelection model =
         }
 
 
-select : Item -> Root.Manager
+select : Item -> Manager
 select item model =
     return
         { model | selectedCid = Just item.path }
@@ -131,11 +101,11 @@ select item model =
         )
 
 
-showPreviewOverlay : Root.Manager
+showPreviewOverlay : Manager
 showPreviewOverlay model =
     Return.singleton { model | showPreviewOverlay = True }
 
 
-toggleLargePreview : Root.Manager
+toggleLargePreview : Manager
 toggleLargePreview model =
     Return.singleton { model | largePreview = not model.largePreview }

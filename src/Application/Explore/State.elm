@@ -1,14 +1,13 @@
 module Explore.State exposing (..)
 
 import Browser.Navigation as Navigation
-import Explore.Types as Explore exposing (..)
 import Ipfs
 import Ipfs.State
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
 import Routing
-import Types as Root exposing (..)
+import Types exposing (..)
 import Url
 
 
@@ -16,24 +15,7 @@ import Url
 -- 📣
 
 
-update : Explore.Msg -> Root.Manager
-update msg =
-    case msg of
-        Explore ->
-            explore
-
-        GotInput a ->
-            gotInput a
-
-        Reset ->
-            reset
-
-
-
--- 🛠
-
-
-explore : Root.Manager
+explore : Manager
 explore model =
     case Maybe.unwrap "" String.trim model.exploreInput of
         "" ->
@@ -46,7 +28,7 @@ explore model =
                 |> Return.command (Ports.storeRootCid input)
 
 
-gotInput : String -> Root.Manager
+gotInput : String -> Manager
 gotInput input model =
     Return.singleton
         { model
@@ -56,7 +38,7 @@ gotInput input model =
         }
 
 
-reset : Root.Manager
+reset : Manager
 reset model =
     return
         { model

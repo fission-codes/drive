@@ -2,38 +2,20 @@ module Ipfs.State exposing (..)
 
 import Browser.Dom as Dom
 import Ipfs
-import Ipfs.Types as Ipfs exposing (..)
 import Item
 import Json.Decode as Json
 import Ports
 import Return exposing (return)
 import Routing
 import Task
-import Types as Root exposing (..)
-
-
-
--- 📣
-
-
-update : Ipfs.Msg -> Root.Manager
-update msg =
-    case msg of
-        GotDirectoryList a ->
-            gotDirectoryList a
-
-        GotError a ->
-            gotError a
-
-        SetupCompleted ->
-            setupCompleted
+import Types exposing (..)
 
 
 
 -- DIRECTORY LIST
 
 
-getDirectoryListCmd : Root.Model -> Cmd Root.Msg
+getDirectoryListCmd : Model -> Cmd Msg
 getDirectoryListCmd model =
     model.page
         |> Routing.drivePathSegments
@@ -48,7 +30,7 @@ getDirectoryListCmd model =
         |> Ports.ipfsListDirectory
 
 
-gotDirectoryList : Json.Value -> Root.Manager
+gotDirectoryList : Json.Value -> Manager
 gotDirectoryList encodedDirList model =
     encodedDirList
         |> Json.decodeValue (Json.list Ipfs.listItemDecoder)
@@ -67,7 +49,7 @@ gotDirectoryList encodedDirList model =
 -- ERRORS
 
 
-gotError : String -> Root.Manager
+gotError : String -> Manager
 gotError error model =
     Return.singleton
         { model
@@ -80,7 +62,7 @@ gotError error model =
 -- SETUP
 
 
-setupCompleted : Root.Manager
+setupCompleted : Manager
 setupCompleted model =
     case model.rootCid of
         Just _ ->

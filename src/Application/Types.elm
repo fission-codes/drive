@@ -5,11 +5,9 @@ module Types exposing (..)
 
 import Browser
 import Browser.Navigation as Navigation
-import Drive.Types as Drive
-import Explore.Types as Explore
 import Ipfs
-import Ipfs.Types as Ipfs
 import Item exposing (Item)
+import Json.Decode as Json
 import Management
 import Routing exposing (Page)
 import Time
@@ -57,11 +55,27 @@ type alias Model =
 type Msg
     = Bypass
       -----------------------------------------
-      -- Bits
+      -- Drive
       -----------------------------------------
-    | DriveMsg Drive.Msg
-    | ExploreMsg Explore.Msg
-    | IpfsMsg Ipfs.Msg
+    | CopyLink Item
+    | DigDeeper { directoryName : String }
+    | GoUp { floor : Int }
+    | RemoveSelection
+    | Select Item
+    | ShowPreviewOverlay
+    | ToggleLargePreview
+      -----------------------------------------
+      -- Explore
+      -----------------------------------------
+    | Explore
+    | GotInput String
+    | Reset
+      -----------------------------------------
+      -- Ipfs
+      -----------------------------------------
+    | GotDirectoryList Json.Value
+    | GotError String
+    | SetupCompleted
       -----------------------------------------
       -- Other
       -----------------------------------------

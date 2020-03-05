@@ -3,7 +3,6 @@ module Drive.View exposing (view)
 import Common
 import Common.View as Common
 import Common.View.Footer as Footer
-import Drive.Types as Drive
 import Explore.View as Explore
 import FeatherIcons
 import Html exposing (Html)
@@ -211,8 +210,7 @@ inactivePathPart idx text =
 
         --
         , { floor = idx }
-            |> Drive.GoUp
-            |> DriveMsg
+            |> GoUp
             |> E.onClick
 
         --
@@ -272,8 +270,7 @@ rootPathPart model segments =
 
                     --
                     , { floor = 0 }
-                        |> Drive.GoUp
-                        |> DriveMsg
+                        |> GoUp
                         |> E.onClick
 
                     --
@@ -497,14 +494,12 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
         [ case kind of
             Directory ->
                 { directoryName = name }
-                    |> Drive.DigDeeper
-                    |> DriveMsg
+                    |> DigDeeper
                     |> E.onClick
 
             _ ->
                 item
-                    |> Drive.Select
-                    |> DriveMsg
+                    |> Select
                     |> E.onClick
 
         --
@@ -658,7 +653,7 @@ detailsDataContainer item =
                 Item.Image ->
                     List.append
                         defaultStyles
-                        [ E.onClick (DriveMsg Drive.ShowPreviewOverlay)
+                        [ E.onClick ShowPreviewOverlay
                         , T.cursor_pointer
                         ]
 
@@ -817,7 +812,7 @@ detailsOverlayContents currentTime parentPath item =
 
         --
         , Html.button
-            [ E.onClick (DriveMsg <| Drive.CopyLink item)
+            [ E.onClick (CopyLink item)
 
             --
             , T.appearance_none
@@ -878,7 +873,7 @@ detailsActions largePreview =
             |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
             |> List.singleton
             |> Html.div
-                [ E.onClick (DriveMsg Drive.ToggleLargePreview)
+                [ E.onClick ToggleLargePreview
 
                 --
                 , T.box_content
@@ -916,7 +911,7 @@ detailsActions largePreview =
             |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
             |> List.singleton
             |> Html.div
-                [ E.onClick (DriveMsg Drive.RemoveSelection)
+                [ E.onClick RemoveSelection
 
                 --
                 , T.box_content

@@ -6,7 +6,6 @@ import Drive.State as Drive
 import Explore.State as Explore
 import Ipfs
 import Ipfs.State as Ipfs
-import Ipfs.Types as Ipfs
 import Other.State as Other
 import Ports
 import Return exposing (return)
@@ -59,16 +58,52 @@ update msg =
             Return.singleton
 
         -----------------------------------------
-        -- Bits
+        -- Drive
         -----------------------------------------
-        DriveMsg a ->
-            Drive.update a
+        CopyLink a ->
+            Drive.copyLink a
 
-        ExploreMsg a ->
-            Explore.update a
+        DigDeeper a ->
+            Drive.digDeeper a
 
-        IpfsMsg a ->
-            Ipfs.update a
+        GoUp a ->
+            Drive.goUp a
+
+        RemoveSelection ->
+            Drive.removeSelection
+
+        Select a ->
+            Drive.select a
+
+        ShowPreviewOverlay ->
+            Drive.showPreviewOverlay
+
+        ToggleLargePreview ->
+            Drive.toggleLargePreview
+
+        -----------------------------------------
+        -- Explore
+        -----------------------------------------
+        Explore ->
+            Explore.explore
+
+        GotInput a ->
+            Explore.gotInput a
+
+        Reset ->
+            Explore.reset
+
+        -----------------------------------------
+        -- Ipfs
+        -----------------------------------------
+        GotDirectoryList a ->
+            Ipfs.gotDirectoryList a
+
+        GotError a ->
+            Ipfs.gotError a
+
+        SetupCompleted ->
+            Ipfs.setupCompleted
 
         -----------------------------------------
         -- Other
@@ -90,9 +125,9 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Ports.ipfsCompletedSetup (IpfsMsg << always Ipfs.SetupCompleted)
-        , Ports.ipfsGotDirectoryList (IpfsMsg << Ipfs.GotDirectoryList)
-        , Ports.ipfsGotError (IpfsMsg << Ipfs.GotError)
+        [ Ports.ipfsCompletedSetup (always SetupCompleted)
+        , Ports.ipfsGotDirectoryList GotDirectoryList
+        , Ports.ipfsGotError GotError
 
         -- Check every 30 seconds what the current time is
         , Time.every (30 * 1000) SetCurrentTime
