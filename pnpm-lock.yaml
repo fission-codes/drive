@@ -9,10 +9,10 @@ devDependencies:
   html-minifier-terser: 5.0.4
   postcss: 7.0.27
   postcss-csso: 4.0.0_postcss@7.0.27
-  postcss-elm-tailwind: github.com/icidasset/postcss-elm-tailwind/c2997991aa9b74e2fd886654ef6cb75a3efdbfe6_postcss@7.0.27
-  snowpack: 1.5.1
+  postcss-elm-tailwind: 0.6.0_postcss@7.0.27
+  snowpack: 1.5.2
   tailwindcss: 1.2.0
-  tailwindcss-animations: 1.0.0
+  tailwindcss-animations: 2.0.0
   terser-dir: 1.0.5
 lockfileVersion: 5.1
 packages:
@@ -2515,6 +2515,16 @@ packages:
       postcss: '>=6.0.0 <8.0.0'
     resolution:
       integrity: sha512-Yh9Ug0w3+T/LZIh1vGJQY8+hE13yFRHpINoAmgOhvu9lBmG1jyHkAprGHEHlGjWODJzB4DCNBVBb6Cs0QEoglQ==
+  /postcss-elm-tailwind/0.6.0_postcss@7.0.27:
+    dependencies:
+      postcss: 7.0.27
+    dev: true
+    engines:
+      node: '>=8.0.0'
+    peerDependencies:
+      postcss: ^7.0.18
+    resolution:
+      integrity: sha512-y7X0uOa2bEIhSDLqDVadUvAyTR+wyWy/JC/tLTdcOMvIcBdF4TYP/8jMuTg2PTeFsXYx0Dw6Yl2u7hhx/TDaGg==
   /postcss-functions/3.0.0:
     dependencies:
       glob: 7.1.6
@@ -2893,7 +2903,7 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
-  /snowpack/1.5.1:
+  /snowpack/1.5.2:
     dependencies:
       '@babel/core': 7.8.6
       '@babel/preset-env': 7.8.6_@babel+core@7.8.6
@@ -2923,7 +2933,7 @@ packages:
     dev: true
     hasBin: true
     resolution:
-      integrity: sha512-RQ5Z/UCNVxchDfrAM9UuK+wEE16yk0hE/Bq/siV9NV9X2q4Ia48ePGdeYalyi2dWOogrBkywjf7ja1mnDo4zNw==
+      integrity: sha512-XFACLLZ2AAMmmp9W8vYGiUCLGCvHgvC9ysJkdFWk9Rz8w3nbpmLj+OqaSV31a7cZo346pqwuhhqdEKEz6Q6NfA==
   /source-map-support/0.5.16:
     dependencies:
       buffer-from: 1.1.1
@@ -3039,12 +3049,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-oRSIpR8pxT1Wr2FquTNnGet79b3BWljqOuoW/h4oBhxJ/HUbX5nX6JSruTkvXDCFMwDPvsaTTbvMLKZWSy0R5g==
-  /tailwindcss-animations/1.0.0:
+  /tailwindcss-animations/2.0.0:
     dependencies:
       lodash: 4.17.15
     dev: true
     resolution:
-      integrity: sha512-dPAo/rRC2Cqupte3tVjoR8gTXyZjyApAmPD6LdiTRRQ79lNx0aCCMTDo86T8Ulif7N48mrMcj/eebf/a3QV6TQ==
+      integrity: sha512-YLdhPiQeDtpnqWd0J70rvy08MDbsq+BBLrzMmPR1Pe6MJDFYDuk4CYGI14GVgj7xRBGkByzp/rAfBcUWD7zpng==
   /tailwindcss/1.2.0:
     dependencies:
       autoprefixer: 9.7.4
@@ -3248,21 +3258,9 @@ packages:
     dev: false
     name: fission-kit
     resolution:
+      registry: 'https://registry.npmjs.org/'
       tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/d77054d1ef4a74ddd018a8efa64c9764e9453eb6'
     version: 0.2.0
-  github.com/icidasset/postcss-elm-tailwind/c2997991aa9b74e2fd886654ef6cb75a3efdbfe6_postcss@7.0.27:
-    dependencies:
-      postcss: 7.0.27
-    dev: true
-    engines:
-      node: '>=8.0.0'
-    id: github.com/icidasset/postcss-elm-tailwind/c2997991aa9b74e2fd886654ef6cb75a3efdbfe6
-    name: postcss-elm-tailwind
-    peerDependencies:
-      postcss: ^7.0.18
-    resolution:
-      tarball: 'https://codeload.github.com/icidasset/postcss-elm-tailwind/tar.gz/c2997991aa9b74e2fd886654ef6cb75a3efdbfe6'
-    version: 0.5.0
 specifiers:
   '@fullhuman/postcss-purgecss': ^2.0.6
   autoprefixer: ^9.7.4
@@ -3273,8 +3271,8 @@ specifiers:
   html-minifier-terser: ^5.0.4
   postcss: ^7.0.26
   postcss-csso: ^4.0.0
-  postcss-elm-tailwind: 'icidasset/postcss-elm-tailwind#c2997991aa9b74e2fd886654ef6cb75a3efdbfe6'
-  snowpack: ^1.1.4
+  postcss-elm-tailwind: 0.6.0
+  snowpack: ^1.5.2
   tailwindcss: ^1.2.0
-  tailwindcss-animations: ^1.0.0
+  tailwindcss-animations: ^2.0.0
   terser-dir: ^1.0.5

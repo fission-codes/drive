@@ -13,10 +13,10 @@
     "html-minifier-terser": "^5.0.4",
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
-    "postcss-elm-tailwind": "icidasset/postcss-elm-tailwind#c2997991aa9b74e2fd886654ef6cb75a3efdbfe6",
-    "snowpack": "^1.1.4",
+    "postcss-elm-tailwind": "0.6.0",
+    "snowpack": "^1.5.2",
     "tailwindcss": "^1.2.0",
-    "tailwindcss-animations": "^1.0.0",
+    "tailwindcss-animations": "^2.0.0",
     "terser-dir": "^1.0.5"
   },
   "scripts": {

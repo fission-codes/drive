@@ -107,7 +107,7 @@ export default {
 
   plugins: [
 
-    animations(),
+    animations,
 
     // Add text-decoration-color classes
     plugin(function ({ addUtilities, variants, theme }) {
