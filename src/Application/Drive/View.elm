@@ -507,6 +507,7 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
         , T.border_gray_700
         , T.cursor_pointer
         , T.flex
+        , T.group
         , T.items_center
         , T.mt_px
         , T.py_4
@@ -540,7 +541,7 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
             |> Html.div [ T.flex_shrink_0 ]
 
         -----------------------------------------
-        -- Label & Extensions
+        -- Label
         -----------------------------------------
         , Html.span
             [ T.flex_auto, T.ml_5, T.truncate ]
@@ -555,26 +556,36 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
                     Html.span
                         [ T.antialiased
                         , T.bg_gray_600
+                        , S.default_transition_duration
                         , T.font_semibold
                         , T.inline_block
-                        , T.leading_snug
+                        , T.leading_normal
                         , T.ml_2
+                        , T.opacity_0
+                        , T.pointer_events_none
                         , T.px_1
-                        , T.py_px
                         , T.rounded
                         , T.text_gray_200
                         , T.text_xs
+                        , T.transition_opacity
                         , T.uppercase
 
                         -- Dark mode
                         ------------
                         , T.dark__bg_gray_200
                         , T.dark__text_gray_500
+
+                        -- Group
+                        --------
+                        , T.group_hover__opacity_100
+                        , T.group_hover__pointer_events_auto
                         ]
                         [ Html.text ext ]
             ]
 
-        --
+        -----------------------------------------
+        -- Tail
+        -----------------------------------------
         , if loading then
             FeatherIcons.loader
                 |> FeatherIcons.withSize S.iconSize
