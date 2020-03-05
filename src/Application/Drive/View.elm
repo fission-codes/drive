@@ -591,7 +591,11 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
                 |> FeatherIcons.withSize S.iconSize
                 |> FeatherIcons.toHtml []
                 |> List.singleton
-                |> Html.span [ T.animation_spin, T.ml_2 ]
+                |> Html.span
+                    [ T.animation_spin
+                    , T.ml_2
+                    , T.text_gray_300
+                    ]
 
           else
             nothing
