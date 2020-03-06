@@ -28,14 +28,14 @@ keyboardInteraction msg unmodified =
             [ Keyboard.ArrowUp ] ->
                 Drive.selectPreviousItem m
 
-            [ Keyboard.Escape ] ->
-                Drive.removeSelection m
-
             [ Keyboard.Character "T" ] ->
                 Drive.toggleLargePreview m
 
             [ Keyboard.Character "U" ] ->
                 Drive.goUpOneLevel m
+
+            [ Keyboard.Escape ] ->
+                Drive.removeSelection m
 
             _ ->
                 Return.singleton m

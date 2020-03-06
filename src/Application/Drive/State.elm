@@ -156,9 +156,7 @@ makeItemSelector indexModifier model =
         ( Ok items, Just selectedCid ) ->
             items
                 |> List.findIndex (.path >> (==) selectedCid)
-                |> Debug.log "foundIndex"
                 |> Maybe.map indexModifier
-                |> Debug.log "modifiedIndex"
                 |> Maybe.andThen (\idx -> List.getAt idx items)
                 |> Maybe.map (\item -> select item model)
                 |> Maybe.withDefault (Return.singleton model)
