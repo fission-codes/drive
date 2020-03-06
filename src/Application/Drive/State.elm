@@ -97,7 +97,7 @@ goUpOneLevel model =
     model.page
         |> Routing.drivePathSegments
         |> List.length
-        |> (\x -> goUp { floor = x - 1 } model)
+        |> (\x -> goUp { floor = x } model)
 
 
 removeSelection : Manager
