@@ -894,6 +894,7 @@ detailsActions largePreview =
         , T.border_transparent
         , T.flex
         , T.items_center
+        , T.py_px
         , T.right_0
         , T.rounded_bl
         , T.text_gray_900
@@ -911,7 +912,7 @@ detailsActions largePreview =
            else
             FeatherIcons.maximize2
           )
-            |> FeatherIcons.withSize 16
+            |> FeatherIcons.withSize 14
             |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
             |> List.singleton
             |> Html.div
@@ -921,8 +922,9 @@ detailsActions largePreview =
                 , T.box_content
                 , T.cursor_pointer
                 , T.hidden
-                , T.px_3
-                , T.py_2
+                , T.my_px
+                , T.px_2
+                , T.py_1
                 , T.w_6
 
                 --
@@ -935,6 +937,7 @@ detailsActions largePreview =
             , T.border_l
             , T.hidden
             , T.opacity_50
+            , T.my_1
             , T.self_stretch
             , T.w_0
 
@@ -949,7 +952,7 @@ detailsActions largePreview =
 
         --
         , FeatherIcons.x
-            |> FeatherIcons.withSize 20
+            |> FeatherIcons.withSize 18
             |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
             |> List.singleton
             |> Html.div
@@ -958,8 +961,9 @@ detailsActions largePreview =
                 --
                 , T.box_content
                 , T.cursor_pointer
-                , T.px_3
-                , T.py_2
+                , T.my_px
+                , T.px_2
+                , T.py_1
                 , T.w_6
                 ]
         ]
