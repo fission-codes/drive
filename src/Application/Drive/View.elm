@@ -381,7 +381,7 @@ contentAvailable model directoryList =
                     , T.flex_auto
                     , T.w_1over2
                     ]
-                    (if model.largePreview then
+                    (if Maybe.isJust model.selectedCid && model.largePreview then
                         [ T.hidden ]
 
                      else if Maybe.isJust model.selectedCid then

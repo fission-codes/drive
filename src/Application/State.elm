@@ -8,6 +8,7 @@ import Drive.State as Drive
 import Explore.State as Explore
 import Ipfs
 import Ipfs.State as Ipfs
+import Keyboard
 import Other.State as Other
 import Ports
 import Return exposing (return)
@@ -34,6 +35,7 @@ init flags url navKey =
       , largePreview = False
       , navKey = navKey
       , page = Routing.pageFromUrl url
+      , pressedKeys = []
       , rootCid = flags.rootCid
       , selectedCid = Nothing
       , showLoadingOverlay = False
@@ -121,6 +123,9 @@ update msg =
         -----------------------------------------
         -- Other
         -----------------------------------------
+        KeyboardInteraction a ->
+            Other.keyboardInteraction a
+
         LinkClicked a ->
             Other.linkClicked a
 
@@ -144,6 +149,9 @@ subscriptions model =
         [ Ports.ipfsCompletedSetup (always SetupCompleted)
         , Ports.ipfsGotDirectoryList GotDirectoryList
         , Ports.ipfsGotError GotError
+
+        -- Keep track of which keyboard keys are pressed
+        , Sub.map KeyboardInteraction Keyboard.subscriptions
 
         -- Check every 30 seconds what the current time is
         , Time.every (30 * 1000) SetCurrentTime

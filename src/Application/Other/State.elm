@@ -2,8 +2,10 @@ module Other.State exposing (..)
 
 import Browser
 import Browser.Navigation as Navigation
+import Drive.State as Drive
 import Ipfs
 import Ipfs.State
+import Keyboard
 import Maybe.Extra as Maybe
 import Return exposing (return)
 import Routing exposing (Page(..))
@@ -14,6 +16,31 @@ import Url exposing (Url)
 
 
 -- 🛠
+
+
+keyboardInteraction : Keyboard.Msg -> Manager
+keyboardInteraction msg unmodified =
+    (\m ->
+        case m.pressedKeys of
+            [ Keyboard.ArrowDown ] ->
+                Drive.selectNextItem m
+
+            [ Keyboard.ArrowUp ] ->
+                Drive.selectPreviousItem m
+
+            [ Keyboard.Escape ] ->
+                Drive.removeSelection m
+
+            [ Keyboard.Character "T" ] ->
+                Drive.toggleLargePreview m
+
+            [ Keyboard.Character "U" ] ->
+                Drive.goUpOneLevel m
+
+            _ ->
+                Return.singleton m
+    )
+        { unmodified | pressedKeys = Keyboard.update msg unmodified.pressedKeys }
 
 
 setCurrentTime : Time.Posix -> Manager

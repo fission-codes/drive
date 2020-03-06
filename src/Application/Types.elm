@@ -9,6 +9,7 @@ import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Ipfs
 import Item exposing (Item)
 import Json.Decode as Json
+import Keyboard
 import Management
 import Routing exposing (Page)
 import Time
@@ -40,6 +41,7 @@ type alias Model =
     , largePreview : Bool
     , navKey : Navigation.Key
     , page : Page
+    , pressedKeys : List Keyboard.Key
     , rootCid : Maybe String
     , selectedCid : Maybe String
     , showLoadingOverlay : Bool
@@ -88,8 +90,9 @@ type Msg
     | GotError String
     | SetupCompleted
       -----------------------------------------
-      -- Other
+      -- 🐚 Other
       -----------------------------------------
+    | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | SetCurrentTime Time.Posix
     | ToggleLoadingOverlay { on : Bool }

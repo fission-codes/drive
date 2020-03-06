@@ -67,25 +67,37 @@ digDeeper { directoryName } model =
 
 goUp : { floor : Int } -> Manager
 goUp { floor } model =
-    (case floor of
-        0 ->
-            []
+    if floor >= 0 then
+        (case floor of
+            0 ->
+                []
 
-        x ->
-            List.take (x - 1) (Routing.drivePathSegments model.page)
-    )
-        |> Routing.Drive
-        |> Routing.adjustUrl model.url
-        |> Url.toString
-        |> Navigation.pushUrl model.navKey
-        |> Return.return model
-        |> Return.andThen removeSelection
-        |> Return.command
-            ({ on = True }
-                |> ToggleLoadingOverlay
-                |> Debouncing.loadingInput
-                |> Return.task
-            )
+            x ->
+                List.take (x - 1) (Routing.drivePathSegments model.page)
+        )
+            |> Routing.Drive
+            |> Routing.adjustUrl model.url
+            |> Url.toString
+            |> Navigation.pushUrl model.navKey
+            |> Return.return model
+            |> Return.andThen removeSelection
+            |> Return.command
+                ({ on = True }
+                    |> ToggleLoadingOverlay
+                    |> Debouncing.loadingInput
+                    |> Return.task
+                )
+
+    else
+        Return.singleton model
+
+
+goUpOneLevel : Manager
+goUpOneLevel model =
+    model.page
+        |> Routing.drivePathSegments
+        |> List.length
+        |> (\x -> goUp { floor = x - 1 } model)
 
 
 removeSelection : Manager
@@ -114,6 +126,16 @@ select item model =
         )
 
 
+selectNextItem : Manager
+selectNextItem =
+    makeItemSelector (\i -> i + 1)
+
+
+selectPreviousItem : Manager
+selectPreviousItem =
+    makeItemSelector (\i -> i - 1)
+
+
 showPreviewOverlay : Manager
 showPreviewOverlay model =
     Return.singleton { model | showPreviewOverlay = True }
@@ -122,3 +144,24 @@ showPreviewOverlay model =
 toggleLargePreview : Manager
 toggleLargePreview model =
     Return.singleton { model | largePreview = not model.largePreview }
+
+
+
+-- ㊙️
+
+
+makeItemSelector : (Int -> Int) -> Manager
+makeItemSelector indexModifier model =
+    case ( model.directoryList, model.selectedCid ) of
+        ( Ok items, Just selectedCid ) ->
+            items
+                |> List.findIndex (.path >> (==) selectedCid)
+                |> Debug.log "foundIndex"
+                |> Maybe.map indexModifier
+                |> Debug.log "modifiedIndex"
+                |> Maybe.andThen (\idx -> List.getAt idx items)
+                |> Maybe.map (\item -> select item model)
+                |> Maybe.withDefault (Return.singleton model)
+
+        _ ->
+            Return.singleton model
