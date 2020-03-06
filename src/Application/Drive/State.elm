@@ -5,6 +5,7 @@ import Common
 import Debouncing
 import Ipfs
 import Item exposing (Item)
+import List.Extra as List
 import Ports
 import Result.Extra as Result
 import Return exposing (return)
@@ -33,11 +34,16 @@ digDeeper { directoryName } model =
         directoryList =
             Result.withDefault [] model.directoryList
 
-        shouldntDig =
-            Result.isErr model.directoryList || List.any .loading directoryList
+        currentPathSegments =
+            Routing.drivePathSegments model.page
 
-        newPage =
-            Routing.addDrivePathSegments [ directoryName ] model.page
+        pathSegments =
+            case model.ipfs of
+                Ipfs.AdditionalListing ->
+                    Maybe.withDefault [] (List.init currentPathSegments)
+
+                _ ->
+                    currentPathSegments
 
         updatedDirectoryList =
             List.map
@@ -46,19 +52,17 @@ digDeeper { directoryName } model =
                         { i | loading = True }
 
                     else
-                        i
+                        { i | loading = False }
                 )
                 directoryList
     in
-    if shouldntDig then
-        Return.singleton model
-
-    else
-        newPage
-            |> Routing.adjustUrl model.url
-            |> Url.toString
-            |> Navigation.pushUrl model.navKey
-            |> Return.return { model | directoryList = Ok updatedDirectoryList }
+    [ directoryName ]
+        |> List.append pathSegments
+        |> Routing.Drive
+        |> Routing.adjustUrl model.url
+        |> Url.toString
+        |> Navigation.pushUrl model.navKey
+        |> Return.return { model | directoryList = Ok updatedDirectoryList }
 
 
 goUp : { floor : Int } -> Manager
@@ -77,7 +81,8 @@ goUp { floor } model =
         |> Return.return model
         |> Return.andThen removeSelection
         |> Return.command
-            (MarkAsBusy
+            ({ on = True }
+                |> ToggleLoadingOverlay
                 |> Debouncing.loadingInput
                 |> Return.task
             )

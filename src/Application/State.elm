@@ -36,6 +36,7 @@ init flags url navKey =
       , page = Routing.pageFromUrl url
       , rootCid = flags.rootCid
       , selectedCid = Nothing
+      , showLoadingOverlay = False
       , showPreviewOverlay = False
       , url = url
 
@@ -114,9 +115,6 @@ update msg =
         GotError a ->
             Ipfs.gotError a
 
-        MarkAsBusy ->
-            Ipfs.markAsBusy
-
         SetupCompleted ->
             Ipfs.setupCompleted
 
@@ -128,6 +126,9 @@ update msg =
 
         SetCurrentTime a ->
             Other.setCurrentTime a
+
+        ToggleLoadingOverlay a ->
+            Other.toggleLoadingOverlay a
 
         UrlChanged a ->
             Other.urlChanged a

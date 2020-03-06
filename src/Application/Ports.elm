@@ -10,7 +10,7 @@ import Json.Decode as Json
 port copyToClipboard : String -> Cmd msg
 
 
-port ipfsListDirectory : String -> Cmd msg
+port ipfsListDirectory : { cid : String, pathSegments : List String } -> Cmd msg
 
 
 port ipfsSetup : () -> Cmd msg

@@ -3,6 +3,7 @@ module Explore.View exposing (view)
 import Common
 import Common.View as Common
 import Common.View.Footer as Footer
+import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
@@ -131,7 +132,7 @@ inputScreen m =
                     Ipfs.Connecting ->
                         E.onClick Bypass
 
-                    Ipfs.Listing ->
+                    Ipfs.InitialListing ->
                         E.onClick Reset
 
                     _ ->
@@ -163,11 +164,20 @@ inputScreen m =
                 , T.focus__shadow_outline
                 ]
                 [ case m.ipfs of
-                    Ipfs.Listing ->
-                        Common.loadingAnimation
+                    Ipfs.InitialListing ->
+                        FeatherIcons.loader
+                            |> FeatherIcons.withSize 24
+                            |> FeatherIcons.toHtml []
+                            |> List.singleton
+                            |> Html.div
+                                [ T.animation_spin
+                                , T.text_purple_tint
+                                ]
 
                     _ ->
-                        Html.span [ T.block, T.mt_px ] [ Html.text "Explore" ]
+                        Html.span
+                            [ T.block, T.mt_px ]
+                            [ Html.text "Explore" ]
                 ]
             ]
         ]

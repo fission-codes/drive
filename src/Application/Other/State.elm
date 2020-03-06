@@ -2,6 +2,7 @@ module Other.State exposing (..)
 
 import Browser
 import Browser.Navigation as Navigation
+import Ipfs
 import Ipfs.State
 import Maybe.Extra as Maybe
 import Return exposing (return)
@@ -34,10 +35,16 @@ linkClicked urlRequest model =
             return model (Navigation.load href)
 
 
+toggleLoadingOverlay : { on : Bool } -> Manager
+toggleLoadingOverlay { on } model =
+    Return.singleton { model | showLoadingOverlay = on }
+
+
 urlChanged : Url -> Manager
 urlChanged url old =
     { old
-        | page = Routing.pageFromUrl url
+        | ipfs = Ipfs.AdditionalListing
+        , page = Routing.pageFromUrl url
         , selectedCid = Nothing
         , url = url
     }

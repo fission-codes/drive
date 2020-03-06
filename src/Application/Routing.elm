@@ -81,15 +81,3 @@ drivePathSegments page =
 
         _ ->
             []
-
-
-addDrivePathSegments : List String -> Page -> Page
-addDrivePathSegments segments page =
-    case page of
-        Drive pathSegments ->
-            segments
-                |> List.append pathSegments
-                |> Drive
-
-        _ ->
-            page

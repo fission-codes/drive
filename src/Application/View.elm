@@ -32,7 +32,7 @@ view model =
 
 body : Model -> List (Html Msg)
 body m =
-    if m.ipfs == Ipfs.Connecting || m.ipfs == Ipfs.Busy then
+    if m.ipfs == Ipfs.Connecting || m.showLoadingOverlay then
         [ Html.div
             [ T.absolute
             , T.left_1over2
@@ -42,8 +42,21 @@ body m =
             [ Common.loadingAnimation ]
         ]
 
-    else if m.ipfs /= Ipfs.Ready || Maybe.isNothing m.rootCid then
+    else if shouldShowExplore m.ipfs || Maybe.isNothing m.rootCid then
         [ Explore.view m ]
 
     else
         [ Drive.view m ]
+
+
+shouldShowExplore : Ipfs.Status -> Bool
+shouldShowExplore ipfsStatus =
+    case ipfsStatus of
+        Ipfs.Ready ->
+            False
+
+        Ipfs.AdditionalListing ->
+            False
+
+        _ ->
+            True

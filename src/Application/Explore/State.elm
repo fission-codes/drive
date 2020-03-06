@@ -22,7 +22,7 @@ explore model =
             Return.singleton model
 
         input ->
-            { model | ipfs = Ipfs.Listing, rootCid = Just input }
+            { model | ipfs = Ipfs.InitialListing, rootCid = Just input }
                 |> Return.singleton
                 |> Return.effect_ Ipfs.State.getDirectoryListCmd
                 |> Return.command (Ports.storeRootCid input)

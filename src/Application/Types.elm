@@ -42,6 +42,7 @@ type alias Model =
     , page : Page
     , rootCid : Maybe String
     , selectedCid : Maybe String
+    , showLoadingOverlay : Bool
     , showPreviewOverlay : Bool
     , url : Url
 
@@ -85,13 +86,13 @@ type Msg
       -----------------------------------------
     | GotDirectoryList Json.Value
     | GotError String
-    | MarkAsBusy
     | SetupCompleted
       -----------------------------------------
       -- Other
       -----------------------------------------
     | LinkClicked Browser.UrlRequest
     | SetCurrentTime Time.Posix
+    | ToggleLoadingOverlay { on : Bool }
     | UrlChanged Url
 
 

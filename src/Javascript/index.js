@@ -68,9 +68,14 @@ app.ports.copyToClipboard.subscribe(text => {
 })
 
 
-app.ports.ipfsListDirectory.subscribe(cid => {
+app.ports.ipfsListDirectory.subscribe(({ cid, pathSegments }) => {
   ipfs.listDirectory(cid)
-    .then(app.ports.ipfsGotDirectoryList.send)
+    .then(results => {
+      app.ports.ipfsGotDirectoryList.send({
+        pathSegments,
+        results
+      })
+    })
     .catch(reportIpfsError)
 })
 

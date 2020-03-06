@@ -18,10 +18,10 @@ type alias ListItem =
 
 
 type Status
-    = Busy
-    | Connecting
+    = Connecting
     | Error String
-    | Listing
+    | InitialListing
+    | AdditionalListing
     | Ready
 
 
