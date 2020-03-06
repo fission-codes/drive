@@ -32,11 +32,20 @@ view model =
     Html.div
         [ T.flex
         , T.flex_col
-        , T.h_screen
+        , T.min_h_screen
         ]
         [ header model
         , content model
-        , Footer.view model
+
+        --
+        , Html.div
+            [ T.bottom_0
+            , T.left_0
+            , T.sticky
+            , T.right_0
+            , T.z_10
+            ]
+            [ Footer.view model ]
         ]
 
 
@@ -56,8 +65,13 @@ header model =
     Html.header
         [ T.bg_gray_600
         , T.break_all
+        , T.left_0
         , T.py_8
+        , T.right_0
+        , T.sticky
         , T.text_white
+        , T.top_0
+        , T.z_10
 
         -- Dark mode
         ------------
@@ -347,7 +361,8 @@ contentAvailable model directoryList =
     Html.div
         [ T.flex
         , T.flex_auto
-        , T.overflow_hidden
+        , T.relative
+        , T.z_0
         ]
         [ Html.div
             [ T.container
@@ -364,8 +379,6 @@ contentAvailable model directoryList =
 
                     --
                     , T.flex_auto
-                    , T.overflow_x_hidden
-                    , T.overflow_y_scroll
                     , T.w_1over2
                     ]
                     (if model.largePreview then
@@ -383,7 +396,8 @@ contentAvailable model directoryList =
 
             --
             , model.selectedCid
-                |> Maybe.andThen (\cid -> List.find (.path >> (==) cid) directoryList)
+                |> Maybe.andThen
+                    (\cid -> List.find (.path >> (==) cid) directoryList)
                 |> Maybe.map
                     (Html.Lazy.lazy5
                         details
@@ -617,22 +631,35 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
 -- MAIN  /  DETAILS
 
 
+{-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
+-}
 details : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
 details currentTime parentPath largePreview showPreviewOverlay item =
     Html.div
-        [ T.bg_gray_900
+        [ A.style "height" "calc(100vh - 99px - 32px * 2 - 92px - 2px)"
+        , A.style "top" "131px"
+
+        --
+        , T.bg_gray_900
         , T.flex
-        , T.flex_auto
         , T.flex_col
         , T.group
+        , T.h_screen
         , T.items_center
         , T.justify_center
         , T.overflow_hidden
         , T.px_4
         , T.py_6
-        , T.relative
         , T.rounded_md
-        , T.w_1over2
+        , T.sticky
+        , T.w_full
+
+        --
+        , if largePreview then
+            T.md__w_full
+
+          else
+            T.md__w_1over2
 
         -- Dark mode
         ------------
