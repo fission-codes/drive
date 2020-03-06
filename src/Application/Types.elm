@@ -5,6 +5,7 @@ module Types exposing (..)
 
 import Browser
 import Browser.Navigation as Navigation
+import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Ipfs
 import Item exposing (Item)
 import Json.Decode as Json
@@ -43,6 +44,11 @@ type alias Model =
     , selectedCid : Maybe String
     , showPreviewOverlay : Bool
     , url : Url
+
+    -----------------------------------------
+    -- Debouncers
+    -----------------------------------------
+    , loadingDebouncer : Debouncer Msg
     }
 
 
@@ -54,6 +60,10 @@ type alias Model =
 -}
 type Msg
     = Bypass
+      -----------------------------------------
+      -- Debouncers
+      -----------------------------------------
+    | LoadingDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
       -- Drive
       -----------------------------------------
@@ -75,6 +85,7 @@ type Msg
       -----------------------------------------
     | GotDirectoryList Json.Value
     | GotError String
+    | MarkAsBusy
     | SetupCompleted
       -----------------------------------------
       -- Other

@@ -1,6 +1,7 @@
 module View exposing (view)
 
 import Browser
+import Common.View as Common
 import Drive.View as Drive
 import Explore.View as Explore
 import FeatherIcons
@@ -16,7 +17,6 @@ import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import Url.Builder
-import Common.View as Common
 
 
 
@@ -32,7 +32,7 @@ view model =
 
 body : Model -> List (Html Msg)
 body m =
-    if m.ipfs == Ipfs.Connecting then
+    if m.ipfs == Ipfs.Connecting || m.ipfs == Ipfs.Busy then
         [ Html.div
             [ T.absolute
             , T.left_1over2

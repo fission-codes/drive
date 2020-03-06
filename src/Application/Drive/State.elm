@@ -2,10 +2,13 @@ module Drive.State exposing (..)
 
 import Browser.Navigation as Navigation
 import Common
+import Debouncing
+import Ipfs
 import Item exposing (Item)
 import Ports
 import Result.Extra as Result
 import Return exposing (return)
+import Return.Extra as Return
 import Routing
 import Types exposing (..)
 import Url
@@ -73,6 +76,11 @@ goUp { floor } model =
         |> Navigation.pushUrl model.navKey
         |> Return.return model
         |> Return.andThen removeSelection
+        |> Return.command
+            (MarkAsBusy
+                |> Debouncing.loadingInput
+                |> Return.task
+            )
 
 
 removeSelection : Manager

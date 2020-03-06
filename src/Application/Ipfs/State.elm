@@ -1,6 +1,7 @@
 module Ipfs.State exposing (..)
 
 import Browser.Dom as Dom
+import Debouncing
 import Ipfs
 import Item
 import Json.Decode as Json
@@ -38,6 +39,7 @@ gotDirectoryList encodedDirList model =
         |> Result.mapError Json.errorToString
         |> (\result -> { model | directoryList = result, ipfs = Ipfs.Ready })
         |> Return.singleton
+        |> Return.andThen Debouncing.cancelLoading
         |> Return.command
             (Task.attempt
                 (always Bypass)
@@ -70,3 +72,12 @@ setupCompleted model =
 
         Nothing ->
             Return.singleton { model | ipfs = Ipfs.Ready }
+
+
+
+-- STATE
+
+
+markAsBusy : Manager
+markAsBusy model =
+    Return.singleton { model | ipfs = Ipfs.Busy }

@@ -2,6 +2,8 @@ module State exposing (init, subscriptions, update)
 
 import Browser.Navigation as Navigation
 import Common exposing (defaultCid)
+import Debouncer.Messages as Debouncer exposing (Debouncer)
+import Debouncing
 import Drive.State as Drive
 import Explore.State as Explore
 import Ipfs
@@ -36,6 +38,10 @@ init flags url navKey =
       , selectedCid = Nothing
       , showPreviewOverlay = False
       , url = url
+
+      -- Debouncers
+      -------------
+      , loadingDebouncer = Debouncing.loading
       }
       -----------------------------------------
       -- Command
@@ -56,6 +62,12 @@ update msg =
     case msg of
         Bypass ->
             Return.singleton
+
+        -----------------------------------------
+        -- Debouncers
+        -----------------------------------------
+        LoadingDebouncerMsg a ->
+            Debouncer.update update Debouncing.loadingUpdateConfig a
 
         -----------------------------------------
         -- Drive
@@ -101,6 +113,9 @@ update msg =
 
         GotError a ->
             Ipfs.gotError a
+
+        MarkAsBusy ->
+            Ipfs.markAsBusy
 
         SetupCompleted ->
             Ipfs.setupCompleted
