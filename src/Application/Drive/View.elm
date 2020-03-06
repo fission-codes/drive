@@ -266,11 +266,26 @@ pathSeparator =
 rootPathPart : Model -> List String -> Html Msg
 rootPathPart model segments =
     let
-        rootCid =
-            Maybe.withDefault "" model.rootCid
+        root =
+            model.roots
+                |> Maybe.map .unresolved
+                |> Maybe.withDefault ""
+
+        rootLength =
+            String.length root
+
+        isDnsLink =
+            Maybe.unwrap False .isDnsLink model.roots
+
+        isTooLong =
+            (isDnsLink && rootLength > 36) || not isDnsLink
 
         text =
-            String.dropLeft (String.length rootCid - 12) rootCid
+            if isTooLong then
+                String.dropLeft (rootLength - 12) root
+
+            else
+                root
 
         attributes =
             case segments of
@@ -301,7 +316,12 @@ rootPathPart model segments =
                     ]
     in
     Html.span
-        (Common.fadeOutLeft :: attributes)
+        (if isTooLong then
+            Common.fadeOutLeft :: attributes
+
+         else
+            attributes
+        )
         [ Html.text text ]
 
 
@@ -402,7 +422,7 @@ contentAvailable model directoryList =
                     (Html.Lazy.lazy5
                         details
                         model.currentTime
-                        (Common.directoryPath model)
+                        (Common.base model)
                         model.largePreview
                         model.showPreviewOverlay
                     )
@@ -633,7 +653,11 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
 details : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
-details currentTime parentPath largePreview showPreviewOverlay item =
+details currentTime base largePreview showPreviewOverlay item =
+    let
+        publicUrl =
+            Item.publicUrl base item
+    in
     Html.div
         [ A.style "height" "calc(100vh - 99px - 32px * 2 - 92px - 2px)"
         , A.style "top" "131px"
@@ -664,7 +688,7 @@ details currentTime parentPath largePreview showPreviewOverlay item =
         ------------
         , T.dark__bg_darkness_below
         ]
-        [ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item
+        [ detailsOverlay currentTime publicUrl largePreview showPreviewOverlay item
         , detailsDataContainer item
         , detailsExtra item
         ]
@@ -713,7 +737,7 @@ detailsDataContainer item =
 
 
 detailsOverlay : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
-detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
+detailsOverlay currentTime publicUrl largePreview showPreviewOverlay item =
     let
         defaultAttributes =
             [ T.absolute
@@ -758,7 +782,7 @@ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
             [ T.relative
             , T.z_10
             ]
-            (detailsOverlayContents currentTime parentPath item)
+            (detailsOverlayContents currentTime publicUrl item)
 
         --
         , Html.div
@@ -787,7 +811,7 @@ detailsOverlay currentTime parentPath largePreview showPreviewOverlay item =
 
 
 detailsOverlayContents : Time.Posix -> String -> Item -> List (Html Msg)
-detailsOverlayContents currentTime parentPath item =
+detailsOverlayContents currentTime publicUrl item =
     [ item.kind
         |> Item.kindIcon
         |> FeatherIcons.withSize 128
@@ -831,7 +855,7 @@ detailsOverlayContents currentTime parentPath item =
         , T.mt_5
         ]
         [ Html.a
-            [ A.href (Item.publicUrl parentPath item)
+            [ A.href publicUrl
             , A.target "_blank"
 
             --

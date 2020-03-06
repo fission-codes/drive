@@ -22,10 +22,9 @@ explore model =
             Return.singleton model
 
         input ->
-            { model | ipfs = Ipfs.InitialListing, rootCid = Just input }
-                |> Return.singleton
-                |> Return.effect_ Ipfs.State.getDirectoryListCmd
-                |> Return.command (Ports.storeRootCid input)
+            return
+                { model | ipfs = Ipfs.InitialListing, roots = Nothing }
+                (Ports.ipfsResolveAddress input)
 
 
 gotInput : String -> Manager
@@ -34,7 +33,7 @@ gotInput input model =
         { model
             | ipfs = Ipfs.Ready
             , exploreInput = Just input
-            , rootCid = Nothing
+            , roots = Nothing
         }
 
 
@@ -44,11 +43,11 @@ reset model =
         { model
             | directoryList = Ok []
             , exploreInput = Just ""
-            , rootCid = Nothing
+            , roots = Nothing
             , selectedCid = Nothing
         }
         (Cmd.batch
-            [ Ports.removeStoredRootCid ()
+            [ Ports.removeStoredRoots ()
 
             --
             , Routing.Blank

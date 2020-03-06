@@ -22,7 +22,7 @@ import Url
 copyLink : Item -> Manager
 copyLink item model =
     item
-        |> Item.publicUrl (Common.directoryPath model)
+        |> Item.publicUrl (Common.base model)
         |> Ports.copyToClipboard
         |> Return.return model
         |> Return.command (Ports.showNotification "Copied shareable link to clipboard.")

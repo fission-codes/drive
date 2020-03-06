@@ -23,7 +23,7 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { rootCid : Maybe String
+    { roots : Maybe Roots
     }
 
 
@@ -42,7 +42,7 @@ type alias Model =
     , navKey : Navigation.Key
     , page : Page
     , pressedKeys : List Keyboard.Key
-    , rootCid : Maybe String
+    , roots : Maybe Roots
     , selectedCid : Maybe String
     , showLoadingOverlay : Bool
     , showPreviewOverlay : Bool
@@ -88,6 +88,7 @@ type Msg
       -----------------------------------------
     | GotDirectoryList Json.Value
     | GotError String
+    | GotResolvedAddress Roots
     | SetupCompleted
       -----------------------------------------
       -- 🐚 Other
@@ -111,6 +112,10 @@ type alias Manager =
 
 
 -- 🧩
---
--- Nothing here yet.
--- Here go the other types.
+
+
+type alias Roots =
+    { isDnsLink : Bool
+    , resolved : String
+    , unresolved : String
+    }

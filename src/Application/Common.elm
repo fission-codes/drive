@@ -10,23 +10,29 @@ import Types exposing (Model)
 -- 🛠
 
 
+base : Model -> String
+base model =
+    case model.roots of
+        Just roots ->
+            model.page
+                |> Routing.drivePathSegments
+                |> (::) roots.unresolved
+                |> String.join "/"
+                |> String.append
+                    (if roots.isDnsLink then
+                        "https://"
+
+                     else
+                        "https://ipfs.runfission.com/ipfs/"
+                    )
+
+        Nothing ->
+            ""
+
+
 defaultCid : String
 defaultCid =
     "QmbCLefkFuXbhHBWSW7PWmJzBL7W7e8zm41HK4DGJ1RDwV"
-
-
-directoryPath : Model -> String
-directoryPath model =
-    model.page
-        |> Routing.drivePathSegments
-        |> (case model.rootCid of
-                Just rootCid ->
-                    (::) rootCid
-
-                Nothing ->
-                    identity
-           )
-        |> String.join "/"
 
 
 sizeInWords : Int -> String

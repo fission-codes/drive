@@ -24,9 +24,9 @@ getDirectoryListCmd model =
 
         cid =
             pathSegments
-                |> (case model.rootCid of
-                        Just rootCid ->
-                            (::) rootCid
+                |> (case model.roots of
+                        Just { resolved } ->
+                            (::) resolved
 
                         Nothing ->
                             identity
@@ -101,7 +101,7 @@ gotError : String -> Manager
 gotError error model =
     Return.singleton
         { model
-            | exploreInput = model.rootCid
+            | exploreInput = Maybe.map .unresolved model.roots
             , ipfs = Ipfs.Error error
         }
 
@@ -110,9 +110,17 @@ gotError error model =
 -- SETUP
 
 
+gotResolvedAddress : Roots -> Manager
+gotResolvedAddress roots model =
+    { model | roots = Just roots }
+        |> Return.singleton
+        |> Return.effect_ getDirectoryListCmd
+        |> Return.command (Ports.storeRoots roots)
+
+
 setupCompleted : Manager
 setupCompleted model =
-    case model.rootCid of
+    case model.roots of
         Just _ ->
             return { model | ipfs = Ipfs.InitialListing } (getDirectoryListCmd model)
 

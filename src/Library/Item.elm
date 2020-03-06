@@ -175,11 +175,8 @@ nameProperties name =
 
 
 publicUrl : String -> Item -> String
-publicUrl directoryPath item =
-    item.name
-        |> String.append "/"
-        |> String.append (String.chop "/" directoryPath)
-        |> String.append "https://ipfs.runfission.com/ipfs/"
+publicUrl base item =
+    String.chopEnd "/" base ++ "/" ++ item.name
 
 
 sortingFunction : Item -> Item -> Order
