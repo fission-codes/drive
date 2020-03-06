@@ -34,6 +34,9 @@ keyboardInteraction msg unmodified =
             [ Keyboard.Character "U" ] ->
                 Drive.goUpOneLevel m
 
+            [ Keyboard.Enter ] ->
+                Drive.digDeeperUsingSelection m
+
             [ Keyboard.Escape ] ->
                 Drive.removeSelection m
 

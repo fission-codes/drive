@@ -79,7 +79,7 @@ gotDirectoryList_ encodedDirList model =
         |> Result.mapError Json.errorToString
         |> (\result ->
                 { model
-                    | directoryList = result
+                    | directoryList = Result.map (List.sortWith Item.sortingFunction) result
                     , ipfs = Ipfs.Ready
                     , showLoadingOverlay = False
                 }

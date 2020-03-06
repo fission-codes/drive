@@ -65,6 +65,28 @@ digDeeper { directoryName } model =
         |> Return.return { model | directoryList = Ok updatedDirectoryList }
 
 
+digDeeperUsingSelection : Manager
+digDeeperUsingSelection model =
+    case ( model.directoryList, model.selectedCid ) of
+        ( Ok items, Just cid ) ->
+            items
+                |> List.find
+                    (.path >> (==) cid)
+                |> Maybe.map
+                    (\item ->
+                        if item.kind == Item.Directory then
+                            digDeeper { directoryName = item.name } model
+
+                        else
+                            Return.singleton model
+                    )
+                |> Maybe.withDefault
+                    (Return.singleton model)
+
+        _ ->
+            Return.singleton model
+
+
 goUp : { floor : Int } -> Manager
 goUp { floor } model =
     if floor >= 0 then
@@ -128,12 +150,16 @@ select item model =
 
 selectNextItem : Manager
 selectNextItem =
-    makeItemSelector (\i -> i + 1)
+    makeItemSelector
+        (\i -> i + 1)
+        (\_ -> 0)
 
 
 selectPreviousItem : Manager
 selectPreviousItem =
-    makeItemSelector (\i -> i - 1)
+    makeItemSelector
+        (\i -> i - 1)
+        (\l -> List.length l - 1)
 
 
 showPreviewOverlay : Manager
@@ -150,14 +176,20 @@ toggleLargePreview model =
 -- ㊙️
 
 
-makeItemSelector : (Int -> Int) -> Manager
-makeItemSelector indexModifier model =
+makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Manager
+makeItemSelector indexModifier fallbackIndexFn model =
     case ( model.directoryList, model.selectedCid ) of
         ( Ok items, Just selectedCid ) ->
             items
                 |> List.findIndex (.path >> (==) selectedCid)
                 |> Maybe.map indexModifier
                 |> Maybe.andThen (\idx -> List.getAt idx items)
+                |> Maybe.map (\item -> select item model)
+                |> Maybe.withDefault (Return.singleton model)
+
+        ( Ok items, Nothing ) ->
+            items
+                |> List.getAt (fallbackIndexFn items)
                 |> Maybe.map (\item -> select item model)
                 |> Maybe.withDefault (Return.singleton model)
 

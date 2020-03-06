@@ -182,6 +182,24 @@ publicUrl directoryPath item =
         |> String.append "https://ipfs.runfission.com/ipfs/"
 
 
+sortingFunction : Item -> Item -> Order
+sortingFunction a b =
+    -- Put directories on top,
+    -- and then sort alphabetically by name
+    case ( a.kind, b.kind ) of
+        ( Directory, Directory ) ->
+            compare (String.toLower a.name) (String.toLower b.name)
+
+        ( Directory, _ ) ->
+            LT
+
+        ( _, Directory ) ->
+            GT
+
+        ( _, _ ) ->
+            compare (String.toLower a.name) (String.toLower b.name)
+
+
 
 -- 🖼
 
