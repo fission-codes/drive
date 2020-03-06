@@ -89,7 +89,7 @@ gotDirectoryList_ encodedDirList model =
         |> Return.command
             (Task.attempt
                 (always Bypass)
-                (Dom.setViewportOf "drive-items" 0 0)
+                (Dom.setViewport 0 0)
             )
 
 
