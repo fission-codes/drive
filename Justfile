@@ -122,6 +122,7 @@ environment := "dev"
 @javascript:
 	echo "⚙️  Copying Javascript"
 	cp {{src_dir}}/Javascript/* {{build_dir}}/
+	touch {{build_dir}}/nomodule.min.js
 
 
 @javascript-dependencies:
