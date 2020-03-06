@@ -30,13 +30,13 @@ init flags url navKey =
       -----------------------------------------
       { currentTime = Time.millisToPosix 0
       , directoryList = Ok []
-      , exploreInput = Just (Maybe.withDefault defaultCid flags.rootCid)
+      , exploreInput = Just (Maybe.withDefault defaultCid <| Maybe.map .unresolved flags.roots)
       , ipfs = Ipfs.Connecting
       , largePreview = False
       , navKey = navKey
       , page = Routing.pageFromUrl url
       , pressedKeys = []
-      , rootCid = flags.rootCid
+      , roots = flags.roots
       , selectedCid = Nothing
       , showLoadingOverlay = False
       , showPreviewOverlay = False
@@ -117,6 +117,9 @@ update msg =
         GotError a ->
             Ipfs.gotError a
 
+        GotResolvedAddress a ->
+            Ipfs.gotResolvedAddress a
+
         SetupCompleted ->
             Ipfs.setupCompleted
 
@@ -149,6 +152,7 @@ subscriptions model =
         [ Ports.ipfsCompletedSetup (always SetupCompleted)
         , Ports.ipfsGotDirectoryList GotDirectoryList
         , Ports.ipfsGotError GotError
+        , Ports.ipfsGotResolvedAddress GotResolvedAddress
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

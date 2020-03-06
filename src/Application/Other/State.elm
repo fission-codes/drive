@@ -81,7 +81,7 @@ urlChanged url old =
         |> Return.singleton
         |> Return.effect_
             (\new ->
-                if new.page /= old.page && Maybe.isJust old.rootCid then
+                if new.page /= old.page && Maybe.isJust old.roots then
                     Ipfs.State.getDirectoryListCmd new
 
                 else

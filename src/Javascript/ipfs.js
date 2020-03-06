@@ -43,6 +43,22 @@ export async function listDirectory(address) {
 }
 
 
+export async function replaceDnsLinkInAddress(address) {
+  const splitted = address.replace(/(^\/|\/$)/m, "").split("/")
+  const firstPart = splitted[0]
+
+  const isDnsLink = !firstPart.startsWith("Qm") && !firstPart.startsWith("bafy")
+  const cleanedPart = firstPart.includes(".") ? firstPart : `${firstPart}.fission.name`
+  const replacedPart = isDnsLink ? await lookupDns(cleanedPart) : firstPart
+
+  return {
+    isDnsLink,
+    resolved: [replacedPart].concat(splitted.slice(1)).join("/"),
+    unresolved: isDnsLink ? [cleanedPart].concat(splitted.slice(1)).join("/") : address
+  }
+}
+
+
 export async function setup() {
   const isSafari =
     /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -69,10 +85,26 @@ export async function setup() {
 }
 
 
-export function stream(cid, opts) {
+export function stream(address, opts) {
   return ipfs.catReadableStream
-    ? ipfs.catReadableStream(cid, opts)
+    ? ipfs.catReadableStream(address, opts)
     : ipfs.files.catReadableStream
-      ? ipfs.files.catReadableStream(cid, opts)
-      : itToStream.readable(ipfs.cat(cid, opts))
+      ? ipfs.files.catReadableStream(address, opts)
+      : itToStream.readable(ipfs.cat(address, opts))
+}
+
+
+
+// ㊙️
+
+
+async function lookupDns(domain) {
+  try {
+    const result = await ipfs.dns(domain)
+    return result.replace(/^\/ipfs\//, "")
+
+  } catch (_) {
+    return domain
+
+  }
 }

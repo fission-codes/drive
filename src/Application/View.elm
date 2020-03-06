@@ -42,7 +42,7 @@ body m =
             [ Common.loadingAnimation ]
         ]
 
-    else if shouldShowExplore m.ipfs || Maybe.isNothing m.rootCid then
+    else if shouldShowExplore m.ipfs || Maybe.isNothing m.roots then
         [ Explore.view m ]
 
     else
