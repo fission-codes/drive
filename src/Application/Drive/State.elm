@@ -58,7 +58,7 @@ digDeeper { directoryName } model =
     in
     [ directoryName ]
         |> List.append pathSegments
-        |> Routing.Drive
+        |> Routing.replaceDrivePathSegments model.page
         |> Routing.adjustUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
@@ -97,7 +97,7 @@ goUp { floor } model =
             x ->
                 List.take (x - 1) (Routing.drivePathSegments model.page)
         )
-            |> Routing.Drive
+            |> Routing.replaceDrivePathSegments model.page
             |> Routing.adjustUrl model.url
             |> Url.toString
             |> Navigation.pushUrl model.navKey

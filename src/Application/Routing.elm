@@ -12,7 +12,7 @@ import Url.Parser as Url exposing (..)
 
 type Page
     = Blank
-    | Drive (List String)
+    | Drive { root : String } (List String)
 
 
 
@@ -23,10 +23,15 @@ pageFromUrl : Url -> Page
 pageFromUrl url =
     case basePath url of
         "" ->
-            Drive []
+            Blank
 
         path ->
-            Drive (String.split "/" path)
+            case String.split "/" path of
+                root :: rest ->
+                    Drive { root = root } rest
+
+                [] ->
+                    Blank
 
 
 adjustUrl : Url -> Page -> Url
@@ -35,9 +40,18 @@ adjustUrl url page =
         Blank ->
             { url | fragment = Nothing }
 
-        Drive pathSegments ->
+        Drive { root } pathSegments ->
+            let
+                frag =
+                    case pathSegments of
+                        [] ->
+                            "/" ++ root
+
+                        _ ->
+                            "/" ++ root ++ "/" ++ String.join "/" pathSegments
+            in
             -- To switch to path-based routing, use { url | path = ... }
-            { url | fragment = Just (Url.Builder.absolute pathSegments []) }
+            { url | fragment = Just frag }
 
 
 
@@ -76,8 +90,38 @@ basePath url =
 drivePathSegments : Page -> List String
 drivePathSegments page =
     case page of
-        Drive pathSegments ->
+        Drive _ pathSegments ->
             pathSegments
 
         _ ->
             []
+
+
+driveRoot : Page -> Maybe String
+driveRoot page =
+    case page of
+        Drive { root } _ ->
+            Just root
+
+        _ ->
+            Nothing
+
+
+addDrivePathSegments : Page -> List String -> Page
+addDrivePathSegments page segments =
+    case page of
+        Drive properties pathSegments ->
+            Drive properties (List.append pathSegments segments)
+
+        _ ->
+            page
+
+
+replaceDrivePathSegments : Page -> List String -> Page
+replaceDrivePathSegments page segments =
+    case page of
+        Drive properties _ ->
+            Drive properties segments
+
+        _ ->
+            page
