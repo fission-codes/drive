@@ -1,13 +1,14 @@
 module Ipfs.State exposing (..)
 
 import Browser.Dom as Dom
+import Browser.Navigation as Navigation
 import Debouncing
 import Ipfs
 import Item
 import Json.Decode as Json
 import Ports
 import Return exposing (return)
-import Routing
+import Routing exposing (Page(..))
 import Task
 import Types exposing (..)
 
@@ -112,9 +113,33 @@ gotError error model =
 
 gotResolvedAddress : Roots -> Manager
 gotResolvedAddress roots model =
-    { model | roots = Just roots }
+    let
+        changeUrl =
+            -- Do I need to put the ipfs address in the url?
+            model.url.fragment
+                |> Maybe.withDefault ""
+                |> String.startsWith ("/" ++ roots.unresolved)
+                |> not
+
+        ipfs =
+            if changeUrl then
+                model.ipfs
+
+            else
+                Ipfs.InitialListing
+    in
+    { model | ipfs = ipfs, roots = Just roots }
         |> Return.singleton
-        |> Return.effect_ getDirectoryListCmd
+        |> (if changeUrl then
+                -- If the url needs to change, issue a navigation command
+                ("#/" ++ roots.unresolved)
+                    |> Navigation.pushUrl model.navKey
+                    |> Return.command
+
+            else
+                -- Otherwise list the directory
+                Return.effect_ getDirectoryListCmd
+           )
         |> Return.command (Ports.storeRoots roots)
 
 
@@ -125,4 +150,11 @@ setupCompleted model =
             return { model | ipfs = Ipfs.InitialListing } (getDirectoryListCmd model)
 
         Nothing ->
-            Return.singleton { model | ipfs = Ipfs.Ready }
+            case model.page of
+                Drive { root } _ ->
+                    return
+                        { model | ipfs = Ipfs.InitialListing }
+                        (Ports.ipfsResolveAddress root)
+
+                _ ->
+                    Return.singleton { model | ipfs = Ipfs.Ready }

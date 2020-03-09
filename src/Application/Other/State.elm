@@ -7,6 +7,7 @@ import Ipfs
 import Ipfs.State
 import Keyboard
 import Maybe.Extra as Maybe
+import Ports
 import Return exposing (return)
 import Routing exposing (Page(..))
 import Time
@@ -72,16 +73,56 @@ toggleLoadingOverlay { on } model =
 
 urlChanged : Url -> Manager
 urlChanged url old =
+    let
+        page =
+            Routing.pageFromUrl url
+
+        isNotDrivePage =
+            Maybe.isNothing (Routing.driveRoot page)
+
+        needsResolve =
+            Routing.driveRoot page /= Maybe.map .unresolved old.roots
+
+        isInitialListing =
+            Routing.driveRoot old.page /= Maybe.map .unresolved old.roots
+    in
     { old
-        | ipfs = Ipfs.AdditionalListing
-        , page = Routing.pageFromUrl url
+        | ipfs =
+            if isNotDrivePage || needsResolve then
+                old.ipfs
+
+            else if isInitialListing then
+                Ipfs.InitialListing
+
+            else
+                Ipfs.AdditionalListing
+
+        --
+        , roots =
+            if needsResolve then
+                Nothing
+
+            else
+                old.roots
+
+        --
+        , page = page
         , selectedCid = Nothing
         , url = url
     }
         |> Return.singleton
         |> Return.effect_
             (\new ->
-                if new.page /= old.page && Maybe.isJust old.roots then
+                if isNotDrivePage then
+                    Cmd.none
+
+                else if needsResolve then
+                    new.page
+                        |> Routing.driveRoot
+                        |> Maybe.map Ports.ipfsResolveAddress
+                        |> Maybe.withDefault Cmd.none
+
+                else if new.page /= old.page && Maybe.isJust old.roots then
                     Ipfs.State.getDirectoryListCmd new
 
                 else

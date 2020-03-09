@@ -9,10 +9,11 @@ import Explore.State as Explore
 import Ipfs
 import Ipfs.State as Ipfs
 import Keyboard
+import Maybe.Extra as Maybe
 import Other.State as Other
 import Ports
 import Return exposing (return)
-import Routing
+import Routing exposing (Page(..))
 import Task
 import Time
 import Types exposing (..)
@@ -25,18 +26,44 @@ import Url exposing (Url)
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
+    let
+        page =
+            Routing.pageFromUrl url
+
+        roots =
+            -- `flags.roots` is a cached version of a resolved ipfs address.
+            -- We only want to keep that, if the unresolved ipfs address in
+            -- the url is the same. Otherwise we should resolve the requested
+            -- ipfs address first (this happens after the ipfs setup).
+            case ( flags.roots, page ) of
+                ( Just cachedRoots, Drive { root } _ ) ->
+                    if root /= cachedRoots.unresolved then
+                        Nothing
+
+                    else
+                        Just cachedRoots
+
+                _ ->
+                    Nothing
+
+        exploreInput =
+            roots
+                |> Maybe.map .unresolved
+                |> Maybe.orElse (Routing.driveRoot page)
+                |> Maybe.withDefault defaultCid
+    in
     ( -----------------------------------------
       -- Model
       -----------------------------------------
       { currentTime = Time.millisToPosix 0
       , directoryList = Ok []
-      , exploreInput = Just (Maybe.withDefault defaultCid <| Maybe.map .unresolved flags.roots)
+      , exploreInput = Just exploreInput
       , ipfs = Ipfs.Connecting
       , largePreview = False
       , navKey = navKey
       , page = Routing.pageFromUrl url
       , pressedKeys = []
-      , roots = flags.roots
+      , roots = roots
       , selectedCid = Nothing
       , showLoadingOverlay = False
       , showPreviewOverlay = False
