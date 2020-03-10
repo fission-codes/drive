@@ -9,7 +9,7 @@ import Keyboard
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
-import Routing exposing (Page(..))
+import Routing exposing (Route(..))
 import Time
 import Types exposing (..)
 import Url exposing (Url)
@@ -74,21 +74,21 @@ toggleLoadingOverlay { on } model =
 urlChanged : Url -> Manager
 urlChanged url old =
     let
-        page =
-            Routing.pageFromUrl url
+        route =
+            Routing.routeFromUrl url
 
-        isNotDrivePage =
-            Maybe.isNothing (Routing.driveRoot page)
+        isTreeRoute =
+            Maybe.isJust (Routing.treeRoot route)
 
         needsResolve =
-            Routing.driveRoot page /= Maybe.map .unresolved old.roots
+            Routing.treeRoot route /= Maybe.map .unresolved old.foundation
 
         isInitialListing =
-            Routing.driveRoot old.page /= Maybe.map .unresolved old.roots
+            Routing.treeRoot old.route /= Maybe.map .unresolved old.foundation
     in
     { old
         | ipfs =
-            if isNotDrivePage || needsResolve then
+            if not isTreeRoute || needsResolve then
                 old.ipfs
 
             else if isInitialListing then
@@ -98,31 +98,31 @@ urlChanged url old =
                 Ipfs.AdditionalListing
 
         --
-        , roots =
+        , foundation =
             if needsResolve then
                 Nothing
 
             else
-                old.roots
+                old.foundation
 
         --
-        , page = page
+        , route = route
         , selectedCid = Nothing
         , url = url
     }
         |> Return.singleton
         |> Return.effect_
             (\new ->
-                if isNotDrivePage then
+                if not isTreeRoute then
                     Cmd.none
 
                 else if needsResolve then
-                    new.page
-                        |> Routing.driveRoot
+                    new.route
+                        |> Routing.treeRoot
                         |> Maybe.map Ports.ipfsResolveAddress
                         |> Maybe.withDefault Cmd.none
 
-                else if new.page /= old.page && Maybe.isJust old.roots then
+                else if new.route /= old.route && Maybe.isJust old.foundation then
                     Ipfs.State.getDirectoryListCmd new
 
                 else

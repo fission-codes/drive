@@ -12,7 +12,7 @@ import Ipfs
 import Item exposing (Item, Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
-import Routing exposing (Page(..))
+import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -42,7 +42,7 @@ body m =
             [ Common.loadingAnimation ]
         ]
 
-    else if shouldShowExplore m.ipfs || Maybe.isNothing m.roots then
+    else if shouldShowExplore m.ipfs || Maybe.isNothing m.foundation then
         [ Explore.view m ]
 
     else

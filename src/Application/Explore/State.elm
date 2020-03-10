@@ -23,7 +23,7 @@ explore model =
 
         input ->
             return
-                { model | ipfs = Ipfs.InitialListing, roots = Nothing }
+                { model | ipfs = Ipfs.InitialListing, foundation = Nothing }
                 (Ports.ipfsResolveAddress input)
 
 
@@ -33,7 +33,7 @@ gotInput input model =
         { model
             | ipfs = Ipfs.Ready
             , exploreInput = Just input
-            , roots = Nothing
+            , foundation = Nothing
         }
 
 
@@ -43,14 +43,14 @@ reset model =
         { model
             | directoryList = Ok []
             , exploreInput = Just ""
-            , roots = Nothing
+            , foundation = Nothing
             , selectedCid = Nothing
         }
         (Cmd.batch
-            [ Ports.removeStoredRoots ()
+            [ Ports.removeStoredFoundation ()
 
             --
-            , Routing.Blank
+            , Routing.Undecided
                 |> Routing.adjustUrl model.url
                 |> Url.toString
                 |> Navigation.pushUrl model.navKey

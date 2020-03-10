@@ -11,7 +11,7 @@ import Item exposing (Item)
 import Json.Decode as Json
 import Keyboard
 import Management
-import Routing exposing (Page)
+import Routing exposing (Route)
 import Time
 import Url exposing (Url)
 
@@ -23,7 +23,7 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { roots : Maybe Roots
+    { foundation : Maybe Foundation
     }
 
 
@@ -37,12 +37,12 @@ type alias Model =
     { currentTime : Time.Posix
     , directoryList : Result String (List Item)
     , exploreInput : Maybe String
+    , foundation : Maybe Foundation
     , ipfs : Ipfs.Status
     , largePreview : Bool
     , navKey : Navigation.Key
-    , page : Page
     , pressedKeys : List Keyboard.Key
-    , roots : Maybe Roots
+    , route : Route
     , selectedCid : Maybe String
     , showLoadingOverlay : Bool
     , showPreviewOverlay : Bool
@@ -88,7 +88,7 @@ type Msg
       -----------------------------------------
     | GotDirectoryList Json.Value
     | GotError String
-    | GotResolvedAddress Roots
+    | GotResolvedAddress Foundation
     | SetupCompleted
       -----------------------------------------
       -- 🐚 Other
@@ -114,7 +114,7 @@ type alias Manager =
 -- 🧩
 
 
-type alias Roots =
+type alias Foundation =
     { isDnsLink : Bool
     , resolved : String
     , unresolved : String
