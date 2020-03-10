@@ -43,8 +43,22 @@ init flags url navKey =
                     else
                         Just cachedFoundation
 
+                ( Just cachedFoundation, _ ) ->
+                    Just cachedFoundation
+
                 _ ->
                     Nothing
+
+        urlCmd =
+            case ( flags.foundation, route ) of
+                ( Just _, Tree _ _ ) ->
+                    Cmd.none
+
+                ( Just f, _ ) ->
+                    Navigation.replaceUrl navKey ("#/" ++ f.unresolved)
+
+                _ ->
+                    Cmd.none
 
         exploreInput =
             foundation
@@ -80,6 +94,7 @@ init flags url navKey =
     , Cmd.batch
         [ Ports.ipfsSetup ()
         , Task.perform SetCurrentTime Time.now
+        , urlCmd
         ]
     )
 

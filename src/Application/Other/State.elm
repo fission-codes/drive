@@ -100,6 +100,9 @@ toggleLoadingOverlay { on } model =
 urlChanged : Url -> Manager
 urlChanged url old =
     let
+        stillConnecting =
+            old.ipfs == Ipfs.Connecting
+
         route =
             Routing.routeFromUrl url
 
@@ -114,7 +117,7 @@ urlChanged url old =
     in
     { old
         | ipfs =
-            if not isTreeRoute || needsResolve then
+            if stillConnecting || not isTreeRoute || needsResolve then
                 old.ipfs
 
             else if isInitialListing then
@@ -139,7 +142,7 @@ urlChanged url old =
         |> Return.singleton
         |> Return.effect_
             (\new ->
-                if not isTreeRoute then
+                if stillConnecting || not isTreeRoute then
                     Cmd.none
 
                 else if needsResolve then
