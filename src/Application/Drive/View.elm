@@ -710,14 +710,12 @@ detailsDataContainer item =
         (List.append
             [ A.id item.id
             , A.class "drive-item__preview"
-
-            --
-            , T.relative
-            , T.z_10
             ]
             (case item.kind of
                 Item.Audio ->
                     [ T.mt_8
+                    , T.relative
+                    , T.z_10
                     ]
 
                 Item.Image ->
