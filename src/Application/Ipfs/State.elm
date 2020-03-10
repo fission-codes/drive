@@ -140,6 +140,7 @@ gotResolvedAddress foundation model =
                 -- Otherwise list the directory
                 Return.effect_ getDirectoryListCmd
            )
+        |> Return.command (Ports.ipfsPrefetchTree foundation.resolved)
         |> Return.command (Ports.storeFoundation foundation)
 
 

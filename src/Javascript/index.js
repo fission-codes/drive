@@ -75,6 +75,11 @@ app.ports.ipfsListDirectory.subscribe(({ cid, pathSegments }) => {
 })
 
 
+app.ports.ipfsPrefetchTree.subscribe(address => {
+  ipfs.prefetchTree(address)
+})
+
+
 app.ports.ipfsResolveAddress.subscribe(async address => {
   const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
   app.ports.ipfsGotResolvedAddress.send(resolvedResult)

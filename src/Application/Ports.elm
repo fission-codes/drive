@@ -14,6 +14,9 @@ port copyToClipboard : String -> Cmd msg
 port ipfsListDirectory : { cid : String, pathSegments : List String } -> Cmd msg
 
 
+port ipfsPrefetchTree : String -> Cmd msg
+
+
 port ipfsResolveAddress : String -> Cmd msg
 
 
