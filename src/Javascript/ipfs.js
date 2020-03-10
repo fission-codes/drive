@@ -6,6 +6,7 @@ Everything involving IPFS.
 
 */
 
+import "./web_modules/is-ipfs.js"
 import "./web_modules/it-to-stream.js"
 import getIpfs from "./web_modules/get-ipfs.js"
 
@@ -47,7 +48,7 @@ export async function replaceDnsLinkInAddress(address) {
   const splitted = address.replace(/(^\/|\/$)/m, "").split("/")
   const firstPart = splitted[0]
 
-  const isDnsLink = !firstPart.startsWith("Qm") && !firstPart.startsWith("bafy")
+  const isDnsLink = !IsIpfs.cid(firstPart)
   const cleanedPart = firstPart.includes(".") ? firstPart : `${firstPart}.fission.name`
   const replacedPart = isDnsLink ? await lookupDns(cleanedPart) : firstPart
 
