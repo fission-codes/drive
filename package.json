@@ -3,7 +3,7 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#d77054d1ef4a74ddd018a8efa64c9764e9453eb6",
-    "get-ipfs": "^1.1.1"
+    "get-ipfs": "^1.2.0"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.0.6",
@@ -14,7 +14,7 @@
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
     "postcss-elm-tailwind": "0.6.0",
-    "snowpack": "^1.5.2",
+    "snowpack": "^1.6.0",
     "tailwindcss": "^1.2.0",
     "tailwindcss-animations": "^2.0.0",
     "terser-dir": "^1.0.5"
