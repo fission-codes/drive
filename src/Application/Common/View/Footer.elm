@@ -104,7 +104,7 @@ right model =
         --
         , T.sm__scale_100
         ]
-        [ if model.ipfs == Ipfs.Ready && Maybe.isJust model.roots then
+        [ if model.ipfs == Ipfs.Ready && Maybe.isJust model.foundation then
             action
                 Button
                 [ E.onClick Reset, T.cursor_pointer ]

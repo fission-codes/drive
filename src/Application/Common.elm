@@ -12,14 +12,14 @@ import Types exposing (Model)
 
 base : Model -> String
 base model =
-    case model.roots of
-        Just roots ->
-            model.page
-                |> Routing.drivePathSegments
-                |> (::) roots.unresolved
+    case model.foundation of
+        Just foundation ->
+            model.route
+                |> Routing.treePathSegments
+                |> (::) foundation.unresolved
                 |> String.join "/"
                 |> String.append
-                    (if roots.isDnsLink then
+                    (if foundation.isDnsLink then
                         "https://"
 
                      else

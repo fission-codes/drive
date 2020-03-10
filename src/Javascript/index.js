@@ -21,7 +21,7 @@ import * as media from "./media.js"
 const app = Elm.Main.init({
   node: document.getElementById("elm"),
   flags: {
-    roots: roots()
+    foundation: foundation()
   }
 })
 
@@ -88,8 +88,8 @@ app.ports.ipfsSetup.subscribe(_ => {
 })
 
 
-app.ports.removeStoredRoots.subscribe(_ => {
-  localStorage.removeItem("fissionDrive.roots")
+app.ports.removeStoredFoundation.subscribe(_ => {
+  localStorage.removeItem("fissionDrive.foundation")
 })
 
 
@@ -113,8 +113,8 @@ app.ports.showNotification.subscribe(text => {
 })
 
 
-app.ports.storeRoots.subscribe(roots => {
-  localStorage.setItem("fissionDrive.roots", JSON.stringify(roots))
+app.ports.storeFoundation.subscribe(foundation => {
+  localStorage.setItem("fissionDrive.foundation", JSON.stringify(foundation))
 })
 
 
@@ -128,7 +128,7 @@ function reportIpfsError(err) {
 }
 
 
-function roots() {
-  const stored = localStorage.getItem("fissionDrive.roots")
+function foundation() {
+  const stored = localStorage.getItem("fissionDrive.foundation")
   return stored ? JSON.parse(stored) : null
 }

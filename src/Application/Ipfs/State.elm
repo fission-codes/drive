@@ -8,7 +8,7 @@ import Item
 import Json.Decode as Json
 import Ports
 import Return exposing (return)
-import Routing exposing (Page(..))
+import Routing exposing (Route(..))
 import Task
 import Types exposing (..)
 
@@ -21,11 +21,11 @@ getDirectoryListCmd : Model -> Cmd Msg
 getDirectoryListCmd model =
     let
         pathSegments =
-            Routing.drivePathSegments model.page
+            Routing.treePathSegments model.route
 
         cid =
             pathSegments
-                |> (case model.roots of
+                |> (case model.foundation of
                         Just { resolved } ->
                             (::) resolved
 
@@ -62,7 +62,7 @@ gotDirectoryList encodedFeedback model =
             gotDirectoryList_ encodedDirList model
 
         Ipfs.AdditionalListing ->
-            if Routing.drivePathSegments model.page == pathSegments then
+            if Routing.treePathSegments model.route == pathSegments then
                 gotDirectoryList_ encodedDirList model
 
             else
@@ -102,7 +102,7 @@ gotError : String -> Manager
 gotError error model =
     Return.singleton
         { model
-            | exploreInput = Maybe.map .unresolved model.roots
+            | exploreInput = Maybe.map .unresolved model.foundation
             , ipfs = Ipfs.Error error
         }
 
@@ -111,14 +111,14 @@ gotError error model =
 -- SETUP
 
 
-gotResolvedAddress : Roots -> Manager
-gotResolvedAddress roots model =
+gotResolvedAddress : Foundation -> Manager
+gotResolvedAddress foundation model =
     let
         changeUrl =
             -- Do I need to put the ipfs address in the url?
             model.url.fragment
                 |> Maybe.withDefault ""
-                |> String.startsWith ("/" ++ roots.unresolved)
+                |> String.startsWith ("/" ++ foundation.unresolved)
                 |> not
 
         ipfs =
@@ -128,11 +128,11 @@ gotResolvedAddress roots model =
             else
                 Ipfs.InitialListing
     in
-    { model | ipfs = ipfs, roots = Just roots }
+    { model | ipfs = ipfs, foundation = Just foundation }
         |> Return.singleton
         |> (if changeUrl then
                 -- If the url needs to change, issue a navigation command
-                ("#/" ++ roots.unresolved)
+                ("#/" ++ foundation.unresolved)
                     |> Navigation.pushUrl model.navKey
                     |> Return.command
 
@@ -140,18 +140,18 @@ gotResolvedAddress roots model =
                 -- Otherwise list the directory
                 Return.effect_ getDirectoryListCmd
            )
-        |> Return.command (Ports.storeRoots roots)
+        |> Return.command (Ports.storeFoundation foundation)
 
 
 setupCompleted : Manager
 setupCompleted model =
-    case model.roots of
+    case model.foundation of
         Just _ ->
             return { model | ipfs = Ipfs.InitialListing } (getDirectoryListCmd model)
 
         Nothing ->
-            case model.page of
-                Drive { root } _ ->
+            case model.route of
+                Tree { root } _ ->
                     return
                         { model | ipfs = Ipfs.InitialListing }
                         (Ports.ipfsResolveAddress root)

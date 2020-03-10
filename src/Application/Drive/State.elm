@@ -35,7 +35,7 @@ digDeeper { directoryName } model =
             Result.withDefault [] model.directoryList
 
         currentPathSegments =
-            Routing.drivePathSegments model.page
+            Routing.treePathSegments model.route
 
         pathSegments =
             case model.ipfs of
@@ -58,7 +58,7 @@ digDeeper { directoryName } model =
     in
     [ directoryName ]
         |> List.append pathSegments
-        |> Routing.replaceDrivePathSegments model.page
+        |> Routing.replaceTreePathSegments model.route
         |> Routing.adjustUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
@@ -95,9 +95,9 @@ goUp { floor } model =
                 []
 
             x ->
-                List.take (x - 1) (Routing.drivePathSegments model.page)
+                List.take (x - 1) (Routing.treePathSegments model.route)
         )
-            |> Routing.replaceDrivePathSegments model.page
+            |> Routing.replaceTreePathSegments model.route
             |> Routing.adjustUrl model.url
             |> Url.toString
             |> Navigation.pushUrl model.navKey
@@ -116,8 +116,8 @@ goUp { floor } model =
 
 goUpOneLevel : Manager
 goUpOneLevel model =
-    model.page
-        |> Routing.drivePathSegments
+    model.route
+        |> Routing.treePathSegments
         |> List.length
         |> (\x -> goUp { floor = x } model)
 

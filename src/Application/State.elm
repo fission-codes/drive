@@ -13,7 +13,7 @@ import Maybe.Extra as Maybe
 import Other.State as Other
 import Ports
 import Return exposing (return)
-import Routing exposing (Page(..))
+import Routing exposing (Route(..))
 import Task
 import Time
 import Types exposing (..)
@@ -27,29 +27,29 @@ import Url exposing (Url)
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        page =
-            Routing.pageFromUrl url
+        route =
+            Routing.routeFromUrl url
 
-        roots =
-            -- `flags.roots` is a cached version of a resolved ipfs address.
+        foundation =
+            -- `flags.foundation` is a cached version of a resolved ipfs address.
             -- We only want to keep that, if the unresolved ipfs address in
             -- the url is the same. Otherwise we should resolve the requested
             -- ipfs address first (this happens after the ipfs setup).
-            case ( flags.roots, page ) of
-                ( Just cachedRoots, Drive { root } _ ) ->
-                    if root /= cachedRoots.unresolved then
+            case ( flags.foundation, route ) of
+                ( Just cachedFoundation, Tree { root } _ ) ->
+                    if root /= cachedFoundation.unresolved then
                         Nothing
 
                     else
-                        Just cachedRoots
+                        Just cachedFoundation
 
                 _ ->
                     Nothing
 
         exploreInput =
-            roots
+            foundation
                 |> Maybe.map .unresolved
-                |> Maybe.orElse (Routing.driveRoot page)
+                |> Maybe.orElse (Routing.treeRoot route)
                 |> Maybe.withDefault defaultCid
     in
     ( -----------------------------------------
@@ -61,9 +61,9 @@ init flags url navKey =
       , ipfs = Ipfs.Connecting
       , largePreview = False
       , navKey = navKey
-      , page = Routing.pageFromUrl url
+      , route = Routing.routeFromUrl url
       , pressedKeys = []
-      , roots = roots
+      , foundation = foundation
       , selectedCid = Nothing
       , showLoadingOverlay = False
       , showPreviewOverlay = False

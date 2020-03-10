@@ -10,37 +10,37 @@ import Url.Parser as Url exposing (..)
 -- 🧩
 
 
-type Page
-    = Blank
-    | Drive { root : String } (List String)
+type Route
+    = Undecided
+    | Tree { root : String } (List String)
 
 
 
 -- 🛠
 
 
-pageFromUrl : Url -> Page
-pageFromUrl url =
+routeFromUrl : Url -> Route
+routeFromUrl url =
     case basePath url of
         "" ->
-            Blank
+            Undecided
 
         path ->
             case String.split "/" path of
                 root :: rest ->
-                    Drive { root = root } rest
+                    Tree { root = root } rest
 
                 [] ->
-                    Blank
+                    Undecided
 
 
-adjustUrl : Url -> Page -> Url
-adjustUrl url page =
-    case page of
-        Blank ->
+adjustUrl : Url -> Route -> Url
+adjustUrl url route =
+    case route of
+        Undecided ->
             { url | fragment = Nothing }
 
-        Drive { root } pathSegments ->
+        Tree { root } pathSegments ->
             let
                 frag =
                     case pathSegments of
@@ -65,63 +65,58 @@ basePath url =
             -- To switch to path-based routing, use url.path
             Maybe.withDefault "" url.fragment
     in
-    if String.startsWith "/ipns/" path then
-        path
-            |> String.chopStart "/"
-            |> String.chopEnd "/"
-            |> String.split "/"
-            |> List.drop 2
-            |> List.map (\s -> Url.percentDecode s |> Maybe.withDefault s)
-            |> String.join "/"
+    path
+        |> String.chop "/"
+        |> String.split "/"
+        |> (if String.startsWith "/ipns/" path then
+                List.drop 2
 
-    else
-        path
-            |> String.chopStart "/"
-            |> String.chopEnd "/"
-            |> String.split "/"
-            |> List.map (\s -> Url.percentDecode s |> Maybe.withDefault s)
-            |> String.join "/"
+            else
+                identity
+           )
+        |> List.map (\s -> Url.percentDecode s |> Maybe.withDefault s)
+        |> String.join "/"
 
 
 
--- DRIVE
+-- TREE
 
 
-drivePathSegments : Page -> List String
-drivePathSegments page =
-    case page of
-        Drive _ pathSegments ->
+treePathSegments : Route -> List String
+treePathSegments route =
+    case route of
+        Tree _ pathSegments ->
             pathSegments
 
         _ ->
             []
 
 
-driveRoot : Page -> Maybe String
-driveRoot page =
-    case page of
-        Drive { root } _ ->
+treeRoot : Route -> Maybe String
+treeRoot route =
+    case route of
+        Tree { root } _ ->
             Just root
 
         _ ->
             Nothing
 
 
-addDrivePathSegments : Page -> List String -> Page
-addDrivePathSegments page segments =
-    case page of
-        Drive properties pathSegments ->
-            Drive properties (List.append pathSegments segments)
+addTreePathSegments : Route -> List String -> Route
+addTreePathSegments route segments =
+    case route of
+        Tree properties pathSegments ->
+            Tree properties (List.append pathSegments segments)
 
         _ ->
-            page
+            route
 
 
-replaceDrivePathSegments : Page -> List String -> Page
-replaceDrivePathSegments page segments =
-    case page of
-        Drive properties _ ->
-            Drive properties segments
+replaceTreePathSegments : Route -> List String -> Route
+replaceTreePathSegments route segments =
+    case route of
+        Tree properties _ ->
+            Tree properties segments
 
         _ ->
-            page
+            route

@@ -14,7 +14,7 @@ import Ipfs
 import Item exposing (Item, Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
-import Routing exposing (Page(..))
+import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
 import Time
@@ -57,7 +57,7 @@ header : Model -> Html Msg
 header model =
     let
         segments =
-            Routing.drivePathSegments model.page
+            Routing.treePathSegments model.route
 
         amountOfSegments =
             List.length segments
@@ -267,7 +267,7 @@ rootPathPart : Model -> List String -> Html Msg
 rootPathPart model segments =
     let
         root =
-            model.roots
+            model.foundation
                 |> Maybe.map .unresolved
                 |> Maybe.withDefault ""
 
@@ -275,7 +275,7 @@ rootPathPart model segments =
             String.length root
 
         isDnsLink =
-            Maybe.unwrap False .isDnsLink model.roots
+            Maybe.unwrap False .isDnsLink model.foundation
 
         isTooLong =
             (isDnsLink && rootLength > 36) || not isDnsLink
