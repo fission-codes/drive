@@ -59,6 +59,7 @@ init flags url navKey =
       , directoryList = Ok []
       , exploreInput = Just exploreInput
       , ipfs = Ipfs.Connecting
+      , isFocused = False
       , largePreview = False
       , navKey = navKey
       , route = Routing.routeFromUrl url
@@ -153,6 +154,12 @@ update msg =
         -----------------------------------------
         -- Other
         -----------------------------------------
+        Blurred ->
+            Other.blurred
+
+        Focused ->
+            Other.focused
+
         KeyboardInteraction a ->
             Other.keyboardInteraction a
 

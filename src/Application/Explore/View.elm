@@ -8,6 +8,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Ipfs
+import Json.Decode as Decode
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -20,7 +21,11 @@ import Types exposing (..)
 view : Model -> Html Msg
 view model =
     Html.div
-        [ T.flex
+        [ E.on "focusout" (Decode.succeed Blurred)
+        , E.on "focusin" (Decode.succeed Focused)
+
+        --
+        , T.flex
         , T.flex_col
         , T.min_h_screen
         ]
@@ -71,8 +76,19 @@ inputScreen m =
             ]
 
         --
-        , Html.div
-            [ T.flex
+        , Html.form
+            [ case m.ipfs of
+                Ipfs.Connecting ->
+                    E.onSubmit Bypass
+
+                Ipfs.InitialListing ->
+                    E.onSubmit Reset
+
+                _ ->
+                    E.onSubmit Explore
+
+            --
+            , T.flex
             , T.max_w_lg
             , T.mt_8
             , T.w_full
@@ -129,17 +145,6 @@ inputScreen m =
             --
             , Html.button
                 [ case m.ipfs of
-                    Ipfs.Connecting ->
-                        E.onClick Bypass
-
-                    Ipfs.InitialListing ->
-                        E.onClick Reset
-
-                    _ ->
-                        E.onClick Explore
-
-                --
-                , case m.ipfs of
                     Ipfs.Error _ ->
                         T.bg_dark_pink
 

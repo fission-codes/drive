@@ -21,35 +21,61 @@ import Url exposing (Url)
 
 keyboardInteraction : Keyboard.Msg -> Manager
 keyboardInteraction msg unmodified =
-    (\m ->
-        case m.pressedKeys of
-            [ Keyboard.ArrowDown ] ->
-                Drive.selectNextItem m
+    (if unmodified.isFocused then
+        []
 
-            [ Keyboard.ArrowUp ] ->
-                Drive.selectPreviousItem m
-
-            [ Keyboard.Character "T" ] ->
-                Drive.toggleLargePreview m
-
-            [ Keyboard.Character "U" ] ->
-                Drive.goUpOneLevel m
-
-            [ Keyboard.Enter ] ->
-                Drive.digDeeperUsingSelection m
-
-            [ Keyboard.Escape ] ->
-                Drive.removeSelection m
-
-            _ ->
-                Return.singleton m
+     else
+        Keyboard.update msg unmodified.pressedKeys
     )
-        { unmodified | pressedKeys = Keyboard.update msg unmodified.pressedKeys }
+        |> (\p ->
+                { unmodified | pressedKeys = p }
+           )
+        |> (\m ->
+                case m.pressedKeys of
+                    [ Keyboard.ArrowDown ] ->
+                        Drive.selectNextItem m
+
+                    [ Keyboard.ArrowUp ] ->
+                        Drive.selectPreviousItem m
+
+                    [ Keyboard.Character "T" ] ->
+                        Drive.toggleLargePreview m
+
+                    [ Keyboard.Character "U" ] ->
+                        Drive.goUpOneLevel m
+
+                    [ Keyboard.Enter ] ->
+                        Drive.digDeeperUsingSelection m
+
+                    [ Keyboard.Escape ] ->
+                        Drive.removeSelection m
+
+                    _ ->
+                        Return.singleton m
+           )
 
 
 setCurrentTime : Time.Posix -> Manager
 setCurrentTime time model =
     Return.singleton { model | currentTime = time }
+
+
+
+-- FOCUS
+
+
+{-| Some element has lost focus.
+-}
+blurred : Manager
+blurred model =
+    Return.singleton { model | isFocused = False }
+
+
+{-| Some element has received focus.
+-}
+focused : Manager
+focused model =
+    Return.singleton { model | isFocused = True }
 
 
 

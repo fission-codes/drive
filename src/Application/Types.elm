@@ -39,6 +39,7 @@ type alias Model =
     , exploreInput : Maybe String
     , foundation : Maybe Foundation
     , ipfs : Ipfs.Status
+    , isFocused : Bool
     , largePreview : Bool
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
@@ -93,6 +94,8 @@ type Msg
       -----------------------------------------
       -- 🐚 Other
       -----------------------------------------
+    | Blurred
+    | Focused
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | SetCurrentTime Time.Posix
