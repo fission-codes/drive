@@ -66,7 +66,9 @@ export async function setup() {
   ipfs = await getIpfs({
     permissions: [
       "cat",
+      "dag.tree",
       "files.catPullStream",
+      "files.catReadableStream",
       "id",
       "ls",
       "swarm.connect",
