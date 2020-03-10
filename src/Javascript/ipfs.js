@@ -26,21 +26,15 @@ const PEER_TCP = "/ip4/3.215.160.238/tcp/4001/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTr
 
 
 export async function listDirectory(address) {
-  const result = await ipfs.ls(address)
+  const result = await ensureArray(await ipfs.ls(address))
 
-  // if good old array
-  if (Array.isArray(result)) {
-    return result
+  if (result.length === 0) {
+    const context = await ensureArray(await ipfs.get(address))
+    if (!context[0] || context[0].type !== "file") return []
+    return context
   }
 
-  // if async iterable
-  const array = []
-
-  for await (const file of result) {
-    array.push(file)
-  }
-
-  return array
+  return result
 }
 
 
@@ -102,6 +96,23 @@ export function stream(address, opts) {
 
 
 // ㊙️
+
+
+async function ensureArray(result) {
+  // if good old array
+  if (Array.isArray(result)) {
+    return result
+  }
+
+  // if async iterable
+  const array = []
+
+  for await (const file of result) {
+    array.push(file)
+  }
+
+  return array
+}
 
 
 async function lookupDns(domain) {

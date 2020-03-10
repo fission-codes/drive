@@ -779,7 +779,8 @@ detailsOverlay currentTime publicUrl largePreview showPreviewOverlay item =
                 defaultAttributes
         )
         [ Html.div
-            [ T.relative
+            [ T.max_w_full
+            , T.relative
             , T.z_10
             ]
             (detailsOverlayContents currentTime publicUrl item)
