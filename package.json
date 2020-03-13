@@ -3,6 +3,7 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#d77054d1ef4a74ddd018a8efa64c9764e9453eb6",
+    "fission-sdk": "^0.1.5",
     "get-ipfs": "^1.2.0"
   },
   "devDependencies": {
@@ -21,6 +22,6 @@
   },
   "scripts": {
     "elm-dev": "elm-live",
-    "snowpack": "snowpack --clean"
+    "snowpack": "snowpack"
   }
 }

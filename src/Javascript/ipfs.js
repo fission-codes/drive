@@ -9,6 +9,7 @@ Everything involving IPFS.
 import "./web_modules/is-ipfs.js"
 import "./web_modules/it-to-stream.js"
 import getIpfs from "./web_modules/get-ipfs.js"
+import sdk from "./web_modules/fission-sdk.js"
 
 
 let ipfs
@@ -83,6 +84,8 @@ export async function setup() {
   })
 
   window.ipfs = ipfs
+  sdk.ipfs.setIpfs(ipfs)
+
   return null
 }
 

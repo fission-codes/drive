@@ -76,8 +76,7 @@ environment := "dev"
 
 @install-deps: (_report "Installing required dependencies")
 	pnpm install
-	pnpm run snowpack
-	mkdir -p web_modules
+	pnpm run snowpack -- --clean
 	curl https://unpkg.com/ipfs@0.41.2/dist/index.js -o web_modules/ipfs.js
 	curl https://unpkg.com/is-ipfs@0.6.3/dist/index.js -o web_modules/is-ipfs.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
