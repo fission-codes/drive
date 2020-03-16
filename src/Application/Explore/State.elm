@@ -2,7 +2,6 @@ module Explore.State exposing (..)
 
 import Browser.Navigation as Navigation
 import Ipfs
-import Ipfs.State
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)

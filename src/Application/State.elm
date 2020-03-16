@@ -2,7 +2,7 @@ module State exposing (init, subscriptions, update)
 
 import Browser.Navigation as Navigation
 import Common exposing (defaultCid)
-import Debouncer.Messages as Debouncer exposing (Debouncer)
+import Debouncer.Messages as Debouncer
 import Debouncing
 import Drive.State as Drive
 import Explore.State as Explore
@@ -12,7 +12,7 @@ import Keyboard
 import Maybe.Extra as Maybe
 import Other.State as Other
 import Ports
-import Return exposing (return)
+import Return
 import Routing exposing (Route(..))
 import Task
 import Time

@@ -6,6 +6,7 @@ devDependencies:
   '@fullhuman/postcss-purgecss': 2.1.0
   autoprefixer: 9.7.4
   elm-git-install: 0.1.2
+  elm-impfix: 1.0.8
   elm-live: 4.0.2
   html-minifier-terser: 5.0.4
   postcss: 7.0.27
@@ -1691,6 +1692,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-qPDP/o/Fkifriaxaf3E7hHFB5L6Ijihyg8is4A6xna6/h/zebUiNssbQrxywI2oxNUkr6W/leEu/WlIC1tmVnw==
+  /elm-impfix/1.0.8:
+    dependencies:
+      chalk: 2.4.2
+      commander: 2.20.3
+      glob: 7.1.6
+      parse-filepath: 1.0.2
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha512-DBvvWxY2+0DFhEBkQCartSVAEKyx00w431FD9Cnb5xeuhWx5IiuxxuPgtCG1pDJ8iC3Uv9CNzgDJvPc9+HTHvA==
   /elm-live/4.0.2:
     dependencies:
       chalk: 1.1.3
@@ -2205,6 +2216,15 @@ packages:
       npm: '>=3.0.0'
     resolution:
       integrity: sha512-lE/7m5DesBqJCCIom/ohJmQViaMOKWBleB0u3yjWGJoWxqhzoQAFL0tLRNFYardUnVvqxgP+tpvoAJMGaFNNOA==
+  /is-absolute/1.0.0:
+    dependencies:
+      is-relative: 1.0.0
+      is-windows: 1.0.2
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha512-dOWoqflvcydARa360Gvv18DZ/gRuHKi2NU/wU5X1ZFzdYfH29nkiNZsF3mp4OJ3H4yo9Mx8A/uAGNzpzPN3yBA==
   /is-arrayish/0.2.1:
     dev: true
     resolution:
@@ -2271,6 +2291,14 @@ packages:
     dev: true
     resolution:
       integrity: sha512-uJA/CDPO3Tao3GTrxYn6AwkM4nUPJiGGYu5+cB8qbC7WGFlrKZbiRo7SFKxUAEpFUfiHofWCXBUNhvYJMh+6zw==
+  /is-relative/1.0.0:
+    dependencies:
+      is-unc-path: 1.0.0
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha512-Kw/ReK0iqwKeu0MITLFuj0jbPAmEiOsIwyIXvvbfa6QfmN9pkD1M+8pdk7Rl/dTKbH34/XBFMbgD4iMJhLQbGA==
   /is-stream/1.1.0:
     dev: true
     engines:
@@ -2283,6 +2311,20 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-XCoy+WlUr7d1+Z8GgSuXmpuUFC9fOhRXglJMx+dwLKTkL44Cjd4W1Z5P+BQZpr+cR93aGP4S/s7Ftw6Nd/kiEw==
+  /is-unc-path/1.0.0:
+    dependencies:
+      unc-path-regex: 0.1.2
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha512-mrGpVd0fs7WWLfVsStvgF6iEJnbjDFZh9/emhRDcGWTduTfNHd9CHeUwH3gYIjdbwo4On6hunkztwOaAw0yllQ==
+  /is-windows/1.0.2:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==
   /is-wsl/1.1.0:
     dev: true
     engines:
@@ -2480,6 +2522,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-3a5LOMSGoCTH5rbqobC2HuDNRtE2glHZ8J7pK+QZYppyWA36yuNpsX994rIY2nCuyP7CZYy7lQq/X2jygiZ89g==
+  /map-cache/0.2.2:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-wyq9C9ZSXZsFFkW7TyasXcmKDb8=
   /map-obj/1.0.1:
     dev: true
     engines:
@@ -2939,6 +2987,16 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==
+  /parse-filepath/1.0.2:
+    dependencies:
+      is-absolute: 1.0.0
+      map-cache: 0.2.2
+      path-root: 0.1.1
+    dev: true
+    engines:
+      node: '>=0.8'
+    resolution:
+      integrity: sha1-pjISf1Oq89FYdvWHLz/6x2PWyJE=
   /parse-json/4.0.0:
     dependencies:
       error-ex: 1.3.2
@@ -2994,6 +3052,20 @@ packages:
     dev: true
     resolution:
       integrity: sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
+  /path-root-regex/0.1.2:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-v8zcjfWxLcUsi0PsONGNcsBLqW0=
+  /path-root/0.1.1:
+    dependencies:
+      path-root-regex: 0.1.2
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-mkpoFMrBwM1zNgqV8yCDyOpHRbc=
   /path-type/3.0.0:
     dependencies:
       pify: 3.0.0
@@ -3796,6 +3868,12 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+  /unc-path-regex/0.1.2:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-5z3T17DXxe2G+6xrCufYxqadUPo=
   /unicode-canonical-property-names-ecmascript/1.0.4:
     dev: true
     engines:
@@ -3951,6 +4029,7 @@ specifiers:
   '@fullhuman/postcss-purgecss': ^2.0.6
   autoprefixer: ^9.7.4
   elm-git-install: ^0.1.2
+  elm-impfix: ^1.0.8
   elm-live: ^4.0.1
   fission-kit: 'fission-suite/kit#d77054d1ef4a74ddd018a8efa64c9764e9453eb6'
   fission-sdk: ^0.1.5

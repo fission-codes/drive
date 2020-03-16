@@ -71,7 +71,14 @@ environment := "dev"
 		--path-to-elm=`which elm` \
 		--pushstate \
 		--start-page=index.html \
-		-- --output={{build_dir}}/application.js \
+		-- --output={{build_dir}}/application.js
+
+
+@elm-housekeeping:
+	echo "> Running elm-impfix"
+	{{node_bin}}/elm-impfix "{{src_dir}}/**/*.elm" --replace
+	echo "> Running elm-format"
+	elm-format {{src_dir}} --yes
 
 
 @install-deps: (_report "Installing required dependencies")

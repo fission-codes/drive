@@ -25,6 +25,8 @@ asdf install
 #    `brew install watchexec`
 # 4. Install https://pnpm.js.org/
 #    `brew install pnpm`
+# 5. (optional) Install https://github.com/avh4/elm-format
+#    `brew install elm-format`
 
 # 5. Install dependencies
 just install-deps

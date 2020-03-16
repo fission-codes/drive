@@ -2,7 +2,6 @@ module Routing exposing (..)
 
 import String.Ext as String
 import Url exposing (Url)
-import Url.Builder
 import Url.Parser as Url exposing (..)
 
 

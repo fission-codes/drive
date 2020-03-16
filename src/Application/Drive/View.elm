@@ -3,14 +3,12 @@ module Drive.View exposing (view)
 import Common
 import Common.View as Common
 import Common.View.Footer as Footer
-import Explore.View as Explore
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
-import Ipfs
 import Item exposing (Item, Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe

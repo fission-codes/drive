@@ -10,6 +10,7 @@
     "@fullhuman/postcss-purgecss": "^2.0.6",
     "autoprefixer": "^9.7.4",
     "elm-git-install": "^0.1.2",
+    "elm-impfix": "^1.0.8",
     "elm-live": "^4.0.1",
     "html-minifier-terser": "^5.0.4",
     "postcss": "^7.0.26",

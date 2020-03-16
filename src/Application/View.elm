@@ -4,16 +4,11 @@ import Browser
 import Common.View as Common
 import Drive.View as Drive
 import Explore.View as Explore
-import FeatherIcons
 import Html exposing (Html)
-import Html.Attributes as A
-import Html.Events as E
 import Ipfs
-import Item exposing (Item, Kind(..))
-import List.Extra as List
+import Item exposing (Kind(..))
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
-import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import Url.Builder
