@@ -159,3 +159,25 @@ setupCompleted model =
 
                 _ ->
                     Return.singleton { model | ipfs = Ipfs.Ready }
+
+
+
+-- 🐚
+
+
+replaceResolvedAddress : { cid : String } -> Manager
+replaceResolvedAddress { cid } model =
+    case model.foundation of
+        Just oldFoundation ->
+            let
+                newFoundation =
+                    { oldFoundation | resolved = cid }
+            in
+            { model | foundation = Just newFoundation }
+                |> Return.singleton
+                |> Return.effect_ getDirectoryListCmd
+                |> Return.command (Ports.ipfsPrefetchTree newFoundation.resolved)
+                |> Return.command (Ports.storeFoundation newFoundation)
+
+        Nothing ->
+            Return.singleton model

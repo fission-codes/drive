@@ -163,6 +163,9 @@ update msg =
         GotResolvedAddress a ->
             Ipfs.gotResolvedAddress a
 
+        ReplaceResolvedAddress a ->
+            Ipfs.replaceResolvedAddress a
+
         SetupCompleted ->
             Ipfs.setupCompleted
 
@@ -202,6 +205,7 @@ subscriptions model =
         , Ports.ipfsGotDirectoryList GotDirectoryList
         , Ports.ipfsGotError GotError
         , Ports.ipfsGotResolvedAddress GotResolvedAddress
+        , Ports.ipfsReplaceResolvedAddress ReplaceResolvedAddress
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

@@ -9,6 +9,8 @@
 
 */
 
+import sdk from "./web_modules/fission-sdk.js"
+
 import "./analytics.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
@@ -28,7 +30,7 @@ const app = Elm.Main.init({
 
 
 // Ports
-// -----
+// =====
 
 app.ports.copyToClipboard.subscribe(text => {
 
@@ -63,36 +65,6 @@ app.ports.copyToClipboard.subscribe(text => {
 })
 
 
-app.ports.ipfsListDirectory.subscribe(({ cid, pathSegments }) => {
-  ipfs.listDirectory(cid)
-    .then(results => {
-      app.ports.ipfsGotDirectoryList.send({
-        pathSegments,
-        results
-      })
-    })
-    .catch(reportIpfsError)
-})
-
-
-app.ports.ipfsPrefetchTree.subscribe(address => {
-  ipfs.prefetchTree(address)
-})
-
-
-app.ports.ipfsResolveAddress.subscribe(async address => {
-  const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
-  app.ports.ipfsGotResolvedAddress.send(resolvedResult)
-})
-
-
-app.ports.ipfsSetup.subscribe(_ => {
-  ipfs.setup()
-    .then(app.ports.ipfsCompletedSetup.send)
-    .catch(reportIpfsError)
-})
-
-
 app.ports.removeStoredFoundation.subscribe(_ => {
   localStorage.removeItem("fissionDrive.foundation")
 })
@@ -120,6 +92,50 @@ app.ports.showNotification.subscribe(text => {
 
 app.ports.storeFoundation.subscribe(foundation => {
   localStorage.setItem("fissionDrive.foundation", JSON.stringify(foundation))
+})
+
+
+// IPFS
+// ----
+
+app.ports.ipfsListDirectory.subscribe(({ cid, pathSegments }) => {
+  ipfs.listDirectory(cid)
+    .then(results => app.ports.ipfsGotDirectoryList.send({ pathSegments, results }))
+    .catch(reportIpfsError)
+})
+
+
+app.ports.ipfsPrefetchTree.subscribe(address => {
+  ipfs.prefetchTree(address)
+})
+
+
+app.ports.ipfsResolveAddress.subscribe(async address => {
+  const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
+  app.ports.ipfsGotResolvedAddress.send(resolvedResult)
+})
+
+
+app.ports.ipfsSetup.subscribe(_ => {
+  ipfs.setup()
+    .then(app.ports.ipfsCompletedSetup.send)
+    .catch(reportIpfsError)
+})
+
+
+// SDK
+// ---
+
+function prepCidForTransport(cid) {
+  return { cid }
+}
+
+
+app.ports.sdkCreateDirectoryPath.subscribe(({ cid, pathSegments }) => {
+  sdk
+    .mkdirp(cid, pathSegments.join("/"))
+    .then(prepCidForTransport)
+    .then(app.ports.replaceResolvedAddress.send)
 })
 
 

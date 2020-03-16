@@ -90,6 +90,7 @@ type Msg
     | GotDirectoryList Json.Value
     | GotError String
     | GotResolvedAddress Foundation
+    | ReplaceResolvedAddress { cid : String }
     | SetupCompleted
       -----------------------------------------
       -- 🐚 Other
