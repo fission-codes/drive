@@ -93,6 +93,8 @@ export default {
 
   variants: {
 
+    backgroundColor: [ "group-hover", "responsive" ],
+    borderColor: [ "focus", "group-hover", "hover", "responsive" ],
     borderWidth: [ "first", "last" ],
     margin: [ "first", "last", "responsive" ],
     opacity: [ "group-hover", "responsive" ],

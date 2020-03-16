@@ -919,14 +919,22 @@ detailsActions largePreview =
         , T.border_b
         , T.border_t_2
         , T.border_transparent
+        , S.default_transition_duration
+        , S.default_transition_easing
         , T.flex
         , T.items_center
+        , T.opacity_25
         , T.py_px
         , T.right_0
         , T.rounded_bl
         , T.text_gray_900
         , T.top_0
+        , T.transition
+        , T.transition_opacity
         , T.z_30
+
+        --
+        , T.group_hover__opacity_100
 
         -- Dark mode
         ------------
@@ -962,10 +970,14 @@ detailsActions largePreview =
         , Html.span
             [ T.border_gray_500
             , T.border_l
+            , S.default_transition_duration
+            , S.default_transition_easing
             , T.hidden
             , T.opacity_50
             , T.my_1
             , T.self_stretch
+            , T.transition
+            , T.transition_colors
             , T.w_0
 
             --
