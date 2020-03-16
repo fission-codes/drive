@@ -226,3 +226,30 @@ kindIcon kind =
         --
         Other ->
             FeatherIcons.file
+
+
+kindName : Kind -> String
+kindName kind =
+    case kind of
+        Directory ->
+            "Directory"
+
+        --
+        Audio ->
+            "Audio"
+
+        Code ->
+            "Code"
+
+        Image ->
+            "Image"
+
+        Text ->
+            "Text"
+
+        Video ->
+            "Video"
+
+        --
+        Other ->
+            "File"

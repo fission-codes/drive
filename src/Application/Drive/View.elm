@@ -842,10 +842,16 @@ detailsOverlayContents currentTime publicUrl item =
         , T.text_gray_300
         , T.text_sm
         ]
-        [ -- TODO
-          item.posixTime
-            |> Maybe.map (Time.Distance.inWords currentTime)
-            |> Maybe.unwrap (Html.text <| Common.sizeInWords item.size) Html.text
+        [ case ( item.posixTime, item.size ) of
+            ( Just time, _ ) ->
+                Html.text (Time.Distance.inWords currentTime time)
+
+            ( Nothing, 0 ) ->
+                -- TODO: Show amount of items the directory has
+                Html.text (Item.kindName item.kind)
+
+            ( Nothing, size ) ->
+                Html.text (Common.sizeInWords size)
         ]
 
     --
