@@ -131,12 +131,12 @@ function prepCidForTransport(cid) {
 }
 
 
-app.ports.sdkCreateDirectoryPath.subscribe(({ cid, pathSegments }) => {
-  sdk
-    .mkdirp(cid, pathSegments.join("/"))
-    .then(prepCidForTransport)
-    .then(app.ports.replaceResolvedAddress.send)
-})
+// app.ports.sdkCreateDirectoryPath.subscribe(({ cid, pathSegments }) => {
+//   sdk
+//     .mkdirp(cid, pathSegments.join("/"))
+//     .then(prepCidForTransport)
+//     .then(app.ports.replaceResolvedAddress.send)
+// })
 
 
 
