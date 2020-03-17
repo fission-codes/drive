@@ -22,7 +22,11 @@ explore model =
 
         input ->
             return
-                { model | ipfs = Ipfs.InitialListing, foundation = Nothing }
+                { model
+                    | ipfs = Ipfs.InitialListing
+                    , foundation = Nothing
+                    , isFocused = False
+                }
                 (Ports.ipfsResolveAddress input)
 
 
