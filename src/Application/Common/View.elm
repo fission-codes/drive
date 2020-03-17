@@ -34,7 +34,8 @@ loadingAnimation =
         |> FeatherIcons.withSize 24
         |> FeatherIcons.toHtml []
         |> List.singleton
-        |> Html.div
+        |> Html.span
             [ T.animation_spin
+            , T.inline_block
             , T.text_gray_300
             ]

@@ -32,6 +32,11 @@ body {
 /* Drive
    ----- */
 
+.drive-item__preview audio {
+  @apply mx-auto;
+}
+
+
 .drive-item__preview img {
   @apply bg-gray-900;
 }
