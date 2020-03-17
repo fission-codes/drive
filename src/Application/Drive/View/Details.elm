@@ -322,10 +322,13 @@ actions largePreview =
 
             --
             , T.cursor_pointer
-            , T.flex
+            , T.hidden
             , T.items_center
             , T.px_2
             , T.py_3
+
+            --
+            , T.md__flex
             ]
             [ (if largePreview then
                 FeatherIcons.minimize2

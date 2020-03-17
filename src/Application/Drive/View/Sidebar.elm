@@ -45,10 +45,10 @@ view_ model =
         , A.style "top" "131px"
 
         --
+        , T.flex
         , T.flex_col
         , T.group
         , T.h_screen
-        , T.hidden
         , T.items_center
         , T.justify_center
         , T.overflow_hidden
@@ -57,9 +57,6 @@ view_ model =
         , T.rounded_md
         , T.sticky
         , T.w_full
-
-        --
-        , T.md__flex
 
         --
         , if Maybe.isJust model.selectedCid then
