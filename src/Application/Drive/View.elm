@@ -3,21 +3,20 @@ module Drive.View exposing (view)
 import Common
 import Common.View as Common
 import Common.View.Footer as Footer
+import Drive.Sidebar as Sidebar
 import Drive.View.Sidebar as Sidebar
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html exposing (nothing)
-import Html.Lazy
 import Item exposing (Item, Kind(..))
+import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
-import Time
-import Time.Distance
 import Types exposing (..)
 import Url.Builder
 
@@ -29,7 +28,11 @@ import Url.Builder
 view : Model -> Html Msg
 view model =
     Html.div
-        [ T.flex
+        [ E.on "focusout" (Decode.succeed Blurred)
+        , E.on "focusin" (Decode.succeed Focused)
+
+        --
+        , T.flex
         , T.flex_col
         , T.min_h_screen
         ]
@@ -164,54 +167,58 @@ header model =
             -----------------------------------------
             -- Actions
             -----------------------------------------
-            -- , Html.div
-            --     [ T.hidden
-            --     , T.items_center
-            --     , T.ml_4
-            --
-            --     --
-            --     , T.lg__flex
-            --     ]
-            --     [ Html.div
-            --         [ T.border_2
-            --         , T.border_gray_500
-            --         , T.cursor_not_allowed
-            --         , T.pl_8
-            --         , T.pr_3
-            --         , T.py_1
-            --         , T.relative
-            --         , T.rounded_full
-            --         , T.text_gray_500
-            --         , T.w_48
-            --
-            --         -- Dark mode
-            --         ------------
-            --         , T.dark__border_gray_200
-            --         , T.dark__text_gray_200
-            --         ]
-            --         [ FeatherIcons.search
-            --             |> FeatherIcons.withSize 20
-            --             |> FeatherIcons.toHtml []
-            --             |> List.singleton
-            --             |> Html.span
-            --                 [ T.absolute
-            --                 , T.left_0
-            --                 , T.ml_2
-            --                 , T.neg_translate_y_1over2
-            --                 , T.text_gray_500
-            --                 , T.top_1over2
-            --                 , T.transform
-            --
-            --                 -- Dark mode
-            --                 ------------
-            --                 , T.dark__text_gray_200
-            --                 ]
-            --
-            --         --
-            --         , Html.text "Search"
-            --         ]
-            --     ]
-            , Html.nothing
+            , Html.div
+                [ T.flex
+                , T.items_center
+                , T.ml_4
+                ]
+                [ FeatherIcons.menu
+                    |> FeatherIcons.withSize S.iconSize
+                    |> FeatherIcons.toHtml []
+                    |> List.singleton
+                    |> Html.span
+                        [ T.text_gray_300
+                        ]
+
+                -- Html.div
+                --     [ T.border_2
+                --     , T.border_gray_500
+                --     , T.cursor_not_allowed
+                --     , T.pl_8
+                --     , T.pr_3
+                --     , T.py_1
+                --     , T.relative
+                --     , T.rounded_full
+                --     , T.text_gray_500
+                --     , T.w_48
+                --
+                --     -- Dark mode
+                --     ------------
+                --     , T.dark__border_gray_200
+                --     , T.dark__text_gray_200
+                --     ]
+                --     [ FeatherIcons.search
+                --         |> FeatherIcons.withSize 20
+                --         |> FeatherIcons.toHtml []
+                --         |> List.singleton
+                --         |> Html.span
+                --             [ T.absolute
+                --             , T.left_0
+                --             , T.ml_2
+                --             , T.neg_translate_y_1over2
+                --             , T.text_gray_500
+                --             , T.top_1over2
+                --             , T.transform
+                --
+                --             -- Dark mode
+                --             ------------
+                --             , T.dark__text_gray_200
+                --             ]
+                --
+                --     --
+                --     , Html.text "Search"
+                --     ]
+                ]
             ]
         ]
 
@@ -403,14 +410,19 @@ contentAvailable model directoryList =
                     , T.flex_auto
                     , T.w_1over2
                     ]
-                    (if Maybe.isJust model.selectedCid && model.largePreview then
+                    (let
+                        hideContent =
+                            Maybe.isJust model.selectedCid
+                                || (model.sidebarMode /= Sidebar.defaultMode)
+                     in
+                     if model.expandSidebar then
                         [ T.hidden ]
 
-                     else if Maybe.isJust model.selectedCid then
+                     else if hideContent then
                         [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
 
                      else
-                        []
+                        [ T.pr_12, T.lg__pr_24 ]
                     )
                 )
                 [ list model directoryList

@@ -81,6 +81,10 @@ export default {
 
     extend: {
 
+      fontSize: {
+        "tiny": "0.8125rem" // between `xs` and `sm`
+      },
+
       screens: {
         dark: { raw: '(prefers-color-scheme: dark)' }
       },

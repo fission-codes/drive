@@ -3,6 +3,7 @@ module Drive.State exposing (..)
 import Browser.Navigation as Navigation
 import Common
 import Debouncing
+import Drive.Sidebar
 import Ipfs
 import Item exposing (Item)
 import List.Extra as List
@@ -17,6 +18,24 @@ import Url
 
 
 -- 📣
+
+
+closeSidebar : Manager
+closeSidebar model =
+    Return.singleton
+        (if model.sidebarMode == Drive.Sidebar.defaultMode then
+            { model
+                | expandSidebar = False
+                , selectedCid = Nothing
+                , showPreviewOverlay = False
+            }
+
+         else
+            { model
+                | expandSidebar = False
+                , sidebarMode = Drive.Sidebar.defaultMode
+            }
+        )
 
 
 copyLink : Item -> Manager
@@ -102,7 +121,7 @@ goUp { floor } model =
             |> Url.toString
             |> Navigation.pushUrl model.navKey
             |> Return.return model
-            |> Return.andThen removeSelection
+            |> Return.andThen closeSidebar
             |> Return.command
                 ({ on = True }
                     |> ToggleLoadingOverlay
@@ -122,20 +141,13 @@ goUpOneLevel model =
         |> (\x -> goUp { floor = x } model)
 
 
-removeSelection : Manager
-removeSelection model =
-    Return.singleton
-        { model
-            | largePreview = False
-            , selectedCid = Nothing
-            , showPreviewOverlay = False
-        }
-
-
 select : Item -> Manager
 select item model =
     return
-        { model | selectedCid = Just item.path }
+        { model
+            | selectedCid = Just item.path
+            , sidebarMode = Drive.Sidebar.DetailsForSelection
+        }
         (if Item.canRenderKind item.kind then
             Ports.renderMedia
                 { id = item.id
@@ -167,9 +179,18 @@ showPreviewOverlay model =
     Return.singleton { model | showPreviewOverlay = True }
 
 
-toggleLargePreview : Manager
-toggleLargePreview model =
-    Return.singleton { model | largePreview = not model.largePreview }
+toggleExpandedSidebar : Manager
+toggleExpandedSidebar model =
+    Return.singleton { model | expandSidebar = not model.expandSidebar }
+
+
+toggleSidebarMode : Drive.Sidebar.Mode -> Manager
+toggleSidebarMode mode model =
+    if model.sidebarMode == Drive.Sidebar.defaultMode then
+        Return.singleton { model | sidebarMode = mode }
+
+    else
+        Return.singleton { model | sidebarMode = Drive.Sidebar.defaultMode }
 
 
 

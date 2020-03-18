@@ -3,7 +3,9 @@ module Common.View exposing (..)
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
+import Ipfs
 import Tailwind as T
+import Types exposing (Model)
 
 
 
@@ -22,6 +24,31 @@ fadeOutRight =
     A.style
         "-webkit-mask-image"
         "linear-gradient(90deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 75%, rgb(0, 0, 0, 0) 100%)"
+
+
+
+-- STATES
+
+
+shouldShowExplore : Model -> Bool
+shouldShowExplore m =
+    case ( m.foundation, m.ipfs ) of
+        ( Nothing, _ ) ->
+            True
+
+        ( Just _, Ipfs.Ready ) ->
+            False
+
+        ( Just _, Ipfs.AdditionalListing ) ->
+            False
+
+        _ ->
+            True
+
+
+shouldShowLoadingAnimation : Model -> Bool
+shouldShowLoadingAnimation m =
+    m.ipfs == Ipfs.Connecting || m.showLoadingOverlay
 
 
 

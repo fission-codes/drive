@@ -74,3 +74,14 @@ textarea::placeholder {
 iframe {
   @apply h-full p-4 w-full;
 }
+
+
+
+/* Sidebar
+   ------- */
+
+.sidebar {
+  height: calc(100vh - 99px - 32px * 2 - 92px - 2px);
+  top: 131px;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}

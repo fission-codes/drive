@@ -39,7 +39,7 @@ keyboardInteraction msg unmodified =
                         Drive.selectPreviousItem m
 
                     [ Keyboard.Character "T" ] ->
-                        Drive.toggleLargePreview m
+                        Drive.toggleExpandedSidebar m
 
                     [ Keyboard.Character "U" ] ->
                         Drive.goUpOneLevel m
@@ -48,7 +48,7 @@ keyboardInteraction msg unmodified =
                         Drive.digDeeperUsingSelection m
 
                     [ Keyboard.Escape ] ->
-                        Drive.removeSelection m
+                        Drive.closeSidebar m
 
                     _ ->
                         Return.singleton m

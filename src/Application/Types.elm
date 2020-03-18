@@ -6,6 +6,7 @@ module Types exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Debouncer.Messages as Debouncer exposing (Debouncer)
+import Drive.Sidebar
 import Ipfs
 import Item exposing (Item)
 import Json.Decode as Json
@@ -40,19 +41,24 @@ type alias Model =
     , foundation : Maybe Foundation
     , ipfs : Ipfs.Status
     , isFocused : Bool
-    , largePreview : Bool
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
     , route : Route
     , selectedCid : Maybe String
     , showLoadingOverlay : Bool
-    , showPreviewOverlay : Bool
     , url : Url
 
     -----------------------------------------
     -- Debouncers
     -----------------------------------------
     , loadingDebouncer : Debouncer Msg
+
+    -----------------------------------------
+    -- Sidebar
+    -----------------------------------------
+    , expandSidebar : Bool
+    , showPreviewOverlay : Bool
+    , sidebarMode : Drive.Sidebar.Mode
     }
 
 
@@ -71,13 +77,14 @@ type Msg
       -----------------------------------------
       -- Drive
       -----------------------------------------
+    | CloseSidebar
     | CopyLink Item
     | DigDeeper { directoryName : String }
     | GoUp { floor : Int }
-    | RemoveSelection
     | Select Item
     | ShowPreviewOverlay
-    | ToggleLargePreview
+    | ToggleExpandedSidebar
+    | ToggleSidebarMode Drive.Sidebar.Mode
       -----------------------------------------
       -- Explore
       -----------------------------------------
