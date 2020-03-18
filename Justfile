@@ -70,6 +70,7 @@ environment := "dev"
 		--dir={{build_dir}} \
 		--path-to-elm=`which elm` \
 		--pushstate \
+		--hot \
 		--start-page=index.html \
 		-- --output={{build_dir}}/application.js
 
