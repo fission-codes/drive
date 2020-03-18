@@ -1,11 +1,11 @@
 module Common.View.Footer exposing (view)
 
+import Common.View as Common
+import Drive.Sidebar
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
-import Ipfs
-import Maybe.Extra as Maybe
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -104,34 +104,63 @@ right model =
         --
         , T.sm__scale_100
         ]
-        [ if model.ipfs == Ipfs.Ready && Maybe.isJust model.foundation then
-            action
+        (if Common.shouldShowExplore model then
+            [ action
+                Link
+                [ A.href "https://fission.codes/support"
+                , A.target "_blank"
+                ]
+                FeatherIcons.lifeBuoy
+                [ Html.text "Support" ]
+
+            --
+            , action
+                Link
+                [ A.href "https://guide.fission.codes/drive"
+                , A.target "_blank"
+                ]
+                FeatherIcons.book
+                [ Html.text "Guide" ]
+            ]
+
+         else
+            [ action
                 Button
-                [ E.onClick Reset, T.cursor_pointer ]
+                [ E.onClick (ToggleSidebarMode Drive.Sidebar.AddOrCreate)
+
+                --
+                , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
+                    T.text_purple
+
+                  else
+                    T.text_inherit
+
+                -- Dark mode
+                ------------
+                , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
+                    T.dark__text_white
+
+                  else
+                    T.dark__text_inherit
+                ]
+                FeatherIcons.plus
+                [ Html.text "Add / Create" ]
+
+            --
+            , action
+                Button
+                []
+                FeatherIcons.share2
+                [ Html.text "Share" ]
+
+            --
+            , action
+                Button
+                [ E.onClick Reset ]
                 FeatherIcons.hash
                 [ Html.text "Change CID" ]
-
-          else
-            Html.text ""
-
-        --
-        , action
-            Link
-            [ A.href "https://fission.codes/support"
-            , A.target "_blank"
             ]
-            FeatherIcons.lifeBuoy
-            [ Html.text "Support" ]
-
-        --
-        , action
-            Link
-            [ A.href "https://guide.fission.codes/drive"
-            , A.target "_blank"
-            ]
-            FeatherIcons.book
-            [ Html.text "Guide" ]
-        ]
+        )
 
 
 
@@ -154,14 +183,15 @@ action a attributes icon nodes =
     )
         (List.append
             attributes
-            [ T.inline_flex
+            [ T.cursor_pointer
+            , T.inline_flex
             , T.items_center
             , T.leading_tight
-            , T.ml_8
+            , T.mr_8
             , T.tracking_tight
 
             --
-            , T.first__ml_0
+            , T.last__mr_0
             ]
         )
         [ icon

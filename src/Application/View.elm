@@ -5,9 +5,7 @@ import Common.View as Common
 import Drive.View as Drive
 import Explore.View as Explore
 import Html exposing (Html)
-import Ipfs
 import Item exposing (Kind(..))
-import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
 import Tailwind as T
 import Types exposing (..)
@@ -27,7 +25,7 @@ view model =
 
 body : Model -> List (Html Msg)
 body m =
-    if m.ipfs == Ipfs.Connecting || m.showLoadingOverlay then
+    if Common.shouldShowLoadingAnimation m then
         [ Html.div
             [ T.absolute
             , T.left_1over2
@@ -37,21 +35,8 @@ body m =
             [ Common.loadingAnimation ]
         ]
 
-    else if shouldShowExplore m.ipfs || Maybe.isNothing m.foundation then
+    else if Common.shouldShowExplore m then
         [ Explore.view m ]
 
     else
         [ Drive.view m ]
-
-
-shouldShowExplore : Ipfs.Status -> Bool
-shouldShowExplore ipfsStatus =
-    case ipfsStatus of
-        Ipfs.Ready ->
-            False
-
-        Ipfs.AdditionalListing ->
-            False
-
-        _ ->
-            True

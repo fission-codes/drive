@@ -2,22 +2,18 @@ module Drive.View.Sidebar exposing (view)
 
 import Common
 import Common.View as Common
-import Common.View.Footer as Footer
+import Drive.Sidebar exposing (..)
+import Drive.View.Common as Drive
 import Drive.View.Details as Details
-import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
-import Html.Events as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
-import Item exposing (Item, Kind(..))
+import Item exposing (Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
-import Styling as S
 import Tailwind as T
-import Time
-import Time.Distance
 import Types exposing (..)
 import Url.Builder
 
@@ -28,12 +24,16 @@ import Url.Builder
 
 view : Model -> Html Msg
 view model =
-    case model.selectedCid of
-        Just _ ->
-            view_ model
+    case model.sidebarMode of
+        DetailsForSelection ->
+            if Maybe.isJust model.selectedCid then
+                view_ model
 
-        Nothing ->
-            nothing
+            else
+                nothing
+
+        _ ->
+            view_ model
 
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
@@ -41,44 +41,220 @@ view model =
 view_ : Model -> Html Msg
 view_ model =
     Html.div
-        [ A.style "height" "calc(100vh - 99px - 32px * 2 - 92px - 2px)"
-        , A.style "top" "131px"
+        [ A.class "sidebar"
 
         --
-        , T.flex
-        , T.flex_col
+        , T.bg_gray_900
         , T.group
         , T.h_screen
-        , T.items_center
-        , T.justify_center
-        , T.overflow_hidden
-        , T.px_4
-        , T.py_6
+        , T.overflow_x_hidden
         , T.rounded_md
         , T.sticky
         , T.w_full
 
         --
-        , if Maybe.isJust model.selectedCid then
-            T.bg_gray_900
-
-          else
-            T.bg_transparent
-
-        --
-        , if model.largePreview && Maybe.isJust model.selectedCid then
+        , if model.expandSidebar then
             T.md__w_full
 
           else
             T.md__w_1over2
 
+        --
+        , case model.sidebarMode of
+            AddOrCreate ->
+                T.overflow_y_scroll
+
+            DetailsForSelection ->
+                T.overflow_y_hidden
+
         -- Dark mode
         ------------
-        , if Maybe.isJust model.selectedCid then
-            T.dark__bg_darkness_below
+        , T.dark__bg_darkness_below
+        ]
+        [ case model.sidebarMode of
+            AddOrCreate ->
+                addOrCreate model
 
-          else
-            T.dark__bg_transparent
+            DetailsForSelection ->
+                detailsForSelection model
+        ]
+
+
+
+-- ADD / CREATE
+
+
+addOrCreate : Model -> Html Msg
+addOrCreate model =
+    Html.div
+        []
+        [ Drive.sidebarControls
+            { above = False
+            , expanded = model.expandSidebar
+            }
+
+        --
+        , addOrCreateForm model
+        ]
+
+
+addOrCreateForm : Model -> Html Msg
+addOrCreateForm model =
+    let
+        title t =
+            Html.div
+                [ T.font_display
+                , T.font_medium
+                , T.mb_3
+                , T.text_gray_300
+                , T.text_lg
+
+                -- Dark mode
+                ------------
+                , T.dark__text_gray_400
+                ]
+                [ Html.text t ]
+    in
+    Html.div
+        [ T.px_8
+        , T.py_8
+        ]
+        [ -----------------------------------------
+          -- Create
+          -----------------------------------------
+          title "Create directory"
+
+        --
+        , Html.form
+            [ T.flex
+            , T.max_w_md
+            ]
+            [ Html.input
+                [ A.placeholder "Box of Magic"
+
+                --
+                -- , case m.ipfs of
+                --     Ipfs.Error _ ->
+                --         T.border_pink_tint
+                --
+                --     _ ->
+                --         T.border_gray_500
+                --
+                --
+                , T.appearance_none
+                , T.bg_transparent
+                , T.border_2
+                , T.border_gray_500
+                , T.flex_auto
+                , T.leading_relaxed
+                , T.outline_none
+                , T.px_4
+                , T.py_2
+                , T.rounded
+                , T.text_inherit
+                , T.text_base
+                , T.w_0
+
+                --
+                -- , case m.ipfs of
+                --     Ipfs.Error _ ->
+                --         T.focus__border_dark_pink
+                --
+                --     _ ->
+                --         T.focus__border_purple_tint
+                --
+                -- Dark mode
+                ------------
+                , T.dark__border_gray_200
+                ]
+                []
+
+            --
+            , Html.button
+                [ T.antialiased
+                , T.appearance_none
+                , T.bg_purple
+                , T.font_semibold
+                , T.ml_3
+                , T.px_6
+                , T.py_3
+                , T.relative
+                , T.rounded
+                , T.text_tiny
+                , T.text_white
+                , T.tracking_wider
+                , T.uppercase
+
+                --
+                , T.focus__shadow_outline
+                ]
+                [ Html.text "Create"
+                ]
+            ]
+
+        -----------------------------------------
+        -- Add
+        -----------------------------------------
+        , Html.div
+            [ T.mt_12 ]
+            [ title "Add files" ]
+
+        --
+        , Html.div
+            [ A.style "min-height" "90px"
+            , A.style "padding-top" "21.5%"
+
+            --
+            , T.border_2
+            , T.border_dashed
+            , T.border_gray_500
+            , T.h_0
+            , T.overflow_hidden
+            , T.relative
+            , T.rounded
+            , T.text_center
+
+            -- Dark mode
+            ------------
+            , T.dark__border_darkness_above
+            ]
+            [ Html.div
+                [ T.absolute
+                , T.font_light
+                , T.italic
+                , T.leading_tight
+                , T.left_1over2
+                , T.neg_translate_x_1over2
+                , T.neg_translate_y_1over2
+                , T.px_4
+                , T.text_gray_400
+                , T.top_1over2
+                , T.transform
+                , T.truncate
+                , T.w_full
+
+                -- Dark mode
+                ------------
+                , T.dark__text_gray_300
+                ]
+                [ Html.text "Click to choose, or drop some files" ]
+            ]
+        ]
+
+
+
+-- DETAILS
+
+
+detailsForSelection : Model -> Html Msg
+detailsForSelection model =
+    Html.div
+        [ T.flex
+        , T.flex_col
+        , T.items_center
+        , T.justify_center
+        , T.px_4
+        , T.py_6
         ]
         [ model.selectedCid
             |> Maybe.andThen
@@ -92,92 +268,9 @@ view_ model =
                     Details.view
                     model.currentTime
                     (Common.base model)
-                    model.largePreview
+                    model.expandSidebar
                     model.showPreviewOverlay
                 )
             |> Maybe.withDefault
                 nothing
         ]
-
-
-
--- ACTIONS
---
---
--- fileSystemActions =
---     Html.div
---         [ T.hidden
---         , T.items_center
---         , T.justify_center
---
---         --
---         , T.md__flex
---         ]
---         [ Html.div
---             [ T.border
---             , T.border_gray_700
---             , T.rounded
---             , T.text_gray_300
---
---             -- Dark mode
---             ------------
---             , T.dark__border_darkness_above
---             , T.dark__text_gray_400
---             ]
---             [ highlightedAction FeatherIcons.uploadCloud "Add files"
---             , action FeatherIcons.folderPlus "Create directory"
---             , action FeatherIcons.folder "Share directory"
---             ]
---         ]
---
---
--- highlightedAction =
---     action_ True
---
---
--- action =
---     action_ False
---
---
--- action_ highlight ico lbl =
---     Html.div
---         [ T.border_b
---         , T.border_gray_700
---         , T.flex
---         , T.items_center
---         , T.mt_px
---         , T.pl_5
---         , T.pr_16
---         , T.py_4
---
---         --
---         , T.last__border_b_0
---
---         --
---         , if highlight then
---             T.font_semibold
---
---           else
---             T.font_normal
---
---         -- Dark mode
---         ------------
---         , T.dark__border_darkness_above
---
---         --
---         , if highlight then
---             T.dark__text_gray_500
---
---           else
---             T.dark__text_inherit
---         ]
---         [ ico
---             |> FeatherIcons.withSize 16
---             |> FeatherIcons.toHtml []
---
---         --
---         , Html.span
---             [ T.ml_3 ]
---             [ Html.text lbl ]
---         ]
---

@@ -4,6 +4,7 @@ import Browser.Navigation as Navigation
 import Common exposing (defaultCid)
 import Debouncer.Messages as Debouncer
 import Debouncing
+import Drive.Sidebar
 import Drive.State as Drive
 import Explore.State as Explore
 import Ipfs
@@ -74,19 +75,23 @@ init flags url navKey =
       , exploreInput = Just exploreInput
       , ipfs = Ipfs.Connecting
       , isFocused = False
-      , largePreview = False
       , navKey = navKey
       , route = Routing.routeFromUrl url
       , pressedKeys = []
       , foundation = foundation
       , selectedCid = Nothing
       , showLoadingOverlay = False
-      , showPreviewOverlay = False
       , url = url
 
       -- Debouncers
       -------------
       , loadingDebouncer = Debouncing.loading
+
+      -- Sidebar
+      ----------
+      , expandSidebar = False
+      , showPreviewOverlay = False
+      , sidebarMode = Drive.Sidebar.defaultMode
       }
       -----------------------------------------
       -- Command
@@ -118,6 +123,9 @@ update msg =
         -----------------------------------------
         -- Drive
         -----------------------------------------
+        CloseSidebar ->
+            Drive.closeSidebar
+
         CopyLink a ->
             Drive.copyLink a
 
@@ -127,17 +135,17 @@ update msg =
         GoUp a ->
             Drive.goUp a
 
-        RemoveSelection ->
-            Drive.removeSelection
-
         Select a ->
             Drive.select a
 
         ShowPreviewOverlay ->
             Drive.showPreviewOverlay
 
-        ToggleLargePreview ->
-            Drive.toggleLargePreview
+        ToggleExpandedSidebar ->
+            Drive.toggleExpandedSidebar
+
+        ToggleSidebarMode a ->
+            Drive.toggleSidebarMode a
 
         -----------------------------------------
         -- Explore

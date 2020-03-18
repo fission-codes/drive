@@ -2,16 +2,14 @@ module Drive.View.Details exposing (view)
 
 import Common
 import Common.View as Common
-import Common.View.Footer as Footer
+import Drive.View.Common as Drive
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
-import Html.Extra as Html exposing (nothing)
-import Html.Lazy
+import Html.Extra as Html
 import Item exposing (Item, Kind(..))
 import List.Extra as List
-import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
@@ -28,14 +26,14 @@ import Url.Builder
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
 view : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
-view currentTime base largePreview showPreviewOverlay item =
+view currentTime base expandSidebar showPreviewOverlay item =
     let
         publicUrl =
             Item.publicUrl base item
     in
     Html.div
         []
-        [ overlay currentTime publicUrl largePreview showPreviewOverlay item
+        [ overlay currentTime publicUrl expandSidebar showPreviewOverlay item
         , dataContainer item
         , extra item
         ]
@@ -46,7 +44,7 @@ view currentTime base largePreview showPreviewOverlay item =
 
 
 overlay : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
-overlay currentTime publicUrl largePreview showPreviewOverlay item =
+overlay currentTime publicUrl expandSidebar showPreviewOverlay item =
     let
         defaultAttributes =
             [ T.absolute
@@ -118,7 +116,10 @@ overlay currentTime publicUrl largePreview showPreviewOverlay item =
             []
 
         --
-        , actions largePreview
+        , Drive.sidebarControls
+            { above = True
+            , expanded = expandSidebar
+            }
         ]
 
 
@@ -277,101 +278,4 @@ extra item =
 
             _ ->
                 Html.nothing
-        ]
-
-
-actions : Bool -> Html Msg
-actions largePreview =
-    Html.div
-        [ T.absolute
-        , S.default_transition_duration
-        , S.default_transition_easing
-        , T.flex
-        , T.items_center
-        , T.justify_end
-        , T.left_0
-        , T.mt_px
-        , T.opacity_0
-        , T.px_2
-        , T.pt_px
-        , T.right_0
-        , T.text_gray_300
-        , T.text_sm
-        , T.top_0
-        , T.transition
-        , T.transition_opacity
-        , T.z_30
-
-        --
-        , T.group_hover__opacity_100
-        ]
-        [ Html.div
-            [ T.absolute
-            , T.border_b
-            , T.border_gray_300
-            , T.left_0
-            , T.opacity_10
-            , T.top_full
-            , T.right_0
-            ]
-            []
-
-        --
-        , Html.div
-            [ E.onClick ToggleLargePreview
-
-            --
-            , T.cursor_pointer
-            , T.hidden
-            , T.items_center
-            , T.px_2
-            , T.py_3
-
-            --
-            , T.md__flex
-            ]
-            [ (if largePreview then
-                FeatherIcons.minimize2
-
-               else
-                FeatherIcons.maximize2
-              )
-                |> FeatherIcons.withSize 14
-                |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
-                |> List.singleton
-                |> Html.div [ T.flex_shrink_0, T.w_6 ]
-
-            --
-            , Html.div
-                [ T.ml_1 ]
-                [ if largePreview then
-                    Html.text "Minimize"
-
-                  else
-                    Html.text "Maximize"
-                ]
-            ]
-
-        --
-        , Html.div
-            [ E.onClick RemoveSelection
-
-            --
-            , T.cursor_pointer
-            , T.flex
-            , T.items_center
-            , T.px_2
-            , T.py_3
-            ]
-            [ FeatherIcons.x
-                |> FeatherIcons.withSize 18
-                |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
-                |> List.singleton
-                |> Html.div [ T.flex_shrink_0, T.w_6 ]
-
-            --
-            , Html.div
-                [ T.ml_1 ]
-                [ Html.text "Close" ]
-            ]
         ]
