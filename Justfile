@@ -148,14 +148,18 @@ environment := "dev"
 
 @watch:
 	echo "👀  Watching for changes"
-	just watch-css & \
+	just watch-css-src & \
+	just watch-css-sys & \
 	just watch-html & \
 	just watch-images & \
 	just watch-js
 
 
-@watch-css:
-	watchexec -p -w {{src_dir}}/Css -e "css" -- just css-large & \
+@watch-css-src:
+	watchexec -p -w {{src_dir}}/Css -e "css" -- just css-large
+
+
+@watch-css-sys:
 	watchexec -p -w {{sys_dir}}/Css -e "js" -- just css-large
 
 
