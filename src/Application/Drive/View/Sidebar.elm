@@ -1,6 +1,6 @@
 module Drive.View.Sidebar exposing (view)
 
-import Common
+import Common exposing (ifThenElse)
 import Common.View as Common
 import Drive.Sidebar exposing (..)
 import Drive.View.Common as Drive
@@ -202,7 +202,7 @@ addOrCreateForm model =
         --
         , Html.div
             [ A.style "min-height" "90px"
-            , A.style "padding-top" "21.5%"
+            , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "21.5%")
 
             --
             , T.border_2

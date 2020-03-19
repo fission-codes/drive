@@ -35,6 +35,15 @@ defaultCid =
     "boris.fission.name"
 
 
+ifThenElse : Bool -> a -> a -> a
+ifThenElse condition x y =
+    if condition then
+        x
+
+    else
+        y
+
+
 sizeInWords : Int -> String
 sizeInWords sizeInBytes =
     let
