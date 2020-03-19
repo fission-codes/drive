@@ -187,10 +187,18 @@ toggleExpandedSidebar model =
 toggleSidebarMode : Drive.Sidebar.Mode -> Manager
 toggleSidebarMode mode model =
     if model.sidebarMode == Drive.Sidebar.defaultMode then
-        Return.singleton { model | sidebarMode = mode }
+        Return.singleton
+            { model
+                | expandSidebar = False
+                , sidebarMode = mode
+            }
 
     else
-        Return.singleton { model | sidebarMode = Drive.Sidebar.defaultMode }
+        Return.singleton
+            { model
+                | expandSidebar = False
+                , sidebarMode = Drive.Sidebar.defaultMode
+            }
 
 
 
