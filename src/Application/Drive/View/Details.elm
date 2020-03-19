@@ -269,12 +269,20 @@ dataContainer item =
 extra : Item -> Html Msg
 extra item =
     Html.div
-        [ T.relative
-        , T.z_0
-        ]
+        []
         [ case item.kind of
             Item.Image ->
-                Common.loadingAnimation
+                Html.div
+                    [ T.absolute
+                    , T.left_1over2
+                    , T.leading_none
+                    , T.neg_translate_x_1over2
+                    , T.neg_translate_y_1over2
+                    , T.top_1over2
+                    , T.transform
+                    , T.z_0
+                    ]
+                    [ Common.loadingAnimation ]
 
             _ ->
                 Html.nothing
