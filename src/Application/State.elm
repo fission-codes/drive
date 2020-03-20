@@ -1,9 +1,11 @@
 module State exposing (init, subscriptions, update)
 
+import Browser.Events as Browser
 import Browser.Navigation as Navigation
 import Common exposing (defaultCid)
 import Debouncer.Messages as Debouncer
 import Debouncing
+import Drive.ContextMenu
 import Drive.Sidebar
 import Drive.State as Drive
 import Explore.State as Explore
@@ -71,6 +73,7 @@ init flags url navKey =
       -- Model
       -----------------------------------------
       { currentTime = Time.millisToPosix 0
+      , contextMenu = Nothing
       , directoryList = Ok []
       , exploreInput = Just exploreInput
       , ipfs = Ipfs.Connecting
@@ -123,6 +126,9 @@ update msg =
         -----------------------------------------
         -- Drive
         -----------------------------------------
+        ActivateSidebarMode a ->
+            Drive.activateSidebarMode a
+
         CloseSidebar ->
             Drive.closeSidebar
 
@@ -186,14 +192,23 @@ update msg =
         Focused ->
             Other.focused
 
+        HideContextMenu ->
+            Other.hideContextMenu
+
         KeyboardInteraction a ->
             Other.keyboardInteraction a
 
         LinkClicked a ->
             Other.linkClicked a
 
+        ScreenSizeChanged a b ->
+            Other.screenSizeChanged a b
+
         SetCurrentTime a ->
             Other.setCurrentTime a
+
+        ShowContextMenu a b ->
+            Other.showContextMenu a b
 
         ToggleLoadingOverlay a ->
             Other.toggleLoadingOverlay a
@@ -217,6 +232,9 @@ subscriptions model =
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions
+
+        -- Monitor screen size
+        , Browser.onResize ScreenSizeChanged
 
         -- Check every 30 seconds what the current time is
         , Time.every (30 * 1000) SetCurrentTime

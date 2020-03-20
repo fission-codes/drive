@@ -3,15 +3,16 @@ module Drive.View exposing (view)
 import Common
 import Common.View as Common
 import Common.View.Footer as Footer
+import Drive.ContextMenu as ContextMenu
 import Drive.Sidebar as Sidebar
 import Drive.View.Sidebar as Sidebar
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Events.Extra.Mouse as M
 import Html.Extra as Html exposing (nothing)
 import Item exposing (Item, Kind(..))
-import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
@@ -28,11 +29,7 @@ import Url.Builder
 view : Model -> Html Msg
 view model =
     Html.div
-        [ E.on "focusout" (Decode.succeed Blurred)
-        , E.on "focusin" (Decode.succeed Focused)
-
-        --
-        , T.flex
+        [ T.flex
         , T.flex_col
         , T.min_h_screen
         ]
@@ -177,7 +174,14 @@ header model =
                     |> FeatherIcons.toHtml []
                     |> List.singleton
                     |> Html.span
-                        [ T.text_gray_300
+                        [ T.pointer_events_none ]
+                    |> List.singleton
+                    |> Html.span
+                        [ M.onClick (ShowContextMenu ContextMenu.hamburger)
+
+                        --
+                        , T.cursor_pointer
+                        , T.text_gray_300
                         ]
 
                 -- Html.div

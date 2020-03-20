@@ -5,8 +5,10 @@ module Types exposing (..)
 
 import Browser
 import Browser.Navigation as Navigation
+import ContextMenu exposing (ContextMenu)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Sidebar
+import Html.Events.Extra.Mouse as Mouse
 import Ipfs
 import Item exposing (Item)
 import Json.Decode as Json
@@ -37,6 +39,7 @@ type alias Flags =
 type alias Model =
     { currentTime : Time.Posix
     , directoryList : Result String (List Item)
+    , contextMenu : Maybe (ContextMenu Msg)
     , exploreInput : Maybe String
     , foundation : Maybe Foundation
     , ipfs : Ipfs.Status
@@ -77,6 +80,7 @@ type Msg
       -----------------------------------------
       -- Drive
       -----------------------------------------
+    | ActivateSidebarMode Drive.Sidebar.Mode
     | CloseSidebar
     | CopyLink Item
     | DigDeeper { directoryName : String }
@@ -104,8 +108,11 @@ type Msg
       -----------------------------------------
     | Blurred
     | Focused
+    | HideContextMenu
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
+    | ScreenSizeChanged Int Int
+    | ShowContextMenu (ContextMenu Msg) Mouse.Event
     | SetCurrentTime Time.Posix
     | ToggleLoadingOverlay { on : Bool }
     | UrlChanged Url

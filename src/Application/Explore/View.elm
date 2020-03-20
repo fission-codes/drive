@@ -8,7 +8,6 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Ipfs
-import Json.Decode as Decode
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -21,11 +20,7 @@ import Types exposing (..)
 view : Model -> Html Msg
 view model =
     Html.div
-        [ E.on "focusout" (Decode.succeed Blurred)
-        , E.on "focusin" (Decode.succeed Focused)
-
-        --
-        , T.flex
+        [ T.flex
         , T.flex_col
         , T.min_h_screen
         ]
