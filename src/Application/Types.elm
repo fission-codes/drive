@@ -8,6 +8,7 @@ import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Sidebar
+import File exposing (File)
 import Html.Events.Extra.Mouse as Mouse
 import Ipfs
 import Item exposing (Item)
@@ -81,6 +82,8 @@ type Msg
       -- Drive
       -----------------------------------------
     | ActivateSidebarMode Drive.Sidebar.Mode
+    | AddFiles File (List File)
+    | AskUserForFilesToAdd
     | CloseSidebar
     | CopyLink Item
     | DigDeeper { directoryName : String }
