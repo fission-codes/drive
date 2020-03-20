@@ -107,20 +107,20 @@ right model =
         (if Common.shouldShowExplore model then
             [ action
                 Link
-                [ A.href "https://fission.codes/support"
-                , A.target "_blank"
-                ]
-                FeatherIcons.lifeBuoy
-                [ Html.text "Support" ]
-
-            --
-            , action
-                Link
                 [ A.href "https://guide.fission.codes/drive"
                 , A.target "_blank"
                 ]
                 FeatherIcons.book
                 [ Html.text "Guide" ]
+
+            --
+            , action
+                Link
+                [ A.href "https://fission.codes/support"
+                , A.target "_blank"
+                ]
+                FeatherIcons.lifeBuoy
+                [ Html.text "Support" ]
             ]
 
          else

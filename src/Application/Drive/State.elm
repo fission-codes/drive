@@ -20,6 +20,11 @@ import Url
 -- 📣
 
 
+activateSidebarMode : Drive.Sidebar.Mode -> Manager
+activateSidebarMode mode model =
+    Return.singleton { model | sidebarMode = mode }
+
+
 closeSidebar : Manager
 closeSidebar model =
     Return.singleton

@@ -28,6 +28,8 @@ export default {
     colors: {
       ...kit.dasherizeObjectKeys(kit.colors),
 
+      "white_05": "rgba(255, 255, 255, 0.05)",
+
       "current-color": "currentColor",
       "inherit": "inherit",
       "transparent": "transparent"
@@ -101,7 +103,7 @@ export default {
   variants: {
 
     backgroundColor: [ "group-hover", "responsive" ],
-    borderColor: [ "focus", "group-hover", "hover", "responsive" ],
+    borderColor: [ "first", "focus", "group-hover", "hover", "last", "responsive" ],
     borderWidth: [ "first", "last" ],
     margin: [ "first", "last", "responsive" ],
     opacity: [ "group-hover", "responsive" ],

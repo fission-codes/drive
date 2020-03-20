@@ -19,14 +19,17 @@
             "elm/url": "1.0.0",
             "elm-community/html-extra": "3.3.0",
             "elm-community/list-extra": "8.2.3",
-            "elm-community/maybe-extra": "5.1.0",
-            "elm-community/result-extra": "2.3.0",
+            "elm-community/maybe-extra": "5.2.0",
+            "elm-community/result-extra": "2.4.0",
             "feathericons/elm-feather": "1.4.0",
             "gingko/time-distance": "2.2.0",
+            "mpizenberg/elm-pointer-events": "4.0.1",
             "myrho/elm-round": "1.0.4",
             "ohanhi/keyboard": "2.0.0"
         },
         "indirect": {
+            "elm/bytes": "1.0.8",
+            "elm/file": "1.0.5",
             "elm/svg": "1.0.1",
             "elm/virtual-dom": "1.0.2"
         }
