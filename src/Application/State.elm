@@ -129,6 +129,12 @@ update msg =
         ActivateSidebarMode a ->
             Drive.activateSidebarMode a
 
+        AddFiles a b ->
+            Drive.addFiles a b
+
+        AskUserForFilesToAdd ->
+            Drive.askUserForFilesToAdd
+
         CloseSidebar ->
             Drive.closeSidebar
 

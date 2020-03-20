@@ -7,6 +7,7 @@ import Drive.View.Common as Drive
 import Drive.View.Details as Details
 import Html exposing (Html)
 import Html.Attributes as A
+import Html.Events as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
 import Item exposing (Kind(..))
@@ -201,13 +202,18 @@ addOrCreateForm model =
 
         --
         , Html.div
-            [ A.style "min-height" "90px"
+            [ E.onClick AskUserForFilesToAdd
+
+            --
+            , A.style "min-height" "90px"
             , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "21.5%")
 
             --
             , T.border_2
             , T.border_dashed
             , T.border_gray_500
+            , T.block
+            , T.cursor_pointer
             , T.h_0
             , T.overflow_hidden
             , T.relative

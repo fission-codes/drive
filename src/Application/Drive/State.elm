@@ -4,6 +4,8 @@ import Browser.Navigation as Navigation
 import Common
 import Debouncing
 import Drive.Sidebar
+import File exposing (File)
+import File.Select
 import Ipfs
 import Item exposing (Item)
 import List.Extra as List
@@ -23,6 +25,17 @@ import Url
 activateSidebarMode : Drive.Sidebar.Mode -> Manager
 activateSidebarMode mode model =
     Return.singleton { model | sidebarMode = mode }
+
+
+addFiles : File -> List File -> Manager
+addFiles file otherFiles =
+    -- TODO
+    Return.singleton
+
+
+askUserForFilesToAdd : Manager
+askUserForFilesToAdd =
+    Return.communicate (File.Select.files [] AddFiles)
 
 
 closeSidebar : Manager
