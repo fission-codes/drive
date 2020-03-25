@@ -2,10 +2,12 @@ module Drive.State exposing (..)
 
 import Browser.Navigation as Navigation
 import Common
+import Common.State as Common
 import Debouncing
 import Drive.Sidebar
 import File exposing (File)
 import File.Select
+import Html.Events.Extra.Drag as Drag
 import Ipfs
 import Item exposing (Item)
 import List.Extra as List
@@ -122,6 +124,19 @@ digDeeperUsingSelection model =
 
         _ ->
             Return.singleton model
+
+
+droppedSomeFiles : Drag.Event -> Manager
+droppedSomeFiles event =
+    -- TODO
+    let
+        _ =
+            Debug.log "dropped" (List.map File.name event.dataTransfer.files)
+
+        files =
+            event.dataTransfer.files
+    in
+    Common.hideHelpfulNote
 
 
 goUp : { floor : Int } -> Manager
