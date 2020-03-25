@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/d77054d1ef4a74ddd018a8efa64c9764e9453eb6
-  fission-sdk: 0.1.5
+  fission-sdk: 0.3.0-alpha
   get-ipfs: 1.2.0
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.1.0
@@ -1123,6 +1123,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-mLQ4i2QO1ytvGWFWmcngKO//JXAQueZvwEKtjgQFM4jIK0kU+ytMfplL8j+n5mspOfjHwoAg+9yhb7BwAHm36g==
+  /bignumber.js/9.0.0:
+    dev: false
+    resolution:
+      integrity: sha512-t/OYhhJ2SD+YGBQcjY8GzzDHEk9f3nerxjtfa6tlMXfe7frs/WozhvCNoGvpM0P3bNf3Gq5ZRMlGr5f3r4/N8A==
   /binary-extensions/2.0.0:
     dev: true
     engines:
@@ -1133,6 +1137,18 @@ packages:
     dev: false
     resolution:
       integrity: sha1-ad+S75U6qIylGjLfarHFShVfx6U=
+  /borc/2.1.1:
+    dependencies:
+      bignumber.js: 9.0.0
+      commander: 2.20.3
+      ieee754: 1.1.13
+      iso-url: 0.4.7
+      json-text-sequence: 0.1.1
+    dev: false
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha512-vPLLC2/gS0QN4O3cnPh+8jLshkMMD4qIfs+B1TPGPh30WrtcfItaO6j4k9alsqu/hIgKi8dVdmMvTcbq4tIF7A==
   /brace-expansion/1.1.11:
     dependencies:
       balanced-match: 1.0.0
@@ -1425,7 +1441,6 @@ packages:
     resolution:
       integrity: sha512-wPMUt6FnH2yzG95SA6mzjQOEKUU3aLaDEmzs1ti+1E9h+CsrZghRlqEM/EJ4KscsQVG8uNN4uVreUeT8+drlgg==
   /commander/2.20.3:
-    dev: true
     resolution:
       integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
   /commander/4.1.1:
@@ -1628,6 +1643,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-yY2bzvdWdBiOEQlpFRGZ45sfppM=
+  /delimit-stream/0.1.0:
+    dev: false
+    resolution:
+      integrity: sha1-m4MZR3wOX4rrPONXrjBfwl6hzSs=
   /depd/1.1.2:
     dev: true
     engines:
@@ -1863,8 +1882,9 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-RdG35QbHF93UgndaK3eSCjwMV6c=
-  /fission-sdk/0.1.5:
+  /fission-sdk/0.3.0-alpha:
     dependencies:
+      borc: 2.1.1
       get-ipfs: 1.2.0
       ipld-dag-pb: 0.18.3
       keystore-idb: 0.7.0
@@ -1873,7 +1893,7 @@ packages:
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-WEUqapEsL9dSF9XQ+xsx0QRRaHL8q9XfswvagQM4CY37/8oT9VcSlBtRTHMEbAeDrzjpAxUzCCWg48ViHP4mjg==
+      integrity: sha512-ataTpsfqknOspSQJNs0Djc/0o9LML6H8qFcc6W3/5lXM5YIoP4T6p+dcYBDuuXUWbzOIXVCX5gqLMrUIgIfw0g==
   /follow-redirects/1.10.0:
     dependencies:
       debug: 3.2.6
@@ -2339,6 +2359,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
+  /iso-url/0.4.7:
+    dev: false
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-27fFRDnPAMnHGLq36bWTpKET+eiXct3ENlCcdcMdk+mjXrb2kw3mhBUg1B7ewAC0kVzlOPhADzQgz1SE6Tglog==
   /jest-worker/24.9.0:
     dependencies:
       merge-stream: 2.0.0
@@ -2376,6 +2402,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw==
+  /json-text-sequence/0.1.1:
+    dependencies:
+      delimit-stream: 0.1.0
+    dev: false
+    resolution:
+      integrity: sha1-py8hfcSvxGKf/1/rME3BvVGi89I=
   /json5/2.1.1:
     dependencies:
       minimist: 1.2.0
@@ -4032,7 +4064,7 @@ specifiers:
   elm-impfix: ^1.0.8
   elm-live: ^4.0.1
   fission-kit: 'fission-suite/kit#d77054d1ef4a74ddd018a8efa64c9764e9453eb6'
-  fission-sdk: ^0.1.5
+  fission-sdk: 0.3.0-alpha
   get-ipfs: ^1.2.0
   html-minifier-terser: ^5.0.4
   postcss: ^7.0.26
