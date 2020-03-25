@@ -3,6 +3,7 @@ module State exposing (init, subscriptions, update)
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
 import Common exposing (defaultCid)
+import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
 import Drive.ContextMenu
@@ -75,7 +76,9 @@ init flags url navKey =
       { currentTime = Time.millisToPosix 0
       , contextMenu = Nothing
       , directoryList = Ok []
+      , dragndropMode = False
       , exploreInput = Just exploreInput
+      , helpfulNote = Nothing
       , ipfs = Ipfs.Connecting
       , isFocused = False
       , navKey = navKey
@@ -89,6 +92,7 @@ init flags url navKey =
       -- Debouncers
       -------------
       , loadingDebouncer = Debouncing.loading
+      , notificationsDebouncer = Debouncing.notifications
 
       -- Sidebar
       ----------
@@ -123,6 +127,9 @@ update msg =
         LoadingDebouncerMsg a ->
             Debouncer.update update Debouncing.loadingUpdateConfig a
 
+        NotificationsDebouncerMsg a ->
+            Debouncer.update update Debouncing.notificationsUpdateConfig a
+
         -----------------------------------------
         -- Drive
         -----------------------------------------
@@ -143,6 +150,9 @@ update msg =
 
         DigDeeper a ->
             Drive.digDeeper a
+
+        DroppedSomeFiles a ->
+            Drive.droppedSomeFiles a
 
         GoUp a ->
             Drive.goUp a
@@ -190,16 +200,31 @@ update msg =
             Ipfs.setupCompleted
 
         -----------------------------------------
-        -- Other
+        -- 🌏 Common
+        -----------------------------------------
+        HideHelpfulNote ->
+            Common.hideHelpfulNote
+
+        RemoveContextMenu ->
+            Common.removeContextMenu
+
+        RemoveHelpfulNote ->
+            Common.removeHelpfulNote
+
+        ShowContextMenu a b ->
+            Common.showContextMenu a b
+
+        ShowHelpfulNote a ->
+            Common.showHelpfulNote a
+
+        -----------------------------------------
+        -- 🐚 Other
         -----------------------------------------
         Blurred ->
             Other.blurred
 
         Focused ->
             Other.focused
-
-        HideContextMenu ->
-            Other.hideContextMenu
 
         KeyboardInteraction a ->
             Other.keyboardInteraction a
@@ -212,9 +237,6 @@ update msg =
 
         SetCurrentTime a ->
             Other.setCurrentTime a
-
-        ShowContextMenu a b ->
-            Other.showContextMenu a b
 
         ToggleLoadingOverlay a ->
             Other.toggleLoadingOverlay a

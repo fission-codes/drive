@@ -2,9 +2,7 @@ module Other.State exposing (..)
 
 import Browser
 import Browser.Navigation as Navigation
-import ContextMenu exposing (ContextMenu)
 import Drive.State as Drive
-import Html.Events.Extra.Mouse as Mouse
 import Ipfs
 import Ipfs.State
 import Keyboard
@@ -19,11 +17,6 @@ import Url exposing (Url)
 
 
 -- 🛠
-
-
-hideContextMenu : Manager
-hideContextMenu model =
-    Return.singleton { model | contextMenu = Nothing }
 
 
 keyboardInteraction : Keyboard.Msg -> Manager
@@ -70,18 +63,6 @@ screenSizeChanged width height model =
 setCurrentTime : Time.Posix -> Manager
 setCurrentTime time model =
     Return.singleton { model | currentTime = time }
-
-
-showContextMenu : ContextMenu Msg -> Mouse.Event -> Manager
-showContextMenu menu event model =
-    let
-        menuWithPosition =
-            { x = Tuple.first event.clientPos - Tuple.first event.offsetPos + 22
-            , y = Tuple.second event.clientPos - Tuple.second event.offsetPos + 40
-            }
-                |> ContextMenu.position menu
-    in
-    Return.singleton { model | contextMenu = Just menuWithPosition }
 
 
 

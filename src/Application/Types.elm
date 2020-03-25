@@ -9,6 +9,7 @@ import ContextMenu exposing (ContextMenu)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Sidebar
 import File exposing (File)
+import Html.Events.Extra.Drag as Drag
 import Html.Events.Extra.Mouse as Mouse
 import Ipfs
 import Item exposing (Item)
@@ -41,8 +42,10 @@ type alias Model =
     { currentTime : Time.Posix
     , directoryList : Result String (List Item)
     , contextMenu : Maybe (ContextMenu Msg)
+    , dragndropMode : Bool
     , exploreInput : Maybe String
     , foundation : Maybe Foundation
+    , helpfulNote : Maybe { faded : Bool, note : String }
     , ipfs : Ipfs.Status
     , isFocused : Bool
     , navKey : Navigation.Key
@@ -56,6 +59,7 @@ type alias Model =
     -- Debouncers
     -----------------------------------------
     , loadingDebouncer : Debouncer Msg
+    , notificationsDebouncer : Debouncer Msg
 
     -----------------------------------------
     -- Sidebar
@@ -78,6 +82,7 @@ type Msg
       -- Debouncers
       -----------------------------------------
     | LoadingDebouncerMsg (Debouncer.Msg Msg)
+    | NotificationsDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
       -- Drive
       -----------------------------------------
@@ -87,6 +92,7 @@ type Msg
     | CloseSidebar
     | CopyLink Item
     | DigDeeper { directoryName : String }
+    | DroppedSomeFiles Drag.Event
     | GoUp { floor : Int }
     | Select Item
     | ShowPreviewOverlay
@@ -107,15 +113,21 @@ type Msg
     | ReplaceResolvedAddress { cid : String }
     | SetupCompleted
       -----------------------------------------
+      -- 🌏 Common
+      -----------------------------------------
+    | HideHelpfulNote
+    | RemoveContextMenu
+    | RemoveHelpfulNote
+    | ShowContextMenu (ContextMenu Msg) Mouse.Event
+    | ShowHelpfulNote String
+      -----------------------------------------
       -- 🐚 Other
       -----------------------------------------
     | Blurred
     | Focused
-    | HideContextMenu
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | ScreenSizeChanged Int Int
-    | ShowContextMenu (ContextMenu Msg) Mouse.Event
     | SetCurrentTime Time.Posix
     | ToggleLoadingOverlay { on : Bool }
     | UrlChanged Url

@@ -3,10 +3,12 @@ module View exposing (view)
 import Browser
 import Common.View as Common
 import Common.View.ContextMenu
+import Common.View.HelpfulNote
 import Drive.View as Drive
 import Explore.View as Explore
 import Html exposing (Html)
 import Html.Events as E
+import Html.Events.Extra.Drag as Drag
 import Html.Extra as Html
 import Item exposing (Kind(..))
 import Json.Decode as Decode
@@ -48,7 +50,7 @@ body m =
         Drive.view m
 
     -----------------------------------------
-    -- Extra
+    -- Context Menu
     -----------------------------------------
     , case m.contextMenu of
         Just menu ->
@@ -56,17 +58,45 @@ body m =
 
         Nothing ->
             Html.nothing
+
+    -----------------------------------------
+    -- Helpful Note
+    -----------------------------------------
+    -- Is shown, for example, when dragging files onto Fission Drive.
+    , case m.helpfulNote of
+        Just note ->
+            Common.View.HelpfulNote.view note
+
+        Nothing ->
+            Html.nothing
     ]
         |> Html.div
-            [ E.on "focusout" (Decode.succeed Blurred)
-            , E.on "focusin" (Decode.succeed Focused)
+            (case m.route of
+                Tree _ _ ->
+                    { onOver = \_ -> ShowHelpfulNote "Drop to add it to your drive"
+                    , onDrop = DroppedSomeFiles
+                    , onEnter = Nothing
+                    , onLeave = Nothing
+                    }
+                        |> Drag.onFileFromOS
+                        |> List.append (rootAttributes m)
 
-            --
-            , case m.contextMenu of
-                Just _ ->
-                    E.onClick HideContextMenu
-
-                Nothing ->
-                    E.onClick Bypass
-            ]
+                _ ->
+                    rootAttributes m
+            )
         |> List.singleton
+
+
+rootAttributes : Model -> List (Html.Attribute Msg)
+rootAttributes m =
+    [ E.on "focusout" (Decode.succeed Blurred)
+    , E.on "focusin" (Decode.succeed Focused)
+
+    --
+    , case m.contextMenu of
+        Just _ ->
+            E.onClick RemoveContextMenu
+
+        Nothing ->
+            E.onClick Bypass
+    ]

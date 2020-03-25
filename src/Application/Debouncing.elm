@@ -32,3 +32,27 @@ loadingUpdateConfig =
     , getDebouncer = .loadingDebouncer
     , setDebouncer = \debouncer model -> { model | loadingDebouncer = debouncer }
     }
+
+
+
+-- NOTIFICATIONS
+
+
+notifications : Debouncer Msg
+notifications =
+    Debouncer.manual
+        |> Debouncer.settleWhenQuietFor (Just <| fromSeconds 1)
+        |> Debouncer.toDebouncer
+
+
+notificationsInput : Msg -> Msg
+notificationsInput =
+    Debouncer.provideInput >> NotificationsDebouncerMsg
+
+
+notificationsUpdateConfig : Debouncer.UpdateConfig Msg Model
+notificationsUpdateConfig =
+    { mapMsg = NotificationsDebouncerMsg
+    , getDebouncer = .notificationsDebouncer
+    , setDebouncer = \debouncer model -> { model | notificationsDebouncer = debouncer }
+    }
