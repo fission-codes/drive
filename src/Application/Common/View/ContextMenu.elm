@@ -82,7 +82,10 @@ itemView { icon, label, href, msg, active } =
             itemClasses
             (case ( href, msg ) of
                 ( Just h, _ ) ->
-                    [ A.href h, A.target "_blank" ]
+                    [ A.href h
+                    , A.rel "noopener noreferrer"
+                    , A.target "_blank"
+                    ]
 
                 ( _, Just m ) ->
                     [ E.onClick m ]
