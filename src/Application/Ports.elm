@@ -27,7 +27,7 @@ port storeFoundation : Foundation -> Cmd msg
 -- 📣  ░░  IPFS
 
 
-port ipfsListDirectory : { cid : String, pathSegments : List String } -> Cmd msg
+port ipfsListDirectory : { address : String, pathSegments : List String } -> Cmd msg
 
 
 port ipfsPrefetchTree : String -> Cmd msg
@@ -43,7 +43,7 @@ port ipfsSetup : () -> Cmd msg
 -- 📣  ░░  SDK
 
 
-port sdkCreateDirectoryPath : { cid : String, pathSegments : List String } -> Cmd msg
+port sdkCreateDirectoryPath : { address : String, pathSegments : List String } -> Cmd msg
 
 
 

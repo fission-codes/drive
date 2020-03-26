@@ -47,7 +47,7 @@ reset model =
             | directoryList = Ok []
             , exploreInput = Just ""
             , foundation = Nothing
-            , selectedCid = Nothing
+            , selectedPath = Nothing
         }
         (Cmd.batch
             [ Ports.removeStoredFoundation ()

@@ -47,12 +47,12 @@ closeSidebar model =
         Return.singleton
             { model
                 | expandSidebar = False
-                , selectedCid = Nothing
+                , selectedPath = Nothing
                 , showPreviewOverlay = False
             }
 
     else
-        potentiallyRenderMedia
+        Common.potentiallyRenderMedia
             { model
                 | expandSidebar = False
                 , sidebarMode = Drive.Sidebar.defaultMode
@@ -126,11 +126,11 @@ digDeeper { directoryName } model =
 
 digDeeperUsingSelection : Manager
 digDeeperUsingSelection model =
-    case ( model.directoryList, model.selectedCid ) of
-        ( Ok items, Just cid ) ->
+    case ( model.directoryList, model.selectedPath ) of
+        ( Ok items, Just path ) ->
             items
                 |> List.find
-                    (.path >> (==) cid)
+                    (.path >> (==) path)
                 |> Maybe.map
                     (\item ->
                         if item.kind == Drive.Item.Directory then
@@ -201,9 +201,9 @@ goUpOneLevel model =
 
 select : Item -> Manager
 select item model =
-    potentiallyRenderMedia
+    Common.potentiallyRenderMedia
         { model
-            | selectedCid = Just item.path
+            | selectedPath = Just item.path
             , sidebarMode = Drive.Sidebar.DetailsForSelection
         }
 
@@ -242,7 +242,7 @@ toggleSidebarMode mode model =
             }
 
     else
-        potentiallyRenderMedia
+        Common.potentiallyRenderMedia
             { model
                 | expandSidebar = False
                 , sidebarMode = Drive.Sidebar.defaultMode
@@ -253,39 +253,12 @@ toggleSidebarMode mode model =
 -- ㊙️
 
 
-potentiallyRenderMedia : Manager
-potentiallyRenderMedia model =
-    case
-        Maybe.andThen
-            (\path ->
-                model.directoryList
-                    |> Result.withDefault []
-                    |> List.find (.path >> (==) path)
-            )
-            model.selectedCid
-    of
-        Just item ->
-            if Drive.Item.canRenderKind item.kind then
-                { id = item.id
-                , name = item.name
-                , path = item.path
-                }
-                    |> Ports.renderMedia
-                    |> return model
-
-            else
-                Return.singleton model
-
-        Nothing ->
-            Return.singleton model
-
-
 makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Manager
 makeItemSelector indexModifier fallbackIndexFn model =
-    case ( model.directoryList, model.selectedCid ) of
-        ( Ok items, Just selectedCid ) ->
+    case ( model.directoryList, model.selectedPath ) of
+        ( Ok items, Just selectedPath ) ->
             items
-                |> List.findIndex (.path >> (==) selectedCid)
+                |> List.findIndex (.path >> (==) selectedPath)
                 |> Maybe.map indexModifier
                 |> Maybe.andThen (\idx -> List.getAt idx items)
                 |> Maybe.map (\item -> select item model)

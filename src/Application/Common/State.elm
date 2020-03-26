@@ -2,7 +2,10 @@ module Common.State exposing (..)
 
 import ContextMenu exposing (ContextMenu, Hook(..))
 import Debouncing
+import Drive.Item
 import Html.Events.Extra.Mouse as Mouse
+import List.Extra as List
+import Ports
 import Return exposing (return)
 import Return.Extra as Return
 import Types exposing (..)
@@ -23,6 +26,33 @@ hideHelpfulNote model =
                 |> Debouncing.notificationsInput
                 |> Return.task
             )
+
+
+potentiallyRenderMedia : Manager
+potentiallyRenderMedia model =
+    case
+        Maybe.andThen
+            (\path ->
+                model.directoryList
+                    |> Result.withDefault []
+                    |> List.find (.path >> (==) path)
+            )
+            model.selectedPath
+    of
+        Just item ->
+            if Drive.Item.canRenderKind item.kind then
+                { id = item.id
+                , name = item.name
+                , path = item.path
+                }
+                    |> Ports.renderMedia
+                    |> return model
+
+            else
+                Return.singleton model
+
+        Nothing ->
+            Return.singleton model
 
 
 removeContextMenu : Manager

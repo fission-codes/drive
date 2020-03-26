@@ -89,7 +89,7 @@ inputScreen m =
             , T.w_full
             ]
             [ Html.input
-                [ A.placeholder Common.defaultCid
+                [ A.placeholder Common.defaultDnsLink
                 , A.value (Maybe.withDefault "" m.exploreInput)
                 , E.onInput GotInput
 

@@ -416,7 +416,7 @@ contentAvailable model directoryList =
                     ]
                     (let
                         hideContent =
-                            Maybe.isJust model.selectedCid
+                            Maybe.isJust model.selectedPath
                                 || (model.sidebarMode /= Sidebar.defaultMode)
                      in
                      if model.expandSidebar then
@@ -466,7 +466,7 @@ list model directoryList =
         -- Tree
         -----------------------------------------
         , directoryList
-            |> List.map (listItem model.selectedCid)
+            |> List.map (listItem model.selectedPath)
             |> Html.div []
 
         -----------------------------------------
@@ -527,10 +527,10 @@ list model directoryList =
 
 
 listItem : Maybe String -> Item -> Html Msg
-listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
+listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
     let
         selected =
-            selectedCid == Just path
+            selectedPath == Just path
     in
     Html.div
         [ case kind of

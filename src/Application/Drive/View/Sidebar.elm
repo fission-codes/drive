@@ -27,7 +27,7 @@ view : Model -> Html Msg
 view model =
     case model.sidebarMode of
         DetailsForSelection ->
-            if Maybe.isJust model.selectedCid then
+            if Maybe.isJust model.selectedPath then
                 view_ model
 
             else
@@ -263,12 +263,12 @@ detailsForSelection model =
         , T.px_4
         , T.py_6
         ]
-        [ model.selectedCid
+        [ model.selectedPath
             |> Maybe.andThen
-                (\cid ->
+                (\path ->
                     model.directoryList
                         |> Result.withDefault []
-                        |> List.find (.path >> (==) cid)
+                        |> List.find (.path >> (==) path)
                 )
             |> Maybe.map
                 (Html.Lazy.lazy5

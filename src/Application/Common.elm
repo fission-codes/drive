@@ -41,8 +41,8 @@ base { presentable } model =
             ""
 
 
-defaultCid : String
-defaultCid =
+defaultDnsLink : String
+defaultDnsLink =
     "boris.fission.name"
 
 

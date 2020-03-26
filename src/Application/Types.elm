@@ -51,7 +51,7 @@ type alias Model =
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
     , route : Route
-    , selectedCid : Maybe String
+    , selectedPath : Maybe String
     , showLoadingOverlay : Bool
     , url : Url
 

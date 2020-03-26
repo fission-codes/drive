@@ -2,10 +2,13 @@ module Ipfs.State exposing (..)
 
 import Browser.Dom as Dom
 import Browser.Navigation as Navigation
+import Common.State as Common
 import Debouncing
-import Ipfs
 import Drive.Item
+import Ipfs
 import Json.Decode as Json
+import List.Extra as List
+import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
 import Routing exposing (Route(..))
@@ -23,7 +26,7 @@ getDirectoryListCmd model =
         pathSegments =
             Routing.treePathSegments model.route
 
-        cid =
+        address =
             pathSegments
                 |> (case model.foundation of
                         Just { resolved } ->
@@ -35,7 +38,7 @@ getDirectoryListCmd model =
                 |> String.join "/"
     in
     Ports.ipfsListDirectory
-        { cid = cid
+        { address = address
         , pathSegments = pathSegments
         }
 
@@ -79,13 +82,36 @@ gotDirectoryList_ encodedDirList model =
         |> Result.map (List.map Drive.Item.fromIpfs)
         |> Result.mapError Json.errorToString
         |> (\result ->
+                let
+                    listResult =
+                        Result.map
+                            (List.sortWith Drive.Item.sortingFunction)
+                            result
+
+                    lastRouteSegment =
+                        List.last (Routing.treePathSegments model.route)
+
+                    selectedPath =
+                        case listResult of
+                            Ok [ singleItem ] ->
+                                if Just singleItem.name == lastRouteSegment then
+                                    Just singleItem.path
+
+                                else
+                                    Nothing
+
+                            _ ->
+                                Nothing
+                in
                 { model
-                    | directoryList = Result.map (List.sortWith Drive.Item.sortingFunction) result
+                    | directoryList = listResult
+                    , expandSidebar = Maybe.isJust selectedPath
                     , ipfs = Ipfs.Ready
+                    , selectedPath = selectedPath
                     , showLoadingOverlay = False
                 }
            )
-        |> Return.singleton
+        |> Common.potentiallyRenderMedia
         |> Return.andThen Debouncing.cancelLoading
         |> Return.command
             (Task.attempt

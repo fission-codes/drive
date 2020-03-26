@@ -2,7 +2,7 @@ module State exposing (init, subscriptions, update)
 
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
-import Common exposing (defaultCid)
+import Common exposing (defaultDnsLink)
 import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
@@ -52,7 +52,7 @@ init flags url navKey =
             foundation
                 |> Maybe.map .unresolved
                 |> Maybe.orElse (Routing.treeRoot route)
-                |> Maybe.withDefault defaultCid
+                |> Maybe.withDefault defaultDnsLink
     in
     ( -----------------------------------------
       -- Model
@@ -69,7 +69,7 @@ init flags url navKey =
       , route = Routing.routeFromUrl url
       , pressedKeys = []
       , foundation = foundation
-      , selectedCid = Nothing
+      , selectedPath = Nothing
       , showLoadingOverlay = False
       , url = url
 

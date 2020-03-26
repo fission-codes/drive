@@ -141,7 +141,7 @@ urlChanged url old =
 
         --
         , route = route
-        , selectedCid = Nothing
+        , selectedPath = Nothing
         , url = url
     }
         |> Return.singleton

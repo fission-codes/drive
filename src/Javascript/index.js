@@ -98,8 +98,8 @@ app.ports.storeFoundation.subscribe(foundation => {
 // IPFS
 // ----
 
-app.ports.ipfsListDirectory.subscribe(({ cid, pathSegments }) => {
-  ipfs.listDirectory(cid)
+app.ports.ipfsListDirectory.subscribe(({ address, pathSegments }) => {
+  ipfs.listDirectory(address)
     .then(results => app.ports.ipfsGotDirectoryList.send({ pathSegments, results }))
     .catch(reportIpfsError)
 })
@@ -131,9 +131,9 @@ function prepCidForTransport(cid) {
 }
 
 
-// app.ports.sdkCreateDirectoryPath.subscribe(({ cid, pathSegments }) => {
+// app.ports.sdkCreateDirectoryPath.subscribe(({ address, pathSegments }) => {
 //   sdk
-//     .mkdirp(cid, pathSegments.join("/"))
+//     .mkdirp(address, pathSegments.join("/"))
 //     .then(prepCidForTransport)
 //     .then(app.ports.replaceResolvedAddress.send)
 // })
