@@ -108,6 +108,7 @@ right model =
             [ action
                 Link
                 [ A.href "https://guide.fission.codes/drive"
+                , A.rel "noopener noreferrer"
                 , A.target "_blank"
                 ]
                 FeatherIcons.book
@@ -117,6 +118,7 @@ right model =
             , action
                 Link
                 [ A.href "https://fission.codes/support"
+                , A.rel "noopener noreferrer"
                 , A.target "_blank"
                 ]
                 FeatherIcons.lifeBuoy

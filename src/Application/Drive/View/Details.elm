@@ -175,6 +175,7 @@ overlayContents currentTime publicUrl item =
         ]
         [ Html.a
             [ A.href publicUrl
+            , A.rel "noopener noreferrer"
             , A.target "_blank"
 
             --
