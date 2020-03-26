@@ -35,23 +35,7 @@ init flags url navKey =
             Routing.routeFromUrl url
 
         foundation =
-            -- `flags.foundation` is a cached version of a resolved ipfs address.
-            -- We only want to keep that, if the unresolved ipfs address in
-            -- the url is the same. Otherwise we should resolve the requested
-            -- ipfs address first (this happens after the ipfs setup).
-            case ( flags.foundation, route ) of
-                ( Just cachedFoundation, Tree { root } _ ) ->
-                    if root /= cachedFoundation.unresolved then
-                        Nothing
-
-                    else
-                        Just cachedFoundation
-
-                ( Just cachedFoundation, _ ) ->
-                    Just cachedFoundation
-
-                _ ->
-                    Nothing
+            Nothing
 
         urlCmd =
             case ( flags.foundation, route ) of
