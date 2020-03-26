@@ -42,20 +42,20 @@ askUserForFilesToAdd =
 
 closeSidebar : Manager
 closeSidebar model =
-    Return.singleton
-        (if model.sidebarMode == Drive.Sidebar.defaultMode then
+    if model.sidebarMode == Drive.Sidebar.defaultMode then
+        Return.singleton
             { model
                 | expandSidebar = False
                 , selectedCid = Nothing
                 , showPreviewOverlay = False
             }
 
-         else
+    else
+        potentiallyRenderMedia
             { model
                 | expandSidebar = False
                 , sidebarMode = Drive.Sidebar.defaultMode
             }
-        )
 
 
 copyLink : Item -> Manager
@@ -176,21 +176,11 @@ goUpOneLevel model =
 
 select : Item -> Manager
 select item model =
-    return
+    potentiallyRenderMedia
         { model
             | selectedCid = Just item.path
             , sidebarMode = Drive.Sidebar.DetailsForSelection
         }
-        (if Item.canRenderKind item.kind then
-            Ports.renderMedia
-                { id = item.id
-                , name = item.name
-                , path = item.path
-                }
-
-         else
-            Cmd.none
-        )
 
 
 selectNextItem : Manager
@@ -227,7 +217,7 @@ toggleSidebarMode mode model =
             }
 
     else
-        Return.singleton
+        potentiallyRenderMedia
             { model
                 | expandSidebar = False
                 , sidebarMode = Drive.Sidebar.defaultMode
@@ -236,6 +226,33 @@ toggleSidebarMode mode model =
 
 
 -- ㊙️
+
+
+potentiallyRenderMedia : Manager
+potentiallyRenderMedia model =
+    case
+        Maybe.andThen
+            (\path ->
+                model.directoryList
+                    |> Result.withDefault []
+                    |> List.find (.path >> (==) path)
+            )
+            model.selectedCid
+    of
+        Just item ->
+            if Item.canRenderKind item.kind then
+                { id = item.id
+                , name = item.name
+                , path = item.path
+                }
+                    |> Ports.renderMedia
+                    |> return model
+
+            else
+                Return.singleton model
+
+        Nothing ->
+            Return.singleton model
 
 
 makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Manager
