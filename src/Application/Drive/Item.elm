@@ -1,4 +1,4 @@
-module Item exposing (..)
+module Drive.Item exposing (..)
 
 import FeatherIcons
 import Ipfs
@@ -26,6 +26,9 @@ type Kind
 
 type alias Item =
     { id : String
+
+    --
+    , cid : String
     , kind : Kind
     , loading : Bool
     , name : String
@@ -98,7 +101,7 @@ canRenderKind kind =
 
 
 fromIpfs : Ipfs.ListItem -> Item
-fromIpfs { name, path, posixTime, size, typ } =
+fromIpfs { cid, name, path, posixTime, size, typ } =
     let
         nameProps =
             case typ of
@@ -143,6 +146,7 @@ fromIpfs { name, path, posixTime, size, typ } =
             |> String.fromInt
 
     --
+    , cid = cid
     , kind = kind
     , loading = False
     , name = name

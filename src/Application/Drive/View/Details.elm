@@ -2,13 +2,15 @@ module Drive.View.Details exposing (view)
 
 import Common
 import Common.View as Common
+import Drive.ContextMenu
+import Drive.Item exposing (Item, Kind(..))
 import Drive.View.Common as Drive
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Events.Extra.Mouse as M
 import Html.Extra as Html
-import Item exposing (Item, Kind(..))
 import List.Extra as List
 import Routing exposing (Route(..))
 import Styling as S
@@ -29,7 +31,7 @@ view : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
 view currentTime base expandSidebar showPreviewOverlay item =
     let
         publicUrl =
-            Item.publicUrl base item
+            Drive.Item.publicUrl base item
     in
     Html.div
         []
@@ -64,13 +66,13 @@ overlay currentTime publicUrl expandSidebar showPreviewOverlay item =
     in
     Html.div
         (case item.kind of
-            Item.Audio ->
+            Drive.Item.Audio ->
                 []
 
-            Item.Video ->
+            Drive.Item.Video ->
                 [ T.hidden ]
 
-            Item.Image ->
+            Drive.Item.Image ->
                 List.append
                     defaultAttributes
                     (if showPreviewOverlay then
@@ -103,7 +105,7 @@ overlay currentTime publicUrl expandSidebar showPreviewOverlay item =
 
             --
             , case item.kind of
-                Item.Image ->
+                Drive.Item.Image ->
                     T.opacity_80
 
                 _ ->
@@ -126,7 +128,7 @@ overlay currentTime publicUrl expandSidebar showPreviewOverlay item =
 overlayContents : Time.Posix -> String -> Item -> List (Html Msg)
 overlayContents currentTime publicUrl item =
     [ item.kind
-        |> Item.kindIcon
+        |> Drive.Item.kindIcon
         |> FeatherIcons.withSize 128
         |> FeatherIcons.withStrokeWidth 0.5
         |> FeatherIcons.toHtml []
@@ -160,7 +162,7 @@ overlayContents currentTime publicUrl item =
 
             ( Nothing, 0 ) ->
                 -- TODO: Show amount of items the directory has
-                Html.text (Item.kindName item.kind)
+                Html.text (Drive.Item.kindName item.kind)
 
             ( Nothing, size ) ->
                 Html.text (Common.sizeInWords size)
@@ -198,16 +200,21 @@ overlayContents currentTime publicUrl item =
 
         --
         , Html.button
-            [ E.onClick (CopyLink item)
+            [ item
+                |> Drive.ContextMenu.item
+                |> ShowContextMenu
+                |> M.onClick
 
             --
             , T.appearance_none
             , T.ml_3
             , T.text_purple
             ]
-            [ FeatherIcons.share
+            [ FeatherIcons.moreVertical
                 |> FeatherIcons.withSize 18
                 |> FeatherIcons.toHtml []
+                |> List.singleton
+                |> Html.div [ T.pointer_events_none ]
             ]
         ]
     ]
@@ -236,14 +243,14 @@ dataContainer item =
             , A.class "drive-item__preview"
             ]
             (case item.kind of
-                Item.Audio ->
+                Drive.Item.Audio ->
                     [ T.mt_8
                     , T.relative
                     , T.text_center
                     , T.z_10
                     ]
 
-                Item.Image ->
+                Drive.Item.Image ->
                     List.append
                         defaultStyles
                         [ E.onClick ShowPreviewOverlay
@@ -255,7 +262,7 @@ dataContainer item =
             )
         )
         [ case item.kind of
-            Item.Image ->
+            Drive.Item.Image ->
                 Html.nothing
 
             _ ->
@@ -272,7 +279,7 @@ extra item =
     Html.div
         []
         [ case item.kind of
-            Item.Image ->
+            Drive.Item.Image ->
                 Html.div
                     [ T.absolute
                     , T.left_1over2

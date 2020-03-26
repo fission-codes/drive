@@ -32,10 +32,10 @@ export async function listDirectory(address) {
   if (result.length === 0) {
     const context = await ensureArray(await ipfs.get(address))
     if (!context[0] || context[0].type !== "file") return []
-    return context
+    return context.map(stringifyCids)
   }
 
-  return result
+  return result.map(stringifyCids)
 }
 
 
@@ -101,6 +101,14 @@ export function stream(address, opts) {
 
 
 // ㊙️
+
+
+function stringifyCids(listItem) {
+  return {
+    ...listItem,
+    cid: listItem.cid.toString()
+  }
+}
 
 
 async function ensureArray(result) {

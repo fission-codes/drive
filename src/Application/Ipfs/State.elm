@@ -4,7 +4,7 @@ import Browser.Dom as Dom
 import Browser.Navigation as Navigation
 import Debouncing
 import Ipfs
-import Item
+import Drive.Item
 import Json.Decode as Json
 import Ports
 import Return exposing (return)
@@ -76,11 +76,11 @@ gotDirectoryList_ : Json.Value -> Manager
 gotDirectoryList_ encodedDirList model =
     encodedDirList
         |> Json.decodeValue (Json.list Ipfs.listItemDecoder)
-        |> Result.map (List.map Item.fromIpfs)
+        |> Result.map (List.map Drive.Item.fromIpfs)
         |> Result.mapError Json.errorToString
         |> (\result ->
                 { model
-                    | directoryList = Result.map (List.sortWith Item.sortingFunction) result
+                    | directoryList = Result.map (List.sortWith Drive.Item.sortingFunction) result
                     , ipfs = Ipfs.Ready
                     , showLoadingOverlay = False
                 }

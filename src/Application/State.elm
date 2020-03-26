@@ -129,11 +129,17 @@ update msg =
         CloseSidebar ->
             Drive.closeSidebar
 
-        CopyLink a ->
-            Drive.copyLink a
+        CopyPublicUrl a ->
+            Drive.copyPublicUrl a
+
+        CopyToClipboard a ->
+            Drive.copyToClipboard a
 
         DigDeeper a ->
             Drive.digDeeper a
+
+        DownloadItem a ->
+            Drive.downloadItem a
 
         DroppedSomeFiles a ->
             Drive.droppedSomeFiles a

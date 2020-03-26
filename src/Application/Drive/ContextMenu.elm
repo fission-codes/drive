@@ -1,6 +1,7 @@
 module Drive.ContextMenu exposing (..)
 
 import ContextMenu exposing (..)
+import Drive.Item
 import Drive.Sidebar as Sidebar
 import FeatherIcons
 import Types exposing (..)
@@ -69,5 +70,76 @@ hamburger =
             --
             , href = Just "https://fission.codes/support"
             , msg = Nothing
+            }
+        ]
+
+
+
+-- ITEM
+
+
+item : Drive.Item.Item -> ContextMenu Msg
+item context =
+    ContextMenu.build
+        BottomCenter
+        [ Item
+            { icon = FeatherIcons.share
+            , label = "Link to Drive page"
+            , active = False
+
+            --
+            , href = Nothing
+            , msg =
+                { item = context
+                , presentable = True
+                }
+                    |> CopyPublicUrl
+                    |> Just
+            }
+
+        --
+        , Item
+            { icon = FeatherIcons.file
+            , label = "Link to file"
+            , active = False
+
+            --
+            , href = Nothing
+            , msg =
+                { item = context
+                , presentable = False
+                }
+                    |> CopyPublicUrl
+                    |> Just
+            }
+
+        --
+        , Divider
+
+        --
+        , Item
+            { icon = FeatherIcons.hash
+            , label = "Copy CID"
+            , active = False
+
+            --
+            , href = Nothing
+            , msg =
+                { clip = context.cid
+                , notification = "Copied CID to clipboard."
+                }
+                    |> CopyToClipboard
+                    |> Just
+            }
+
+        --
+        , Item
+            { icon = FeatherIcons.download
+            , label = "Download"
+            , active = False
+
+            --
+            , href = Nothing
+            , msg = Just (DownloadItem context)
             }
         ]

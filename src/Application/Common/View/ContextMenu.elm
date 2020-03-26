@@ -20,7 +20,7 @@ import Types exposing (Msg(..))
 view : ContextMenu Msg -> Html Msg
 view contextMenu =
     let
-        { items, coordinates } =
+        { hook, items, coordinates } =
             ContextMenu.properties contextMenu
     in
     Html.div
@@ -32,7 +32,6 @@ view contextMenu =
         , T.fixed
         , T.leading_relaxed
         , T.overflow_hidden
-        , T.neg_translate_x_full
         , T.rounded
         , T.shadow_md
         , T.select_none
@@ -40,6 +39,22 @@ view contextMenu =
         , T.text_tiny
         , T.transform
         , T.z_50
+
+        -- X
+        , case hook of
+            BottomCenter ->
+                T.neg_translate_x_1over2
+
+            TopRight ->
+                T.neg_translate_x_full
+
+        -- Y
+        , case hook of
+            BottomCenter ->
+                T.neg_translate_y_full
+
+            TopRight ->
+                T.translate_y_0
 
         -- Dark mode
         ------------

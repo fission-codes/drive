@@ -7,12 +7,12 @@ import Browser
 import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
+import Drive.Item exposing (Item)
 import Drive.Sidebar
 import File exposing (File)
 import Html.Events.Extra.Drag as Drag
 import Html.Events.Extra.Mouse as Mouse
 import Ipfs
-import Item exposing (Item)
 import Json.Decode as Json
 import Keyboard
 import Management
@@ -90,8 +90,10 @@ type Msg
     | AddFiles File (List File)
     | AskUserForFilesToAdd
     | CloseSidebar
-    | CopyLink Item
+    | CopyPublicUrl { item : Item, presentable : Bool }
+    | CopyToClipboard { clip : String, notification : String }
     | DigDeeper { directoryName : String }
+    | DownloadItem Item
     | DroppedSomeFiles Drag.Event
     | GoUp { floor : Int }
     | Select Item

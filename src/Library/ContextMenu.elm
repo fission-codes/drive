@@ -1,4 +1,4 @@
-module ContextMenu exposing (ContextMenu, Hook(..), Item(..), ItemProperties, build, position, properties)
+module ContextMenu exposing (ContextMenu, Hook(..), Item(..), ItemProperties, build, hook, position, properties)
 
 import Coordinates exposing (Coordinates)
 import FeatherIcons
@@ -30,7 +30,8 @@ type alias ItemProperties msg =
 
 
 type Hook
-    = TopRight
+    = BottomCenter
+    | TopRight
 
 
 
@@ -38,17 +39,27 @@ type Hook
 
 
 build : Hook -> List (Item msg) -> ContextMenu msg
-build hook items =
-    ContextMenu hook items { x = 0, y = 0 }
+build h i =
+    ContextMenu h i { x = 0, y = 0 }
 
 
 position : ContextMenu msg -> Coordinates -> ContextMenu msg
-position (ContextMenu hook items _) coordinates =
-    ContextMenu hook items coordinates
+position (ContextMenu h i _) c =
+    ContextMenu h i c
 
 
-properties : ContextMenu msg -> { items : List (Item msg), coordinates : Coordinates }
-properties (ContextMenu _ items coordinates) =
-    { items = items
-    , coordinates = coordinates
+
+-- PROPERTIES
+
+
+hook : ContextMenu msg -> Hook
+hook (ContextMenu h _ _) =
+    h
+
+
+properties : ContextMenu msg -> { hook : Hook, items : List (Item msg), coordinates : Coordinates }
+properties (ContextMenu h i c) =
+    { hook = h
+    , items = i
+    , coordinates = c
     }

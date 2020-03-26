@@ -1,6 +1,6 @@
 module Common.State exposing (..)
 
-import ContextMenu exposing (ContextMenu)
+import ContextMenu exposing (ContextMenu, Hook(..))
 import Debouncing
 import Html.Events.Extra.Mouse as Mouse
 import Return exposing (return)
@@ -43,9 +43,26 @@ removeHelpfulNote model =
 showContextMenu : ContextMenu Msg -> Mouse.Event -> Manager
 showContextMenu menu event model =
     let
+        xOffset =
+            -- TODO: We need to get the element width
+            case ContextMenu.hook menu of
+                BottomCenter ->
+                    9
+
+                TopRight ->
+                    22
+
+        yOffset =
+            case ContextMenu.hook menu of
+                BottomCenter ->
+                    -15
+
+                TopRight ->
+                    40
+
         menuWithPosition =
-            { x = Tuple.first event.clientPos - Tuple.first event.offsetPos + 22
-            , y = Tuple.second event.clientPos - Tuple.second event.offsetPos + 40
+            { x = Tuple.first event.clientPos - Tuple.first event.offsetPos + xOffset
+            , y = Tuple.second event.clientPos - Tuple.second event.offsetPos + yOffset
             }
                 |> ContextMenu.position menu
     in

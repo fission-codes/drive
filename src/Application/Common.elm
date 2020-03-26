@@ -4,27 +4,38 @@ import Round
 import Routing
 import String.Ext as String
 import Types exposing (Model)
+import Url
 
 
 
 -- 🛠
 
 
-base : Model -> String
-base model =
+base : { presentable : Bool } -> Model -> String
+base { presentable } model =
     case model.foundation of
         Just foundation ->
             model.route
                 |> Routing.treePathSegments
-                |> (::) foundation.unresolved
-                |> String.join "/"
-                |> String.append
-                    (if foundation.isDnsLink then
-                        "https://"
+                |> (::)
+                    (if presentable then
+                        foundation.unresolved
 
                      else
-                        "https://ipfs.runfission.com/ipfs/"
+                        foundation.resolved
                     )
+                |> String.join "/"
+                |> (if presentable then
+                        model.url
+                            |> (\u -> { u | path = "", query = Nothing, fragment = Nothing })
+                            |> Url.toString
+                            |> String.chopEnd "/"
+                            |> String.addSuffix "/#/"
+                            |> String.append
+
+                    else
+                        String.append "https://ipfs.runfission.com/ipfs/"
+                   )
 
         Nothing ->
             ""

@@ -9,7 +9,8 @@ import Time
 
 
 type alias ListItem =
-    { name : String
+    { cid : String
+    , name : String
     , path : String
     , posixTime : Maybe Time.Posix
     , size : Int
@@ -31,8 +32,9 @@ type Status
 
 listItemDecoder : Json.Decode.Decoder ListItem
 listItemDecoder =
-    Json.Decode.map5
+    Json.Decode.map6
         ListItem
+        (Json.Decode.field "cid" Json.Decode.string)
         (Json.Decode.field "name" Json.Decode.string)
         (Json.Decode.field "path" Json.Decode.string)
         (Json.Decode.int

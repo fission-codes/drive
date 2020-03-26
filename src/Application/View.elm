@@ -10,7 +10,7 @@ import Html exposing (Html)
 import Html.Events as E
 import Html.Events.Extra.Drag as Drag
 import Html.Extra as Html
-import Item exposing (Kind(..))
+import Drive.Item exposing (Kind(..))
 import Json.Decode as Decode
 import Routing exposing (Route(..))
 import Tailwind as T

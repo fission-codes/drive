@@ -12,7 +12,7 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra.Mouse as M
 import Html.Extra as Html exposing (nothing)
-import Item exposing (Item, Kind(..))
+import Drive.Item exposing (Item, Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
@@ -576,7 +576,7 @@ listItem selectedCid ({ kind, loading, name, nameProperties, path } as item) =
           -- Icon
           -----------------------------------------
           kind
-            |> Item.kindIcon
+            |> Drive.Item.kindIcon
             |> FeatherIcons.withSize S.iconSize
             |> FeatherIcons.toHtml []
             |> List.singleton

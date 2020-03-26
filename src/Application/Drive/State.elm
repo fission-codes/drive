@@ -4,12 +4,13 @@ import Browser.Navigation as Navigation
 import Common
 import Common.State as Common
 import Debouncing
+import Drive.Item exposing (Item)
 import Drive.Sidebar
 import File exposing (File)
+import File.Download
 import File.Select
 import Html.Events.Extra.Drag as Drag
 import Ipfs
-import Item exposing (Item)
 import List.Extra as List
 import Ports
 import Result.Extra as Result
@@ -58,13 +59,32 @@ closeSidebar model =
             }
 
 
-copyLink : Item -> Manager
-copyLink item model =
+copyPublicUrl : { item : Item, presentable : Bool } -> Manager
+copyPublicUrl { item, presentable } model =
+    let
+        base =
+            Common.base { presentable = presentable } model
+
+        notification =
+            if presentable then
+                "Copied Drive URL to clipboard."
+
+            else
+                "Copied Content URL to clipboard."
+    in
     item
-        |> Item.publicUrl (Common.base model)
+        |> Drive.Item.publicUrl base
         |> Ports.copyToClipboard
         |> Return.return model
-        |> Return.command (Ports.showNotification "Copied shareable link to clipboard.")
+        |> Return.command (Ports.showNotification notification)
+
+
+copyToClipboard : { clip : String, notification : String } -> Manager
+copyToClipboard { clip, notification } model =
+    clip
+        |> Ports.copyToClipboard
+        |> Return.return model
+        |> Return.command (Ports.showNotification notification)
 
 
 digDeeper : { directoryName : String } -> Manager
@@ -113,7 +133,7 @@ digDeeperUsingSelection model =
                     (.path >> (==) cid)
                 |> Maybe.map
                     (\item ->
-                        if item.kind == Item.Directory then
+                        if item.kind == Drive.Item.Directory then
                             digDeeper { directoryName = item.name } model
 
                         else
@@ -126,13 +146,18 @@ digDeeperUsingSelection model =
             Return.singleton model
 
 
+downloadItem : Item -> Manager
+downloadItem item model =
+    item
+        |> Drive.Item.publicUrl (Common.base { presentable = False } model)
+        |> File.Download.url
+        |> return model
+
+
 droppedSomeFiles : Drag.Event -> Manager
 droppedSomeFiles event =
     -- TODO
     let
-        _ =
-            Debug.log "dropped" (List.map File.name event.dataTransfer.files)
-
         files =
             event.dataTransfer.files
     in
@@ -240,7 +265,7 @@ potentiallyRenderMedia model =
             model.selectedCid
     of
         Just item ->
-            if Item.canRenderKind item.kind then
+            if Drive.Item.canRenderKind item.kind then
                 { id = item.id
                 , name = item.name
                 , path = item.path

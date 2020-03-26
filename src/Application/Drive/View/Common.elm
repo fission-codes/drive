@@ -5,7 +5,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
-import Item exposing (Kind(..))
+import Drive.Item exposing (Kind(..))
 import List.Extra as List
 import Routing exposing (Route(..))
 import Styling as S

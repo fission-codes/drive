@@ -2,6 +2,7 @@ module Drive.View.Sidebar exposing (view)
 
 import Common exposing (ifThenElse)
 import Common.View as Common
+import Drive.Item exposing (Kind(..))
 import Drive.Sidebar exposing (..)
 import Drive.View.Common as Drive
 import Drive.View.Details as Details
@@ -10,7 +11,6 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
-import Item exposing (Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
@@ -274,7 +274,7 @@ detailsForSelection model =
                 (Html.Lazy.lazy5
                     Details.view
                     model.currentTime
-                    (Common.base model)
+                    (Common.base { presentable = False } model)
                     model.expandSidebar
                     model.showPreviewOverlay
                 )
