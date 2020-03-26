@@ -257,6 +257,7 @@ detailsForSelection model =
     Html.div
         [ T.flex
         , T.flex_col
+        , T.h_full
         , T.items_center
         , T.justify_center
         , T.px_4
