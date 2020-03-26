@@ -176,9 +176,7 @@ overlayContents currentTime publicUrl item =
         , T.mt_5
         ]
         [ Html.a
-            [ A.href publicUrl
-            , A.rel "noopener noreferrer"
-            , A.target "_blank"
+            [ E.onClick (DownloadItem item)
 
             --
             , T.antialiased
@@ -195,7 +193,7 @@ overlayContents currentTime publicUrl item =
             ]
             [ Html.span
                 [ T.block, T.pt_px ]
-                [ Html.text "Open in new tab" ]
+                [ Html.text "Download" ]
             ]
 
         --

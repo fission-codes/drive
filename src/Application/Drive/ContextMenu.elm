@@ -114,9 +114,6 @@ item context =
             }
 
         --
-        , Divider
-
-        --
         , Item
             { icon = FeatherIcons.hash
             , label = "Copy CID"
@@ -130,16 +127,5 @@ item context =
                 }
                     |> CopyToClipboard
                     |> Just
-            }
-
-        --
-        , Item
-            { icon = FeatherIcons.download
-            , label = "Download"
-            , active = False
-
-            --
-            , href = Nothing
-            , msg = Just (DownloadItem context)
             }
         ]
