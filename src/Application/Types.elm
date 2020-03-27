@@ -39,7 +39,8 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { currentTime : Time.Posix
+    { authenticated : Bool
+    , currentTime : Time.Posix
     , directoryList : Result String (List Item)
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool

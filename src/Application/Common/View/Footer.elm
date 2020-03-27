@@ -6,6 +6,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Extra as Html
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -126,27 +127,11 @@ right model =
             ]
 
          else
-            [ action
-                Button
-                [ E.onClick (ToggleSidebarMode Drive.Sidebar.AddOrCreate)
+            [ if model.authenticated then
+                addCreateAction model
 
-                --
-                , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
-                    T.text_purple
-
-                  else
-                    T.text_inherit
-
-                -- Dark mode
-                ------------
-                , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
-                    T.dark__text_white
-
-                  else
-                    T.dark__text_inherit
-                ]
-                FeatherIcons.plus
-                [ Html.text "Add / Create" ]
+              else
+                Html.nothing
 
             --
             , action
@@ -163,6 +148,34 @@ right model =
                 [ Html.text "Change CID" ]
             ]
         )
+
+
+
+-- ACTIONS
+
+
+addCreateAction model =
+    action
+        Button
+        [ E.onClick (ToggleSidebarMode Drive.Sidebar.AddOrCreate)
+
+        --
+        , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
+            T.text_purple
+
+          else
+            T.text_inherit
+
+        -- Dark mode
+        ------------
+        , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
+            T.dark__text_white
+
+          else
+            T.dark__text_inherit
+        ]
+        FeatherIcons.plus
+        [ Html.text "Add / Create" ]
 
 
 

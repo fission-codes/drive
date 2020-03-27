@@ -4,6 +4,7 @@ import Common
 import Common.View as Common
 import Common.View.Footer as Footer
 import Drive.ContextMenu as ContextMenu
+import Drive.Item exposing (Item, Kind(..))
 import Drive.Sidebar as Sidebar
 import Drive.View.Sidebar as Sidebar
 import FeatherIcons
@@ -12,7 +13,6 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra.Mouse as M
 import Html.Extra as Html exposing (nothing)
-import Drive.Item exposing (Item, Kind(..))
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
@@ -177,7 +177,10 @@ header model =
                         [ T.pointer_events_none ]
                     |> List.singleton
                     |> Html.span
-                        [ M.onClick (ShowContextMenu ContextMenu.hamburger)
+                        [ { authenticated = model.authenticated }
+                            |> ContextMenu.hamburger
+                            |> ShowContextMenu
+                            |> M.onClick
 
                         --
                         , T.cursor_pointer

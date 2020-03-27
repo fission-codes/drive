@@ -57,7 +57,8 @@ init flags url navKey =
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { currentTime = Time.millisToPosix 0
+      { authenticated = False
+      , currentTime = Time.millisToPosix 0
       , contextMenu = Nothing
       , directoryList = Ok []
       , dragndropMode = False
