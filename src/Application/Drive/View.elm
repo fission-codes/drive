@@ -167,7 +167,7 @@ header model =
             , Html.div
                 [ T.flex
                 , T.items_center
-                , T.ml_4
+                , T.ml_12
                 ]
                 [ FeatherIcons.menu
                     |> FeatherIcons.withSize S.iconSize
