@@ -1,7 +1,7 @@
 module Drive.ContextMenu exposing (..)
 
 import ContextMenu exposing (..)
-import Drive.Item
+import Drive.Item exposing (Kind(..))
 import Drive.Sidebar as Sidebar
 import FeatherIcons
 import Types exposing (..)
@@ -82,50 +82,66 @@ item : Drive.Item.Item -> ContextMenu Msg
 item context =
     ContextMenu.build
         BottomCenter
-        [ Item
-            { icon = FeatherIcons.share
-            , label = "Link to Drive page"
-            , active = False
+        (case context.kind of
+            Directory ->
+                [ driveLink context
+                , copyCid context
+                ]
 
-            --
-            , href = Nothing
-            , msg =
-                { item = context
-                , presentable = True
-                }
-                    |> CopyPublicUrl
-                    |> Just
-            }
+            _ ->
+                [ driveLink context
+                , contentLink context
+                , copyCid context
+                ]
+        )
 
-        --
-        , Item
-            { icon = FeatherIcons.file
-            , label = "Link to file"
-            , active = False
 
-            --
-            , href = Nothing
-            , msg =
-                { item = context
-                , presentable = False
-                }
-                    |> CopyPublicUrl
-                    |> Just
-            }
+contentLink context =
+    Item
+        { icon = FeatherIcons.file
+        , label = "Link to file"
+        , active = False
 
         --
-        , Item
-            { icon = FeatherIcons.hash
-            , label = "Copy CID"
-            , active = False
-
-            --
-            , href = Nothing
-            , msg =
-                { clip = context.cid
-                , notification = "Copied CID to clipboard."
-                }
-                    |> CopyToClipboard
-                    |> Just
+        , href = Nothing
+        , msg =
+            { item = context
+            , presentable = False
             }
-        ]
+                |> CopyPublicUrl
+                |> Just
+        }
+
+
+copyCid context =
+    Item
+        { icon = FeatherIcons.hash
+        , label = "Copy CID"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            { clip = context.cid
+            , notification = "Copied CID to clipboard."
+            }
+                |> CopyToClipboard
+                |> Just
+        }
+
+
+driveLink context =
+    Item
+        { icon = FeatherIcons.share
+        , label = "Link to Drive page"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            { item = context
+            , presentable = True
+            }
+                |> CopyPublicUrl
+                |> Just
+        }

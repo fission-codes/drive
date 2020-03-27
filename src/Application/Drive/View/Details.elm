@@ -175,12 +175,22 @@ overlayContents currentTime publicUrl item =
         , T.justify_center
         , T.mt_5
         ]
-        [ Html.a
-            [ E.onClick (DownloadItem item)
+        [ Html.span
+            [ case item.kind of
+                Directory ->
+                    { item = item
+                    , presentable = True
+                    }
+                        |> CopyPublicUrl
+                        |> E.onClick
+
+                _ ->
+                    E.onClick (DownloadItem item)
 
             --
             , T.antialiased
             , T.bg_purple
+            , T.cursor_pointer
             , T.font_semibold
             , T.inline_block
             , T.px_2
@@ -193,7 +203,13 @@ overlayContents currentTime publicUrl item =
             ]
             [ Html.span
                 [ T.block, T.pt_px ]
-                [ Html.text "Download" ]
+                [ case item.kind of
+                    Directory ->
+                        Html.text "Copy Link"
+
+                    _ ->
+                        Html.text "Download"
+                ]
             ]
 
         --
