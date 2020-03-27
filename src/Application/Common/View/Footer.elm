@@ -10,6 +10,7 @@ import Html.Extra as Html
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
+import Url
 
 
 
@@ -136,9 +137,14 @@ right model =
             --
             , action
                 Button
-                []
+                [ { clip = Url.toString model.url
+                  , notification = "Copied Drive URL to clipboard."
+                  }
+                    |> CopyToClipboard
+                    |> E.onClick
+                ]
                 FeatherIcons.share2
-                [ Html.text "Share" ]
+                [ Html.text "Copy Link" ]
 
             --
             , action
