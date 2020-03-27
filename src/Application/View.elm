@@ -123,7 +123,7 @@ overlay contextMenu helpfulNote =
             Maybe.isJust contextMenu || Maybe.unwrap False (.faded >> not) helpfulNote
     in
     Html.div
-        [ T.absolute
+        [ T.fixed
         , T.bg_black
         , T.duration_200
         , T.ease_in_out
