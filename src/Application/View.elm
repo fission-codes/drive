@@ -4,15 +4,19 @@ import Browser
 import Common.View as Common
 import Common.View.ContextMenu
 import Common.View.HelpfulNote
+import ContextMenu exposing (ContextMenu)
+import Drive.Item exposing (Kind(..))
 import Drive.View as Drive
 import Explore.View as Explore
 import Html exposing (Html)
 import Html.Events as E
 import Html.Events.Extra.Drag as Drag
 import Html.Extra as Html
-import Drive.Item exposing (Kind(..))
+import Html.Lazy as Lazy
 import Json.Decode as Decode
+import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
+import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import Url.Builder
@@ -69,6 +73,12 @@ body m =
 
         Nothing ->
             Html.nothing
+
+    -- Overlay
+    , Lazy.lazy2
+        overlay
+        m.contextMenu
+        m.helpfulNote
     ]
         |> Html.div
             (case m.route of
@@ -100,3 +110,41 @@ rootAttributes m =
         Nothing ->
             E.onClick Bypass
     ]
+
+
+
+-- OVERLAY
+
+
+overlay : Maybe (ContextMenu Msg) -> Maybe { faded : Bool, note : String } -> Html Msg
+overlay contextMenu helpfulNote =
+    let
+        shouldBeShown =
+            Maybe.isJust contextMenu || Maybe.unwrap False (.faded >> not) helpfulNote
+    in
+    Html.div
+        [ T.absolute
+        , T.bg_black
+        , T.duration_200
+        , T.ease_in_out
+        , T.inset_0
+        , T.transition_opacity
+        , T.transform
+        , T.translate_x_0
+        , T.z_40
+
+        --
+        , if shouldBeShown then
+            T.opacity_40
+
+          else
+            T.opacity_0
+
+        --
+        , if shouldBeShown then
+            T.pointer_events_auto
+
+          else
+            T.pointer_events_none
+        ]
+        []

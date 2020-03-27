@@ -51,6 +51,8 @@ view_ model =
         , T.overflow_x_hidden
         , T.rounded_md
         , T.sticky
+        , T.transform
+        , T.translate_x_0
         , T.w_full
 
         --

@@ -17,11 +17,27 @@ import Types exposing (Msg(..))
 view : { faded : Bool, note : String } -> Html Msg
 view note =
     Html.div
-        [ T.absolute
+        [ E.onClick HideHelpfulNote
+
+        --
+        , T.antialiased
+        , T.bg_purple
+        , T.bottom_0
+        , T.cursor_pointer
         , S.default_transition_duration
         , S.default_transition_easing
-        , T.inset_0
-        , T.transition
+        , T.fixed
+        , T.font_bold
+        , T.left_1over2
+        , T.mb_20
+        , T.neg_translate_x_1over2
+        , T.px_5
+        , T.py_4
+        , T.rounded_lg
+        , T.text_purple_tint
+        , T.tracking_tight
+        , T.transform
+        , T.transition_opacity
         , T.z_50
 
         --
@@ -29,7 +45,7 @@ view note =
             T.opacity_0
 
           else
-            T.opacity_100
+            T.opacity_90
 
         --
         , if note.faded then
@@ -38,39 +54,4 @@ view note =
           else
             T.pointer_events_auto
         ]
-        [ Html.div
-            [ T.absolute
-            , T.bg_black
-            , T.inset_0
-            , T.opacity_40
-            , T.z_0
-            ]
-            []
-
-        --
-        , Html.div
-            [ E.onClick HideHelpfulNote
-
-            --
-            , T.antialiased
-            , T.bg_purple
-            , T.bottom_0
-            , T.cursor_pointer
-            , S.default_transition_duration
-            , S.default_transition_easing
-            , T.fixed
-            , T.font_bold
-            , T.left_1over2
-            , T.mb_20
-            , T.neg_translate_x_1over2
-            , T.opacity_90
-            , T.px_5
-            , T.py_4
-            , T.rounded_lg
-            , T.text_purple_tint
-            , T.tracking_tight
-            , T.transform
-            , T.z_10
-            ]
-            [ Html.text note.note ]
-        ]
+        [ Html.text note.note ]
