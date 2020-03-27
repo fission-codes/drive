@@ -178,8 +178,7 @@ goUp { floor } model =
             |> Routing.adjustUrl model.url
             |> Url.toString
             |> Navigation.pushUrl model.navKey
-            |> Return.return model
-            |> Return.andThen closeSidebar
+            |> Return.return { model | selectedPath = Nothing }
             |> Return.command
                 ({ on = True }
                     |> ToggleLoadingOverlay
