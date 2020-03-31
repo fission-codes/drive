@@ -19,7 +19,7 @@ hamburger { authenticated } =
             authenticatedBurgers ++ [ Divider ] ++ alwaysBurgers
 
          else
-            alwaysBurgers
+            unauthenticatedBurgers ++ [ Divider ] ++ alwaysBurgers
         )
 
 
@@ -43,6 +43,30 @@ authenticatedBurgers =
         --
         , href = Nothing
         , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
+        }
+
+    --
+    , Item
+        { icon = FeatherIcons.user
+        , label = "Sign out"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg = Just Reset
+        }
+    ]
+
+
+unauthenticatedBurgers =
+    [ Item
+        { icon = FeatherIcons.hardDrive
+        , label = "Make FFS"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg = Just SignIn
         }
     ]
 

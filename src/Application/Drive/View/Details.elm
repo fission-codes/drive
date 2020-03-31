@@ -27,15 +27,15 @@ import Url.Builder
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
-view : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
-view currentTime base expandSidebar showPreviewOverlay item =
+view : String -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
+view base isGroundFloor currentTime expandSidebar showPreviewOverlay item =
     let
         publicUrl =
             Drive.Item.publicUrl base item
     in
     Html.div
         []
-        [ overlay currentTime publicUrl expandSidebar showPreviewOverlay item
+        [ overlay publicUrl isGroundFloor currentTime expandSidebar showPreviewOverlay item
         , dataContainer item
         , extra item
         ]
@@ -45,8 +45,8 @@ view currentTime base expandSidebar showPreviewOverlay item =
 -- OVERLAY
 
 
-overlay : Time.Posix -> String -> Bool -> Bool -> Item -> Html Msg
-overlay currentTime publicUrl expandSidebar showPreviewOverlay item =
+overlay : String -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
+overlay publicUrl isGroundFloor currentTime expandSidebar showPreviewOverlay item =
     let
         defaultAttributes =
             [ T.absolute
@@ -94,7 +94,7 @@ overlay currentTime publicUrl expandSidebar showPreviewOverlay item =
             , T.relative
             , T.z_10
             ]
-            (overlayContents currentTime publicUrl item)
+            (overlayContents isGroundFloor publicUrl currentTime item)
 
         --
         , Html.div
@@ -125,10 +125,18 @@ overlay currentTime publicUrl expandSidebar showPreviewOverlay item =
         ]
 
 
-overlayContents : Time.Posix -> String -> Item -> List (Html Msg)
-overlayContents currentTime publicUrl item =
-    [ item.kind
-        |> Drive.Item.kindIcon
+overlayContents : Bool -> String -> Time.Posix -> Item -> List (Html Msg)
+overlayContents isGroundFloor publicUrl currentTime item =
+    let
+        isPublicRootDir =
+            isGroundFloor && item.name == "public"
+    in
+    [ (if isPublicRootDir then
+        FeatherIcons.globe
+
+       else
+        Drive.Item.kindIcon item.kind
+      )
         |> FeatherIcons.withSize 128
         |> FeatherIcons.withStrokeWidth 0.5
         |> FeatherIcons.toHtml []
@@ -147,7 +155,12 @@ overlayContents currentTime publicUrl item =
         , T.tracking_tight
         , T.truncate
         ]
-        [ Html.text item.name ]
+        [ if isPublicRootDir then
+            Html.text "Public"
+
+          else
+            Html.text item.name
+        ]
 
     --
     , Html.div

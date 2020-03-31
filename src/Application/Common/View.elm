@@ -4,8 +4,29 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Ipfs
+import Json.Decode as Decode
 import Tailwind as T
-import Types exposing (Model)
+import Types exposing (Model, Msg)
+
+
+
+-- EVENTS
+
+
+blobUrlsDecoder : Decode.Decoder Msg
+blobUrlsDecoder =
+    blobUrlObjectDecoder
+        |> Decode.list
+        |> Decode.at [ "detail", "blobs" ]
+        |> Decode.map (\blobs -> Types.AddFiles { blobs = blobs })
+
+
+blobUrlObjectDecoder : Decode.Decoder { name : String, url : String }
+blobUrlObjectDecoder =
+    Decode.map2
+        (\name url -> { name = name, url = url })
+        (Decode.field "name" Decode.string)
+        (Decode.field "url" Decode.string)
 
 
 
@@ -40,6 +61,9 @@ shouldShowExplore m =
             False
 
         ( Just _, Ipfs.AdditionalListing ) ->
+            False
+
+        ( Just _, Ipfs.FileSystemOperation ) ->
             False
 
         _ ->

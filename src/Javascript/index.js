@@ -9,9 +9,10 @@
 
 */
 
-import sdk from "./web_modules/fission-sdk.js"
-
 import "./analytics.js"
+import "./custom.js"
+
+import * as ffs from "./ffs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 
@@ -23,6 +24,7 @@ import * as media from "./media.js"
 const app = Elm.Main.init({
   node: document.getElementById("elm"),
   flags: {
+    authenticated: authenticated(),
     foundation: foundation(),
     viewportSize: { height: window.innerHeight, width: window.innerWidth }
   }
@@ -66,15 +68,20 @@ app.ports.copyToClipboard.subscribe(text => {
 })
 
 
+app.ports.removeStoredAuthDnsLink.subscribe(_ => {
+  localStorage.removeItem("fissionDrive.authlink")
+})
+
+
 app.ports.removeStoredFoundation.subscribe(_ => {
   localStorage.removeItem("fissionDrive.foundation")
 })
 
 
-app.ports.renderMedia.subscribe(opts => {
+app.ports.renderMedia.subscribe(a => {
   // Wait for DOM to render
   // TODO: Needs improvement, should use MutationObserver instead of port.
-  setTimeout(_ => media.render(opts), 250)
+  setTimeout(_ => media.render(a), 250)
 })
 
 
@@ -91,8 +98,56 @@ app.ports.showNotification.subscribe(text => {
 })
 
 
+app.ports.storeAuthDnsLink.subscribe(dnslink => {
+  localStorage.setItem("fissionDrive.authlink", dnslink)
+})
+
+
 app.ports.storeFoundation.subscribe(foundation => {
   localStorage.setItem("fissionDrive.foundation", JSON.stringify(foundation))
+})
+
+
+// FFS
+// ---
+
+const ffsSendList = a => results => {
+  app.ports.ipfsGotDirectoryList.send({
+    pathSegments: a.pathSegments,
+    results
+  })
+}
+
+
+app.ports.ffsAddContent.subscribe(a => {
+  ffs
+    .add(a)
+    .then( ffsSendList(a) )
+    .catch( reportFileSystemError )
+})
+
+
+app.ports.ffsCreateDirectory.subscribe(a => {
+  ffs
+    .createDirecory(a)
+    .then( ffsSendList({ pathSegments: a.pathSegments.slice(0, -1) }) )
+    .catch( reportFileSystemError )
+})
+
+
+app.ports.ffsListDirectory.subscribe(a => {
+  ffs
+    .listDirectory(a)
+    .then( ffsSendList(a) )
+    .catch( reportFileSystemError )
+})
+
+
+app.ports.ffsLoad.subscribe(a => {
+  ffs
+    .load(a)
+    .then( ffsSendList(a) )
+    .catch( reportFileSystemError )
 })
 
 
@@ -106,9 +161,9 @@ app.ports.ipfsListDirectory.subscribe(({ address, pathSegments }) => {
 })
 
 
-app.ports.ipfsPrefetchTree.subscribe(address => {
-  ipfs.prefetchTree(address)
-})
+// app.ports.ipfsPrefetchTree.subscribe(address => {
+//   ipfs.prefetchTree(address)
+// })
 
 
 app.ports.ipfsResolveAddress.subscribe(async address => {
@@ -124,25 +179,21 @@ app.ports.ipfsSetup.subscribe(_ => {
 })
 
 
-// SDK
-// ---
-
-function prepCidForTransport(cid) {
-  return { cid }
-}
-
-
-// app.ports.sdkCreateDirectoryPath.subscribe(({ address, pathSegments }) => {
-//   sdk
-//     .mkdirp(address, pathSegments.join("/"))
-//     .then(prepCidForTransport)
-//     .then(app.ports.replaceResolvedAddress.send)
-// })
-
-
 
 // 🛠
 // -
+
+function authenticated() {
+  const stored = localStorage.getItem("fissionDrive.authlink")
+  return stored ? { dnslink: stored } : null
+}
+
+
+function reportFileSystemError(err) {
+  // TODO: app.ports.ipfsGotError.send(err.message || err)
+  console.error(err)
+}
+
 
 function reportIpfsError(err) {
   app.ports.ipfsGotError.send(err.message || err)

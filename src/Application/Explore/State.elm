@@ -44,13 +44,15 @@ reset : Manager
 reset model =
     return
         { model
-            | directoryList = Ok []
+            | authenticated = Nothing
+            , directoryList = Ok { floor = 1, items = [] }
             , exploreInput = Just ""
             , foundation = Nothing
             , selectedPath = Nothing
         }
         (Cmd.batch
-            [ Ports.removeStoredFoundation ()
+            [ Ports.removeStoredAuthDnsLink ()
+            , Ports.removeStoredFoundation ()
 
             --
             , Routing.Undecided

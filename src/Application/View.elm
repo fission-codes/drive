@@ -80,15 +80,17 @@ body m =
         m.contextMenu
         m.helpfulNote
     ]
-        |> Html.div
+        |> Html.node
+            "fs-drop-zone"
             (case m.route of
                 Tree _ _ ->
                     { onOver = \_ -> ShowHelpfulNote "Drop to add it to your drive"
-                    , onDrop = DroppedSomeFiles
+                    , onDrop = \_ -> HideHelpfulNote
                     , onEnter = Nothing
                     , onLeave = Nothing
                     }
                         |> Drag.onFileFromOS
+                        |> List.append [ E.on "dropBlobs" Common.blobUrlsDecoder ]
                         |> List.append (rootAttributes m)
 
                 _ ->

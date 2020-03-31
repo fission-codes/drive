@@ -1,5 +1,6 @@
 module State exposing (init, subscriptions, update)
 
+import Authentication.State as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
 import Common exposing (defaultDnsLink)
@@ -57,10 +58,10 @@ init flags url navKey =
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { authenticated = False
+      { authenticated = flags.authenticated
       , currentTime = Time.millisToPosix 0
       , contextMenu = Nothing
-      , directoryList = Ok []
+      , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
       , foundation = foundation
@@ -82,6 +83,7 @@ init flags url navKey =
 
       -- Sidebar
       ----------
+      , createDirectoryInput = ""
       , expandSidebar = False
       , showPreviewOverlay = False
       , sidebarMode = Drive.Sidebar.defaultMode
@@ -108,6 +110,12 @@ update msg =
             Return.singleton
 
         -----------------------------------------
+        -- Authentication
+        -----------------------------------------
+        SignIn ->
+            Authentication.signIn
+
+        -----------------------------------------
         -- Debouncers
         -----------------------------------------
         LoadingDebouncerMsg a ->
@@ -122,11 +130,8 @@ update msg =
         ActivateSidebarMode a ->
             Drive.activateSidebarMode a
 
-        AddFiles a b ->
-            Drive.addFiles a b
-
-        AskUserForFilesToAdd ->
-            Drive.askUserForFilesToAdd
+        AddFiles a ->
+            Drive.addFiles a
 
         CloseSidebar ->
             Drive.closeSidebar
@@ -137,14 +142,17 @@ update msg =
         CopyToClipboard a ->
             Drive.copyToClipboard a
 
+        CreateDirectory ->
+            Drive.createDirectory
+
         DigDeeper a ->
             Drive.digDeeper a
 
         DownloadItem a ->
             Drive.downloadItem a
 
-        DroppedSomeFiles a ->
-            Drive.droppedSomeFiles a
+        GotCreateDirectoryInput a ->
+            Drive.gotCreateDirectoryInput a
 
         GoUp a ->
             Drive.goUp a
@@ -176,6 +184,9 @@ update msg =
         -----------------------------------------
         -- Ipfs
         -----------------------------------------
+        GetDirectoryList ->
+            Ipfs.getDirectoryList
+
         GotDirectoryList a ->
             Ipfs.gotDirectoryList a
 

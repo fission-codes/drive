@@ -1,6 +1,6 @@
 module Ipfs exposing (..)
 
-import Json.Decode
+import Json.Decode as Json
 import Time
 
 
@@ -23,6 +23,7 @@ type Status
     | Error String
     | InitialListing
     | AdditionalListing
+    | FileSystemOperation
     | Ready
 
 
@@ -30,20 +31,20 @@ type Status
 -- DECODING
 
 
-listItemDecoder : Json.Decode.Decoder ListItem
+listItemDecoder : Json.Decoder ListItem
 listItemDecoder =
-    Json.Decode.map6
+    Json.map6
         ListItem
-        (Json.Decode.field "cid" Json.Decode.string)
-        (Json.Decode.field "name" Json.Decode.string)
-        (Json.Decode.field "path" Json.Decode.string)
-        (Json.Decode.int
-            |> Json.Decode.at [ "mtime", "secs" ]
-            |> Json.Decode.maybe
-            |> Json.Decode.map (Maybe.map convertTime)
+        (Json.field "cid" Json.string)
+        (Json.field "name" Json.string)
+        (Json.field "path" Json.string)
+        (Json.int
+            |> Json.at [ "mtime", "secs" ]
+            |> Json.maybe
+            |> Json.map (Maybe.map convertTime)
         )
-        (Json.Decode.field "size" Json.Decode.int)
-        (Json.Decode.field "type" Json.Decode.string)
+        (Json.field "size" Json.int)
+        (Json.field "type" Json.string)
 
 
 convertTime : Int -> Time.Posix

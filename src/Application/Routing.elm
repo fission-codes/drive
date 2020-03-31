@@ -81,6 +81,11 @@ basePath url =
 -- TREE
 
 
+treePath : Route -> String
+treePath =
+    treePathSegments >> String.join "/"
+
+
 treePathSegments : Route -> List String
 treePathSegments route =
     case route of

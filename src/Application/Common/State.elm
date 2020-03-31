@@ -5,6 +5,7 @@ import Debouncing
 import Drive.Item
 import Html.Events.Extra.Mouse as Mouse
 import List.Extra as List
+import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
 import Return.Extra as Return
@@ -34,6 +35,7 @@ potentiallyRenderMedia model =
         Maybe.andThen
             (\path ->
                 model.directoryList
+                    |> Result.map .items
                     |> Result.withDefault []
                     |> List.find (.path >> (==) path)
             )
@@ -44,6 +46,7 @@ potentiallyRenderMedia model =
                 { id = item.id
                 , name = item.name
                 , path = item.path
+                , useFFS = Maybe.isJust model.authenticated
                 }
                     |> Ports.renderMedia
                     |> return model

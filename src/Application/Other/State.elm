@@ -3,8 +3,8 @@ module Other.State exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Drive.State as Drive
+import FFS.State as FFS
 import Ipfs
-import Ipfs.State
 import Keyboard
 import Maybe.Extra as Maybe
 import Ports
@@ -150,21 +150,20 @@ urlChanged url old =
         , selectedPath = Nothing
         , url = url
     }
-        |> Return.singleton
-        |> Return.effect_
-            (\new ->
+        |> (\new ->
                 if stillConnecting || not isTreeRoute then
-                    Cmd.none
+                    Return.singleton new
 
                 else if needsResolve then
                     new.route
                         |> Routing.treeRoot
                         |> Maybe.map Ports.ipfsResolveAddress
                         |> Maybe.withDefault Cmd.none
+                        |> return new
 
                 else if new.route /= old.route && Maybe.isJust old.foundation then
-                    Ipfs.State.getDirectoryListCmd new
+                    FFS.listDirectory new
 
                 else
-                    Cmd.none
-            )
+                    Return.singleton new
+           )

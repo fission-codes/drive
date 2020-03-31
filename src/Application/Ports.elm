@@ -11,7 +11,10 @@ import Types exposing (Foundation)
 port copyToClipboard : String -> Cmd msg
 
 
-port renderMedia : { id : String, name : String, path : String } -> Cmd msg
+port renderMedia : { id : String, name : String, path : String, useFFS : Bool } -> Cmd msg
+
+
+port removeStoredAuthDnsLink : () -> Cmd msg
 
 
 port removeStoredFoundation : () -> Cmd msg
@@ -20,7 +23,30 @@ port removeStoredFoundation : () -> Cmd msg
 port showNotification : String -> Cmd msg
 
 
+port storeAuthDnsLink : String -> Cmd msg
+
+
 port storeFoundation : Foundation -> Cmd msg
+
+
+
+-- 📣  ░░  FFS
+
+
+port ffsAddContent :
+    { blobs : List { name : String, url : String }
+    , pathSegments : List String
+    }
+    -> Cmd msg
+
+
+port ffsCreateDirectory : { pathSegments : List String } -> Cmd msg
+
+
+port ffsListDirectory : { pathSegments : List String } -> Cmd msg
+
+
+port ffsLoad : { cid : String, pathSegments : List String } -> Cmd msg
 
 
 
@@ -37,13 +63,6 @@ port ipfsResolveAddress : String -> Cmd msg
 
 
 port ipfsSetup : () -> Cmd msg
-
-
-
--- 📣  ░░  SDK
-
-
-port sdkCreateDirectoryPath : { address : String, pathSegments : List String } -> Cmd msg
 
 
 

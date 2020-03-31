@@ -183,21 +183,24 @@ publicUrl base item =
     String.chopEnd "/" base ++ "/" ++ item.name
 
 
-sortingFunction : Item -> Item -> Order
-sortingFunction a b =
+sortingFunction : { isGroundFloor : Bool } -> Item -> Item -> Order
+sortingFunction { isGroundFloor } a b =
     -- Put directories on top,
     -- and then sort alphabetically by name
-    case ( a.kind, b.kind ) of
-        ( Directory, Directory ) ->
-            compare (String.toLower a.name) (String.toLower b.name)
-
-        ( Directory, _ ) ->
+    case ( a.kind, b.kind, isGroundFloor && a.name == "public" ) of
+        ( _, _, True ) ->
             LT
 
-        ( _, Directory ) ->
+        ( Directory, Directory, _ ) ->
+            compare (String.toLower a.name) (String.toLower b.name)
+
+        ( Directory, _, _ ) ->
+            LT
+
+        ( _, Directory, _ ) ->
             GT
 
-        ( _, _ ) ->
+        ( _, _, _ ) ->
             compare (String.toLower a.name) (String.toLower b.name)
 
 

@@ -9,10 +9,13 @@ import Drive.View.Details as Details
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Events.Extra as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
+import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Result.Extra as Result
 import Routing exposing (Route(..))
 import Tailwind as T
 import Types exposing (..)
@@ -129,20 +132,16 @@ addOrCreateForm model =
 
         --
         , Html.form
-            [ T.flex
+            [ E.onSubmit CreateDirectory
+
+            --
+            , T.flex
             , T.max_w_md
             ]
             [ Html.input
-                [ A.placeholder "Box of Magic"
+                [ A.placeholder "Magic Box"
+                , E.onInput GotCreateDirectoryInput
 
-                --
-                -- , case m.ipfs of
-                --     Ipfs.Error _ ->
-                --         T.border_pink_tint
-                --
-                --     _ ->
-                --         T.border_gray_500
-                --
                 --
                 , T.appearance_none
                 , T.bg_transparent
@@ -158,14 +157,6 @@ addOrCreateForm model =
                 , T.text_base
                 , T.w_0
 
-                --
-                -- , case m.ipfs of
-                --     Ipfs.Error _ ->
-                --         T.focus__border_dark_pink
-                --
-                --     _ ->
-                --         T.focus__border_purple_tint
-                --
                 -- Dark mode
                 ------------
                 , T.dark__border_gray_200
@@ -203,12 +194,13 @@ addOrCreateForm model =
             [ title "Add files" ]
 
         --
-        , Html.div
-            [ E.onClick AskUserForFilesToAdd
+        , Html.node
+            "fs-content-uploader"
+            [ E.on "changeBlobs" Common.blobUrlsDecoder
 
             --
-            , A.style "min-height" "90px"
-            , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "21.5%")
+            , A.style "min-height" "108px"
+            , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "22.5%")
 
             --
             , T.border_2
@@ -269,14 +261,16 @@ detailsForSelection model =
             |> Maybe.andThen
                 (\path ->
                     model.directoryList
+                        |> Result.map .items
                         |> Result.withDefault []
                         |> List.find (.path >> (==) path)
                 )
             |> Maybe.map
-                (Html.Lazy.lazy5
+                (Html.Lazy.lazy6
                     Details.view
-                    model.currentTime
                     (Common.base { presentable = False } model)
+                    (Result.unwrap True (.floor >> (==) 1) model.directoryList)
+                    model.currentTime
                     model.expandSidebar
                     model.showPreviewOverlay
                 )

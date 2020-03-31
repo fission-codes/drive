@@ -7,6 +7,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
+import Maybe.Extra as Maybe
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -128,7 +129,7 @@ right model =
             ]
 
          else
-            [ if model.authenticated then
+            [ if Maybe.isJust model.authenticated then
                 addCreateAction model
 
               else

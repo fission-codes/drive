@@ -5,12 +5,14 @@ import Browser.Navigation as Navigation
 import Common.State as Common
 import Debouncing
 import Drive.Item
+import FFS.State as FFS
 import Ipfs
 import Json.Decode as Json
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
+import Return.Extra as Return
 import Routing exposing (Route(..))
 import Task
 import Types exposing (..)
@@ -18,6 +20,11 @@ import Types exposing (..)
 
 
 -- DIRECTORY LIST
+
+
+getDirectoryList : Manager
+getDirectoryList model =
+    return model (getDirectoryListCmd model)
 
 
 getDirectoryListCmd : Model -> Cmd Msg
@@ -62,11 +69,14 @@ gotDirectoryList encodedFeedback model =
     in
     case model.ipfs of
         Ipfs.InitialListing ->
-            gotDirectoryList_ encodedDirList model
+            gotDirectoryList_ pathSegments encodedDirList model
+
+        Ipfs.FileSystemOperation ->
+            gotDirectoryList_ pathSegments encodedDirList model
 
         Ipfs.AdditionalListing ->
             if Routing.treePathSegments model.route == pathSegments then
-                gotDirectoryList_ encodedDirList model
+                gotDirectoryList_ pathSegments encodedDirList model
 
             else
                 Return.singleton model
@@ -75,17 +85,23 @@ gotDirectoryList encodedFeedback model =
             Return.singleton model
 
 
-gotDirectoryList_ : Json.Value -> Manager
-gotDirectoryList_ encodedDirList model =
+gotDirectoryList_ : List String -> Json.Value -> Manager
+gotDirectoryList_ pathSegments encodedDirList model =
     encodedDirList
         |> Json.decodeValue (Json.list Ipfs.listItemDecoder)
         |> Result.map (List.map Drive.Item.fromIpfs)
         |> Result.mapError Json.errorToString
         |> (\result ->
                 let
+                    floor =
+                        List.length pathSegments + 1
+
                     listResult =
                         Result.map
-                            (List.sortWith Drive.Item.sortingFunction)
+                            ({ isGroundFloor = floor == 1 }
+                                |> Drive.Item.sortingFunction
+                                |> List.sortWith
+                            )
                             result
 
                     lastRouteSegment =
@@ -104,7 +120,12 @@ gotDirectoryList_ encodedDirList model =
                                 Nothing
                 in
                 { model
-                    | directoryList = listResult
+                    | directoryList =
+                        Result.map
+                            (\items -> { floor = floor, items = items })
+                            listResult
+
+                    --
                     , expandSidebar = Maybe.isJust selectedPath
                     , ipfs = Ipfs.Ready
                     , selectedPath = selectedPath
@@ -163,10 +184,9 @@ gotResolvedAddress foundation model =
                     |> Return.command
 
             else
-                -- Otherwise list the directory
-                Return.effect_ getDirectoryListCmd
+                -- Otherwise boot up the file system
+                Return.andThen FFS.boot
            )
-        |> Return.command (Ports.ipfsPrefetchTree foundation.resolved)
         |> Return.command (Ports.storeFoundation foundation)
 
 
@@ -174,7 +194,7 @@ setupCompleted : Manager
 setupCompleted model =
     case model.foundation of
         Just _ ->
-            return { model | ipfs = Ipfs.InitialListing } (getDirectoryListCmd model)
+            FFS.boot { model | ipfs = Ipfs.InitialListing }
 
         Nothing ->
             case model.route of
@@ -200,9 +220,7 @@ replaceResolvedAddress { cid } model =
                     { oldFoundation | resolved = cid }
             in
             { model | foundation = Just newFoundation }
-                |> Return.singleton
-                |> Return.effect_ getDirectoryListCmd
-                |> Return.command (Ports.ipfsPrefetchTree newFoundation.resolved)
+                |> FFS.boot
                 |> Return.command (Ports.storeFoundation newFoundation)
 
         Nothing ->

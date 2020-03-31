@@ -121,7 +121,7 @@ header model =
                             Just <| rootPathPart model segments
 
                         else if idx == 0 then
-                            Just <| activePathPart segment
+                            Just <| activePathPart (amountOfSegments - idx + 1) segment
 
                         else if showEntirePath && idx == amountOfSegments then
                             Just <| rootPathPart model segments
@@ -160,7 +160,7 @@ header model =
                             Just <| rootPathPart model segments
 
                         else if idx == 0 then
-                            Just <| activePathPart segment
+                            Just <| activePathPart (amountOfSegments - idx + 1) segment
 
                         else if idx == 1 then
                             Just <| inactivePathPart (amountOfSegments - idx + 1) "…"
@@ -233,11 +233,10 @@ header model =
                     |> FeatherIcons.withSize S.iconSize
                     |> FeatherIcons.toHtml []
                     |> List.singleton
-                    |> Html.span
-                        [ T.pointer_events_none ]
+                    |> Html.span [ T.pointer_events_none ]
                     |> List.singleton
                     |> Html.span
-                        [ { authenticated = model.authenticated }
+                        [ { authenticated = Maybe.isJust model.authenticated }
                             |> ContextMenu.hamburger
                             |> ShowContextMenu
                             |> M.onClick
@@ -252,12 +251,16 @@ header model =
 
 
 inactivePathPart : Int -> String -> Html Msg
-inactivePathPart idx text =
+inactivePathPart floor text =
+    let
+        isPublicRootDir =
+            floor == 2 && text == "public"
+    in
     Html.span
         [ A.class "underline-thick"
 
         --
-        , { floor = idx }
+        , { floor = floor }
             |> GoUp
             |> E.onClick
 
@@ -273,14 +276,28 @@ inactivePathPart idx text =
         , T.dark__tdc_gray_200
         , T.dark__text_gray_400
         ]
-        [ Html.text text ]
+        [ if isPublicRootDir then
+            Html.map never publicDirPart
+
+          else
+            Html.text text
+        ]
 
 
-activePathPart : String -> Html Msg
-activePathPart text =
+activePathPart : Int -> String -> Html Msg
+activePathPart floor text =
+    let
+        isPublicRootDir =
+            floor == 2 && text == "public"
+    in
     Html.span
         [ T.text_purple ]
-        [ Html.text text ]
+        [ if isPublicRootDir then
+            Html.map never publicDirPart
+
+          else
+            Html.text text
+        ]
 
 
 pathSeparator : Html Msg
@@ -359,6 +376,15 @@ rootPathPart model segments =
         [ Html.text text ]
 
 
+publicDirPart : Html Never
+publicDirPart =
+    FeatherIcons.globe
+        |> FeatherIcons.withSize 24
+        |> FeatherIcons.toHtml []
+        |> List.singleton
+        |> Html.div [ A.style "vertical-align" "sub", T.inline_block ]
+
+
 
 -- MAIN
 
@@ -366,16 +392,26 @@ rootPathPart model segments =
 content : Model -> Html Msg
 content model =
     case model.directoryList of
-        Ok [] ->
-            empty
-
         Ok directoryList ->
-            contentAvailable model directoryList
+            case directoryList.items of
+                [] ->
+                    empty
+
+                _ ->
+                    contentAvailable model directoryList
 
         Err err ->
-            -- Error is handled by the root view,
-            -- which will render the explore view.
-            empty
+            Html.div
+                [ T.flex
+                , T.flex_1
+                , T.items_center
+                , T.justify_center
+                , T.p_5
+                ]
+                [ Html.div
+                    [ T.max_w_md ]
+                    [ Html.text err ]
+                ]
 
 
 empty : Html Msg
@@ -410,7 +446,7 @@ empty =
         ]
 
 
-contentAvailable : Model -> List Item -> Html Msg
+contentAvailable : Model -> { floor : Int, items : List Item } -> Html Msg
 contentAvailable model directoryList =
     Html.div
         [ T.flex
@@ -468,8 +504,12 @@ contentAvailable model directoryList =
 -- MAIN  /  LIST
 
 
-list : Model -> List Item -> Html Msg
+list : Model -> { floor : Int, items : List Item } -> Html Msg
 list model directoryList =
+    let
+        isGroundFloor =
+            directoryList.floor == 1
+    in
     Html.div
         [ T.text_lg ]
         [ Html.div
@@ -489,8 +529,8 @@ list model directoryList =
         -----------------------------------------
         -- Tree
         -----------------------------------------
-        , directoryList
-            |> List.map (listItem model.selectedPath)
+        , directoryList.items
+            |> List.map (listItem isGroundFloor model.selectedPath)
             |> Html.div []
 
         -----------------------------------------
@@ -507,7 +547,7 @@ list model directoryList =
                             ( d, f + 1, s + i.size )
                     )
                     ( 0, 0, 0 )
-                    directoryList
+                    directoryList.items
 
             sizeString =
                 Common.sizeInWords size
@@ -550,11 +590,14 @@ list model directoryList =
         ]
 
 
-listItem : Maybe String -> Item -> Html Msg
-listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Bool -> Maybe String -> Item -> Html Msg
+listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path } as item) =
     let
         selected =
             selectedPath == Just path
+
+        isPublicRootDir =
+            isGroundFloor && name == "public"
     in
     Html.div
         [ case kind of
@@ -569,7 +612,6 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
                     |> E.onClick
 
         --
-        , T.border_b
         , T.border_gray_700
         , T.cursor_pointer
         , T.flex
@@ -577,6 +619,13 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         , T.items_center
         , T.mt_px
         , T.py_4
+
+        --
+        , if isPublicRootDir then
+            T.border_b_2
+
+          else
+            T.border_b
 
         --
         , if selected then
@@ -599,8 +648,12 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         [ -----------------------------------------
           -- Icon
           -----------------------------------------
-          kind
-            |> Drive.Item.kindIcon
+          (if isPublicRootDir then
+            FeatherIcons.globe
+
+           else
+            Drive.Item.kindIcon kind
+          )
             |> FeatherIcons.withSize S.iconSize
             |> FeatherIcons.toHtml []
             |> List.singleton
@@ -611,7 +664,11 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         -----------------------------------------
         , Html.span
             [ T.flex_auto, T.ml_5, T.truncate ]
-            [ Html.text nameProperties.base
+            [ if isPublicRootDir then
+                Html.text "Public"
+
+              else
+                Html.text nameProperties.base
 
             --
             , case nameProperties.extension of

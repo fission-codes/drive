@@ -28,7 +28,8 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { foundation : Maybe Foundation
+    { authenticated : Maybe { dnslink : String }
+    , foundation : Maybe Foundation
     , viewportSize : { height : Int, width : Int }
     }
 
@@ -40,9 +41,9 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { authenticated : Bool
+    { authenticated : Maybe { dnslink : String }
     , currentTime : Time.Posix
-    , directoryList : Result String (List Item)
+    , directoryList : Result String { floor : Int, items : List Item }
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
     , exploreInput : Maybe String
@@ -67,6 +68,7 @@ type alias Model =
     -----------------------------------------
     -- Sidebar
     -----------------------------------------
+    , createDirectoryInput : String
     , expandSidebar : Bool
     , showPreviewOverlay : Bool
     , sidebarMode : Drive.Sidebar.Mode
@@ -82,6 +84,10 @@ type alias Model =
 type Msg
     = Bypass
       -----------------------------------------
+      -- Authentication
+      -----------------------------------------
+    | SignIn
+      -----------------------------------------
       -- Debouncers
       -----------------------------------------
     | LoadingDebouncerMsg (Debouncer.Msg Msg)
@@ -90,14 +96,14 @@ type Msg
       -- Drive
       -----------------------------------------
     | ActivateSidebarMode Drive.Sidebar.Mode
-    | AddFiles File (List File)
-    | AskUserForFilesToAdd
+    | AddFiles { blobs : List { name : String, url : String } }
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
     | CopyToClipboard { clip : String, notification : String }
+    | CreateDirectory
     | DigDeeper { directoryName : String }
     | DownloadItem Item
-    | DroppedSomeFiles Drag.Event
+    | GotCreateDirectoryInput String
     | GoUp { floor : Int }
     | Select Item
     | ShowPreviewOverlay
@@ -112,6 +118,7 @@ type Msg
       -----------------------------------------
       -- Ipfs
       -----------------------------------------
+    | GetDirectoryList
     | GotDirectoryList Json.Value
     | GotError String
     | GotResolvedAddress Foundation
