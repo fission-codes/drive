@@ -57,7 +57,13 @@ keyboardInteraction msg unmodified =
 
 screenSizeChanged : Int -> Int -> Manager
 screenSizeChanged width height model =
-    Return.singleton { model | contextMenu = Nothing }
+    let
+        viewportSize =
+            { height = height
+            , width = width
+            }
+    in
+    Return.singleton { model | contextMenu = Nothing, viewportSize = viewportSize }
 
 
 setCurrentTime : Time.Posix -> Manager

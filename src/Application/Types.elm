@@ -29,6 +29,7 @@ import Url exposing (Url)
 -}
 type alias Flags =
     { foundation : Maybe Foundation
+    , viewportSize : { height : Int, width : Int }
     }
 
 
@@ -52,6 +53,7 @@ type alias Model =
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
     , route : Route
+    , viewportSize : { height : Int, width : Int }
     , selectedPath : Maybe String
     , showLoadingOverlay : Bool
     , url : Url

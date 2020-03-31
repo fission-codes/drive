@@ -102,20 +102,41 @@ header model =
             -- Path
             -----------------------------------------
             -- Tablet and bigger screens
-            , segments
+            , let
+                a =
+                    toFloat (model.viewportSize.width - 208)
+
+                b =
+                    toFloat (String.length <| String.join " / " segments)
+
+                showEntirePath =
+                    a / b > 17.5
+              in
+              segments
+                |> List.append [ "ROOT" ]
                 |> List.reverse
                 |> List.indexedMap
-                    (\idx ->
-                        if idx == 0 then
-                            activePathPart
+                    (\idx segment ->
+                        if idx == 0 && amountOfSegments == 0 then
+                            Just <| rootPathPart model segments
+
+                        else if idx == 0 then
+                            Just <| activePathPart segment
+
+                        else if showEntirePath && idx == amountOfSegments then
+                            Just <| rootPathPart model segments
+
+                        else if showEntirePath then
+                            Just <| inactivePathPart (amountOfSegments - idx + 1) segment
+
+                        else if idx == 1 then
+                            Just <| inactivePathPart (amountOfSegments - idx + 1) "…"
 
                         else
-                            inactivePathPart (amountOfSegments - idx + 1)
+                            Nothing
                     )
+                |> List.filterMap identity
                 |> List.reverse
-                |> List.append
-                    [ rootPathPart model segments
-                    ]
                 |> List.intersperse pathSeparator
                 |> Html.div
                     [ T.flex_auto
@@ -164,6 +185,45 @@ header model =
             -----------------------------------------
             -- Actions
             -----------------------------------------
+            -- , Html.div
+            --     [ T.border_2
+            --     , T.border_gray_500
+            --     , T.cursor_not_allowed
+            --     , T.pl_8
+            --     , T.pr_3
+            --     , T.py_1
+            --     , T.relative
+            --     , T.rounded_full
+            --     , T.text_gray_500
+            --     , T.w_48
+            --
+            --     -- Dark mode
+            --     ------------
+            --     , T.dark__border_gray_200
+            --     , T.dark__text_gray_200
+            --     ]
+            --     [ FeatherIcons.search
+            --         |> FeatherIcons.withSize 20
+            --         |> FeatherIcons.toHtml []
+            --         |> List.singleton
+            --         |> Html.span
+            --             [ T.absolute
+            --             , T.left_0
+            --             , T.ml_2
+            --             , T.neg_translate_y_1over2
+            --             , T.text_gray_500
+            --             , T.top_1over2
+            --             , T.transform
+            --
+            --             -- Dark mode
+            --             ------------
+            --             , T.dark__text_gray_200
+            --             ]
+            --
+            --     --
+            --     , Html.text "Search"
+            --     ]
+            --
             , Html.div
                 [ T.flex
                 , T.items_center
@@ -186,45 +246,6 @@ header model =
                         , T.cursor_pointer
                         , T.text_gray_300
                         ]
-
-                -- Html.div
-                --     [ T.border_2
-                --     , T.border_gray_500
-                --     , T.cursor_not_allowed
-                --     , T.pl_8
-                --     , T.pr_3
-                --     , T.py_1
-                --     , T.relative
-                --     , T.rounded_full
-                --     , T.text_gray_500
-                --     , T.w_48
-                --
-                --     -- Dark mode
-                --     ------------
-                --     , T.dark__border_gray_200
-                --     , T.dark__text_gray_200
-                --     ]
-                --     [ FeatherIcons.search
-                --         |> FeatherIcons.withSize 20
-                --         |> FeatherIcons.toHtml []
-                --         |> List.singleton
-                --         |> Html.span
-                --             [ T.absolute
-                --             , T.left_0
-                --             , T.ml_2
-                --             , T.neg_translate_y_1over2
-                --             , T.text_gray_500
-                --             , T.top_1over2
-                --             , T.transform
-                --
-                --             -- Dark mode
-                --             ------------
-                --             , T.dark__text_gray_200
-                --             ]
-                --
-                --     --
-                --     , Html.text "Search"
-                --     ]
                 ]
             ]
         ]

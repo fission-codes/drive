@@ -23,7 +23,8 @@ import * as media from "./media.js"
 const app = Elm.Main.init({
   node: document.getElementById("elm"),
   flags: {
-    foundation: foundation()
+    foundation: foundation(),
+    viewportSize: { height: window.innerHeight, width: window.innerWidth }
   }
 })
 

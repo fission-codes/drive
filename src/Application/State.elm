@@ -70,6 +70,7 @@ init flags url navKey =
       , navKey = navKey
       , route = Routing.routeFromUrl url
       , pressedKeys = []
+      , viewportSize = flags.viewportSize
       , selectedPath = Nothing
       , showLoadingOverlay = False
       , url = url
