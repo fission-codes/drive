@@ -44,31 +44,10 @@ inputScreen m =
         , T.justify_center
         , T.text_center
         ]
-        [ Html.div
-            [ T.antialiased
-            , T.font_display
-            , T.font_light
-            , T.leading_tight
-            , T.text_6xl
-            , T.tracking_widest
-            , T.uppercase
-            ]
-            [ Html.text "Fission Drive" ]
-
-        --
-        , Html.div
-            [ T.max_w_md
-            , T.mt_5
-            , T.text_gray_300
-
-            -- Dark mode
-            ------------
-            , T.dark__text_gray_400
-            ]
-            [ Html.text """
-                This is a Preview release which will evolve into your personal Fission Drive. Enter any public IPFS hash or use the example hash.
-              """
-            ]
+        [ Common.introLogo
+        , Common.introText [ Html.text """
+            This is a Preview release which will evolve into your personal Fission Drive. Enter any public IPFS hash or use the example hash.
+          """ ]
 
         --
         , Html.form
@@ -80,7 +59,7 @@ inputScreen m =
                     E.onSubmit Reset
 
                 _ ->
-                    E.onSubmit Explore
+                    E.onSubmit ChangeCid
 
             --
             , T.flex

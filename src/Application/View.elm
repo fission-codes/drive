@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Authentication.View
 import Browser
 import Common.View as Common
 import Common.View.ContextMenu
@@ -38,20 +39,28 @@ body m =
     [ -----------------------------------------
       -- Main
       -----------------------------------------
-      if Common.shouldShowLoadingAnimation m then
-        Html.div
-            [ T.absolute
-            , T.left_1over2
-            , T.neg_translate_y_1over2
-            , T.top_1over2
-            ]
-            [ Common.loadingAnimation ]
+      case ( Common.shouldShowLoadingAnimation m, m.route ) of
+        ( True, _ ) ->
+            Html.div
+                [ T.absolute
+                , T.left_1over2
+                , T.neg_translate_y_1over2
+                , T.top_1over2
+                ]
+                [ Common.loadingAnimation ]
 
-      else if Common.shouldShowExplore m then
-        Explore.view m
+        ( False, Explore ) ->
+            Explore.view m
 
-      else
-        Drive.view m
+        ( False, Tree _ _ ) ->
+            if Common.shouldShowExplore m then
+                Explore.view m
+
+            else
+                Drive.view m
+
+        ( False, Undecided ) ->
+            Authentication.View.notAuthenticated m
 
     -----------------------------------------
     -- Context Menu

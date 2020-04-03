@@ -1,5 +1,6 @@
 module Styling exposing (..)
 
+import Html exposing (Html)
 import Tailwind as T
 
 
@@ -29,3 +30,31 @@ default_transition_easing =
 
 iconSize =
     22
+
+
+
+-- 🍱
+
+
+button : List (Html.Attribute msg) -> List (Html msg) -> Html msg
+button attributes =
+    attributes
+        |> List.append
+            [ T.antialiased
+            , T.appearance_none
+            , T.font_semibold
+            , T.leading_normal
+            , T.ml_3
+            , T.px_5
+            , T.py_3
+            , T.relative
+            , T.rounded
+            , T.text_sm
+            , T.text_white
+            , T.tracking_wider
+            , T.uppercase
+
+            --
+            , T.focus__shadow_outline
+            ]
+        |> Html.button

@@ -10,8 +10,9 @@ import Url.Parser as Url exposing (..)
 
 
 type Route
-    = Undecided
+    = Explore
     | Tree { root : String } (List String)
+    | Undecided
 
 
 
@@ -23,6 +24,9 @@ routeFromUrl url =
     case basePath url of
         "" ->
             Undecided
+
+        "explore" ->
+            Explore
 
         path ->
             case String.split "/" path of
@@ -36,7 +40,7 @@ routeFromUrl url =
 adjustUrl : Url -> Route -> Url
 adjustUrl url route =
     case route of
-        Undecided ->
+        Explore ->
             { url | fragment = Nothing }
 
         Tree { root } pathSegments ->
@@ -51,6 +55,9 @@ adjustUrl url route =
             in
             -- To switch to path-based routing, use { url | path = ... }
             { url | fragment = Just frag }
+
+        Undecided ->
+            { url | fragment = Nothing }
 
 
 

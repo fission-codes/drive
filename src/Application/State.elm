@@ -172,8 +172,8 @@ update msg =
         -----------------------------------------
         -- Explore
         -----------------------------------------
-        Explore ->
-            Explore.explore
+        ChangeCid ->
+            Explore.changeCid
 
         GotInput a ->
             Explore.gotInput a

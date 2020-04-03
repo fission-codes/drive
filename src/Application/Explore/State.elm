@@ -14,8 +14,8 @@ import Url
 -- 📣
 
 
-explore : Manager
-explore model =
+changeCid : Manager
+changeCid model =
     case Maybe.unwrap "" String.trim model.exploreInput of
         "" ->
             Return.singleton model
