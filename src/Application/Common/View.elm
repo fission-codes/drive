@@ -95,14 +95,19 @@ introLogo =
             [ T.relative ]
             [ Html.text "Drive"
             , Html.div
-                [ T.absolute
-                , T.bg_pink
+                [ A.style "font-size" "11.5px"
+                , A.style "letter-spacing" "1.5px"
+                , A.style "padding" "0.5px 3px 0 4px"
+
+                --
+                , T.absolute
+                , T.bg_gray_300
                 , T.font_body
                 , T.font_semibold
                 , T.leading_relaxed
                 , T.px_1
                 , T.right_0
-                , T.rounded
+                , T.rounded_sm
                 , T.subpixel_antialiased
                 , T.top_0
                 , T.tracking_wider
