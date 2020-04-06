@@ -93,6 +93,15 @@ focused model =
 -- URL
 
 
+goToRoute : Route -> Manager
+goToRoute route model =
+    route
+        |> Routing.adjustUrl model.url
+        |> Url.toString
+        |> Navigation.pushUrl model.navKey
+        |> return model
+
+
 linkClicked : Browser.UrlRequest -> Manager
 linkClicked urlRequest model =
     case urlRequest of

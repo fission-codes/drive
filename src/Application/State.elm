@@ -112,6 +112,9 @@ update msg =
         -----------------------------------------
         -- Authentication
         -----------------------------------------
+        AdjustSignUpContext a b ->
+            Authentication.adjustSignUpContext a b
+
         SignIn ->
             Authentication.signIn
 
@@ -228,6 +231,9 @@ update msg =
 
         Focused ->
             Other.focused
+
+        GoToRoute a ->
+            Other.goToRoute a
 
         KeyboardInteraction a ->
             Other.keyboardInteraction a

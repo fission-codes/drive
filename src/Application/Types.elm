@@ -3,6 +3,7 @@ module Types exposing (..)
 {-| Root-level types.
 -}
 
+import Authentication.Types exposing (SignUpContext)
 import Browser
 import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
@@ -86,6 +87,7 @@ type Msg
       -----------------------------------------
       -- Authentication
       -----------------------------------------
+    | AdjustSignUpContext (SignUpContext -> String -> SignUpContext) String
     | SignIn
       -----------------------------------------
       -- Debouncers
@@ -137,6 +139,7 @@ type Msg
       -----------------------------------------
     | Blurred
     | Focused
+    | GoToRoute Route
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | ScreenSizeChanged Int Int

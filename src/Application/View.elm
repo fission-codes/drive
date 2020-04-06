@@ -1,6 +1,6 @@
 module View exposing (view)
 
-import Authentication.View
+import Authentication.View as Authentication
 import Browser
 import Common.View as Common
 import Common.View.ContextMenu
@@ -49,18 +49,21 @@ body m =
                 ]
                 [ Common.loadingAnimation ]
 
-        ( False, Explore ) ->
+        ( _, CreateAccount context ) ->
+            Authentication.signUp context m
+
+        ( _, Explore ) ->
             Explore.view m
 
-        ( False, Tree _ _ ) ->
+        ( _, Tree _ _ ) ->
             if Common.shouldShowExplore m then
                 Explore.view m
 
             else
                 Drive.view m
 
-        ( False, Undecided ) ->
-            Authentication.View.notAuthenticated m
+        ( _, Undecided ) ->
+            Authentication.notAuthenticated m
 
     -----------------------------------------
     -- Context Menu

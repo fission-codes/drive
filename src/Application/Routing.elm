@@ -1,5 +1,6 @@
 module Routing exposing (..)
 
+import Authentication.Types as Authentication
 import String.Ext as String
 import Url exposing (Url)
 import Url.Parser as Url exposing (..)
@@ -10,9 +11,19 @@ import Url.Parser as Url exposing (..)
 
 
 type Route
-    = Explore
+    = CreateAccount Authentication.SignUpContext
+    | Explore
     | Tree { root : String } (List String)
     | Undecided
+
+
+
+-- 🏔
+
+
+createAccount : Route
+createAccount =
+    CreateAccount { email = "", username = "" }
 
 
 
@@ -25,7 +36,14 @@ routeFromUrl url =
         "" ->
             Undecided
 
-        "explore" ->
+        "account/create" ->
+            createAccount
+
+        "account/link" ->
+            -- TODO
+            Undecided
+
+        "explore/ipfs" ->
             Explore
 
         path ->
@@ -40,8 +58,11 @@ routeFromUrl url =
 adjustUrl : Url -> Route -> Url
 adjustUrl url route =
     case route of
+        CreateAccount _ ->
+            { url | fragment = Just "/account/create" }
+
         Explore ->
-            { url | fragment = Nothing }
+            { url | fragment = Just "/explore/ipfs" }
 
         Tree { root } pathSegments ->
             let
@@ -60,6 +81,13 @@ adjustUrl url route =
             { url | fragment = Nothing }
 
 
+routeUrl : Route -> Url -> String
+routeUrl route originalUrl =
+    route
+        |> adjustUrl originalUrl
+        |> Url.toString
+
+
 
 -- 🧹
 
@@ -74,12 +102,6 @@ basePath url =
     path
         |> String.chop "/"
         |> String.split "/"
-        |> (if String.startsWith "/ipns/" path then
-                List.drop 2
-
-            else
-                identity
-           )
         |> List.map (\s -> Url.percentDecode s |> Maybe.withDefault s)
         |> String.join "/"
 

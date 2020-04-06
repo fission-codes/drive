@@ -146,9 +146,7 @@ inputScreen m =
                     Ipfs.InitialListing ->
                         FeatherIcons.loader
                             |> FeatherIcons.withSize 24
-                            |> FeatherIcons.toHtml []
-                            |> List.singleton
-                            |> Html.div
+                            |> Common.wrapIcon
                                 [ T.animation_spin
                                 , T.text_purple_tint
                                 ]

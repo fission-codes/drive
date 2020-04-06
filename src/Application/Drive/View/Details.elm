@@ -139,9 +139,7 @@ overlayContents isGroundFloor publicUrl currentTime item =
       )
         |> FeatherIcons.withSize 128
         |> FeatherIcons.withStrokeWidth 0.5
-        |> FeatherIcons.toHtml []
-        |> List.singleton
-        |> Html.div
+        |> Common.wrapIcon
             [ T.flex
             , T.flex_col
             , T.items_center
@@ -239,9 +237,7 @@ overlayContents isGroundFloor publicUrl currentTime item =
             ]
             [ FeatherIcons.moreVertical
                 |> FeatherIcons.withSize 18
-                |> FeatherIcons.toHtml []
-                |> List.singleton
-                |> Html.div [ T.pointer_events_none ]
+                |> Common.wrapIcon [ T.pointer_events_none ]
             ]
         ]
     ]

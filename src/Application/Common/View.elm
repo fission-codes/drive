@@ -97,14 +97,15 @@ introLogo =
             , Html.div
                 [ A.style "font-size" "11.5px"
                 , A.style "letter-spacing" "1.5px"
-                , A.style "padding" "0.5px 3px 0 4px"
+                , A.style "padding" "0px 3px 0 4px"
 
                 --
                 , T.absolute
                 , T.bg_gray_300
                 , T.font_body
-                , T.font_semibold
+                , T.font_normal
                 , T.leading_relaxed
+                , T.mt_px
                 , T.px_1
                 , T.right_0
                 , T.rounded_sm
@@ -114,8 +115,13 @@ introLogo =
                 , T.transform
                 , T.translate_x_5
                 , T.translate_y_1
-                , T.text_white
+                , T.text_gray_600
                 , T.text_xs
+
+                -- Dark mode
+                ------------
+                , T.dark__bg_gray_200
+                , T.dark__text_gray_400
                 ]
                 [ Html.text "BETA" ]
             ]
@@ -139,10 +145,13 @@ loadingAnimation : Html msg
 loadingAnimation =
     FeatherIcons.loader
         |> FeatherIcons.withSize 24
-        |> FeatherIcons.toHtml []
-        |> List.singleton
-        |> Html.span
+        |> wrapIcon
             [ T.animation_spin
             , T.inline_block
             , T.text_gray_300
             ]
+
+
+wrapIcon : List (Html.Attribute msg) -> FeatherIcons.Icon -> Html msg
+wrapIcon attributes icon =
+    Html.span attributes [ FeatherIcons.toHtml [] icon ]

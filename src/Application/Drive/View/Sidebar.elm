@@ -17,6 +17,7 @@ import List.Extra as List
 import Maybe.Extra as Maybe
 import Result.Extra as Result
 import Routing exposing (Route(..))
+import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import Url.Builder
@@ -138,28 +139,10 @@ addOrCreateForm model =
             , T.flex
             , T.max_w_md
             ]
-            [ Html.input
+            [ S.textField
                 [ A.placeholder "Magic Box"
                 , E.onInput GotCreateDirectoryInput
-
-                --
-                , T.appearance_none
-                , T.bg_transparent
-                , T.border_2
-                , T.border_gray_500
-                , T.flex_auto
-                , T.leading_relaxed
-                , T.outline_none
-                , T.px_4
-                , T.py_2
-                , T.rounded
-                , T.text_inherit
-                , T.text_base
                 , T.w_0
-
-                -- Dark mode
-                ------------
-                , T.dark__border_gray_200
                 ]
                 []
 

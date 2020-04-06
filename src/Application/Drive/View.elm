@@ -90,9 +90,7 @@ header model =
               -----------------------------------------
               FeatherIcons.hardDrive
                 |> FeatherIcons.withSize S.iconSize
-                |> FeatherIcons.toHtml []
-                |> List.singleton
-                |> Html.div
+                |> Common.wrapIcon
                     [ T.mr_5
                     , T.opacity_50
                     , T.text_purple
@@ -231,9 +229,7 @@ header model =
                 ]
                 [ FeatherIcons.menu
                     |> FeatherIcons.withSize S.iconSize
-                    |> FeatherIcons.toHtml []
-                    |> List.singleton
-                    |> Html.span [ T.pointer_events_none ]
+                    |> Common.wrapIcon [ T.pointer_events_none ]
                     |> List.singleton
                     |> Html.span
                         [ { authenticated = Maybe.isJust model.authenticated }
@@ -432,9 +428,7 @@ empty =
         ]
         [ FeatherIcons.folder
             |> FeatherIcons.withSize 88
-            |> FeatherIcons.toHtml []
-            |> List.singleton
-            |> Html.div [ T.opacity_30 ]
+            |> Common.wrapIcon [ T.opacity_30 ]
 
         --
         , Html.div
@@ -712,9 +706,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
         , if loading then
             FeatherIcons.loader
                 |> FeatherIcons.withSize S.iconSize
-                |> FeatherIcons.toHtml []
-                |> List.singleton
-                |> Html.span
+                |> Common.wrapIcon
                     [ T.animation_spin
                     , T.ml_2
                     , T.text_gray_300
@@ -727,9 +719,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
         , if selected then
             FeatherIcons.arrowRight
                 |> FeatherIcons.withSize S.iconSize
-                |> FeatherIcons.toHtml []
-                |> List.singleton
-                |> Html.span [ T.ml_2, T.opacity_50 ]
+                |> Common.wrapIcon [ T.ml_2, T.opacity_50 ]
 
           else
             nothing

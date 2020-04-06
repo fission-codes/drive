@@ -1,11 +1,11 @@
 module Drive.View.Common exposing (..)
 
+import Drive.Item exposing (Kind(..))
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
-import Drive.Item exposing (Kind(..))
 import List.Extra as List
 import Routing exposing (Route(..))
 import Styling as S
@@ -90,7 +90,7 @@ sidebarControls { above, expanded } =
                 |> FeatherIcons.withSize 14
                 |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
                 |> List.singleton
-                |> Html.div [ T.flex_shrink_0, T.w_6 ]
+                |> Html.span [ T.flex_shrink_0, T.w_6 ]
 
             --
             , Html.div
@@ -118,7 +118,7 @@ sidebarControls { above, expanded } =
                 |> FeatherIcons.withSize 18
                 |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
                 |> List.singleton
-                |> Html.div [ T.flex_shrink_0, T.w_6 ]
+                |> Html.span [ T.flex_shrink_0, T.w_6 ]
 
             --
             , Html.div
