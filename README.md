@@ -15,6 +15,7 @@ The Drive application that lives on your `fission.name` domain.
 #    (or install manually, see .tool-versions)
 #    (https://asdf-vm.com)
 #    `brew install asdf`
+#    `brew install gpg2`
 asdf plugin-add elm
 asdf plugin-add nodejs && bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
 asdf install
