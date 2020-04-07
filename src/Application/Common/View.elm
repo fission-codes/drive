@@ -83,7 +83,7 @@ introLogo =
         [ T.antialiased
         , T.font_display
         , T.font_light
-        , T.leading_tight
+        , T.leading_none
         , T.tracking_widest
         , T.text_6xl
         , T.uppercase

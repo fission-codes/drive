@@ -98,7 +98,7 @@ signUp context model =
 
         --
         , Html.div
-            [ T.max_w_md
+            [ T.max_w_sm
             , T.mt_8
             , T.text_left
             , T.w_full
@@ -215,6 +215,7 @@ centered model nodes =
             , T.flex_col
             , T.items_center
             , T.justify_center
+            , T.py_12
             , T.text_center
             ]
             nodes
