@@ -11,6 +11,7 @@
 
 import "./analytics.js"
 import "./custom.js"
+import sdk from "./web_modules/fission-sdk.js"
 
 import * as ffs from "./ffs.js"
 import * as ipfs from "./ipfs.js"
@@ -148,6 +149,20 @@ app.ports.ffsLoad.subscribe(a => {
     .load(a)
     .then( ffsSendList(a) )
     .catch( reportFileSystemError )
+})
+
+
+// Fission
+// -------
+
+
+// TODO: Remove
+window.sdk = sdk
+
+
+app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
+  const isAvailable = await sdk.user.isUsernameAvailable(username)
+  app.ports.reportUsernameAvailability.send(isAvailable)
 })
 
 

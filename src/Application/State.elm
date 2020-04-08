@@ -78,8 +78,9 @@ init flags url navKey =
 
       -- Debouncers
       -------------
-      , loadingDebouncer = Debouncing.loading
-      , notificationsDebouncer = Debouncing.notifications
+      , loadingDebouncer = Debouncing.loading.debouncer
+      , notificationsDebouncer = Debouncing.notifications.debouncer
+      , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
 
       -- Sidebar
       ----------
@@ -112,8 +113,17 @@ update msg =
         -----------------------------------------
         -- Authentication
         -----------------------------------------
-        AdjustSignUpContext a b ->
-            Authentication.adjustSignUpContext a b
+        CheckIfUsernameIsAvailable a ->
+            Authentication.checkIfUsernameIsAvailable a
+
+        GotSignUpEmailInput a ->
+            Authentication.gotSignUpEmailInput a
+
+        GotSignUpUsernameInput a ->
+            Authentication.gotSignUpUsernameInput a
+
+        ReportUsernameAvailability a ->
+            Authentication.reportUsernameAvailability a
 
         SignIn ->
             Authentication.signIn
@@ -122,10 +132,13 @@ update msg =
         -- Debouncers
         -----------------------------------------
         LoadingDebouncerMsg a ->
-            Debouncer.update update Debouncing.loadingUpdateConfig a
+            Debouncer.update update Debouncing.loading.updateConfig a
 
         NotificationsDebouncerMsg a ->
-            Debouncer.update update Debouncing.notificationsUpdateConfig a
+            Debouncer.update update Debouncing.notifications.updateConfig a
+
+        UsernameAvailabilityDebouncerMsg a ->
+            Debouncer.update update Debouncing.usernameAvailability.updateConfig a
 
         -----------------------------------------
         -- Drive
@@ -266,6 +279,7 @@ subscriptions model =
         , Ports.ipfsGotError GotError
         , Ports.ipfsGotResolvedAddress GotResolvedAddress
         , Ports.ipfsReplaceResolvedAddress ReplaceResolvedAddress
+        , Ports.reportUsernameAvailability ReportUsernameAvailability
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

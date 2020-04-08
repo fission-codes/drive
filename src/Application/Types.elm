@@ -65,6 +65,7 @@ type alias Model =
     -----------------------------------------
     , loadingDebouncer : Debouncer Msg
     , notificationsDebouncer : Debouncer Msg
+    , usernameAvailabilityDebouncer : Debouncer Msg
 
     -----------------------------------------
     -- Sidebar
@@ -87,13 +88,17 @@ type Msg
       -----------------------------------------
       -- Authentication
       -----------------------------------------
-    | AdjustSignUpContext (SignUpContext -> String -> SignUpContext) String
+    | CheckIfUsernameIsAvailable String
+    | GotSignUpEmailInput String
+    | GotSignUpUsernameInput String
+    | ReportUsernameAvailability Bool
     | SignIn
       -----------------------------------------
       -- Debouncers
       -----------------------------------------
     | LoadingDebouncerMsg (Debouncer.Msg Msg)
     | NotificationsDebouncerMsg (Debouncer.Msg Msg)
+    | UsernameAvailabilityDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
       -- Drive
       -----------------------------------------

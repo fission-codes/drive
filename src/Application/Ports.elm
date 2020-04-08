@@ -8,6 +8,9 @@ import Types exposing (Foundation)
 -- 📣
 
 
+port checkIfUsernameIsAvailable : String -> Cmd msg
+
+
 port copyToClipboard : String -> Cmd msg
 
 
@@ -82,3 +85,6 @@ port ipfsGotResolvedAddress : (Foundation -> msg) -> Sub msg
 
 
 port ipfsReplaceResolvedAddress : ({ cid : String } -> msg) -> Sub msg
+
+
+port reportUsernameAvailability : (Bool -> msg) -> Sub msg

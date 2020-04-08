@@ -1,12 +1,49 @@
 module Debouncing exposing (..)
 
-import Debouncer.Messages as Debouncer exposing (Debouncer, fromSeconds)
+import Debouncer.Messages as Debouncer exposing (Debouncer, Milliseconds, fromSeconds)
 import Return
 import Types exposing (..)
 
 
 
--- LOADING
+-- 🏔
+
+
+loading =
+    makeConfig
+        { getter = .loadingDebouncer
+        , setter = \debouncer model -> { model | loadingDebouncer = debouncer }
+
+        --
+        , msg = LoadingDebouncerMsg
+        , settleAfter = fromSeconds 1.5
+        }
+
+
+notifications =
+    makeConfig
+        { getter = .notificationsDebouncer
+        , setter = \debouncer model -> { model | notificationsDebouncer = debouncer }
+
+        --
+        , msg = NotificationsDebouncerMsg
+        , settleAfter = fromSeconds 1
+        }
+
+
+usernameAvailability =
+    makeConfig
+        { getter = .usernameAvailabilityDebouncer
+        , setter = \debouncer model -> { model | usernameAvailabilityDebouncer = debouncer }
+
+        --
+        , msg = UsernameAvailabilityDebouncerMsg
+        , settleAfter = fromSeconds 0.5
+        }
+
+
+
+-- CANCELLING
 
 
 cancelLoading : Manager
@@ -14,45 +51,40 @@ cancelLoading model =
     Return.singleton { model | loadingDebouncer = Debouncer.cancel model.loadingDebouncer }
 
 
-loading : Debouncer Msg
-loading =
-    Debouncer.manual
-        |> Debouncer.settleWhenQuietFor (Just <| fromSeconds 1.5)
-        |> Debouncer.toDebouncer
+
+-- ⚗️
 
 
-loadingInput : Msg -> Msg
-loadingInput =
-    Debouncer.provideInput >> LoadingDebouncerMsg
+type alias Config model msg =
+    { getter : model -> Debouncer msg
+    , setter : Debouncer msg -> model -> model
 
-
-loadingUpdateConfig : Debouncer.UpdateConfig Msg Model
-loadingUpdateConfig =
-    { mapMsg = LoadingDebouncerMsg
-    , getDebouncer = .loadingDebouncer
-    , setDebouncer = \debouncer model -> { model | loadingDebouncer = debouncer }
+    --
+    , msg : Debouncer.Msg msg -> msg
+    , settleAfter : Milliseconds
     }
+    ->
+        { debouncer : Debouncer msg
+        , provideInput : msg -> msg
+        , updateConfig : Debouncer.UpdateConfig msg model
+        }
 
 
+makeConfig : Config Model Msg
+makeConfig { getter, msg, setter, settleAfter } =
+    { debouncer =
+        Debouncer.manual
+            |> Debouncer.settleWhenQuietFor (Just settleAfter)
+            |> Debouncer.toDebouncer
 
--- NOTIFICATIONS
+    --
+    , provideInput =
+        Debouncer.provideInput >> msg
 
-
-notifications : Debouncer Msg
-notifications =
-    Debouncer.manual
-        |> Debouncer.settleWhenQuietFor (Just <| fromSeconds 1)
-        |> Debouncer.toDebouncer
-
-
-notificationsInput : Msg -> Msg
-notificationsInput =
-    Debouncer.provideInput >> NotificationsDebouncerMsg
-
-
-notificationsUpdateConfig : Debouncer.UpdateConfig Msg Model
-notificationsUpdateConfig =
-    { mapMsg = NotificationsDebouncerMsg
-    , getDebouncer = .notificationsDebouncer
-    , setDebouncer = \debouncer model -> { model | notificationsDebouncer = debouncer }
+    --
+    , updateConfig =
+        { mapMsg = msg
+        , getDebouncer = getter
+        , setDebouncer = setter
+        }
     }

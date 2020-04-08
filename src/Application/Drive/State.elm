@@ -195,7 +195,7 @@ goUp { floor } model =
             |> Return.command
                 ({ on = True }
                     |> ToggleLoadingOverlay
-                    |> Debouncing.loadingInput
+                    |> Debouncing.loading.provideInput
                     |> Return.task
                 )
 

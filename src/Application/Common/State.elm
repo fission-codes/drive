@@ -24,7 +24,7 @@ hideHelpfulNote model =
         |> Return.singleton
         |> Return.command
             (RemoveHelpfulNote
-                |> Debouncing.notificationsInput
+                |> Debouncing.notifications.provideInput
                 |> Return.task
             )
 
@@ -107,6 +107,6 @@ showHelpfulNote note model =
     return
         { model | helpfulNote = Just { faded = False, note = note } }
         (HideHelpfulNote
-            |> Debouncing.notificationsInput
+            |> Debouncing.notifications.provideInput
             |> Return.task
         )

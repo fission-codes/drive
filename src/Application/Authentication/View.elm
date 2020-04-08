@@ -9,6 +9,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
+import Maybe.Extra as Maybe
 import Routing
 import Styling as S
 import Tailwind as T
@@ -114,7 +115,7 @@ signUp context model =
                 , A.placeholder "doctor@who.tv"
                 , A.type_ "email"
                 , A.value context.email
-                , E.onInput (AdjustSignUpContext signUpContextModifiers.email)
+                , E.onInput GotSignUpEmailInput
                 ]
                 []
 
@@ -129,10 +130,10 @@ signUp context model =
                 [ A.id "username"
                 , A.placeholder "thedoctor"
                 , A.value context.username
-                , E.onInput (AdjustSignUpContext signUpContextModifiers.username)
+                , E.onInput GotSignUpUsernameInput
                 ]
                 []
-            , usernameSuccess
+            , usernameMessage context
 
             -- Sign Up
             ----------
@@ -165,35 +166,74 @@ signUp context model =
         ]
 
 
-signUpContextModifiers =
-    { email = \c e -> { c | email = e }
-    , username = \c u -> { c | username = u }
-    }
+usernameMessage : SignUpContext -> Html Msg
+usernameMessage { username, usernameIsAvailable } =
+    let
+        checking =
+            Maybe.isNothing usernameIsAvailable
 
+        isAvailable =
+            Maybe.withDefault True usernameIsAvailable
 
-usernameSuccess : Html Msg
-usernameSuccess =
+        noUsername =
+            String.trim username == ""
+    in
     Html.div
-        [ T.flex
-        , T.items_center
+        [ T.items_center
         , T.leading_tight
         , T.mt_3
         , T.opacity_75
         , T.rounded
         , T.text_tiny
         , T.tracking_tight
+
+        --
+        , if noUsername then
+            T.hidden
+
+          else
+            T.flex
+
+        --
+        , if isAvailable then
+            T.text_inherit
+
+          else
+            T.text_dark_pink
+
+        --
+        , if isAvailable then
+            T.dark__text_inherit
+
+          else
+            T.dark__text_pink_tint
         ]
         [ FeatherIcons.globe
             |> FeatherIcons.withSize 16
             |> Common.wrapIcon [ T.mr_2, T.opacity_60 ]
 
         --
-        , Html.span
-            []
-            [ Html.span [ T.antialiased ] [ Html.text "The " ]
-            , Html.strong [ T.break_all ] [ Html.text "thedoctor.fission.name" ]
-            , Html.span [ T.antialiased ] [ Html.text " domain will be at your command." ]
-            ]
+        , if noUsername then
+            Html.nothing
+
+          else if checking then
+            Html.text "Checking if username is available ..."
+
+          else if isAvailable then
+            Html.span
+                []
+                [ Html.span [ T.antialiased ] [ Html.text "The " ]
+                , Html.strong [ T.break_all ] [ Html.text username, Html.text ".fission.name" ]
+                , Html.span [ T.antialiased ] [ Html.text " domain will be at your command." ]
+                ]
+
+          else
+            Html.span
+                []
+                [ Html.span [ T.antialiased ] [ Html.text "The " ]
+                , Html.strong [ T.break_all ] [ Html.text username ]
+                , Html.span [ T.antialiased ] [ Html.text " username is sadly not available." ]
+                ]
         ]
 
 

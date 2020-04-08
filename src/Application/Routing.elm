@@ -23,7 +23,11 @@ type Route
 
 createAccount : Route
 createAccount =
-    CreateAccount { email = "", username = "" }
+    CreateAccount
+        { email = ""
+        , username = ""
+        , usernameIsAvailable = Nothing
+        }
 
 
 
