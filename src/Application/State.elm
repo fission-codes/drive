@@ -121,8 +121,8 @@ update msg =
         CheckIfUsernameIsAvailable a ->
             Authentication.checkIfUsernameIsAvailable a
 
-        CreateAccount ->
-            Authentication.createAccount
+        CreateAccount a ->
+            Authentication.createAccount a
 
         GotSignUpEmailInput a ->
             Authentication.gotSignUpEmailInput a

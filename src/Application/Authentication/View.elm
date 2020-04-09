@@ -101,15 +101,7 @@ signUp context model =
 
         --
         , Html.form
-            [ E.onSubmit
-                (case context.usernameIsAvailable of
-                    Just True ->
-                        -- TODO
-                        Bypass
-
-                    _ ->
-                        Bypass
-                )
+            [ E.onSubmit (CreateAccount context)
 
             --
             , T.max_w_sm

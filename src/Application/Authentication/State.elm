@@ -6,6 +6,7 @@ import FFS.State as FFS
 import Ipfs
 import Json.Decode as Json
 import Ports
+import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
 import Return.Extra as Return
 import Routing
@@ -18,13 +19,28 @@ import Types exposing (Manager, Msg(..))
 
 checkIfUsernameIsAvailable : String -> Manager
 checkIfUsernameIsAvailable username =
-    Return.communicate (Ports.checkIfUsernameIsAvailable username)
+    case String.trim username of
+        "" ->
+            Return.singleton
+
+        u ->
+            Return.communicate (Ports.checkIfUsernameIsAvailable u)
 
 
-createAccount : Manager
-createAccount =
-    -- TODO
-    Return.singleton
+createAccount : SignUpContext -> Manager
+createAccount context model =
+    case context.usernameIsAvailable of
+        Just True ->
+            -- TODO
+            -- * Show "Creating your file-system" screen
+            { email = context.email
+            , username = context.username
+            }
+                |> Ports.createAccount
+                |> return { model | reCreateAccount = Loading }
+
+        _ ->
+            Return.singleton model
 
 
 gotSignUpEmailInput : String -> Manager
@@ -49,7 +65,6 @@ reportCreateAccountResult { status } =
     case status of
         201 ->
             -- TODO:
-            -- * Show "Creating your file-system" screen
             -- * Set up an initial FFS
             -- * Add some sample data to the new FFS
             Return.singleton

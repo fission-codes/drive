@@ -82,6 +82,13 @@ textarea:focus {
   textarea::placeholder {
     @apply text-gray-300 opacity-75;
   }
+
+  input:focus,
+  textarea:focus {
+    /* TODO: This needs to be a darker purple */
+    /*       (like purple tint but for dark mode) */
+    @apply border-purple;
+  }
 }
 
 

@@ -56,7 +56,7 @@ port ffsLoad : { cid : String, pathSegments : List String } -> Cmd msg
 port checkIfUsernameIsAvailable : String -> Cmd msg
 
 
-port createAccount : () -> Cmd msg
+port createAccount : { email : String, username : String } -> Cmd msg
 
 
 

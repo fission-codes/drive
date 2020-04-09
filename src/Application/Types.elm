@@ -95,7 +95,7 @@ type Msg
       -- Authentication
       -----------------------------------------
     | CheckIfUsernameIsAvailable String
-    | CreateAccount
+    | CreateAccount SignUpContext
     | GotSignUpEmailInput String
     | GotSignUpUsernameInput String
     | ReportCreateAccountResult { status : Int }
