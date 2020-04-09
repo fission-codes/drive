@@ -166,6 +166,12 @@ app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
 })
 
 
+// app.ports.createAccount.subscribe(async userProps => {
+//   const response = await sdk.user.createAccount(userProps)
+//   app.ports.gotCreateAccountResult.send({ status: response.status })
+// })
+
+
 // IPFS
 // ----
 

@@ -17,6 +17,7 @@ import Ipfs
 import Json.Decode as Json
 import Keyboard
 import Management
+import RemoteData exposing (RemoteData)
 import Routing exposing (Route)
 import Time
 import Url exposing (Url)
@@ -68,6 +69,11 @@ type alias Model =
     , usernameAvailabilityDebouncer : Debouncer Msg
 
     -----------------------------------------
+    -- Remote Data
+    -----------------------------------------
+    , reCreateAccount : RemoteData String ()
+
+    -----------------------------------------
     -- Sidebar
     -----------------------------------------
     , createDirectoryInput : String
@@ -89,8 +95,10 @@ type Msg
       -- Authentication
       -----------------------------------------
     | CheckIfUsernameIsAvailable String
+    | CreateAccount
     | GotSignUpEmailInput String
     | GotSignUpUsernameInput String
+    | ReportCreateAccountResult { status : Int }
     | ReportUsernameAvailability Bool
     | SignIn
       -----------------------------------------

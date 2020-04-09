@@ -8,9 +8,6 @@ import Types exposing (Foundation)
 -- 📣
 
 
-port checkIfUsernameIsAvailable : String -> Cmd msg
-
-
 port copyToClipboard : String -> Cmd msg
 
 
@@ -53,6 +50,16 @@ port ffsLoad : { cid : String, pathSegments : List String } -> Cmd msg
 
 
 
+-- 📣  ░░  FISSION
+
+
+port checkIfUsernameIsAvailable : String -> Cmd msg
+
+
+port createAccount : () -> Cmd msg
+
+
+
 -- 📣  ░░  IPFS
 
 
@@ -85,6 +92,9 @@ port ipfsGotResolvedAddress : (Foundation -> msg) -> Sub msg
 
 
 port ipfsReplaceResolvedAddress : ({ cid : String } -> msg) -> Sub msg
+
+
+port reportCreateAccountResult : ({ status : Int } -> msg) -> Sub msg
 
 
 port reportUsernameAvailability : (Bool -> msg) -> Sub msg

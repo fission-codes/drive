@@ -17,8 +17,9 @@ import Keyboard
 import Maybe.Extra as Maybe
 import Other.State as Other
 import Ports
+import RemoteData
 import Return
-import Routing exposing (Route(..))
+import Routing
 import Task
 import Time
 import Types exposing (..)
@@ -40,7 +41,7 @@ init flags url navKey =
 
         urlCmd =
             case ( flags.foundation, route ) of
-                ( Just _, Tree _ _ ) ->
+                ( Just _, Routing.Tree _ _ ) ->
                     Cmd.none
 
                 ( Just f, _ ) ->
@@ -82,6 +83,10 @@ init flags url navKey =
       , notificationsDebouncer = Debouncing.notifications.debouncer
       , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
 
+      -- Remote Data
+      --------------
+      , reCreateAccount = RemoteData.NotAsked
+
       -- Sidebar
       ----------
       , createDirectoryInput = ""
@@ -116,11 +121,17 @@ update msg =
         CheckIfUsernameIsAvailable a ->
             Authentication.checkIfUsernameIsAvailable a
 
+        CreateAccount ->
+            Authentication.createAccount
+
         GotSignUpEmailInput a ->
             Authentication.gotSignUpEmailInput a
 
         GotSignUpUsernameInput a ->
             Authentication.gotSignUpUsernameInput a
+
+        ReportCreateAccountResult a ->
+            Authentication.reportCreateAccountResult a
 
         ReportUsernameAvailability a ->
             Authentication.reportUsernameAvailability a
@@ -279,6 +290,7 @@ subscriptions model =
         , Ports.ipfsGotError GotError
         , Ports.ipfsGotResolvedAddress GotResolvedAddress
         , Ports.ipfsReplaceResolvedAddress ReplaceResolvedAddress
+        , Ports.reportCreateAccountResult ReportCreateAccountResult
         , Ports.reportUsernameAvailability ReportUsernameAvailability
 
         -- Keep track of which keyboard keys are pressed

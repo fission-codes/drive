@@ -16,7 +16,7 @@ import Html.Extra as Html
 import Html.Lazy as Lazy
 import Json.Decode as Decode
 import Maybe.Extra as Maybe
-import Routing exposing (Route(..))
+import Routing
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -44,25 +44,27 @@ body m =
             Html.div
                 [ T.absolute
                 , T.left_1over2
+                , T.neg_translate_x_1over2
                 , T.neg_translate_y_1over2
                 , T.top_1over2
+                , T.transform
                 ]
                 [ Common.loadingAnimation ]
 
-        ( _, CreateAccount context ) ->
+        ( _, Routing.CreateAccount context ) ->
             Authentication.signUp context m
 
-        ( _, Explore ) ->
+        ( _, Routing.Explore ) ->
             Explore.view m
 
-        ( _, Tree _ _ ) ->
+        ( _, Routing.Tree _ _ ) ->
             if Common.shouldShowExplore m then
                 Explore.view m
 
             else
                 Drive.view m
 
-        ( _, Undecided ) ->
+        ( _, Routing.Undecided ) ->
             Authentication.notAuthenticated m
 
     -----------------------------------------
@@ -95,7 +97,7 @@ body m =
         |> Html.node
             "fs-drop-zone"
             (case m.route of
-                Tree _ _ ->
+                Routing.Tree _ _ ->
                     { onOver = \_ -> ShowHelpfulNote "Drop to add it to your drive"
                     , onDrop = \_ -> HideHelpfulNote
                     , onEnter = Nothing

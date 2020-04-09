@@ -69,7 +69,12 @@ buttonWithNode node attributes =
             , T.text_sm
             , T.text_white
             , T.tracking_wider
+            , T.transition_colors
             , T.uppercase
+
+            --
+            , default_transition_duration
+            , default_transition_easing
 
             --
             , T.focus__shadow_outline

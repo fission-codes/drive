@@ -1,6 +1,7 @@
 module Authentication.View exposing (..)
 
 import Authentication.Types exposing (..)
+import Common exposing (ifThenElse)
 import Common.View as Common
 import Common.View.Footer as Footer
 import Common.View.Svg
@@ -8,6 +9,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Events.Extra as E
 import Html.Extra as Html
 import Maybe.Extra as Maybe
 import Routing
@@ -98,8 +100,19 @@ signUp context model =
         , Common.introText aboutFissionDrive
 
         --
-        , Html.div
-            [ T.max_w_sm
+        , Html.form
+            [ E.onSubmit
+                (case context.usernameIsAvailable of
+                    Just True ->
+                        -- TODO
+                        Bypass
+
+                    _ ->
+                        Bypass
+                )
+
+            --
+            , T.max_w_sm
             , T.mt_8
             , T.text_left
             , T.w_full
@@ -113,6 +126,7 @@ signUp context model =
             , S.textField
                 [ A.id "email"
                 , A.placeholder "doctor@who.tv"
+                , A.required True
                 , A.type_ "email"
                 , A.value context.email
                 , E.onInput GotSignUpEmailInput
@@ -129,6 +143,7 @@ signUp context model =
             , S.textField
                 [ A.id "username"
                 , A.placeholder "thedoctor"
+                , A.required True
                 , A.value context.username
                 , E.onInput GotSignUpUsernameInput
                 ]
@@ -137,11 +152,19 @@ signUp context model =
 
             -- Sign Up
             ----------
-            , S.button
-                [ T.bg_purple
-                , T.block
+            , let
+                usernameIsAvailable =
+                    Maybe.withDefault True context.usernameIsAvailable
+              in
+              S.button
+                [ T.block
                 , T.mt_6
                 , T.w_full
+
+                --
+                , ifThenElse usernameIsAvailable T.bg_purple T.bg_dark_pink
+
+                -- , ifThenElse usernameIsAvailable T.bg_purple T.bg_dark_pink
                 ]
                 [ Html.text "Get started" ]
 
@@ -188,25 +211,9 @@ usernameMessage { username, usernameIsAvailable } =
         , T.tracking_tight
 
         --
-        , if noUsername then
-            T.hidden
-
-          else
-            T.flex
-
-        --
-        , if isAvailable then
-            T.text_inherit
-
-          else
-            T.text_dark_pink
-
-        --
-        , if isAvailable then
-            T.dark__text_inherit
-
-          else
-            T.dark__text_pink_tint
+        , ifThenElse noUsername T.hidden T.flex
+        , ifThenElse isAvailable T.text_inherit T.text_dark_pink
+        , ifThenElse isAvailable T.dark__text_inherit T.dark__text_pink_tint
         ]
         [ FeatherIcons.globe
             |> FeatherIcons.withSize 16
@@ -222,17 +229,16 @@ usernameMessage { username, usernameIsAvailable } =
           else if isAvailable then
             Html.span
                 []
-                [ Html.span [ T.antialiased ] [ Html.text "The " ]
+                [ Html.span [ T.antialiased ] [ Html.text "Your personal Drive address will be " ]
                 , Html.strong [ T.break_all ] [ Html.text username, Html.text ".fission.name" ]
-                , Html.span [ T.antialiased ] [ Html.text " domain will be at your command." ]
                 ]
 
           else
             Html.span
                 []
-                [ Html.span [ T.antialiased ] [ Html.text "The " ]
+                [ Html.span [ T.antialiased ] [ Html.text "The username " ]
                 , Html.strong [ T.break_all ] [ Html.text username ]
-                , Html.span [ T.antialiased ] [ Html.text " username is sadly not available." ]
+                , Html.span [ T.antialiased ] [ Html.text " is sadly not available." ]
                 ]
         ]
 
