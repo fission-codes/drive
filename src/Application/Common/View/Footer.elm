@@ -8,6 +8,7 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Maybe.Extra as Maybe
+import Routing
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -107,53 +108,56 @@ right model =
         --
         , T.sm__scale_100
         ]
-        (if Common.shouldShowExplore model then
-            [ action
-                Link
-                [ A.href "https://guide.fission.codes/drive"
-                , A.rel "noopener noreferrer"
-                , A.target "_blank"
+        (case model.route of
+            Routing.CreateAccount _ ->
+                [ explore
+
+                --
+                , action
+                    Link
+                    [ A.href (Routing.routeUrl Routing.LinkAccount model.url) ]
+                    FeatherIcons.user
+                    [ Html.text "Sign in" ]
                 ]
-                FeatherIcons.book
-                [ Html.text "Guide" ]
 
-            --
-            , action
-                Link
-                [ A.href "https://fission.codes/support"
-                , A.rel "noopener noreferrer"
-                , A.target "_blank"
+            Routing.Explore ->
+                [ action
+                    Link
+                    [ A.href (Routing.routeUrl Routing.createAccount model.url) ]
+                    FeatherIcons.user
+                    [ Html.text "Create account" ]
                 ]
-                FeatherIcons.lifeBuoy
-                [ Html.text "Support" ]
-            ]
 
-         else
-            [ if Maybe.isJust model.authenticated then
-                addCreateAction model
+            Routing.LinkAccount ->
+                -- TODO
+                []
 
-              else
-                Html.nothing
+            Routing.Tree _ _ ->
+                [ if Maybe.isJust model.authenticated then
+                    addCreateAction model
 
-            --
-            , action
-                Button
-                [ { clip = Url.toString model.url
-                  , notification = "Copied Drive URL to clipboard."
-                  }
-                    |> CopyToClipboard
-                    |> E.onClick
+                  else
+                    Html.nothing
+
+                --
+                , action
+                    Button
+                    [ { clip = Url.toString model.url
+                      , notification = "Copied Drive URL to clipboard."
+                      }
+                        |> CopyToClipboard
+                        |> E.onClick
+                    ]
+                    FeatherIcons.share2
+                    [ Html.text "Copy Link" ]
+
+                --
+                , explore
                 ]
-                FeatherIcons.share2
-                [ Html.text "Copy Link" ]
 
-            --
-            , action
-                Button
-                [ E.onClick Reset ]
-                FeatherIcons.hash
-                [ Html.text "Change CID" ]
-            ]
+            Routing.Undecided ->
+                [ explore
+                ]
         )
 
 
@@ -183,6 +187,14 @@ addCreateAction model =
         ]
         FeatherIcons.plus
         [ Html.text "Add / Create" ]
+
+
+explore =
+    action
+        Button
+        [ E.onClick (Reset Routing.Explore) ]
+        FeatherIcons.hash
+        [ Html.text "Explore" ]
 
 
 

@@ -30,7 +30,7 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { authenticated : Maybe { dnslink : String }
+    { authenticated : Maybe { dnsLink : String }
     , foundation : Maybe Foundation
     , viewportSize : { height : Int, width : Int }
     }
@@ -43,7 +43,7 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { authenticated : Maybe { dnslink : String }
+    { authenticated : Maybe { dnsLink : String }
     , currentTime : Time.Posix
     , directoryList : Result String { floor : Int, items : List Item }
     , contextMenu : Maybe (ContextMenu Msg)
@@ -96,10 +96,11 @@ type Msg
       -----------------------------------------
     | CheckIfUsernameIsAvailable String
     | CreateAccount SignUpContext
+    | GotCreateAccountFailure String
+    | GotCreateAccountSuccess { dnsLink : String }
     | GotSignUpEmailInput String
     | GotSignUpUsernameInput String
-    | ReportCreateAccountResult { status : Int }
-    | ReportUsernameAvailability Bool
+    | GotUsernameAvailability Bool
     | SignIn
       -----------------------------------------
       -- Debouncers
@@ -129,7 +130,7 @@ type Msg
       -----------------------------------------
     | ChangeCid
     | GotInput String
-    | Reset
+    | Reset Route
       -----------------------------------------
       -- Ipfs
       -----------------------------------------

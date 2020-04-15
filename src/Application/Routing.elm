@@ -13,6 +13,7 @@ import Url.Parser as Url exposing (..)
 type Route
     = CreateAccount Authentication.SignUpContext
     | Explore
+    | LinkAccount
     | Tree { root : String } (List String)
     | Undecided
 
@@ -44,8 +45,7 @@ routeFromUrl url =
             createAccount
 
         "account/link" ->
-            -- TODO
-            Undecided
+            LinkAccount
 
         "explore/ipfs" ->
             Explore
@@ -67,6 +67,9 @@ adjustUrl url route =
 
         Explore ->
             { url | fragment = Just "/explore/ipfs" }
+
+        LinkAccount ->
+            { url | fragment = Just "/account/link" }
 
         Tree { root } pathSegments ->
             let

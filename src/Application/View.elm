@@ -41,21 +41,17 @@ body m =
       -----------------------------------------
       case ( Common.shouldShowLoadingAnimation m, m.route ) of
         ( True, _ ) ->
-            Html.div
-                [ T.absolute
-                , T.left_1over2
-                , T.neg_translate_x_1over2
-                , T.neg_translate_y_1over2
-                , T.top_1over2
-                , T.transform
-                ]
-                [ Common.loadingAnimation ]
+            Common.loadingScreen []
 
         ( _, Routing.CreateAccount context ) ->
             Authentication.signUp context m
 
         ( _, Routing.Explore ) ->
             Explore.view m
+
+        ( _, Routing.LinkAccount ) ->
+            -- TODO
+            Authentication.notAuthenticated m
 
         ( _, Routing.Tree _ _ ) ->
             if Common.shouldShowExplore m then

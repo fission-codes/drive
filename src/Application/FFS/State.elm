@@ -16,17 +16,12 @@ boot : Manager
 boot model =
     -- TODO? Ports.ipfsPrefetchTree
     case ( model.authenticated, model.foundation ) of
-        ( Just { dnslink }, Just { unresolved, resolved } ) ->
-            if dnslink == unresolved then
-                { cid = resolved
-                , pathSegments = Routing.treePathSegments model.route
-                }
-                    |> Ports.ffsLoad
-                    |> return model
-
-            else
-                -- TODO
-                Return.singleton model
+        ( Just _, Just { unresolved, resolved } ) ->
+            { cid = resolved
+            , pathSegments = Routing.treePathSegments model.route
+            }
+                |> Ports.ffsLoad
+                |> return model
 
         _ ->
             GetDirectoryList

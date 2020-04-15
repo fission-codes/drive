@@ -99,8 +99,8 @@ app.ports.showNotification.subscribe(text => {
 })
 
 
-app.ports.storeAuthDnsLink.subscribe(dnslink => {
-  localStorage.setItem("fissionDrive.authlink", dnslink)
+app.ports.storeAuthDnsLink.subscribe(dnsLink => {
+  localStorage.setItem("fissionDrive.authlink", dnsLink)
 })
 
 
@@ -162,14 +162,35 @@ window.sdk = sdk
 
 app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
   const isAvailable = await sdk.user.isUsernameAvailable(username)
-  app.ports.reportUsernameAvailability.send(isAvailable)
+  app.ports.gotUsernameAvailability.send(isAvailable)
 })
 
 
-// app.ports.createAccount.subscribe(async userProps => {
-//   const response = await sdk.user.createAccount(userProps)
-//   app.ports.gotCreateAccountResult.send({ status: response.status })
-// })
+app.ports.createAccount.subscribe(async userProps => {
+  const response = await sdk.user.createAccount(userProps)
+  const dnsLink = `${userProps.username}.fission.name`
+
+  if (response.success) {
+    await ffs.createNew()
+    await ffs.addSampleData()
+    await ffs.updateRoot()
+
+    app.ports.gotCreateAccountSuccess.send({
+      dnsLink
+    })
+
+    app.ports.ipfsGotResolvedAddress.send({
+      isDnsLink: true,
+      resolved: await ffs.cid(),
+      unresolved: dnsLink
+    })
+
+  } else {
+    // TODO: Get error from response
+    app.ports.gotCreateAccountFailure.send("Email already in use")
+
+  }
+})
 
 
 // IPFS
@@ -206,7 +227,7 @@ app.ports.ipfsSetup.subscribe(_ => {
 
 function authenticated() {
   const stored = localStorage.getItem("fissionDrive.authlink")
-  return stored ? { dnslink: stored } : null
+  return stored ? { dnsLink: stored } : null
 }
 
 

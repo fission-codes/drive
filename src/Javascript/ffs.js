@@ -30,6 +30,15 @@ export async function add({ blobs, pathSegments }) {
 }
 
 
+export async function addSampleData() {
+  await ffs.mkdir("private/Apps")
+  await ffs.mkdir("private/Audio")
+  await ffs.mkdir("private/Documents")
+  await ffs.mkdir("private/Photos")
+  await ffs.mkdir("private/Video")
+}
+
+
 export async function createDirecory({ pathSegments }) {
   const path = prefixedPath(pathSegments)
   await ffs.mkdir(path)
@@ -37,9 +46,21 @@ export async function createDirecory({ pathSegments }) {
 }
 
 
+export async function cid() {
+  return await ffs.sync()
+}
+
+
+export async function createNew() {
+  ffs = await sdk.ffs.default.empty()
+}
+
+
 export async function listDirectory({ pathSegments }) {
   const isListingRoot = pathSegments.length === 0
   const path = prefixedPath(pathSegments)
+
+  console.log(path)
 
   // Make a list
   const rawList = Object.values(await ffs.ls(path))
@@ -75,16 +96,25 @@ export async function listDirectory({ pathSegments }) {
 
 
 export async function load({ cid, pathSegments }) {
+  console.log("load", cid, pathSegments)
   ffs = await sdk.ffs.default.fromCID(cid)
-
-  // TODO: Remove
+  console.log(ffs)
   ffs = ffs || await sdk.ffs.default.upgradePublicCID(cid)
+  await ffs.sync()
+  console.log(ffs)
+  console.log(await ffs.ls("public"))
+  console.log(await ffs.ls("private"))
 
   if (ffs) {
     return await listDirectory({ pathSegments })
   } else {
     throw "Not a Fission File System"
   }
+}
+
+
+export async function updateRoot() {
+  await sdk.user.updateRoot(ffs)
 }
 
 

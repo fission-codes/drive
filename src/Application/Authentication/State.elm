@@ -31,8 +31,6 @@ createAccount : SignUpContext -> Manager
 createAccount context model =
     case context.usernameIsAvailable of
         Just True ->
-            -- TODO
-            -- * Show "Creating your file-system" screen
             { email = context.email
             , username = context.username
             }
@@ -41,6 +39,16 @@ createAccount context model =
 
         _ ->
             Return.singleton model
+
+
+gotCreateAccountFailure : String -> Manager
+gotCreateAccountFailure err model =
+    Return.singleton { model | reCreateAccount = Failure err }
+
+
+gotCreateAccountSuccess : { dnsLink : String } -> Manager
+gotCreateAccountSuccess a model =
+    Return.singleton { model | authenticated = Just a, reCreateAccount = Success () }
 
 
 gotSignUpEmailInput : String -> Manager
@@ -60,22 +68,8 @@ gotSignUpUsernameInput input model =
             )
 
 
-reportCreateAccountResult : { status : Int } -> Manager
-reportCreateAccountResult { status } =
-    case status of
-        201 ->
-            -- TODO:
-            -- * Set up an initial FFS
-            -- * Add some sample data to the new FFS
-            Return.singleton
-
-        _ ->
-            -- TODO: Report error by replacing the "Can I sign in instead?" link
-            Return.singleton
-
-
-reportUsernameAvailability : Bool -> Manager
-reportUsernameAvailability isAvailable =
+gotUsernameAvailability : Bool -> Manager
+gotUsernameAvailability isAvailable =
     adjustSignUpContext_ (\c -> { c | usernameIsAvailable = Just isAvailable })
 
 
@@ -84,7 +78,7 @@ signIn model =
     case model.foundation of
         Just { unresolved } ->
             { model
-                | authenticated = Just { dnslink = unresolved }
+                | authenticated = Just { dnsLink = unresolved }
                 , ipfs = Ipfs.InitialListing
             }
                 |> FFS.boot

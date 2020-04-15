@@ -12,6 +12,7 @@ import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html
 import Maybe.Extra as Maybe
+import RemoteData exposing (RemoteData(..))
 import Routing
 import Styling as S
 import Tailwind as T
@@ -94,6 +95,22 @@ signIn =
 
 signUp : SignUpContext -> Model -> Html Msg
 signUp context model =
+    case model.reCreateAccount of
+        Failure _ ->
+            signUpForm context model
+
+        Loading ->
+            creatingAccount
+
+        NotAsked ->
+            signUpForm context model
+
+        Success _ ->
+            signUpForm context model
+
+
+signUpForm : SignUpContext -> Model -> Html Msg
+signUpForm context model =
     centered
         model
         [ Common.introLogo
@@ -163,7 +180,7 @@ signUp context model =
             --
             , [ Html.text "Can I sign in instead?" ]
                 |> Html.a
-                    [ A.href "#/account/link"
+                    [ A.href (Routing.routeUrl Routing.LinkAccount model.url)
 
                     --
                     , T.italic
@@ -233,6 +250,14 @@ usernameMessage { username, usernameIsAvailable } =
                 , Html.span [ T.antialiased ] [ Html.text " is sadly not available." ]
                 ]
         ]
+
+
+creatingAccount : Html msg
+creatingAccount =
+    [ Html.text "Just a moment, creating your file system." ]
+        |> Html.div [ T.italic, T.mt_3 ]
+        |> List.singleton
+        |> Common.loadingScreen
 
 
 

@@ -3,9 +3,10 @@ module Explore.State exposing (..)
 import Browser.Navigation as Navigation
 import Ipfs
 import Maybe.Extra as Maybe
+import Other.State as Other
 import Ports
-import Return exposing (return)
-import Routing
+import Return exposing (andThen, return)
+import Routing exposing (Route)
 import Types exposing (..)
 import Url
 
@@ -40,24 +41,19 @@ gotInput input model =
         }
 
 
-reset : Manager
-reset model =
-    return
-        { model
-            | authenticated = Nothing
-            , directoryList = Ok { floor = 1, items = [] }
-            , exploreInput = Just ""
-            , foundation = Nothing
-            , selectedPath = Nothing
-        }
-        (Cmd.batch
-            [ Ports.removeStoredAuthDnsLink ()
-            , Ports.removeStoredFoundation ()
-
-            --
-            , Routing.Undecided
-                |> Routing.adjustUrl model.url
-                |> Url.toString
-                |> Navigation.pushUrl model.navKey
-            ]
-        )
+reset : Route -> Manager
+reset route model =
+    [ Ports.removeStoredAuthDnsLink ()
+    , Ports.removeStoredFoundation ()
+    ]
+        |> Cmd.batch
+        |> return
+            { model
+                | authenticated = Nothing
+                , directoryList = Ok { floor = 1, items = [] }
+                , exploreInput = Just ""
+                , foundation = Nothing
+                , selectedPath = Nothing
+            }
+        |> andThen
+            (Other.goToRoute route)

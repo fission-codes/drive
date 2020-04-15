@@ -79,6 +79,19 @@ port ipfsSetup : () -> Cmd msg
 -- 📰
 
 
+port gotCreateAccountFailure : (String -> msg) -> Sub msg
+
+
+port gotCreateAccountSuccess : ({ dnsLink : String } -> msg) -> Sub msg
+
+
+port gotUsernameAvailability : (Bool -> msg) -> Sub msg
+
+
+
+-- 📰  ░░  IPFS
+
+
 port ipfsCompletedSetup : (() -> msg) -> Sub msg
 
 
@@ -92,9 +105,3 @@ port ipfsGotResolvedAddress : (Foundation -> msg) -> Sub msg
 
 
 port ipfsReplaceResolvedAddress : ({ cid : String } -> msg) -> Sub msg
-
-
-port reportCreateAccountResult : ({ status : Int } -> msg) -> Sub msg
-
-
-port reportUsernameAvailability : (Bool -> msg) -> Sub msg

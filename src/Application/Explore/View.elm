@@ -8,6 +8,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Ipfs
+import Routing
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -56,7 +57,7 @@ inputScreen m =
                     E.onSubmit Bypass
 
                 Ipfs.InitialListing ->
-                    E.onSubmit Reset
+                    E.onSubmit (Reset Routing.Explore)
 
                 _ ->
                     E.onSubmit ChangeCid

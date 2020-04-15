@@ -152,6 +152,26 @@ loadingAnimation =
             ]
 
 
+loadingScreen : List (Html msg) -> Html msg
+loadingScreen additionalNodes =
+    Html.div
+        [ T.flex
+        , T.flex_col
+        , T.min_h_screen
+        ]
+        [ Html.div
+            [ T.flex
+            , T.flex_auto
+            , T.flex_col
+            , T.items_center
+            , T.justify_center
+            , T.p_8
+            , T.text_center
+            ]
+            (loadingAnimation :: additionalNodes)
+        ]
+
+
 wrapIcon : List (Html.Attribute msg) -> FeatherIcons.Icon -> Html msg
 wrapIcon attributes icon =
     Html.span attributes [ FeatherIcons.toHtml [] icon ]

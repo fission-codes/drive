@@ -36,9 +36,6 @@ init flags url navKey =
         route =
             Routing.routeFromUrl url
 
-        foundation =
-            Nothing
-
         urlCmd =
             case ( flags.foundation, route ) of
                 ( Just _, Routing.Tree _ _ ) ->
@@ -51,7 +48,7 @@ init flags url navKey =
                     Cmd.none
 
         exploreInput =
-            foundation
+            flags.foundation
                 |> Maybe.map .unresolved
                 |> Maybe.orElse (Routing.treeRoot route)
                 |> Maybe.withDefault defaultDnsLink
@@ -65,7 +62,7 @@ init flags url navKey =
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
-      , foundation = foundation
+      , foundation = Nothing
       , helpfulNote = Nothing
       , ipfs = Ipfs.Connecting
       , isFocused = False
@@ -124,17 +121,20 @@ update msg =
         CreateAccount a ->
             Authentication.createAccount a
 
+        GotCreateAccountFailure a ->
+            Authentication.gotCreateAccountFailure a
+
+        GotCreateAccountSuccess a ->
+            Authentication.gotCreateAccountSuccess a
+
         GotSignUpEmailInput a ->
             Authentication.gotSignUpEmailInput a
 
         GotSignUpUsernameInput a ->
             Authentication.gotSignUpUsernameInput a
 
-        ReportCreateAccountResult a ->
-            Authentication.reportCreateAccountResult a
-
-        ReportUsernameAvailability a ->
-            Authentication.reportUsernameAvailability a
+        GotUsernameAvailability a ->
+            Authentication.gotUsernameAvailability a
 
         SignIn ->
             Authentication.signIn
@@ -205,8 +205,8 @@ update msg =
         GotInput a ->
             Explore.gotInput a
 
-        Reset ->
-            Explore.reset
+        Reset a ->
+            Explore.reset a
 
         -----------------------------------------
         -- Ipfs
@@ -290,8 +290,9 @@ subscriptions model =
         , Ports.ipfsGotError GotError
         , Ports.ipfsGotResolvedAddress GotResolvedAddress
         , Ports.ipfsReplaceResolvedAddress ReplaceResolvedAddress
-        , Ports.reportCreateAccountResult ReportCreateAccountResult
-        , Ports.reportUsernameAvailability ReportUsernameAvailability
+        , Ports.gotCreateAccountFailure GotCreateAccountFailure
+        , Ports.gotCreateAccountSuccess GotCreateAccountSuccess
+        , Ports.gotUsernameAvailability GotUsernameAvailability
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

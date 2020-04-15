@@ -4,6 +4,7 @@ import ContextMenu exposing (..)
 import Drive.Item exposing (Kind(..))
 import Drive.Sidebar as Sidebar
 import FeatherIcons
+import Routing
 import Types exposing (..)
 
 
@@ -53,7 +54,7 @@ authenticatedBurgers =
 
         --
         , href = Nothing
-        , msg = Just Reset
+        , msg = Just (Reset Routing.Undecided)
         }
     ]
 
@@ -61,7 +62,7 @@ authenticatedBurgers =
 unauthenticatedBurgers =
     [ Item
         { icon = FeatherIcons.hardDrive
-        , label = "Make FFS"
+        , label = "Sign in"
         , active = False
 
         --
@@ -74,12 +75,12 @@ unauthenticatedBurgers =
 alwaysBurgers =
     [ Item
         { icon = FeatherIcons.hash
-        , label = "Change CID"
+        , label = "Explore"
         , active = False
 
         --
         , href = Nothing
-        , msg = Just Reset
+        , msg = Just (Reset Routing.Explore)
         }
 
     --
