@@ -83,11 +83,14 @@ textarea:focus {
     @apply text-gray-300 opacity-75;
   }
 
+  input:user-invalid,
+  textarea:user-invalid {
+    @apply border-pink-shade;
+  }
+
   input:focus,
   textarea:focus {
-    /* TODO: This needs to be a darker purple */
-    /*       (like purple tint but for dark mode) */
-    @apply border-purple;
+    @apply border-purple-shade;
   }
 }
 

@@ -98,7 +98,7 @@ inputScreen m =
                 --
                 , case m.ipfs of
                     Ipfs.Error _ ->
-                        T.focus__border_dark_pink
+                        T.focus__border_red
 
                     _ ->
                         T.focus__border_purple_tint
@@ -110,7 +110,7 @@ inputScreen m =
                 --
                 , case m.ipfs of
                     Ipfs.Error _ ->
-                        T.dark__focus__border_dark_pink
+                        T.dark__focus__border_red
 
                     _ ->
                         T.dark__focus__border_purple
@@ -121,7 +121,7 @@ inputScreen m =
             , Html.button
                 [ case m.ipfs of
                     Ipfs.Error _ ->
-                        T.bg_dark_pink
+                        T.bg_red
 
                     _ ->
                         T.bg_purple

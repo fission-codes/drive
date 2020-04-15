@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "fission-kit": "fission-suite/kit#6f5ac08e9d544973937e8de1e2fc76d425568d3d",
+    "fission-kit": "fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6",
     "get-ipfs": "^1.2.0"
   },
   "devDependencies": {

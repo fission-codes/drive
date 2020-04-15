@@ -171,9 +171,7 @@ signUpForm context model =
                 , T.w_full
 
                 --
-                , ifThenElse usernameIsAvailable T.bg_purple T.bg_dark_pink
-
-                -- , ifThenElse usernameIsAvailable T.bg_purple T.bg_dark_pink
+                , ifThenElse usernameIsAvailable T.bg_purple T.bg_red
                 ]
                 [ Html.text "Get started" ]
 
@@ -221,7 +219,7 @@ usernameMessage { username, usernameIsAvailable } =
 
         --
         , ifThenElse noUsername T.hidden T.flex
-        , ifThenElse isAvailable T.text_inherit T.text_dark_pink
+        , ifThenElse isAvailable T.text_inherit T.text_red
         , ifThenElse isAvailable T.dark__text_inherit T.dark__text_pink_tint
         ]
         [ FeatherIcons.globe
