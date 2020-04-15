@@ -114,7 +114,7 @@ export async function load({ cid, pathSegments }) {
 
 
 export async function updateRoot() {
-  await sdk.user.updateRoot(ffs)
+  await sdk.user.updateRoot(ffs, "http://localhost:1337")
 }
 
 

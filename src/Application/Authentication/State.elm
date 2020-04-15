@@ -31,11 +31,19 @@ createAccount : SignUpContext -> Manager
 createAccount context model =
     case context.usernameIsAvailable of
         Just True ->
+            let
+                dnsLink =
+                    context.username ++ ".fission.name"
+            in
             { email = context.email
             , username = context.username
             }
                 |> Ports.createAccount
-                |> return { model | reCreateAccount = Loading }
+                |> return
+                    { model
+                        | exploreInput = Just dnsLink
+                        , reCreateAccount = Loading
+                    }
 
         _ ->
             Return.singleton model

@@ -167,10 +167,10 @@ app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
 
 
 app.ports.createAccount.subscribe(async userProps => {
-  const response = await sdk.user.createAccount(userProps)
+  const response = await sdk.user.createAccount(userProps, "http://localhost:1337")
   const dnsLink = `${userProps.username}.fission.name`
 
-  if (response.success) {
+  if (response.status < 300) {
     await ffs.createNew()
     await ffs.addSampleData()
     await ffs.updateRoot()

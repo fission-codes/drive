@@ -97,6 +97,7 @@ signUp : SignUpContext -> Model -> Html Msg
 signUp context model =
     case model.reCreateAccount of
         Failure _ ->
+            -- TODO
             signUpForm context model
 
         Loading ->
@@ -106,7 +107,7 @@ signUp context model =
             signUpForm context model
 
         Success _ ->
-            signUpForm context model
+            creatingAccount
 
 
 signUpForm : SignUpContext -> Model -> Html Msg
