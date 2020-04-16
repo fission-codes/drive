@@ -85,7 +85,7 @@ port gotCreateAccountFailure : (String -> msg) -> Sub msg
 port gotCreateAccountSuccess : ({ dnsLink : String } -> msg) -> Sub msg
 
 
-port gotUsernameAvailability : (Bool -> msg) -> Sub msg
+port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg
 
 
 

@@ -161,8 +161,14 @@ window.sdk = sdk
 
 
 app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
-  const isAvailable = await sdk.user.isUsernameAvailable(username)
-  app.ports.gotUsernameAvailability.send(isAvailable)
+  if (sdk.user.isUsernameValid(username)) {
+    const isAvailable = await sdk.user.isUsernameAvailable(username)
+    app.ports.gotUsernameAvailability.send({ available: isAvailable, valid: true })
+
+  } else {
+    app.ports.gotUsernameAvailability.send({ available: false, valid: false })
+
+  }
 })
 
 
@@ -187,7 +193,7 @@ app.ports.createAccount.subscribe(async userProps => {
 
   } else {
     // TODO: Get error from response
-    app.ports.gotCreateAccountFailure.send("Email already in use")
+    app.ports.gotCreateAccountFailure.send("Already created an account")
 
   }
 })

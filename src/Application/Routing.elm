@@ -1,6 +1,7 @@
 module Routing exposing (..)
 
 import Authentication.Types as Authentication
+import RemoteData
 import String.Ext as String
 import Url exposing (Url)
 import Url.Parser as Url exposing (..)
@@ -27,7 +28,8 @@ createAccount =
     CreateAccount
         { email = ""
         , username = ""
-        , usernameIsAvailable = Nothing
+        , usernameIsAvailable = RemoteData.NotAsked
+        , usernameIsValid = True
         }
 
 

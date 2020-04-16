@@ -18,25 +18,29 @@ import Types exposing (Manager, Msg(..))
 
 
 checkIfUsernameIsAvailable : String -> Manager
-checkIfUsernameIsAvailable username =
+checkIfUsernameIsAvailable username model =
     case String.trim username of
         "" ->
-            Return.singleton
+            Return.singleton model
 
         u ->
-            Return.communicate (Ports.checkIfUsernameIsAvailable u)
+            model
+                |> adjustSignUpContext_
+                    (\c -> { c | usernameIsAvailable = Loading })
+                |> Return.command
+                    (Ports.checkIfUsernameIsAvailable u)
 
 
 createAccount : SignUpContext -> Manager
 createAccount context model =
-    case context.usernameIsAvailable of
-        Just True ->
+    case ( context.usernameIsValid, context.usernameIsAvailable ) of
+        ( True, Success True ) ->
             let
                 dnsLink =
                     context.username ++ ".fission.name"
             in
-            { email = context.email
-            , username = context.username
+            { email = String.trim context.email
+            , username = String.trim context.username
             }
                 |> Ports.createAccount
                 |> return
@@ -67,7 +71,14 @@ gotSignUpEmailInput input =
 gotSignUpUsernameInput : String -> Manager
 gotSignUpUsernameInput input model =
     model
-        |> adjustSignUpContext_ (\c -> { c | username = input, usernameIsAvailable = Nothing })
+        |> adjustSignUpContext_
+            (\c ->
+                { c
+                    | username = input
+                    , usernameIsAvailable = Loading
+                    , usernameIsValid = True
+                }
+            )
         |> Return.command
             (input
                 |> CheckIfUsernameIsAvailable
@@ -76,9 +87,19 @@ gotSignUpUsernameInput input model =
             )
 
 
-gotUsernameAvailability : Bool -> Manager
-gotUsernameAvailability isAvailable =
-    adjustSignUpContext_ (\c -> { c | usernameIsAvailable = Just isAvailable })
+gotUsernameAvailability : { available : Bool, valid : Bool } -> Manager
+gotUsernameAvailability { available, valid } =
+    adjustSignUpContext_
+        (\c ->
+            if not valid then
+                { c | usernameIsValid = False }
+
+            else
+                { c
+                    | usernameIsAvailable = Success available
+                    , usernameIsValid = True
+                }
+        )
 
 
 signIn : Manager

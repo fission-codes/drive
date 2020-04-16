@@ -587,6 +587,9 @@ list model directoryList =
 listItem : Bool -> Maybe String -> Item -> Html Msg
 listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path } as item) =
     let
+        { base } =
+            nameProperties
+
         selected =
             selectedPath == Just path
 
@@ -644,6 +647,21 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
           -----------------------------------------
           (if isPublicRootDir then
             FeatherIcons.globe
+
+           else if base == "Apps" then
+            FeatherIcons.package
+
+           else if base == "Audio" then
+            FeatherIcons.music
+
+           else if base == "Documents" then
+            FeatherIcons.fileText
+
+           else if base == "Photos" then
+            FeatherIcons.image
+
+           else if base == "Video" then
+            FeatherIcons.video
 
            else
             Drive.Item.kindIcon kind

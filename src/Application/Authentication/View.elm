@@ -96,22 +96,21 @@ signIn =
 signUp : SignUpContext -> Model -> Html Msg
 signUp context model =
     case model.reCreateAccount of
-        Failure _ ->
-            -- TODO
-            signUpForm context model
+        Failure err ->
+            signUpForm (Just err) context model
 
         Loading ->
             creatingAccount
 
         NotAsked ->
-            signUpForm context model
+            signUpForm Nothing context model
 
         Success _ ->
             creatingAccount
 
 
-signUpForm : SignUpContext -> Model -> Html Msg
-signUpForm context model =
+signUpForm : Maybe String -> SignUpContext -> Model -> Html Msg
+signUpForm maybeError context model =
     centered
         model
         [ Common.introLogo
@@ -151,7 +150,8 @@ signUpForm context model =
                 ]
                 [ Html.text "Username" ]
             , S.textField
-                [ A.id "username"
+                [ A.autocomplete False
+                , A.id "username"
                 , A.placeholder "thedoctor"
                 , A.required True
                 , A.value context.username
@@ -163,8 +163,8 @@ signUpForm context model =
             -- Sign Up
             ----------
             , let
-                usernameIsAvailable =
-                    Maybe.withDefault True context.usernameIsAvailable
+                isKindOfValid =
+                    context.usernameIsValid && context.usernameIsAvailable /= Success False
               in
               S.button
                 [ T.block
@@ -172,42 +172,55 @@ signUpForm context model =
                 , T.w_full
 
                 --
-                , ifThenElse usernameIsAvailable T.bg_purple T.bg_red
+                , ifThenElse isKindOfValid T.bg_purple T.bg_red
                 ]
                 [ Html.text "Get started" ]
 
             --
-            , [ Html.text "Can I sign in instead?" ]
-                |> Html.a
-                    [ A.href (Routing.routeUrl Routing.LinkAccount model.url)
+            , case maybeError of
+                Just err ->
+                    Html.text err
 
-                    --
-                    , T.italic
-                    , T.text_center
-                    , T.text_gray_300
-                    , T.text_sm
-                    , T.underline
-                    ]
-                |> List.singleton
-                |> Html.div
-                    [ T.mt_3
-                    , T.text_center
-                    ]
+                Nothing ->
+                    [ Html.text "Can I sign in instead?" ]
+                        |> Html.a
+                            [ A.href (Routing.routeUrl Routing.LinkAccount model.url)
+
+                            --
+                            , T.italic
+                            , T.text_center
+                            , T.text_gray_300
+                            , T.text_sm
+                            , T.underline
+                            ]
+                        |> List.singleton
+                        |> Html.div
+                            [ T.mt_3
+                            , T.text_center
+                            ]
             ]
         ]
 
 
 usernameMessage : SignUpContext -> Html Msg
-usernameMessage { username, usernameIsAvailable } =
+usernameMessage context =
     let
+        username =
+            String.trim context.username
+
+        ( isValid, isAvailable ) =
+            ( context.usernameIsValid
+            , context.usernameIsAvailable == Success True
+            )
+
+        isFaulty =
+            not isValid || not isAvailable
+
         checking =
-            Maybe.isNothing usernameIsAvailable
+            isValid && context.usernameIsAvailable == Loading
 
-        isAvailable =
-            Maybe.withDefault True usernameIsAvailable
-
-        noUsername =
-            String.trim username == ""
+        hidden =
+            username == "" || context.usernameIsAvailable == NotAsked
     in
     Html.div
         [ T.items_center
@@ -219,34 +232,42 @@ usernameMessage { username, usernameIsAvailable } =
         , T.tracking_tight
 
         --
-        , ifThenElse noUsername T.hidden T.flex
-        , ifThenElse isAvailable T.text_inherit T.text_red
-        , ifThenElse isAvailable T.dark__text_inherit T.dark__text_pink_tint
+        , ifThenElse hidden T.hidden T.flex
+        , ifThenElse isFaulty T.text_red T.text_inherit
+        , ifThenElse isFaulty T.dark__text_pink_tint T.dark__text_inherit
         ]
         [ FeatherIcons.globe
             |> FeatherIcons.withSize 16
             |> Common.wrapIcon [ T.mr_2, T.opacity_60 ]
 
         --
-        , if noUsername then
+        , if hidden then
             Html.nothing
 
           else if checking then
-            Html.text "Checking if username is available ..."
+            Html.span [ T.antialiased ] [ Html.text "Checking if username is available ..." ]
 
-          else if isAvailable then
+          else if not isValid then
             Html.span
                 []
-                [ Html.span [ T.antialiased ] [ Html.text "Your personal Drive address will be " ]
-                , Html.strong [ T.break_all ] [ Html.text username, Html.text ".fission.name" ]
+                [ Html.span [ T.antialiased ] [ Html.text "Sorry, " ]
+                , Html.strong [ T.break_all ] [ Html.text username ]
+                , Html.span [ T.antialiased ] [ Html.text " is not a valid username. You can use letters, numbers and hyphens in between." ]
                 ]
 
-          else
+          else if not isAvailable then
             Html.span
                 []
                 [ Html.span [ T.antialiased ] [ Html.text "The username " ]
                 , Html.strong [ T.break_all ] [ Html.text username ]
                 , Html.span [ T.antialiased ] [ Html.text " is sadly not available." ]
+                ]
+
+          else
+            Html.span
+                []
+                [ Html.span [ T.antialiased ] [ Html.text "Your personal Drive address will be " ]
+                , Html.strong [ T.break_all ] [ Html.text username, Html.text ".fission.name" ]
                 ]
         ]
 

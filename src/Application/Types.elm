@@ -100,7 +100,7 @@ type Msg
     | GotCreateAccountSuccess { dnsLink : String }
     | GotSignUpEmailInput String
     | GotSignUpUsernameInput String
-    | GotUsernameAvailability Bool
+    | GotUsernameAvailability { available : Bool, valid : Bool }
     | SignIn
       -----------------------------------------
       -- Debouncers

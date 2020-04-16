@@ -38,7 +38,7 @@ usernameAvailability =
 
         --
         , msg = UsernameAvailabilityDebouncerMsg
-        , settleAfter = fromSeconds 0.5
+        , settleAfter = fromSeconds 0.75
         }
 
 

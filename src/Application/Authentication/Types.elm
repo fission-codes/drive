@@ -1,10 +1,15 @@
 module Authentication.Types exposing (..)
 
+import RemoteData exposing (RemoteData)
+
+
+
 -- 🧩
 
 
 type alias SignUpContext =
     { email : String
     , username : String
-    , usernameIsAvailable : Maybe Bool
+    , usernameIsAvailable : RemoteData () Bool
+    , usernameIsValid : Bool
     }
