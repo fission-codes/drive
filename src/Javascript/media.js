@@ -8,7 +8,7 @@ Everything involving media.
 
 import "./web_modules/render-media.js"
 
-import * as ffs from "./ffs.js"
+import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 
 
@@ -28,7 +28,7 @@ export function render({ id, name, path, useFFS }) {
 
   // Streaming method
   const makeStream = useFFS
-    ? ffs.fakeStream
+    ? fs.fakeStream
     : ipfs.stream
 
   // Initialize stream

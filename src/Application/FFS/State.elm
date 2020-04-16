@@ -20,7 +20,7 @@ boot model =
             { cid = resolved
             , pathSegments = Routing.treePathSegments model.route
             }
-                |> Ports.ffsLoad
+                |> Ports.fsLoad
                 |> return model
 
         _ ->
@@ -33,7 +33,7 @@ listDirectory : Manager
 listDirectory model =
     if Maybe.isJust model.authenticated then
         { pathSegments = Routing.treePathSegments model.route }
-            |> Ports.ffsListDirectory
+            |> Ports.fsListDirectory
             |> return model
 
     else

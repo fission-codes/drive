@@ -13,7 +13,7 @@ import "./analytics.js"
 import "./custom.js"
 import sdk from "./web_modules/fission-sdk.js"
 
-import * as ffs from "./ffs.js"
+import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 
@@ -112,7 +112,7 @@ app.ports.storeFoundation.subscribe(foundation => {
 // FFS
 // ---
 
-const ffsSendList = a => results => {
+const fsSendList = a => results => {
   app.ports.ipfsGotDirectoryList.send({
     pathSegments: a.pathSegments,
     results
@@ -120,34 +120,34 @@ const ffsSendList = a => results => {
 }
 
 
-app.ports.ffsAddContent.subscribe(a => {
-  ffs
+app.ports.fsAddContent.subscribe(a => {
+  fs
     .add(a)
-    .then( ffsSendList(a) )
+    .then( fsSendList(a) )
     .catch( reportFileSystemError )
 })
 
 
-app.ports.ffsCreateDirectory.subscribe(a => {
-  ffs
+app.ports.fsCreateDirectory.subscribe(a => {
+  fs
     .createDirecory(a)
-    .then( ffsSendList({ pathSegments: a.pathSegments.slice(0, -1) }) )
+    .then( fsSendList({ pathSegments: a.pathSegments.slice(0, -1) }) )
     .catch( reportFileSystemError )
 })
 
 
-app.ports.ffsListDirectory.subscribe(a => {
-  ffs
+app.ports.fsListDirectory.subscribe(a => {
+  fs
     .listDirectory(a)
-    .then( ffsSendList(a) )
+    .then( fsSendList(a) )
     .catch( reportFileSystemError )
 })
 
 
-app.ports.ffsLoad.subscribe(a => {
-  ffs
+app.ports.fsLoad.subscribe(a => {
+  fs
     .load(a)
-    .then( ffsSendList(a) )
+    .then( fsSendList(a) )
     .catch( reportFileSystemError )
 })
 
@@ -171,9 +171,9 @@ app.ports.createAccount.subscribe(async userProps => {
   const dnsLink = `${userProps.username}.fission.name`
 
   if (response.status < 300) {
-    await ffs.createNew()
-    await ffs.addSampleData()
-    await ffs.updateRoot()
+    await fs.createNew()
+    await fs.addSampleData()
+    await fs.updateRoot()
 
     app.ports.gotCreateAccountSuccess.send({
       dnsLink
@@ -181,7 +181,7 @@ app.ports.createAccount.subscribe(async userProps => {
 
     app.ports.ipfsGotResolvedAddress.send({
       isDnsLink: true,
-      resolved: await ffs.cid(),
+      resolved: await fs.cid(),
       unresolved: dnsLink
     })
 

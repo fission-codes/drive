@@ -36,7 +36,7 @@ addFiles { blobs } model =
     { blobs = blobs
     , pathSegments = Routing.treePathSegments model.route
     }
-        |> Ports.ffsAddContent
+        |> Ports.fsAddContent
         |> return { model | ipfs = FileSystemOperation }
 
 
@@ -96,7 +96,7 @@ createDirectory model =
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
-                |> (\p -> Ports.ffsCreateDirectory { pathSegments = p })
+                |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
                 |> return { model | ipfs = FileSystemOperation }
 
 

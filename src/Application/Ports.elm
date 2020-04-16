@@ -30,33 +30,23 @@ port storeFoundation : Foundation -> Cmd msg
 
 
 
--- 📣  ░░  FFS
+-- 📣  ░░  FILE SYSTEM
 
 
-port ffsAddContent :
+port fsAddContent :
     { blobs : List { name : String, url : String }
     , pathSegments : List String
     }
     -> Cmd msg
 
 
-port ffsCreateDirectory : { pathSegments : List String } -> Cmd msg
+port fsCreateDirectory : { pathSegments : List String } -> Cmd msg
 
 
-port ffsListDirectory : { pathSegments : List String } -> Cmd msg
+port fsListDirectory : { pathSegments : List String } -> Cmd msg
 
 
-port ffsLoad : { cid : String, pathSegments : List String } -> Cmd msg
-
-
-
--- 📣  ░░  FISSION
-
-
-port checkIfUsernameIsAvailable : String -> Cmd msg
-
-
-port createAccount : { email : String, username : String } -> Cmd msg
+port fsLoad : { cid : String, pathSegments : List String } -> Cmd msg
 
 
 
@@ -73,6 +63,16 @@ port ipfsResolveAddress : String -> Cmd msg
 
 
 port ipfsSetup : () -> Cmd msg
+
+
+
+-- 📣  ░░  USER
+
+
+port checkIfUsernameIsAvailable : String -> Cmd msg
+
+
+port createAccount : { email : String, username : String } -> Cmd msg
 
 
 
