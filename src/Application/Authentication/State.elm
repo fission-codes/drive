@@ -70,7 +70,7 @@ gotSignUpEmailInput input =
 
 gotSignUpUsernameInput : String -> Manager
 gotSignUpUsernameInput input model =
-    model
+    { model | reCreateAccount = NotAsked }
         |> adjustSignUpContext_
             (\c ->
                 { c

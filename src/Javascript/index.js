@@ -156,10 +156,6 @@ app.ports.fsLoad.subscribe(a => {
 // -------
 
 
-// TODO: Remove
-window.sdk = sdk
-
-
 app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
   if (sdk.user.isUsernameValid(username)) {
     const isAvailable = await sdk.user.isUsernameAvailable(username)
@@ -173,10 +169,17 @@ app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
 
 
 app.ports.createAccount.subscribe(async userProps => {
-  const response = await sdk.user.createAccount(userProps, "http://localhost:1337")
-  const dnsLink = `${userProps.username}.fission.name`
+  let response
+
+  try {
+    response = await sdk.user.createAccount(userProps, "http://localhost:1337")
+  } catch (_) {
+    response = { status: 500 }
+  }
 
   if (response.status < 300) {
+    const dnsLink = `${userProps.username}.fission.name`
+
     await fs.createNew()
     await fs.addSampleData()
     await fs.updateRoot()
@@ -192,8 +195,9 @@ app.ports.createAccount.subscribe(async userProps => {
     })
 
   } else {
-    // TODO: Get error from response
-    app.ports.gotCreateAccountFailure.send("Already created an account")
+    app.ports.gotCreateAccountFailure.send(
+      "Unable to create an account, maybe you have one already?"
+    )
 
   }
 })

@@ -164,7 +164,9 @@ signUpForm maybeError context model =
             ----------
             , let
                 isKindOfValid =
-                    context.usernameIsValid && context.usernameIsAvailable /= Success False
+                    context.usernameIsValid
+                        && (context.usernameIsAvailable /= Success False)
+                        && (maybeError == Nothing)
               in
               S.button
                 [ T.block
@@ -179,7 +181,13 @@ signUpForm maybeError context model =
             --
             , case maybeError of
                 Just err ->
-                    Html.text err
+                    Html.div
+                        [ T.italic
+                        , T.mt_4
+                        , T.text_red
+                        , T.text_sm
+                        ]
+                        [ Html.text err ]
 
                 Nothing ->
                     [ Html.text "Can I sign in instead?" ]
@@ -213,11 +221,11 @@ usernameMessage context =
             , context.usernameIsAvailable == Success True
             )
 
-        isFaulty =
-            not isValid || not isAvailable
-
         checking =
             isValid && context.usernameIsAvailable == Loading
+
+        isFaulty =
+            not isValid || (not checking && not isAvailable)
 
         hidden =
             username == "" || context.usernameIsAvailable == NotAsked
