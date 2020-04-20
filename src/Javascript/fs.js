@@ -9,6 +9,8 @@ Everything involving the Fission File System.
 import "./web_modules/it-to-stream.js"
 import sdk from "./web_modules/fission-sdk.js"
 
+import * as api from "./api.js"
+
 
 let ffs
 
@@ -31,6 +33,8 @@ export async function add({ blobs, pathSegments }) {
 
 
 export async function addSampleData() {
+  // TODO: We should maintain some dnslink with a standard set of data,
+  //       and then "import" that data here.
   await ffs.mkdir("private/Apps")
   await ffs.mkdir("private/Audio")
   await ffs.mkdir("private/Documents")
@@ -59,8 +63,6 @@ export async function createNew() {
 export async function listDirectory({ pathSegments }) {
   const isListingRoot = pathSegments.length === 0
   const path = prefixedPath(pathSegments)
-
-  console.log(path)
 
   // Make a list
   const rawList = Object.values(await ffs.ls(path))
@@ -96,14 +98,9 @@ export async function listDirectory({ pathSegments }) {
 
 
 export async function load({ cid, pathSegments }) {
-  console.log("load", cid, pathSegments)
   ffs = await sdk.ffs.default.fromCID(cid)
-  console.log(ffs)
   ffs = ffs || await sdk.ffs.default.upgradePublicCID(cid)
   await ffs.sync()
-  console.log(ffs)
-  console.log(await ffs.ls("public"))
-  console.log(await ffs.ls("private"))
 
   if (ffs) {
     return await listDirectory({ pathSegments })
@@ -114,7 +111,7 @@ export async function load({ cid, pathSegments }) {
 
 
 export async function updateRoot() {
-  await sdk.user.updateRoot(ffs, "http://localhost:1337")
+  await sdk.user.updateRoot(ffs, api.endpoint)
 }
 
 
