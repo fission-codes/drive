@@ -110,28 +110,28 @@ app.ports.storeFoundation.subscribe(foundation => {
 })
 
 
-// FFS
-// ---
+// FS
+// --
 
-const fsSendList = (a, sendParentDir) => results => {
+const exe = (port, method, options = {}) => app.ports[port].subscribe(async a => {
+  const results = await fs[method](a)
+
   app.ports.ipfsGotDirectoryList.send({
-    pathSegments: a.pathSegments.slice(0, sendParentDir ? -1 : undefined),
+    pathSegments: a.pathSegments.slice(0, options.listParent ? -1 : undefined),
     results
   })
-}
+
+  if (options.mutation) {
+    const cid = await fs.cid()
+    app.ports.ipfsReplaceResolvedAddress.send({ cid })
+  }
+})
 
 
-const exe = (method, options = {}) => a => {
-  fs[method](a)
-    .then( fsSendList(a, options.parent) )
-    .catch( reportFileSystemError )
-}
-
-
-app.ports.fsAddContent      .subscribe( exe("add"                                 ))
-app.ports.fsCreateDirectory .subscribe( exe("createDirecory", { parent : true }   ))
-app.ports.fsListDirectory   .subscribe( exe("listDirectory"                       ))
-app.ports.fsLoad            .subscribe( exe("load"                                ))
+exe("fsAddContent", "add", { mutation: true })
+exe("fsCreateDirectory", "createDirecory", { listParent: true, mutation: true })
+exe("fsListDirectory", "listDirectory")
+exe("fsLoad", "load")
 
 
 // Fission
@@ -161,6 +161,8 @@ app.ports.createAccount.subscribe(async userProps => {
 
   if (response.status < 300) {
     const dnsLink = `${userProps.username}.fission.name`
+
+    localStorage.setItem("fissionDrive.authlink", dnsLink)
 
     await fs.createNew()
     await fs.addSampleData()
@@ -195,11 +197,6 @@ app.ports.ipfsListDirectory.subscribe(({ address, pathSegments }) => {
 })
 
 
-// app.ports.ipfsPrefetchTree.subscribe(address => {
-//   ipfs.prefetchTree(address)
-// })
-
-
 app.ports.ipfsResolveAddress.subscribe(async address => {
   const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
   app.ports.ipfsGotResolvedAddress.send(resolvedResult)
@@ -215,17 +212,11 @@ app.ports.ipfsSetup.subscribe(_ => {
 
 
 // 🛠
-// -
+// ==
 
 function authenticated() {
   const stored = localStorage.getItem("fissionDrive.authlink")
   return stored ? { dnsLink: stored } : null
-}
-
-
-function reportFileSystemError(err) {
-  // TODO: app.ports.ipfsGotError.send(err.message || err)
-  console.error(err)
 }
 
 

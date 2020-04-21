@@ -51,7 +51,7 @@ export async function createDirecory({ pathSegments }) {
 
 
 export async function cid() {
-  return await ffs.sync()
+  return (await ffs.sync()).toString()
 }
 
 
@@ -61,6 +61,8 @@ export async function createNew() {
 
 
 export async function listDirectory({ pathSegments }) {
+  await ffs.sync()
+
   const isListingRoot = pathSegments.length === 0
   const path = prefixedPath(pathSegments)
 
@@ -100,7 +102,6 @@ export async function listDirectory({ pathSegments }) {
 export async function load({ cid, pathSegments }) {
   ffs = await sdk.ffs.default.fromCID(cid)
   ffs = ffs || await sdk.ffs.default.upgradePublicCID(cid)
-  await ffs.sync()
 
   if (ffs) {
     return await listDirectory({ pathSegments })

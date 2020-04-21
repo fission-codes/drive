@@ -34,7 +34,7 @@ view model =
         , T.min_h_screen
         ]
         [ header model
-        , content model
+        , primary model
 
         --
         , Html.div
@@ -385,16 +385,23 @@ publicDirPart =
 -- MAIN
 
 
-content : Model -> Html Msg
-content model =
+primary : Model -> Html Msg
+primary model =
     case model.directoryList of
         Ok directoryList ->
-            case directoryList.items of
-                [] ->
-                    empty
+            mainLayout
+                model
+                (case directoryList.items of
+                    [] ->
+                        if model.expandSidebar then
+                            Html.nothing
 
-                _ ->
-                    contentAvailable model directoryList
+                        else
+                            empty
+
+                    _ ->
+                        contentAvailable model directoryList
+                )
 
         Err err ->
             Html.div
@@ -408,6 +415,36 @@ content model =
                     [ T.max_w_md ]
                     [ Html.text err ]
                 ]
+
+
+mainLayout : Model -> Html Msg -> Html Msg
+mainLayout model leftSide =
+    Html.div
+        [ T.flex
+        , T.flex_auto
+        , T.relative
+        , T.z_0
+        ]
+        [ Html.div
+            [ T.container
+            , S.container_padding
+            , T.flex
+            , T.flex_auto
+            , T.items_stretch
+            , T.mx_auto
+            , T.my_8
+            ]
+            [ -----------------------------------------
+              -- Left
+              -----------------------------------------
+              leftSide
+
+            -----------------------------------------
+            -- Right
+            -----------------------------------------
+            , Sidebar.view model
+            ]
+        ]
 
 
 empty : Html Msg
@@ -443,54 +480,29 @@ empty =
 contentAvailable : Model -> { floor : Int, items : List Item } -> Html Msg
 contentAvailable model directoryList =
     Html.div
-        [ T.flex
-        , T.flex_auto
-        , T.relative
-        , T.z_0
-        ]
-        [ Html.div
-            [ T.container
-            , S.container_padding
-            , T.flex
+        (List.append
+            [ A.id "drive-items"
+
+            --
             , T.flex_auto
-            , T.items_stretch
-            , T.mx_auto
-            , T.my_8
+            , T.w_1over2
             ]
-            [ -----------------------------------------
-              -- Left
-              -----------------------------------------
-              Html.div
-                (List.append
-                    [ A.id "drive-items"
+            (let
+                hideContent =
+                    Maybe.isJust model.selectedPath
+                        || (model.sidebarMode /= Sidebar.defaultMode)
+             in
+             if model.expandSidebar then
+                [ T.hidden ]
 
-                    --
-                    , T.flex_auto
-                    , T.w_1over2
-                    ]
-                    (let
-                        hideContent =
-                            Maybe.isJust model.selectedPath
-                                || (model.sidebarMode /= Sidebar.defaultMode)
-                     in
-                     if model.expandSidebar then
-                        [ T.hidden ]
+             else if hideContent then
+                [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
 
-                     else if hideContent then
-                        [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
-
-                     else
-                        [ T.pr_12, T.lg__pr_24 ]
-                    )
-                )
-                [ list model directoryList
-                ]
-
-            -----------------------------------------
-            -- Right
-            -----------------------------------------
-            , Sidebar.view model
-            ]
+             else
+                [ T.pr_12, T.lg__pr_24 ]
+            )
+        )
+        [ list model directoryList
         ]
 
 

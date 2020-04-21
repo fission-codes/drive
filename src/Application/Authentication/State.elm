@@ -2,7 +2,7 @@ module Authentication.State exposing (..)
 
 import Authentication.Types exposing (SignUpContext)
 import Debouncing
-import FFS.State as FFS
+import FS.State as FS
 import Ipfs
 import Json.Decode as Json
 import Ports
@@ -110,7 +110,7 @@ signIn model =
                 | authenticated = Just { dnsLink = unresolved }
                 , ipfs = Ipfs.InitialListing
             }
-                |> FFS.boot
+                |> FS.boot
                 |> Return.command (Ports.storeAuthDnsLink unresolved)
 
         Nothing ->

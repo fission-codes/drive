@@ -52,6 +52,11 @@ init flags url navKey =
                 |> Maybe.map .unresolved
                 |> Maybe.orElse (Routing.treeRoot route)
                 |> Maybe.withDefault defaultDnsLink
+
+        loadedFoundation =
+            Maybe.andThen
+                (\_ -> flags.foundation)
+                flags.authenticated
     in
     ( -----------------------------------------
       -- Model
@@ -62,7 +67,7 @@ init flags url navKey =
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
-      , foundation = Nothing
+      , foundation = loadedFoundation
       , helpfulNote = Nothing
       , ipfs = Ipfs.Connecting
       , isFocused = False

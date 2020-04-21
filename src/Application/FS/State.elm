@@ -1,4 +1,4 @@
-module FFS.State exposing (..)
+module FS.State exposing (..)
 
 import Maybe.Extra as Maybe
 import Ports
@@ -14,7 +14,6 @@ import Types exposing (..)
 
 boot : Manager
 boot model =
-    -- TODO? Ports.ipfsPrefetchTree
     case ( model.authenticated, model.foundation ) of
         ( Just _, Just { unresolved, resolved } ) ->
             { cid = resolved

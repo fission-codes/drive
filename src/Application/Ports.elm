@@ -11,7 +11,7 @@ import Types exposing (Foundation)
 port copyToClipboard : String -> Cmd msg
 
 
-port renderMedia : { id : String, name : String, path : String, useFFS : Bool } -> Cmd msg
+port renderMedia : { id : String, name : String, path : String, useFS : Bool } -> Cmd msg
 
 
 port removeStoredAuthDnsLink : () -> Cmd msg
@@ -54,9 +54,6 @@ port fsLoad : { cid : String, pathSegments : List String } -> Cmd msg
 
 
 port ipfsListDirectory : { address : String, pathSegments : List String } -> Cmd msg
-
-
-port ipfsPrefetchTree : String -> Cmd msg
 
 
 port ipfsResolveAddress : String -> Cmd msg

@@ -3,7 +3,7 @@ module Other.State exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Drive.State as Drive
-import FFS.State as FFS
+import FS.State as FS
 import Ipfs
 import Keyboard
 import Maybe.Extra as Maybe
@@ -171,7 +171,7 @@ urlChanged url old =
                         |> return new
 
                 else if new.route /= old.route && Maybe.isJust old.foundation then
-                    FFS.listDirectory new
+                    FS.listDirectory new
 
                 else
                     Return.singleton new

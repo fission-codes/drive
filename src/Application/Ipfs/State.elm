@@ -5,7 +5,7 @@ import Browser.Navigation as Navigation
 import Common.State as Common
 import Debouncing
 import Drive.Item
-import FFS.State as FFS
+import FS.State as FS
 import Ipfs
 import Json.Decode as Json
 import List.Extra as List
@@ -185,7 +185,7 @@ gotResolvedAddress foundation model =
 
             else
                 -- Otherwise boot up the file system
-                Return.andThen FFS.boot
+                Return.andThen FS.boot
            )
         |> Return.command (Ports.storeFoundation foundation)
 
@@ -194,7 +194,7 @@ setupCompleted : Manager
 setupCompleted model =
     case model.foundation of
         Just _ ->
-            FFS.boot { model | ipfs = Ipfs.InitialListing }
+            FS.boot { model | ipfs = Ipfs.InitialListing }
 
         Nothing ->
             case model.route of
@@ -219,9 +219,9 @@ replaceResolvedAddress { cid } model =
                 newFoundation =
                     { oldFoundation | resolved = cid }
             in
-            { model | foundation = Just newFoundation }
-                |> FFS.boot
-                |> Return.command (Ports.storeFoundation newFoundation)
+            return
+                { model | foundation = Just newFoundation }
+                (Ports.storeFoundation newFoundation)
 
         Nothing ->
             Return.singleton model

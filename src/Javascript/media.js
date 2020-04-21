@@ -15,7 +15,7 @@ import * as ipfs from "./ipfs.js"
 let stream
 
 
-export function render({ id, name, path, useFFS }) {
+export function render({ id, name, path, useFS }) {
   const containerId = id
 
   // Get container node
@@ -27,7 +27,7 @@ export function render({ id, name, path, useFFS }) {
   })
 
   // Streaming method
-  const makeStream = useFFS
+  const makeStream = useFS
     ? fs.fakeStream
     : ipfs.stream
 

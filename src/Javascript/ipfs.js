@@ -39,11 +39,6 @@ export async function listDirectory(address) {
 }
 
 
-export async function prefetchTree(address) {
-  return await ipfs.dag.tree(address, { recursive: true })
-}
-
-
 export async function replaceDnsLinkInAddress(address) {
   const splitted = address.replace(/(^\/|\/$)/m, "").split("/")
   const firstPart = splitted[0]
