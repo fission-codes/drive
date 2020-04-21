@@ -1,6 +1,6 @@
 module Drive.View exposing (view)
 
-import Common
+import Common exposing (ifThenElse)
 import Common.View as Common
 import Common.View.Footer as Footer
 import Drive.ContextMenu as ContextMenu
@@ -397,7 +397,7 @@ primary model =
                             Html.nothing
 
                         else
-                            empty
+                            empty model
 
                     _ ->
                         contentAvailable model directoryList
@@ -447,10 +447,24 @@ mainLayout model leftSide =
         ]
 
 
-empty : Html Msg
-empty =
+empty : Model -> Html Msg
+empty model =
+    let
+        isAuthenticated =
+            Maybe.isJust model.authenticated
+    in
     Html.div
-        [ T.flex
+        [ if isAuthenticated then
+            E.onClick (ToggleSidebarMode Sidebar.AddOrCreate)
+
+          else
+            E.onClick Bypass
+
+        --
+        , ifThenElse isAuthenticated T.cursor_pointer T.cursor_default
+
+        --
+        , T.flex
         , T.flex_auto
         , T.flex_col
         , T.items_center
@@ -463,17 +477,32 @@ empty =
         ------------
         , T.dark__text_gray_400
         ]
-        [ FeatherIcons.folder
-            |> FeatherIcons.withSize 88
-            |> Common.wrapIcon [ T.opacity_30 ]
+        [ if isAuthenticated then
+            FeatherIcons.plus
+                |> FeatherIcons.withSize 88
+                |> Common.wrapIcon [ T.opacity_30 ]
+
+          else
+            FeatherIcons.folder
+                |> FeatherIcons.withSize 88
+                |> Common.wrapIcon [ T.opacity_30 ]
 
         --
         , Html.div
             [ T.mt_4, T.text_lg ]
-            [ Html.text "Nothing to see here,"
-            , Html.br [] []
-            , Html.text "empty directory"
-            ]
+            (case model.authenticated of
+                Just _ ->
+                    [ Html.text "Nothing here yet,"
+                    , Html.br [] []
+                    , Html.text "click or drag to add"
+                    ]
+
+                Nothing ->
+                    [ Html.text "Nothing to see here,"
+                    , Html.br [] []
+                    , Html.text "empty directory"
+                    ]
+            )
         ]
 
 
