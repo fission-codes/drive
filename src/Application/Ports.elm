@@ -66,6 +66,9 @@ port ipfsSetup : () -> Cmd msg
 -- 📣  ░░  USER
 
 
+port annihilateKeys : () -> Cmd msg
+
+
 port checkIfUsernameIsAvailable : String -> Cmd msg
 
 

@@ -61,13 +61,30 @@ export async function createNew() {
 
 
 export async function listDirectory({ pathSegments }) {
+  const isListingRoot = pathSegments.length === 0
+
   await ffs.sync()
 
-  const isListingRoot = pathSegments.length === 0
-  const path = prefixedPath(pathSegments)
+  let path = prefixedPath(pathSegments)
 
   // Make a list
-  const rawList = Object.values(await ffs.ls(path))
+  const rawList = await (async _ => {
+    try {
+      return Object.values(await ffs.ls(path))
+    } catch (err) {
+      // We get an error if try to list a file.
+      // This a way around that issue.
+      const bananaSplit = path.split("/")
+      const dir = bananaSplit.slice(0, -1).join("/")
+      const file = bananaSplit[bananaSplit.length - 1]
+
+      path = dir
+
+      return Object.values(await ffs.ls(dir)).filter(l => {
+        return l.name === file
+      })
+    }
+  })()
 
   // Adjust list
   const list = rawList.map(l => ({
@@ -99,11 +116,13 @@ export async function listDirectory({ pathSegments }) {
 }
 
 
-export async function load({ cid, pathSegments }) {
+export async function load({ cid, pathSegments, syncHook }) {
   ffs = await sdk.ffs.default.fromCID(cid)
   ffs = ffs || await sdk.ffs.default.upgradePublicCID(cid)
 
   if (ffs) {
+    ffs.addSyncHook(syncHook)
+
     return await listDirectory({ pathSegments })
   } else {
     throw "Not a Fission File System"

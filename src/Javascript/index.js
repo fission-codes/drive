@@ -18,6 +18,8 @@ import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 
+window.sdk = sdk
+
 
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
@@ -114,28 +116,55 @@ app.ports.storeFoundation.subscribe(foundation => {
 // --
 
 const exe = (port, method, options = {}) => app.ports[port].subscribe(async a => {
-  const results = await fs[method](a)
+  const results = await fs[method]({ ...a, ...options })
 
   app.ports.ipfsGotDirectoryList.send({
     pathSegments: a.pathSegments.slice(0, options.listParent ? -1 : undefined),
     results
   })
-
-  if (options.mutation) {
-    const cid = await fs.cid()
-    app.ports.ipfsReplaceResolvedAddress.send({ cid })
-  }
 })
 
 
-exe("fsAddContent", "add", { mutation: true })
-exe("fsCreateDirectory", "createDirecory", { listParent: true, mutation: true })
+const syncHook = cid => {
+  app.ports.ipfsReplaceResolvedAddress.send({ cid })
+}
+
+
+exe("fsAddContent", "add")
+exe("fsCreateDirectory", "createDirecory", { listParent: true })
 exe("fsListDirectory", "listDirectory")
-exe("fsLoad", "load")
+exe("fsLoad", "load", { syncHook })
 
 
-// Fission
-// -------
+// IPFS
+// ----
+
+app.ports.ipfsListDirectory.subscribe(({ address, pathSegments }) => {
+  ipfs.listDirectory(address)
+    .then(results => app.ports.ipfsGotDirectoryList.send({ pathSegments, results }))
+    .catch(reportIpfsError)
+})
+
+
+app.ports.ipfsResolveAddress.subscribe(async address => {
+  const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
+  app.ports.ipfsGotResolvedAddress.send(resolvedResult)
+})
+
+
+app.ports.ipfsSetup.subscribe(_ => {
+  ipfs.setup()
+    .then(app.ports.ipfsCompletedSetup.send)
+    .catch(reportIpfsError)
+})
+
+
+// User
+// ----
+
+app.ports.annihilateKeys.subscribe(_ => {
+  sdk.keystore.clear()
+})
 
 
 app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
@@ -184,29 +213,6 @@ app.ports.createAccount.subscribe(async userProps => {
     )
 
   }
-})
-
-
-// IPFS
-// ----
-
-app.ports.ipfsListDirectory.subscribe(({ address, pathSegments }) => {
-  ipfs.listDirectory(address)
-    .then(results => app.ports.ipfsGotDirectoryList.send({ pathSegments, results }))
-    .catch(reportIpfsError)
-})
-
-
-app.ports.ipfsResolveAddress.subscribe(async address => {
-  const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
-  app.ports.ipfsGotResolvedAddress.send(resolvedResult)
-})
-
-
-app.ports.ipfsSetup.subscribe(_ => {
-  ipfs.setup()
-    .then(app.ports.ipfsCompletedSetup.send)
-    .catch(reportIpfsError)
 })
 
 

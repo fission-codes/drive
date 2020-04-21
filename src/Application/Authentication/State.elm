@@ -33,8 +33,8 @@ checkIfUsernameIsAvailable username model =
 
 createAccount : SignUpContext -> Manager
 createAccount context model =
-    case ( context.usernameIsValid, context.usernameIsAvailable ) of
-        ( True, Success True ) ->
+    case context.usernameIsValid of
+        True ->
             let
                 dnsLink =
                     context.username ++ ".fission.name"
@@ -64,8 +64,10 @@ gotCreateAccountSuccess a model =
 
 
 gotSignUpEmailInput : String -> Manager
-gotSignUpEmailInput input =
-    adjustSignUpContext_ (\c -> { c | email = input })
+gotSignUpEmailInput input model =
+    adjustSignUpContext_
+        (\c -> { c | email = input })
+        { model | reCreateAccount = NotAsked }
 
 
 gotSignUpUsernameInput : String -> Manager
