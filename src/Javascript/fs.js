@@ -151,25 +151,14 @@ export function fakeStream(address, options) {
 
 
 function fakeStreamIterator(address, options) {
-  const next = () => {
+  return { async *[Symbol.asyncIterator]() {
     cacheCounters[address] = (cacheCounters[address] || 0) + 1
 
-    return (
-      fileCache[address]
-        ? Promise.resolve(fileCache[address])
-        : ffs.cat(address).then(t => { fileCache[address] = t; return t })
+    const typedArray = fileCache[address]
+      ? await Promise.resolve(fileCache[address])
+      : await ffs.cat(address).then(t => { fileCache[address] = t; return t })
 
-    ).then(typedArray => {
-      return {
-        done: cacheCounters[address] > 1,
-        value: typedArray
-      }
-
-    })
-  }
-
-  return { [Symbol.asyncIterator]() {
-    return { next }
+    yield typedArray
   }}
 }
 
