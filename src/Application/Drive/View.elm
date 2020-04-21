@@ -248,10 +248,6 @@ header model =
 
 inactivePathPart : Int -> String -> Html Msg
 inactivePathPart floor text =
-    let
-        isPublicRootDir =
-            floor == 2 && text == "public"
-    in
     Html.span
         [ A.class "underline-thick"
 
@@ -272,28 +268,14 @@ inactivePathPart floor text =
         , T.dark__tdc_gray_200
         , T.dark__text_gray_400
         ]
-        [ if isPublicRootDir then
-            Html.map never publicDirPart
-
-          else
-            Html.text text
-        ]
+        [ namePart floor text ]
 
 
 activePathPart : Int -> String -> Html Msg
 activePathPart floor text =
-    let
-        isPublicRootDir =
-            floor == 2 && text == "public"
-    in
     Html.span
         [ T.text_purple ]
-        [ if isPublicRootDir then
-            Html.map never publicDirPart
-
-          else
-            Html.text text
-        ]
+        [ namePart floor text ]
 
 
 pathSeparator : Html Msg
@@ -372,9 +354,32 @@ rootPathPart model segments =
         [ Html.text text ]
 
 
+namePart : Int -> String -> Html Msg
+namePart floor text =
+    let
+        isPublicRootDir =
+            floor == 2 && text == "public"
+    in
+    if isPublicRootDir then
+        Html.map never publicDirPart
+
+    else
+        case Drive.Item.nameIconForBasename text of
+            Just icon ->
+                breadcrumbIcon icon
+
+            Nothing ->
+                Html.text text
+
+
 publicDirPart : Html Never
 publicDirPart =
-    FeatherIcons.globe
+    breadcrumbIcon FeatherIcons.globe
+
+
+breadcrumbIcon : FeatherIcons.Icon -> Html msg
+breadcrumbIcon icon =
+    icon
         |> FeatherIcons.withSize 24
         |> FeatherIcons.toHtml []
         |> List.singleton
@@ -689,23 +694,10 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
           (if isPublicRootDir then
             FeatherIcons.globe
 
-           else if base == "Apps" then
-            FeatherIcons.package
-
-           else if base == "Audio" then
-            FeatherIcons.music
-
-           else if base == "Documents" then
-            FeatherIcons.fileText
-
-           else if base == "Photos" then
-            FeatherIcons.image
-
-           else if base == "Video" then
-            FeatherIcons.video
-
            else
-            Drive.Item.kindIcon kind
+            item
+                |> Drive.Item.nameIcon
+                |> Maybe.withDefault (Drive.Item.kindIcon kind)
           )
             |> FeatherIcons.withSize S.iconSize
             |> FeatherIcons.toHtml []

@@ -260,3 +260,29 @@ kindName kind =
         --
         Other ->
             "File"
+
+
+nameIcon : Item -> Maybe FeatherIcons.Icon
+nameIcon item =
+    nameIconForBasename item.nameProperties.base
+
+
+nameIconForBasename : String -> Maybe FeatherIcons.Icon
+nameIconForBasename basename =
+    if basename == "Apps" then
+        Just FeatherIcons.package
+
+    else if basename == "Audio" then
+        Just FeatherIcons.music
+
+    else if basename == "Documents" then
+        Just FeatherIcons.fileText
+
+    else if basename == "Photos" then
+        Just FeatherIcons.image
+
+    else if basename == "Video" then
+        Just FeatherIcons.video
+
+    else
+        Nothing
