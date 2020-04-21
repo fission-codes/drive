@@ -139,10 +139,6 @@ export async function updateRoot() {
 // STREAMING
 
 
-let cacheCounters = {}
-let fileCache = {}
-
-
 export function fakeStream(address, options) {
   const a = fakeStreamIterator(address, options)
   const b = itToStream.readable(a)
@@ -152,13 +148,12 @@ export function fakeStream(address, options) {
 
 function fakeStreamIterator(address, options) {
   return { async *[Symbol.asyncIterator]() {
-    cacheCounters[address] = (cacheCounters[address] || 0) + 1
+    const typedArray = await ffs.cat(address)
+    const size = typedArray.length
+    const start = options.offset || 0
+    const end = options.length ? start + options.length : size - 1
 
-    const typedArray = fileCache[address]
-      ? await Promise.resolve(fileCache[address])
-      : await ffs.cat(address).then(t => { fileCache[address] = t; return t })
-
-    yield typedArray
+    yield typedArray.slice(start, end)
   }}
 }
 
