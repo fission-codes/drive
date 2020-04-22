@@ -11,6 +11,7 @@ import Drive.View as Drive
 import Explore.View as Explore
 import Html exposing (Html)
 import Html.Events as E
+import Html.Events.Ext as E
 import Html.Events.Extra.Drag as Drag
 import Html.Extra as Html
 import Html.Lazy as Lazy
@@ -114,7 +115,7 @@ rootAttributes m =
     List.append
         (case m.contextMenu of
             Just _ ->
-                [ E.on "tap" (Decode.succeed RemoveContextMenu) ]
+                [ E.onTap RemoveContextMenu ]
 
             Nothing ->
                 []

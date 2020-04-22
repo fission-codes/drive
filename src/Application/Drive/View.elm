@@ -12,6 +12,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Events.Ext as E
 import Html.Events.Extra.Mouse as M
 import Html.Events.Extra.Touch as T
 import Html.Extra as Html exposing (nothing)
@@ -650,14 +651,12 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
             Directory ->
                 { directoryName = name }
                     |> DigDeeper
-                    |> Decode.succeed
-                    |> E.on "tap"
+                    |> E.onTap
 
             _ ->
                 item
                     |> Select
-                    |> Decode.succeed
-                    |> E.on "tap"
+                    |> E.onTap
 
         -- Show context menu on right click,
         -- or when holding, without moving, the item on touch devices.

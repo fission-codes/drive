@@ -223,6 +223,12 @@ app.ports.createAccount.subscribe(async userProps => {
 // 🛠
 // ==
 
+tocca({
+  dbltapThreshold: 400,
+  tapThreshold: 250
+})
+
+
 function authenticated() {
   const stored = localStorage.getItem("fissionDrive.authlink")
   return stored ? { dnsLink: stored } : null
