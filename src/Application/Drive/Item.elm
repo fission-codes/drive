@@ -274,20 +274,43 @@ nameIcon item =
 
 nameIconForBasename : String -> Maybe FeatherIcons.Icon
 nameIconForBasename basename =
-    if basename == "Apps" then
-        Just FeatherIcons.package
+    case basename of
+        "Apps" ->
+            Just FeatherIcons.package
 
-    else if basename == "Audio" then
-        Just FeatherIcons.music
+        "Applications" ->
+            Just FeatherIcons.package
 
-    else if basename == "Documents" then
-        Just FeatherIcons.fileText
+        --
+        "Audio" ->
+            Just FeatherIcons.music
 
-    else if basename == "Photos" then
-        Just FeatherIcons.image
+        "Music" ->
+            Just FeatherIcons.music
 
-    else if basename == "Video" then
-        Just FeatherIcons.video
+        --
+        "Docs" ->
+            Just FeatherIcons.fileText
 
-    else
-        Nothing
+        "Documents" ->
+            Just FeatherIcons.fileText
+
+        --
+        "Movies" ->
+            Just FeatherIcons.video
+
+        "Video" ->
+            Just FeatherIcons.video
+
+        "Videos" ->
+            Just FeatherIcons.video
+
+        --
+        "Photos" ->
+            Just FeatherIcons.image
+
+        "Pictures" ->
+            Just FeatherIcons.image
+
+        _ ->
+            Nothing
