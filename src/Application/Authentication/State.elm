@@ -33,8 +33,11 @@ checkIfUsernameIsAvailable username model =
 
 createAccount : SignUpContext -> Manager
 createAccount context model =
-    case context.usernameIsValid of
-        True ->
+    case ( context.usernameIsValid, context.usernameIsAvailable ) of
+        ( _, Success False ) ->
+            Return.singleton model
+
+        ( True, _ ) ->
             let
                 dnsLink =
                     context.username ++ ".fission.name"
