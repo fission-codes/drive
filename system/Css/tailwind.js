@@ -30,7 +30,6 @@ export default {
 
       "white_05": "rgba(255, 255, 255, 0.05)",
 
-      "current-color": "currentColor",
       "inherit": "inherit",
       "transparent": "transparent"
     },

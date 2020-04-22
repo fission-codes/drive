@@ -89,8 +89,6 @@ environment := "dev"
 
 	# Download non-minified dependencies
 	# (note, alternative to wzrd.in → https://bundle.run)
-	cp ../ts-sdk/dist/index.es5.js web_modules/fission-sdk.js
-
 	curl https://unpkg.com/ipfs@0.41.2/dist/index.js -o web_modules/ipfs.js
 	curl https://unpkg.com/is-ipfs@0.6.3/dist/index.js -o web_modules/is-ipfs.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
