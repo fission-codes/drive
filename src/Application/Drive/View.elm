@@ -3,6 +3,7 @@ module Drive.View exposing (view)
 import Common exposing (ifThenElse)
 import Common.View as Common
 import Common.View.Footer as Footer
+import ContextMenu
 import Drive.ContextMenu as ContextMenu
 import Drive.Item exposing (Item, Kind(..))
 import Drive.Sidebar as Sidebar
@@ -12,7 +13,9 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra.Mouse as M
+import Html.Events.Extra.Touch as T
 import Html.Extra as Html exposing (nothing)
+import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
@@ -647,12 +650,40 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
             Directory ->
                 { directoryName = name }
                     |> DigDeeper
-                    |> E.onClick
+                    |> Decode.succeed
+                    |> E.on "tap"
 
             _ ->
                 item
                     |> Select
-                    |> E.onClick
+                    |> Decode.succeed
+                    |> E.on "tap"
+
+        -- Show context menu on right click,
+        -- or when holding, without moving, the item on touch devices.
+        , item
+            |> ContextMenu.item ContextMenu.TopCenterWithoutOffset
+            |> ShowContextMenu
+            |> M.onContextMenu
+
+        --
+        , E.custom
+            "longtap"
+            (Decode.map2
+                (\x y ->
+                    { message =
+                        item
+                            |> ContextMenu.item ContextMenu.TopCenterWithoutOffset
+                            |> ShowContextMenuWithCoordinates { x = x, y = y }
+
+                    --
+                    , stopPropagation = True
+                    , preventDefault = False
+                    }
+                )
+                (Decode.field "x" Decode.float)
+                (Decode.field "y" Decode.float)
+            )
 
         --
         , T.border_gray_700

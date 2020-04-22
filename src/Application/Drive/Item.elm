@@ -178,6 +178,11 @@ nameProperties name =
     }
 
 
+pathProperties : Item -> { pathSegments : List String }
+pathProperties item =
+    { pathSegments = String.split "/" item.path }
+
+
 publicUrl : String -> Item -> String
 publicUrl base item =
     String.chopEnd "/" base ++ "/" ++ item.name

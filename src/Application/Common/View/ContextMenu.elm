@@ -45,6 +45,9 @@ view contextMenu =
             BottomCenter ->
                 T.neg_translate_x_1over2
 
+            TopCenterWithoutOffset ->
+                T.neg_translate_x_1over2
+
             TopRight ->
                 T.neg_translate_x_full
 
@@ -52,6 +55,9 @@ view contextMenu =
         , case hook of
             BottomCenter ->
                 T.neg_translate_y_full
+
+            TopCenterWithoutOffset ->
+                T.translate_y_0
 
             TopRight ->
                 T.translate_y_0

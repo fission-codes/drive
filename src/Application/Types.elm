@@ -7,6 +7,7 @@ import Authentication.Types exposing (SignUpContext)
 import Browser
 import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
+import Coordinates exposing (Coordinates)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Item exposing (Item)
 import Drive.Sidebar
@@ -121,6 +122,7 @@ type Msg
     | DownloadItem Item
     | GotCreateDirectoryInput String
     | GoUp { floor : Int }
+    | RemoveItem Item
     | Select Item
     | ShowPreviewOverlay
     | ToggleExpandedSidebar
@@ -147,6 +149,7 @@ type Msg
     | RemoveContextMenu
     | RemoveHelpfulNote
     | ShowContextMenu (ContextMenu Msg) Mouse.Event
+    | ShowContextMenuWithCoordinates Coordinates (ContextMenu Msg)
     | ShowHelpfulNote String
       -----------------------------------------
       -- 🐚 Other

@@ -91,6 +91,7 @@ environment := "dev"
 	# (note, alternative to wzrd.in → https://bundle.run)
 	curl https://unpkg.com/ipfs@0.41.2/dist/index.js -o web_modules/ipfs.js
 	curl https://unpkg.com/is-ipfs@0.6.3/dist/index.js -o web_modules/is-ipfs.js
+	curl https://unpkg.com/tocca@2.0.9/Tocca.js -o web_modules/tocca.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
 	curl https://wzrd.in/debug-standalone/render-media@3.4.0 -o web_modules/render-media.js
 

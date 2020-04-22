@@ -111,20 +111,32 @@ alwaysBurgers =
 -- ITEM
 
 
-item : Drive.Item.Item -> ContextMenu Msg
-item context =
+item : ContextMenu.Hook -> Drive.Item.Item -> ContextMenu Msg
+item hook context =
     ContextMenu.build
-        BottomCenter
+        hook
         (case context.kind of
             Directory ->
                 [ driveLink context
                 , copyCid context
+
+                --
+                , Divider
+
+                --
+                , removeItem context
                 ]
 
             _ ->
                 [ driveLink context
                 , contentLink context
                 , copyCid context
+
+                --
+                , Divider
+
+                --
+                , removeItem context
                 ]
         )
 
@@ -176,5 +188,20 @@ driveLink context =
             , presentable = True
             }
                 |> CopyPublicUrl
+                |> Just
+        }
+
+
+removeItem context =
+    Item
+        { icon = FeatherIcons.trash2
+        , label = "Remove"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            context
+                |> RemoveItem
                 |> Just
         }

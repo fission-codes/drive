@@ -2,6 +2,7 @@ module Drive.View.Details exposing (view)
 
 import Common
 import Common.View as Common
+import ContextMenu
 import Drive.ContextMenu
 import Drive.Item exposing (Item, Kind(..))
 import Drive.View.Common as Drive
@@ -226,7 +227,7 @@ overlayContents isGroundFloor publicUrl currentTime item =
         --
         , Html.button
             [ item
-                |> Drive.ContextMenu.item
+                |> Drive.ContextMenu.item ContextMenu.BottomCenter
                 |> ShowContextMenu
                 |> M.onClick
 

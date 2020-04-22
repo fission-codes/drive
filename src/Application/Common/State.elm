@@ -1,6 +1,7 @@
 module Common.State exposing (..)
 
 import ContextMenu exposing (ContextMenu, Hook(..))
+import Coordinates exposing (Coordinates)
 import Debouncing
 import Drive.Item
 import Html.Events.Extra.Mouse as Mouse
@@ -80,26 +81,40 @@ showContextMenu menu event model =
             -- TODO: We need to get the element width
             case ContextMenu.hook menu of
                 BottomCenter ->
-                    9
+                    Tuple.first event.offsetPos - 9
+
+                TopCenterWithoutOffset ->
+                    0
 
                 TopRight ->
-                    22
+                    Tuple.first event.offsetPos - 22
 
         yOffset =
             case ContextMenu.hook menu of
                 BottomCenter ->
+                    Tuple.second event.offsetPos + 15
+
+                TopCenterWithoutOffset ->
                     -15
 
                 TopRight ->
-                    40
+                    Tuple.second event.offsetPos - 40
 
         menuWithPosition =
-            { x = Tuple.first event.clientPos - Tuple.first event.offsetPos + xOffset
-            , y = Tuple.second event.clientPos - Tuple.second event.offsetPos + yOffset
+            { x = Tuple.first event.clientPos - xOffset
+            , y = Tuple.second event.clientPos - yOffset
             }
                 |> ContextMenu.position menu
     in
     Return.singleton { model | contextMenu = Just menuWithPosition }
+
+
+showContextMenuWithCoordinates : Coordinates -> ContextMenu Msg -> Manager
+showContextMenuWithCoordinates coordinates menu model =
+    coordinates
+        |> ContextMenu.position menu
+        |> (\c -> { model | contextMenu = Just c })
+        |> Return.singleton
 
 
 showHelpfulNote : String -> Manager

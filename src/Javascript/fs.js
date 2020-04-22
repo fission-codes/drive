@@ -130,6 +130,20 @@ export async function load({ cid, pathSegments, syncHook }) {
 }
 
 
+export async function removeItem({ pathSegments }) {
+  const path = prefixedPath(pathSegments)
+
+  await ffs.runOnTree(path, false, (tree, relPath) => {
+    console.log(tree, relPath)
+    return tree.rmLink(relPath)
+  })
+
+  await ffs.sync()
+
+  return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
+}
+
+
 export async function updateRoot() {
   await sdk.user.updateRoot(ffs, api.endpoint)
 }
@@ -166,7 +180,12 @@ function fakeStreamIterator(address, options) {
    So we need to prefix with "private" when necessary.
 */
 function prefixedPath(pathSegments) {
-  return pathSegments[0] === "public"
+  return isPrefixSegment( pathSegments[0] )
     ? pathSegments.join("/")
     : [ "private", ...pathSegments ].join("/")
+}
+
+
+function isPrefixSegment(s) {
+  return s === "public" || s === "private"
 }

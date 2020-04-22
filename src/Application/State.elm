@@ -189,6 +189,9 @@ update msg =
         GoUp a ->
             Drive.goUp a
 
+        RemoveItem a ->
+            Drive.removeItem a
+
         Select a ->
             Drive.select a
 
@@ -248,6 +251,9 @@ update msg =
 
         ShowContextMenu a b ->
             Common.showContextMenu a b
+
+        ShowContextMenuWithCoordinates a b ->
+            Common.showContextMenuWithCoordinates a b
 
         ShowHelpfulNote a ->
             Common.showHelpfulNote a

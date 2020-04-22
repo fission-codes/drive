@@ -4,7 +4,7 @@ import Browser.Navigation as Navigation
 import Common
 import Common.State as Common
 import Debouncing
-import Drive.Item exposing (Item)
+import Drive.Item as Item exposing (Item)
 import Drive.Sidebar
 import File exposing (File)
 import File.Download
@@ -72,7 +72,7 @@ copyPublicUrl { item, presentable } model =
                 "Copied Content URL to clipboard."
     in
     item
-        |> Drive.Item.publicUrl base
+        |> Item.publicUrl base
         |> Ports.copyToClipboard
         |> Return.return model
         |> Return.command (Ports.showNotification notification)
@@ -151,7 +151,7 @@ digDeeperUsingSelection model =
                     (.path >> (==) path)
                 |> Maybe.map
                     (\item ->
-                        if item.kind == Drive.Item.Directory then
+                        if item.kind == Item.Directory then
                             digDeeper { directoryName = item.name } model
 
                         else
@@ -167,7 +167,7 @@ digDeeperUsingSelection model =
 downloadItem : Item -> Manager
 downloadItem item model =
     item
-        |> Drive.Item.publicUrl (Common.base { presentable = False } model)
+        |> Item.publicUrl (Common.base { presentable = False } model)
         |> File.Download.url
         |> return model
 
@@ -209,6 +209,14 @@ goUpOneLevel model =
         |> Routing.treePathSegments
         |> List.length
         |> (\x -> goUp { floor = x } model)
+
+
+removeItem : Item -> Manager
+removeItem item =
+    item
+        |> Item.pathProperties
+        |> Ports.fsRemoveItem
+        |> Return.communicate
 
 
 select : Item -> Manager

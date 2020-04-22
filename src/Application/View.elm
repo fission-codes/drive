@@ -111,17 +111,17 @@ body m =
 
 rootAttributes : Model -> List (Html.Attribute Msg)
 rootAttributes m =
-    [ E.on "focusout" (Decode.succeed Blurred)
-    , E.on "focusin" (Decode.succeed Focused)
+    List.append
+        (case m.contextMenu of
+            Just _ ->
+                [ E.on "tap" (Decode.succeed RemoveContextMenu) ]
 
-    --
-    , case m.contextMenu of
-        Just _ ->
-            E.onClick RemoveContextMenu
-
-        Nothing ->
-            E.onClick Bypass
-    ]
+            Nothing ->
+                []
+        )
+        [ E.on "focusout" (Decode.succeed Blurred)
+        , E.on "focusin" (Decode.succeed Focused)
+        ]
 
 
 

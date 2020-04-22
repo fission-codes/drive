@@ -9,9 +9,11 @@
 
 */
 
+import "./web_modules/tocca.js"
+import sdk from "./web_modules/fission-sdk.js"
+
 import "./analytics.js"
 import "./custom.js"
-import sdk from "./web_modules/fission-sdk.js"
 
 import * as api from "./api.js"
 import * as fs from "./fs.js"
@@ -134,6 +136,7 @@ exe("fsAddContent", "add")
 exe("fsCreateDirectory", "createDirecory", { listParent: true })
 exe("fsListDirectory", "listDirectory")
 exe("fsLoad", "load", { syncHook })
+exe("fsRemoveItem", "removeItem", { listParent: true })
 
 
 // IPFS
