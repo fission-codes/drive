@@ -177,31 +177,36 @@ addOrCreateForm model =
             [ title "Add files" ]
 
         --
-        , Html.node
-            "fs-content-uploader"
-            [ E.on "changeBlobs" Common.blobUrlsDecoder
-
-            --
-            , A.style "min-height" "108px"
-            , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "22.5%")
-
-            --
-            , T.border_2
-            , T.border_dashed
-            , T.border_gray_500
-            , T.block
-            , T.cursor_pointer
-            , T.h_0
-            , T.overflow_hidden
-            , T.relative
-            , T.rounded
+        , Html.div
+            [ T.relative
             , T.text_center
-
-            -- Dark mode
-            ------------
-            , T.dark__border_darkness_above
             ]
-            [ Html.div
+            [ Html.node
+                "fs-content-uploader"
+                [ E.on "changeBlobs" Common.blobUrlsDecoder
+
+                --
+                , A.style "min-height" "108px"
+                , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "22.5%")
+
+                --
+                , T.border_2
+                , T.border_dashed
+                , T.border_gray_500
+                , T.block
+                , T.cursor_pointer
+                , T.h_0
+                , T.overflow_hidden
+                , T.rounded
+
+                -- Dark mode
+                ------------
+                , T.dark__border_darkness_above
+                ]
+                []
+
+            --
+            , Html.div
                 [ T.absolute
                 , T.font_light
                 , T.italic
@@ -209,6 +214,7 @@ addOrCreateForm model =
                 , T.left_1over2
                 , T.neg_translate_x_1over2
                 , T.neg_translate_y_1over2
+                , T.pointer_events_none
                 , T.px_4
                 , T.text_gray_400
                 , T.top_1over2

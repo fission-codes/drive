@@ -19,23 +19,39 @@ function handleFile(file) {
 }
 
 
-customElements.define("fs-content-uploader", class extends HTMLInputElement {
+class ContentUploader extends HTMLElement {
 
-  constructor() {
-    super()
+  connectedCallback() {
+    const shadowRoot = this.attachShadow({ mode: "open" })
 
-    this.addEventListener("change", event => {
-      const blobs = [ ...event.files ].map(handleFile)
+    // The actual input element
+    const inputElement = document.createElement("input")
+    inputElement.multiple = true
+    inputElement.type = "file"
+
+    inputElement.style.position = "absolute"
+    inputElement.style.top = "-1000px"
+
+    inputElement.addEventListener("change", event => {
+      const blobs = [ ...event.target.files ].map(handleFile)
       const blobsEvent = new CustomEvent("changeBlobs", { detail: { blobs } })
 
       this.dispatchEvent(blobsEvent)
     })
+
+    // Add input element
+    shadowRoot.appendChild(inputElement)
+
+    // Pass on click event
+    this.addEventListener("click", event => {
+      inputElement.click()
+    })
   }
 
-})
+}
 
 
-customElements.define("fs-drop-zone", class extends HTMLElement {
+class DropZone extends HTMLElement {
 
   constructor() {
     super()
@@ -48,4 +64,8 @@ customElements.define("fs-drop-zone", class extends HTMLElement {
     })
   }
 
-})
+}
+
+
+customElements.define("fs-content-uploader", ContentUploader)
+customElements.define("fs-drop-zone", DropZone)

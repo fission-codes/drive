@@ -54,9 +54,15 @@ init flags url navKey =
                 |> Maybe.withDefault defaultDnsLink
 
         loadedFoundation =
-            Maybe.andThen
-                (\_ -> flags.foundation)
-                flags.authenticated
+            -- When the following is a `Just`,
+            -- it will not load from a dnslink and
+            -- use the cached cid instead.
+            --
+            -- Maybe.andThen
+            --     (\_ -> flags.foundation)
+            --     flags.authenticated
+            --
+            Nothing
     in
     ( -----------------------------------------
       -- Model

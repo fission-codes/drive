@@ -63,8 +63,6 @@ export async function createNew() {
 export async function listDirectory({ pathSegments }) {
   const isListingRoot = pathSegments.length === 0
 
-  await ffs.sync()
-
   let path = prefixedPath(pathSegments)
 
   // Make a list

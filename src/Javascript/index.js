@@ -20,8 +20,6 @@ import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 
-window.sdk = sdk
-
 
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
@@ -127,8 +125,10 @@ const exe = (port, method, options = {}) => app.ports[port].subscribe(async a =>
 })
 
 
-const syncHook = cid => {
+const syncHook = async cid => {
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
+  console.log("Syncing …", cid)
+  await fs.updateRoot()
 }
 
 

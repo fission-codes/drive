@@ -150,9 +150,6 @@ right model =
                     ]
                     FeatherIcons.share2
                     [ Html.text "Copy Link" ]
-
-                --
-                , explore
                 ]
 
             Routing.Undecided ->
