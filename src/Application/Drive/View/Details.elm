@@ -227,7 +227,9 @@ overlayContents isGroundFloor publicUrl currentTime item =
         --
         , Html.button
             [ item
-                |> Drive.ContextMenu.item ContextMenu.BottomCenter
+                |> Drive.ContextMenu.item
+                    ContextMenu.BottomCenter
+                    { isGroundFloor = isGroundFloor }
                 |> ShowContextMenu
                 |> M.onClick
 

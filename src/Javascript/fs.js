@@ -22,11 +22,14 @@ let fs
 export async function add({ blobs, pathSegments }) {
   const path = prefixedPath(pathSegments)
 
-  await Promise.all(blobs.map(async ({ name, url }) => {
+  await blobs.reduce(async (acc, { name, url }) => {
+    await acc
     const fileOrBlob = await fetch(url).then(r => r.blob())
     const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
+    console.log(blob)
     await fs.add(`${path}/${name}`, blob)
-  }))
+    URL.revokeObjectURL(url)
+  }, Promise.resolve(null))
 
   return await listDirectory({ pathSegments })
 }

@@ -139,21 +139,24 @@ alwaysBurgers =
 -- ITEM
 
 
-item : ContextMenu.Hook -> Drive.Item.Item -> ContextMenu Msg
-item hook context =
+item : ContextMenu.Hook -> { isGroundFloor : Bool } -> Drive.Item.Item -> ContextMenu Msg
+item hook { isGroundFloor } context =
     ContextMenu.build
         hook
         (case context.kind of
             Directory ->
-                [ driveLink context
-                , copyCid context
+                List.append
+                    [ driveLink context
+                    , copyCid context
+                    ]
+                    (if isGroundFloor && context.name == "public" then
+                        []
 
-                --
-                , Divider
-
-                --
-                , removeItem context
-                ]
+                     else
+                        [ Divider
+                        , removeItem context
+                        ]
+                    )
 
             _ ->
                 [ driveLink context

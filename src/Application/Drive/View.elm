@@ -661,7 +661,9 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
         -- Show context menu on right click,
         -- or when holding, without moving, the item on touch devices.
         , item
-            |> ContextMenu.item ContextMenu.TopCenterWithoutOffset
+            |> ContextMenu.item
+                ContextMenu.TopCenterWithoutOffset
+                { isGroundFloor = isGroundFloor }
             |> ShowContextMenu
             |> M.onContextMenu
 
@@ -672,7 +674,9 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
                 (\x y ->
                     { message =
                         item
-                            |> ContextMenu.item ContextMenu.TopCenterWithoutOffset
+                            |> ContextMenu.item
+                                ContextMenu.TopCenterWithoutOffset
+                                { isGroundFloor = isGroundFloor }
                             |> ShowContextMenuWithCoordinates { x = x, y = y }
 
                     --

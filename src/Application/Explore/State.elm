@@ -1,6 +1,7 @@
 module Explore.State exposing (..)
 
 import Browser.Navigation as Navigation
+import Common
 import Drive.Sidebar
 import Ipfs
 import Maybe.Extra as Maybe
@@ -45,7 +46,8 @@ gotInput input model =
 
 reset : Route -> Manager
 reset route model =
-    [ -- Ports.annihilateKeys ()
+    [ -- TODO:
+      -- , Ports.annihilateKeys ()
       -- , Ports.removeStoredAuthDnsLink ()
       Ports.removeStoredFoundation ()
     ]
@@ -53,7 +55,7 @@ reset route model =
         |> return
             { model
                 | directoryList = Ok { floor = 1, items = [] }
-                , exploreInput = Just ""
+                , exploreInput = Just Common.defaultDnsLink
                 , foundation = Nothing
                 , selectedPath = Nothing
             }
