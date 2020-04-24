@@ -28,6 +28,9 @@ view contextMenu =
         , A.style "top" (String.fromFloat coordinates.y ++ "px")
 
         --
+        , A.style "min-width" "170px"
+
+        --
         , T.bg_gray_900
         , T.fixed
         , T.leading_relaxed

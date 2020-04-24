@@ -1,5 +1,6 @@
 module Common.View.Footer exposing (view)
 
+import Common
 import Common.View as Common
 import Drive.Sidebar
 import FeatherIcons
@@ -121,23 +122,27 @@ right model =
                 ]
 
             Routing.Explore ->
-                [ action
-                    Link
-                    [ A.href (Routing.routeUrl Routing.createAccount model.url) ]
-                    FeatherIcons.user
-                    [ Html.text "Create account" ]
-                ]
+                if Maybe.isJust model.authenticated then
+                    [ myDrive model ]
+
+                else
+                    [ action
+                        Link
+                        [ A.href (Routing.routeUrl Routing.createAccount model.url) ]
+                        FeatherIcons.user
+                        [ Html.text "Create account" ]
+                    ]
 
             Routing.LinkAccount ->
                 -- TODO
                 []
 
             Routing.Tree _ _ ->
-                [ if Maybe.isJust model.authenticated then
+                [ if Common.isAuthenticatedAndNotExploring model then
                     addCreateAction model
 
                   else
-                    Html.nothing
+                    myDrive model
 
                 --
                 , action
@@ -156,6 +161,23 @@ right model =
                 [ explore
                 ]
         )
+
+
+myDrive : Model -> Html Msg
+myDrive model =
+    case model.authenticated of
+        Just { dnsLink } ->
+            action
+                Link
+                [ model.url
+                    |> Routing.routeUrl (Routing.Tree { root = dnsLink } [])
+                    |> A.href
+                ]
+                FeatherIcons.hardDrive
+                [ Html.text "My Drive" ]
+
+        Nothing ->
+            Html.nothing
 
 
 

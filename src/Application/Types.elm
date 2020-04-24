@@ -12,6 +12,7 @@ import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Item exposing (Item)
 import Drive.Sidebar
 import File exposing (File)
+import Foundation exposing (Foundation)
 import Html.Events.Extra.Drag as Drag
 import Html.Events.Extra.Mouse as Mouse
 import Ipfs
@@ -32,7 +33,9 @@ import Url exposing (Url)
 -}
 type alias Flags =
     { authenticated : Maybe { dnsLink : String }
+    , currentTime : Int
     , foundation : Maybe Foundation
+    , lastFsOperation : Int
     , viewportSize : { height : Int, width : Int }
     }
 
@@ -173,14 +176,3 @@ type alias Organizer model =
 
 type alias Manager =
     Organizer Model
-
-
-
--- 🧩
-
-
-type alias Foundation =
-    { isDnsLink : Bool
-    , resolved : String
-    , unresolved : String
-    }

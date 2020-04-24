@@ -236,7 +236,7 @@ header model =
                     |> Common.wrapIcon [ T.pointer_events_none ]
                     |> List.singleton
                     |> Html.span
-                        [ { authenticated = Maybe.isJust model.authenticated }
+                        [ model
                             |> ContextMenu.hamburger
                             |> ShowContextMenu
                             |> M.onClick

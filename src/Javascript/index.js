@@ -29,7 +29,9 @@ const app = Elm.Main.init({
   node: document.getElementById("elm"),
   flags: {
     authenticated: authenticated(),
+    currentTime: Date.now(),
     foundation: foundation(),
+    lastFsOperation: lastFsOperation(),
     viewportSize: { height: window.innerHeight, width: window.innerWidth }
   }
 })
@@ -72,9 +74,9 @@ app.ports.copyToClipboard.subscribe(text => {
 })
 
 
-app.ports.removeStoredAuthDnsLink.subscribe(_ => {
-  localStorage.removeItem("fissionDrive.authlink")
-})
+// app.ports.removeStoredAuthDnsLink.subscribe(_ => {
+//   localStorage.removeItem("fissionDrive.authlink")
+// })
 
 
 app.ports.removeStoredFoundation.subscribe(_ => {
@@ -127,6 +129,7 @@ const exe = (port, method, options = {}) => app.ports[port].subscribe(async a =>
 
 const syncHook = async cid => {
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
+  localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
   console.log("Syncing …", cid)
   await fs.updateRoot()
 }
@@ -165,9 +168,9 @@ app.ports.ipfsSetup.subscribe(_ => {
 // User
 // ----
 
-app.ports.annihilateKeys.subscribe(_ => {
-  sdk.keystore.clear()
-})
+// app.ports.annihilateKeys.subscribe(_ => {
+//   sdk.keystore.clear()
+// })
 
 
 app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
@@ -232,6 +235,11 @@ tocca({
 function authenticated() {
   const stored = localStorage.getItem("fissionDrive.authlink")
   return stored ? { dnsLink: stored } : null
+}
+
+
+function lastFsOperation() {
+  return parseInt(localStorage.getItem("fissionDrive.lastFsOperation") || "0", 10)
 }
 
 

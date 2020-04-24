@@ -1,7 +1,8 @@
 port module Ports exposing (..)
 
+import Foundation exposing (Foundation)
 import Json.Decode as Json
-import Types exposing (Foundation)
+import Types
 
 
 

@@ -47,7 +47,7 @@ inputScreen m =
         ]
         [ Common.introLogo
         , Common.introText [ Html.text """
-            This is a Preview release which will evolve into your personal Fission Drive. Enter any public IPFS hash or use the example hash.
+            Enter any public IPFS hash or DNSLink domain.
           """ ]
 
         --

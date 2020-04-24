@@ -212,11 +212,11 @@ goUpOneLevel model =
 
 
 removeItem : Item -> Manager
-removeItem item =
+removeItem item model =
     item
         |> Item.pathProperties
         |> Ports.fsRemoveItem
-        |> Return.communicate
+        |> return { model | ipfs = FileSystemOperation }
 
 
 select : Item -> Manager

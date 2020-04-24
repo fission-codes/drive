@@ -6,6 +6,7 @@ import Common.State as Common
 import Debouncing
 import Drive.Item
 import FS.State as FS
+import Foundation exposing (Foundation)
 import Ipfs
 import Json.Decode as Json
 import List.Extra as List

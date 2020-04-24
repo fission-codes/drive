@@ -1,5 +1,7 @@
 module FS.State exposing (..)
 
+import Common
+import Foundation
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
@@ -14,8 +16,8 @@ import Types exposing (..)
 
 boot : Manager
 boot model =
-    case ( model.authenticated, model.foundation ) of
-        ( Just _, Just { unresolved, resolved } ) ->
+    case ( Common.isAuthenticatedAndNotExploring model, model.foundation ) of
+        ( True, Just { resolved } ) ->
             { cid = resolved
             , pathSegments = Routing.treePathSegments model.route
             }
@@ -30,7 +32,7 @@ boot model =
 
 listDirectory : Manager
 listDirectory model =
-    if Maybe.isJust model.authenticated then
+    if Common.isAuthenticatedAndNotExploring model then
         { pathSegments = Routing.treePathSegments model.route }
             |> Ports.fsListDirectory
             |> return model

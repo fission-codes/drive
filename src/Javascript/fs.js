@@ -12,7 +12,7 @@ import sdk from "./web_modules/fission-sdk.js"
 import * as api from "./api.js"
 
 
-let ffs
+let fs
 
 
 
@@ -25,7 +25,7 @@ export async function add({ blobs, pathSegments }) {
   await Promise.all(blobs.map(async ({ name, url }) => {
     const fileOrBlob = await fetch(url).then(r => r.blob())
     const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
-    await ffs.add(`${path}/${name}`, blob)
+    await fs.add(`${path}/${name}`, blob)
   }))
 
   return await listDirectory({ pathSegments })
@@ -35,28 +35,28 @@ export async function add({ blobs, pathSegments }) {
 export async function addSampleData() {
   // TODO: We should maintain some dnslink with a standard set of data,
   //       and then "import" that data here.
-  await ffs.mkdir("private/Apps")
-  await ffs.mkdir("private/Audio")
-  await ffs.mkdir("private/Documents")
-  await ffs.mkdir("private/Photos")
-  await ffs.mkdir("private/Video")
+  await fs.mkdir("private/Apps")
+  await fs.mkdir("private/Audio")
+  await fs.mkdir("private/Documents")
+  await fs.mkdir("private/Photos")
+  await fs.mkdir("private/Video")
 }
 
 
 export async function createDirecory({ pathSegments }) {
   const path = prefixedPath(pathSegments)
-  await ffs.mkdir(path)
+  await fs.mkdir(path)
   return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
 }
 
 
 export async function cid() {
-  return (await ffs.sync()).toString()
+  return (await fs.sync()).toString()
 }
 
 
 export async function createNew() {
-  ffs = await sdk.ffs.default.empty()
+  fs = await sdk.fs.empty()
 }
 
 
@@ -68,7 +68,7 @@ export async function listDirectory({ pathSegments }) {
   // Make a list
   const rawList = await (async _ => {
     try {
-      return Object.values(await ffs.ls(path))
+      return Object.values(await fs.ls(path))
     } catch (err) {
       // We get an error if try to list a file.
       // This a way around that issue.
@@ -78,7 +78,7 @@ export async function listDirectory({ pathSegments }) {
 
       path = dir
 
-      return Object.values(await ffs.ls(dir)).filter(l => {
+      return Object.values(await fs.ls(dir)).filter(l => {
         return l.name === file
       })
     }
@@ -94,7 +94,7 @@ export async function listDirectory({ pathSegments }) {
 
   // Add a fictional "public" directory when listing the "root"
   if (isListingRoot) {
-    const publicCid = await ffs.publicTree.put()
+    const publicCid = await fs.publicTree.put()
 
     return [
       {
@@ -115,11 +115,11 @@ export async function listDirectory({ pathSegments }) {
 
 
 export async function load({ cid, pathSegments, syncHook }) {
-  ffs = await sdk.ffs.default.fromCID(cid)
-  ffs = ffs || await sdk.ffs.default.upgradePublicCID(cid)
+  fs = await sdk.fs.fromCID(cid)
+  fs = fs || await sdk.fs.upgradePublicCID(cid)
 
-  if (ffs) {
-    ffs.addSyncHook(syncHook)
+  if (fs) {
+    fs.addSyncHook(syncHook)
 
     return await listDirectory({ pathSegments })
   } else {
@@ -130,20 +130,13 @@ export async function load({ cid, pathSegments, syncHook }) {
 
 export async function removeItem({ pathSegments }) {
   const path = prefixedPath(pathSegments)
-
-  await ffs.runOnTree(path, false, (tree, relPath) => {
-    console.log(tree, relPath)
-    return tree.rmLink(relPath)
-  })
-
-  await ffs.sync()
-
+  await fs.rm(path)
   return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
 }
 
 
 export async function updateRoot() {
-  await sdk.user.updateRoot(ffs, api.endpoint)
+  await sdk.user.updateRoot(fs, api.endpoint)
 }
 
 
@@ -160,7 +153,7 @@ export function fakeStream(address, options) {
 
 function fakeStreamIterator(address, options) {
   return { async *[Symbol.asyncIterator]() {
-    const typedArray = await ffs.cat(address)
+    const typedArray = await fs.cat(address)
     const size = typedArray.length
     const start = options.offset || 0
     const end = options.length ? start + options.length : size - 1

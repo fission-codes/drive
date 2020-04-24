@@ -1,9 +1,12 @@
 module Drive.ContextMenu exposing (hamburger, item)
 
+import Common
 import ContextMenu exposing (..)
 import Drive.Item exposing (Kind(..))
 import Drive.Sidebar as Sidebar
 import FeatherIcons
+import List.Ext as List
+import Maybe.Extra as Maybe
 import Routing
 import Types exposing (..)
 
@@ -12,19 +15,25 @@ import Types exposing (..)
 -- 🍔
 
 
-hamburger : { authenticated : Bool } -> ContextMenu Msg
-hamburger { authenticated } =
-    ContextMenu.build
-        TopRight
-        (if authenticated then
-            authenticatedBurgers ++ [ Divider ] ++ alwaysBurgers
+hamburger : Model -> ContextMenu Msg
+hamburger model =
+    (if Common.isAuthenticatedAndNotExploring model then
+        yourBurgers
 
-         else
-            unauthenticatedBurgers ++ [ Divider ] ++ alwaysBurgers
-        )
+     else if Maybe.isJust model.authenticated then
+        model.authenticated
+            |> Maybe.map .dnsLink
+            |> Maybe.withDefault ""
+            |> authenticatedOtherBurgers
+
+     else
+        unauthenticatedBurgers
+    )
+        |> List.add ([ Divider ] ++ alwaysBurgers)
+        |> ContextMenu.build TopRight
 
 
-authenticatedBurgers =
+yourBurgers =
     [ Item
         { icon = FeatherIcons.upload
         , label = "Add files"
@@ -46,30 +55,49 @@ authenticatedBurgers =
         , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
         }
 
+    -- TODO:
     --
-    , Item
-        { icon = FeatherIcons.user
-        , label = "Sign out"
+    -- , Item
+    --     { icon = FeatherIcons.user
+    --     , label = "Sign out"
+    --     , active = False
+    --
+    --     --
+    --     , href = Nothing
+    --     , msg = Just (Reset Routing.Undecided)
+    --     }
+    ]
+
+
+authenticatedOtherBurgers dnsLink =
+    [ Item
+        { icon = FeatherIcons.hardDrive
+        , label = "My Drive"
         , active = False
 
         --
         , href = Nothing
-        , msg = Just (Reset Routing.Undecided)
+        , msg =
+            []
+                |> Routing.Tree { root = dnsLink }
+                |> GoToRoute
+                |> Just
         }
     ]
 
 
 unauthenticatedBurgers =
-    [ Item
-        { icon = FeatherIcons.hardDrive
-        , label = "Sign in"
-        , active = False
-
-        --
-        , href = Nothing
-        , msg = Just SignIn
-        }
-    ]
+    -- [ Item
+    --     { icon = FeatherIcons.hardDrive
+    --     , label = "Sign in"
+    --     , active = False
+    --
+    --     --
+    --     , href = Nothing
+    --     , msg = Just SignIn
+    --     }
+    -- ]
+    []
 
 
 alwaysBurgers =

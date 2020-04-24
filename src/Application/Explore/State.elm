@@ -1,6 +1,7 @@
 module Explore.State exposing (..)
 
 import Browser.Navigation as Navigation
+import Drive.Sidebar
 import Ipfs
 import Maybe.Extra as Maybe
 import Other.State as Other
@@ -27,6 +28,7 @@ changeCid model =
                     | ipfs = Ipfs.InitialListing
                     , foundation = Nothing
                     , isFocused = False
+                    , sidebarMode = Drive.Sidebar.defaultMode
                 }
                 (Ports.ipfsResolveAddress input)
 
@@ -43,15 +45,14 @@ gotInput input model =
 
 reset : Route -> Manager
 reset route model =
-    [ Ports.annihilateKeys ()
-    , Ports.removeStoredAuthDnsLink ()
-    , Ports.removeStoredFoundation ()
+    [ -- Ports.annihilateKeys ()
+      -- , Ports.removeStoredAuthDnsLink ()
+      Ports.removeStoredFoundation ()
     ]
         |> Cmd.batch
         |> return
             { model
-                | authenticated = Nothing
-                , directoryList = Ok { floor = 1, items = [] }
+                | directoryList = Ok { floor = 1, items = [] }
                 , exploreInput = Just ""
                 , foundation = Nothing
                 , selectedPath = Nothing
