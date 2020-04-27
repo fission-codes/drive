@@ -17,18 +17,23 @@ import Types exposing (Manager, Msg(..))
 -- 📣
 
 
-checkIfUsernameIsAvailable : String -> Manager
-checkIfUsernameIsAvailable username model =
-    case String.trim username of
-        "" ->
-            Return.singleton model
+checkIfUsernameIsAvailable : Manager
+checkIfUsernameIsAvailable model =
+    case model.route of
+        Routing.CreateAccount context ->
+            case context.username of
+                "" ->
+                    Return.singleton model
 
-        u ->
-            model
-                |> adjustSignUpContext_
-                    (\c -> { c | usernameIsAvailable = Loading })
-                |> Return.command
-                    (Ports.checkIfUsernameIsAvailable u)
+                u ->
+                    model
+                        |> adjustSignUpContext_
+                            (\c -> { c | usernameIsAvailable = Loading })
+                        |> Return.command
+                            (Ports.checkIfUsernameIsAvailable u)
+
+        _ ->
+            Return.singleton model
 
 
 createAccount : SignUpContext -> Manager
@@ -85,8 +90,7 @@ gotSignUpUsernameInput input model =
                 }
             )
         |> Return.command
-            (input
-                |> CheckIfUsernameIsAvailable
+            (CheckIfUsernameIsAvailable
                 |> Debouncing.usernameAvailability.provideInput
                 |> Return.task
             )
@@ -96,7 +100,10 @@ gotUsernameAvailability : { available : Bool, valid : Bool } -> Manager
 gotUsernameAvailability { available, valid } =
     adjustSignUpContext_
         (\c ->
-            if not valid then
+            if c.usernameIsAvailable /= Loading then
+                c
+
+            else if not valid then
                 { c | usernameIsValid = False }
 
             else

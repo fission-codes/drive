@@ -98,7 +98,7 @@ type Msg
       -----------------------------------------
       -- Authentication
       -----------------------------------------
-    | CheckIfUsernameIsAvailable String
+    | CheckIfUsernameIsAvailable
     | CreateAccount SignUpContext
     | GotCreateAccountFailure String
     | GotCreateAccountSuccess { dnsLink : String }

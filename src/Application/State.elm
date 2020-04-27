@@ -129,8 +129,8 @@ update msg =
         -----------------------------------------
         -- Authentication
         -----------------------------------------
-        CheckIfUsernameIsAvailable a ->
-            Authentication.checkIfUsernameIsAvailable a
+        CheckIfUsernameIsAvailable ->
+            Authentication.checkIfUsernameIsAvailable
 
         CreateAccount a ->
             Authentication.createAccount a
