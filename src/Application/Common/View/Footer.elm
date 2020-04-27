@@ -126,12 +126,7 @@ right model =
                     [ myDrive model ]
 
                 else
-                    [ action
-                        Link
-                        [ A.href (Routing.routeUrl Routing.createAccount model.url) ]
-                        FeatherIcons.user
-                        [ Html.text "Create account" ]
-                    ]
+                    [ createAccount model ]
 
             Routing.LinkAccount ->
                 -- TODO
@@ -141,8 +136,11 @@ right model =
                 [ if Common.isAuthenticatedAndNotExploring model then
                     addCreateAction model
 
-                  else
+                  else if Maybe.isJust model.authenticated then
                     myDrive model
+
+                  else
+                    createAccount model
 
                 --
                 , action
@@ -161,23 +159,6 @@ right model =
                 [ explore
                 ]
         )
-
-
-myDrive : Model -> Html Msg
-myDrive model =
-    case model.authenticated of
-        Just { dnsLink } ->
-            action
-                Link
-                [ model.url
-                    |> Routing.routeUrl (Routing.Tree { root = dnsLink } [])
-                    |> A.href
-                ]
-                FeatherIcons.hardDrive
-                [ Html.text "My Drive" ]
-
-        Nothing ->
-            Html.nothing
 
 
 
@@ -208,12 +189,36 @@ addCreateAction model =
         [ Html.text "Add / Create" ]
 
 
+createAccount model =
+    action
+        Link
+        [ A.href (Routing.routeUrl Routing.createAccount model.url) ]
+        FeatherIcons.user
+        [ Html.text "Create account" ]
+
+
 explore =
     action
         Button
         [ E.onClick (Reset Routing.Explore) ]
         FeatherIcons.hash
         [ Html.text "Explore" ]
+
+
+myDrive model =
+    case model.authenticated of
+        Just { dnsLink } ->
+            action
+                Link
+                [ model.url
+                    |> Routing.routeUrl (Routing.Tree { root = dnsLink } [])
+                    |> A.href
+                ]
+                FeatherIcons.hardDrive
+                [ Html.text "My Drive" ]
+
+        Nothing ->
+            Html.nothing
 
 
 
