@@ -33,6 +33,11 @@ createAccount =
         }
 
 
+linkAccount : Route
+linkAccount =
+    LinkAccount
+
+
 
 -- 🛠
 
@@ -95,6 +100,11 @@ routeUrl route originalUrl =
     route
         |> adjustUrl originalUrl
         |> Url.toString
+
+
+routeUrlF : Url -> Route -> String
+routeUrlF originalUrl route =
+    routeUrl route originalUrl
 
 
 

@@ -111,14 +111,14 @@ right model =
         ]
         (case model.route of
             Routing.CreateAccount _ ->
-                [ explore
-
-                --
-                , action
+                [ action
                     Link
                     [ A.href (Routing.routeUrl Routing.LinkAccount model.url) ]
                     FeatherIcons.user
                     [ Html.text "Sign in" ]
+
+                --
+                , explore
                 ]
 
             Routing.Explore ->
@@ -129,11 +129,23 @@ right model =
                     [ createAccount model ]
 
             Routing.LinkAccount ->
-                -- TODO
-                []
+                [ createAccount model
+                , explore
+                ]
 
             Routing.Tree _ _ ->
-                [ if Common.isAuthenticatedAndNotExploring model then
+                [ if Maybe.isNothing model.authenticated then
+                    action
+                        Link
+                        [ A.href (Routing.routeUrl Routing.linkAccount model.url) ]
+                        FeatherIcons.user
+                        [ Html.text "Sign in" ]
+
+                  else
+                    Html.nothing
+
+                --
+                , if Common.isAuthenticatedAndNotExploring model then
                     addCreateAction model
 
                   else if Maybe.isJust model.authenticated then

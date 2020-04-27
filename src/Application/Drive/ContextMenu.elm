@@ -87,17 +87,33 @@ authenticatedOtherBurgers dnsLink =
 
 
 unauthenticatedBurgers =
-    -- [ Item
-    --     { icon = FeatherIcons.hardDrive
-    --     , label = "Sign in"
-    --     , active = False
+    [ Item
+        { icon = FeatherIcons.user
+        , label = "Sign in"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            Routing.linkAccount
+                |> GoToRoute
+                |> Just
+        }
+
     --
-    --     --
-    --     , href = Nothing
-    --     , msg = Just SignIn
-    --     }
-    -- ]
-    []
+    , Item
+        { icon = FeatherIcons.user
+        , label = "Create account"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            Routing.createAccount
+                |> GoToRoute
+                |> Just
+        }
+    ]
 
 
 alwaysBurgers =
