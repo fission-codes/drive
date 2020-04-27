@@ -124,16 +124,22 @@ urlChanged url old =
             old.ipfs == Ipfs.Connecting
 
         route =
-            Routing.routeFromUrl url
+            Routing.routeFromUrl old.mode url
+
+        newRoot =
+            Routing.treeRoot url route
+
+        oldRoot =
+            Routing.treeRoot url old.route
 
         isTreeRoute =
-            Maybe.isJust (Routing.treeRoot route)
+            Maybe.isJust newRoot
 
         needsResolve =
-            Routing.treeRoot route /= Maybe.map .unresolved old.foundation
+            newRoot /= Maybe.map .unresolved old.foundation
 
         isInitialListing =
-            Routing.treeRoot old.route /= Maybe.map .unresolved old.foundation
+            oldRoot /= Maybe.map .unresolved old.foundation
     in
     { old
         | ipfs =
@@ -164,8 +170,7 @@ urlChanged url old =
                     Return.singleton new
 
                 else if needsResolve then
-                    new.route
-                        |> Routing.treeRoot
+                    newRoot
                         |> Maybe.map Ports.ipfsResolveAddress
                         |> Maybe.withDefault Cmd.none
                         |> return new

@@ -110,6 +110,11 @@ right model =
         , T.sm__scale_100
         ]
         (case model.route of
+            Routing.Undecided ->
+                [ explore
+                ]
+
+            --
             Routing.CreateAccount _ ->
                 [ action
                     Link
@@ -133,44 +138,50 @@ right model =
                 , explore
                 ]
 
+            -----------------------------------------
+            -- Tree
+            -----------------------------------------
+            Routing.PersonalTree _ ->
+                treeActions model
+
             Routing.Tree _ _ ->
-                [ if Maybe.isNothing model.authenticated then
-                    action
-                        Link
-                        [ A.href (Routing.routeUrl Routing.linkAccount model.url) ]
-                        FeatherIcons.user
-                        [ Html.text "Sign in" ]
-
-                  else
-                    Html.nothing
-
-                --
-                , if Common.isAuthenticatedAndNotExploring model then
-                    addCreateAction model
-
-                  else if Maybe.isJust model.authenticated then
-                    myDrive model
-
-                  else
-                    createAccount model
-
-                --
-                , action
-                    Button
-                    [ { clip = Url.toString model.url
-                      , notification = "Copied Drive URL to clipboard."
-                      }
-                        |> CopyToClipboard
-                        |> E.onClick
-                    ]
-                    FeatherIcons.share2
-                    [ Html.text "Copy Link" ]
-                ]
-
-            Routing.Undecided ->
-                [ explore
-                ]
+                treeActions model
         )
+
+
+treeActions model =
+    [ if Maybe.isNothing model.authenticated then
+        action
+            Link
+            [ A.href (Routing.routeUrl Routing.linkAccount model.url) ]
+            FeatherIcons.user
+            [ Html.text "Sign in" ]
+
+      else
+        Html.nothing
+
+    --
+    , if Common.isAuthenticatedAndNotExploring model then
+        addCreateAction model
+
+      else if Maybe.isJust model.authenticated then
+        myDrive model
+
+      else
+        createAccount model
+
+    --
+    , action
+        Button
+        [ { clip = Url.toString model.url
+          , notification = "Copied Drive URL to clipboard."
+          }
+            |> CopyToClipboard
+            |> E.onClick
+        ]
+        FeatherIcons.share2
+        [ Html.text "Copy Link" ]
+    ]
 
 
 

@@ -44,6 +44,10 @@ body m =
         ( True, _ ) ->
             Common.loadingScreen []
 
+        ( _, Routing.Undecided ) ->
+            Authentication.notAuthenticated m
+
+        --
         ( _, Routing.CreateAccount context ) ->
             Authentication.signUp context m
 
@@ -54,15 +58,22 @@ body m =
             -- TODO
             Authentication.notAuthenticated m
 
-        ( _, Routing.Tree _ _ ) ->
+        -----------------------------------------
+        -- Tree
+        -----------------------------------------
+        ( _, Routing.PersonalTree _ ) ->
             if Common.shouldShowExplore m then
                 Explore.view m
 
             else
                 Drive.view m
 
-        ( _, Routing.Undecided ) ->
-            Authentication.notAuthenticated m
+        ( _, Routing.Tree _ _ ) ->
+            if Common.shouldShowExplore m then
+                Explore.view m
+
+            else
+                Drive.view m
 
     -----------------------------------------
     -- Context Menu

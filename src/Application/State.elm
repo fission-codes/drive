@@ -15,6 +15,7 @@ import Ipfs
 import Ipfs.State as Ipfs
 import Keyboard
 import Maybe.Extra as Maybe
+import Mode
 import Other.State as Other
 import Ports
 import RemoteData
@@ -33,8 +34,18 @@ import Url exposing (Url)
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
+        mode =
+            if True then
+                Mode.PersonalDomain
+
+            else if String.endsWith ".fission.name" url.host then
+                Mode.PersonalDomain
+
+            else
+                Mode.Default
+
         route =
-            Routing.routeFromUrl url
+            Routing.routeFromUrl mode url
 
         urlCmd =
             case ( flags.foundation, route ) of
@@ -50,7 +61,7 @@ init flags url navKey =
         exploreInput =
             flags.foundation
                 |> Maybe.map .unresolved
-                |> Maybe.orElse (Routing.treeRoot route)
+                |> Maybe.orElse (Routing.treeRoot url route)
                 |> Maybe.withDefault defaultDnsLink
 
         loadedFoundation =
@@ -80,8 +91,9 @@ init flags url navKey =
       , helpfulNote = Nothing
       , ipfs = Ipfs.Connecting
       , isFocused = False
+      , mode = mode
       , navKey = navKey
-      , route = Routing.routeFromUrl url
+      , route = route
       , pressedKeys = []
       , viewportSize = flags.viewportSize
       , selectedPath = Nothing

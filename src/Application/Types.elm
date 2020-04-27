@@ -19,6 +19,7 @@ import Ipfs
 import Json.Decode as Json
 import Keyboard
 import Management
+import Mode exposing (Mode)
 import RemoteData exposing (RemoteData)
 import Routing exposing (Route)
 import Time
@@ -57,6 +58,7 @@ type alias Model =
     , helpfulNote : Maybe { faded : Bool, note : String }
     , ipfs : Ipfs.Status
     , isFocused : Bool
+    , mode : Mode
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
     , route : Route

@@ -11,6 +11,7 @@ import Ipfs
 import Json.Decode as Json
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Mode
 import Ports
 import Return exposing (return)
 import Return.Extra as Return
@@ -164,10 +165,15 @@ gotResolvedAddress foundation model =
     let
         changeUrl =
             -- Do I need to put the ipfs address in the url?
-            model.url.fragment
-                |> Maybe.withDefault ""
-                |> String.startsWith ("/" ++ foundation.unresolved)
-                |> not
+            case model.mode of
+                Mode.Default ->
+                    model.url.fragment
+                        |> Maybe.withDefault ""
+                        |> String.startsWith ("/" ++ foundation.unresolved)
+                        |> not
+
+                Mode.PersonalDomain ->
+                    False
 
         ipfs =
             if changeUrl then
@@ -198,13 +204,13 @@ setupCompleted model =
             FS.boot { model | ipfs = Ipfs.InitialListing }
 
         Nothing ->
-            case model.route of
-                Tree { root } _ ->
+            case Routing.treeRoot model.url model.route of
+                Just root ->
                     return
                         { model | ipfs = Ipfs.InitialListing }
                         (Ports.ipfsResolveAddress root)
 
-                _ ->
+                Nothing ->
                     Return.singleton { model | ipfs = Ipfs.Ready }
 
 
