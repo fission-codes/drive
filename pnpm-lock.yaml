@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/52007072cf459d02de6b49f5ca13229a7a03f4c6
-  fission-sdk: 0.5.0
+  fission-sdk: 0.5.2
   get-ipfs: 1.2.0
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.1.2
@@ -982,6 +982,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-MPtoySlAZQ37VoLaPcTHCu1RWJ4llDkULYZIzOYxlhxBqYPB0RsRlmMU0R6tahtFe27mIdkHV+551ZWV4PLmVw==
+  /@types/lodash/4.14.150:
+    dev: false
+    resolution:
+      integrity: sha512-kMNLM5JBcasgYscD9x/Gvr6lTAv2NVgsKtet/hm93qMyf/D1pt+7jeEZklKJKxMVmXjxbRVQQGfqDSfipYCO6w==
   /@types/minimist/1.2.0:
     dev: true
     resolution:
@@ -1969,20 +1973,22 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
-  /fission-sdk/0.5.0:
+  /fission-sdk/0.5.2:
     dependencies:
+      '@types/lodash': 4.14.150
       base58-universal: 1.0.0
       borc: 2.1.2
       get-ipfs: 1.2.0
       ipld-dag-pb: 0.18.4
       keystore-idb: 0.11.1
+      lodash: 4.17.15
       make-error: 1.3.6
       query-string: 6.12.1
     dev: false
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-2ycHMtFKdGNgy9GpEb4sVU00bLbUNIHcX8+puanMYiQDCzAPIjn5UadAVPQiHynnk3hV0QpcW+ARp2diM9mwLQ==
+      integrity: sha512-ghk99190bklm9z3JSlxLaZtxtLI0Fkhlrc9jcdm358eN6jvombT+H/A6yPDuP6MgSvbrc/K+VtkXxw0V0qKJyQ==
   /follow-redirects/1.10.0:
     dependencies:
       debug: 3.2.6
@@ -2591,7 +2597,6 @@ packages:
     resolution:
       integrity: sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
   /lodash/4.17.15:
-    dev: true
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /log-symbols/2.2.0:
@@ -4237,7 +4242,7 @@ specifiers:
   elm-impfix: ^1.0.8
   elm-live: ^4.0.1
   fission-kit: 'fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6'
-  fission-sdk: 0.5.0
+  fission-sdk: 0.5.2
   get-ipfs: ^1.2.0
   html-minifier-terser: ^5.0.5
   postcss: ^7.0.26
