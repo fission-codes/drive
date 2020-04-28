@@ -117,7 +117,6 @@ textField attributes =
             , T.rounded
             , T.text_inherit
             , T.text_base
-            , T.w_full
 
             -- Dark mode
             ------------

@@ -2,6 +2,7 @@ module FS.State exposing (..)
 
 import Common
 import Foundation
+import Ipfs
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
@@ -36,6 +37,13 @@ boot model =
 -- 🐚
 --
 -- LIFE
+
+
+gotError : String -> Manager
+gotError error model =
+    -- TODO: Show error notification
+    -- This could be something like, "directory already exists".
+    Return.singleton { model | ipfs = Ipfs.Ready }
 
 
 listDirectory : Manager

@@ -150,6 +150,7 @@ signUpForm maybeError context model =
                 , A.type_ "email"
                 , A.value context.email
                 , E.onInput GotSignUpEmailInput
+                , T.w_full
                 ]
                 []
 
@@ -167,6 +168,7 @@ signUpForm maybeError context model =
                 , A.required True
                 , A.value context.username
                 , E.onInput GotSignUpUsernameInput
+                , T.w_full
                 ]
                 []
             , usernameMessage context

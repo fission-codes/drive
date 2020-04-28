@@ -61,7 +61,7 @@ shouldShowExplore m =
         ( Just _, Ipfs.AdditionalListing ) ->
             False
 
-        ( Just _, Ipfs.FileSystemOperation ) ->
+        ( Just _, Ipfs.FileSystemOperation _ ) ->
             False
 
         _ ->
@@ -141,15 +141,22 @@ introText =
         ]
 
 
-loadingAnimation : Html msg
+loadingAnimation : { size : Int } -> Html msg
 loadingAnimation =
+    loadingAnimationWithAttributes [ T.text_gray_300 ]
+
+
+loadingAnimationWithAttributes : List (Html.Attribute msg) -> { size : Int } -> Html msg
+loadingAnimationWithAttributes attributes { size } =
     FeatherIcons.loader
-        |> FeatherIcons.withSize 24
+        |> FeatherIcons.withSize (toFloat size)
         |> wrapIcon
-            [ T.animation_spin
-            , T.inline_block
-            , T.text_gray_300
-            ]
+            (List.append
+                [ T.animation_spin
+                , T.block
+                ]
+                attributes
+            )
 
 
 loadingScreen : List (Html msg) -> Html msg
@@ -168,7 +175,7 @@ loadingScreen additionalNodes =
             , T.p_8
             , T.text_center
             ]
-            (loadingAnimation :: additionalNodes)
+            (loadingAnimation { size = 24 } :: additionalNodes)
         ]
 
 

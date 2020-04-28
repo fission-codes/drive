@@ -461,6 +461,9 @@ empty model =
     let
         isAuthenticated =
             Maybe.isJust model.authenticated
+
+        hideContent =
+            model.sidebarMode /= Sidebar.defaultMode
     in
     Html.div
         [ if isAuthenticated then
@@ -470,10 +473,10 @@ empty model =
             E.onClick Bypass
 
         --
+        , ifThenElse hideContent T.hidden T.flex
         , ifThenElse isAuthenticated T.cursor_pointer T.cursor_default
 
         --
-        , T.flex
         , T.flex_auto
         , T.flex_col
         , T.items_center
@@ -481,6 +484,9 @@ empty model =
         , T.leading_snug
         , T.text_center
         , T.text_gray_300
+
+        --
+        , T.md__flex
 
         -- Dark mode
         ------------
@@ -498,7 +504,9 @@ empty model =
 
         --
         , Html.div
-            [ T.mt_4, T.text_lg ]
+            [ T.mt_4
+            , T.text_lg
+            ]
             (case model.authenticated of
                 Just _ ->
                     [ Html.text "Nothing here yet,"
@@ -789,13 +797,11 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
         -- Tail
         -----------------------------------------
         , if loading then
-            FeatherIcons.loader
-                |> FeatherIcons.withSize S.iconSize
-                |> Common.wrapIcon
-                    [ T.animation_spin
-                    , T.ml_2
-                    , T.text_gray_300
-                    ]
+            Common.loadingAnimationWithAttributes
+                [ T.ml_2
+                , T.text_gray_300
+                ]
+                { size = S.iconSize }
 
           else
             nothing

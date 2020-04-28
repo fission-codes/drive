@@ -292,7 +292,7 @@ dataContainer item =
                 Html.nothing
 
             _ ->
-                Common.loadingAnimation
+                Common.loadingAnimation { size = S.iconSize }
         ]
 
 
@@ -316,7 +316,7 @@ extra item =
                     , T.transform
                     , T.z_0
                     ]
-                    [ Common.loadingAnimation ]
+                    [ Common.loadingAnimation { size = S.iconSize } ]
 
             _ ->
                 Html.nothing

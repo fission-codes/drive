@@ -21,10 +21,19 @@ type alias ListItem =
 type Status
     = Connecting
     | Error String
+      --
     | InitialListing
     | AdditionalListing
-    | FileSystemOperation
+      --
+    | FileSystemOperation FileSystemOperation
+      --
     | Ready
+
+
+type FileSystemOperation
+    = AddingFiles
+    | CreatingDirectory
+    | Deleting
 
 
 

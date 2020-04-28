@@ -11,6 +11,7 @@ import Drive.ContextMenu
 import Drive.Sidebar
 import Drive.State as Drive
 import Explore.State as Explore
+import FS.State as FS
 import Ipfs
 import Ipfs.State as Ipfs
 import Keyboard
@@ -89,7 +90,7 @@ init flags url navKey =
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
-      , foundation = Debug.log "foundation" loadedFoundation
+      , foundation = loadedFoundation
       , helpfulNote = Nothing
       , ipfs = Ipfs.Connecting
       , isFocused = False
@@ -240,6 +241,12 @@ update msg =
             Explore.reset a
 
         -----------------------------------------
+        -- File System
+        -----------------------------------------
+        GotFsError a ->
+            FS.gotError a
+
+        -----------------------------------------
         -- Ipfs
         -----------------------------------------
         GetDirectoryList ->
@@ -248,7 +255,7 @@ update msg =
         GotDirectoryList a ->
             Ipfs.gotDirectoryList a
 
-        GotError a ->
+        GotIpfsError a ->
             Ipfs.gotError a
 
         GotResolvedAddress a ->
@@ -319,9 +326,10 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Ports.ipfsCompletedSetup (always SetupCompleted)
+        [ Ports.fsGotError GotFsError
+        , Ports.ipfsCompletedSetup (always SetupCompleted)
         , Ports.ipfsGotDirectoryList GotDirectoryList
-        , Ports.ipfsGotError GotError
+        , Ports.ipfsGotError GotIpfsError
         , Ports.ipfsGotResolvedAddress GotResolvedAddress
         , Ports.ipfsReplaceResolvedAddress ReplaceResolvedAddress
         , Ports.gotCreateAccountFailure GotCreateAccountFailure

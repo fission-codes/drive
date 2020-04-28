@@ -25,6 +25,9 @@ import * as media from "./media.js"
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
 
+window.sdk = sdk
+
+
 const app = Elm.Main.init({
   node: document.getElementById("elm"),
   flags: {
@@ -118,12 +121,20 @@ app.ports.storeFoundation.subscribe(foundation => {
 // --
 
 const exe = (port, method, options = {}) => app.ports[port].subscribe(async a => {
-  const results = await fs[method]({ ...a, ...options })
+  let results
 
-  app.ports.ipfsGotDirectoryList.send({
-    pathSegments: a.pathSegments.slice(0, options.listParent ? -1 : undefined),
-    results
-  })
+  try {
+    results = await fs[method]({ ...a, ...options })
+
+    app.ports.ipfsGotDirectoryList.send({
+      pathSegments: a.pathSegments.slice(0, options.listParent ? -1 : undefined),
+      results
+    })
+
+  } catch (e) {
+    reportFileSystemError(e)
+
+  }
 })
 
 
@@ -154,7 +165,15 @@ app.ports.ipfsListDirectory.subscribe(({ address, pathSegments }) => {
 
 app.ports.ipfsResolveAddress.subscribe(async address => {
   const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
-  app.ports.ipfsGotResolvedAddress.send(resolvedResult)
+
+  if (resolvedResult.resolved) {
+    app.ports.ipfsGotResolvedAddress.send(resolvedResult)
+
+  } else {
+    const cachedFoundation = foundation()
+    cachedFoundation && app.ports.ipfsGotResolvedAddress.send(cachedFoundation)
+
+  }
 })
 
 
@@ -240,6 +259,12 @@ function authenticated() {
 
 function lastFsOperation() {
   return parseInt(localStorage.getItem("fissionDrive.lastFsOperation") || "0", 10)
+}
+
+
+function reportFileSystemError(err) {
+  app.ports.fsGotError.send(err.message || err || "")
+  console.error(err)
 }
 
 

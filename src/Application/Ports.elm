@@ -93,6 +93,13 @@ port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Su
 
 
 
+-- 📰  ░░  FILE SYSTEM
+
+
+port fsGotError : (String -> msg) -> Sub msg
+
+
+
 -- 📰  ░░  IPFS
 
 

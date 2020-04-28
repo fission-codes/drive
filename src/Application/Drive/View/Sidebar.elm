@@ -12,6 +12,7 @@ import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
+import Ipfs
 import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
@@ -147,25 +148,19 @@ addOrCreateForm model =
                 []
 
             --
-            , Html.button
-                [ T.antialiased
-                , T.appearance_none
-                , T.bg_purple
-                , T.font_semibold
+            , S.button
+                [ T.bg_purple
                 , T.ml_3
                 , T.px_6
-                , T.py_3
-                , T.relative
-                , T.rounded
                 , T.text_tiny
-                , T.text_white
-                , T.tracking_wider
-                , T.uppercase
-
-                --
-                , T.focus__shadow_outline
                 ]
-                [ Html.text "Create"
+                [ if model.ipfs == Ipfs.FileSystemOperation Ipfs.CreatingDirectory then
+                    Common.loadingAnimationWithAttributes
+                        [ T.text_purple_tint ]
+                        { size = S.iconSize }
+
+                  else
+                    Html.text "Create"
                 ]
             ]
 
@@ -208,8 +203,10 @@ addOrCreateForm model =
             --
             , Html.div
                 [ T.absolute
+                , T.flex
                 , T.font_light
                 , T.italic
+                , T.justify_center
                 , T.leading_tight
                 , T.left_1over2
                 , T.neg_translate_x_1over2
@@ -226,7 +223,14 @@ addOrCreateForm model =
                 ------------
                 , T.dark__text_gray_300
                 ]
-                [ Html.text "Click to choose, or drop some files" ]
+                [ if model.ipfs == Ipfs.FileSystemOperation Ipfs.AddingFiles then
+                    Common.loadingAnimationWithAttributes
+                        []
+                        { size = S.iconSize }
+
+                  else
+                    Html.text "Click to choose, or drop some files"
+                ]
             ]
         ]
 

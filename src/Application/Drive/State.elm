@@ -10,7 +10,7 @@ import File exposing (File)
 import File.Download
 import File.Select
 import Html.Events.Extra.Drag as Drag
-import Ipfs exposing (Status(..))
+import Ipfs exposing (FileSystemOperation(..), Status(..))
 import List.Ext as List
 import List.Extra as List
 import Ports
@@ -37,7 +37,7 @@ addFiles { blobs } model =
     , pathSegments = Routing.treePathSegments model.route
     }
         |> Ports.fsAddContent
-        |> return { model | ipfs = FileSystemOperation }
+        |> return { model | ipfs = FileSystemOperation AddingFiles }
 
 
 closeSidebar : Manager
@@ -97,7 +97,7 @@ createDirectory model =
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
                 |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
-                |> return { model | ipfs = FileSystemOperation }
+                |> return { model | ipfs = FileSystemOperation CreatingDirectory }
 
 
 digDeeper : { directoryName : String } -> Manager
@@ -216,7 +216,7 @@ removeItem item model =
     item
         |> Item.pathProperties
         |> Ports.fsRemoveItem
-        |> return { model | ipfs = FileSystemOperation }
+        |> return { model | ipfs = FileSystemOperation Deleting }
 
 
 select : Item -> Manager

@@ -145,13 +145,9 @@ inputScreen m =
                 ]
                 [ case m.ipfs of
                     Ipfs.InitialListing ->
-                        FeatherIcons.loader
-                            |> FeatherIcons.withSize 24
-                            |> Common.wrapIcon
-                                [ T.animation_spin
-                                , T.block
-                                , T.text_purple_tint
-                                ]
+                        Common.loadingAnimationWithAttributes
+                            [ T.text_purple_tint ]
+                            { size = S.iconSize }
 
                     _ ->
                         Html.span

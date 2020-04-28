@@ -174,7 +174,7 @@ gotDirectoryList encodedFeedback model =
         Ipfs.InitialListing ->
             gotDirectoryList_ pathSegments encodedDirList model
 
-        Ipfs.FileSystemOperation ->
+        Ipfs.FileSystemOperation _ ->
             gotDirectoryList_ pathSegments encodedDirList model
 
         Ipfs.AdditionalListing ->

@@ -139,11 +139,15 @@ type Msg
     | GotInput String
     | Reset Route
       -----------------------------------------
+      -- File System
+      -----------------------------------------
+    | GotFsError String
+      -----------------------------------------
       -- Ipfs
       -----------------------------------------
     | GetDirectoryList
     | GotDirectoryList Json.Value
-    | GotError String
+    | GotIpfsError String
     | GotResolvedAddress Foundation
     | ReplaceResolvedAddress { cid : String }
     | SetupCompleted

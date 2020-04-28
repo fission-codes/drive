@@ -26,7 +26,6 @@ export async function add({ blobs, pathSegments }) {
     await acc
     const fileOrBlob = await fetch(url).then(r => r.blob())
     const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
-    console.log(blob)
     await fs.add(`${path}/${name}`, blob)
     URL.revokeObjectURL(url)
   }, Promise.resolve(null))
