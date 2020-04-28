@@ -38,7 +38,6 @@ export async function add({ blobs, pathSegments }) {
 export async function addSampleData() {
   // TODO: We should maintain some dnslink with a standard set of data,
   //       and then "import" that data here.
-  await fs.mkdir("private/Apps")
   await fs.mkdir("private/Audio")
   await fs.mkdir("private/Documents")
   await fs.mkdir("private/Photos")
