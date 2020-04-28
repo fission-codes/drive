@@ -35,10 +35,7 @@ init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
         mode =
-            if True then
-                Mode.PersonalDomain
-
-            else if String.endsWith ".fission.name" url.host then
+            if String.endsWith ".fission.name" url.host then
                 Mode.PersonalDomain
 
             else
