@@ -121,7 +121,6 @@ export async function load({ cid, pathSegments, syncHook }) {
 
   if (fs) {
     fs.addSyncHook(syncHook)
-
     return await listDirectory({ pathSegments })
   } else {
     throw "Not a Fission File System"
@@ -132,7 +131,7 @@ export async function load({ cid, pathSegments, syncHook }) {
 export async function removeItem({ pathSegments }) {
   const path = prefixedPath(pathSegments)
   await fs.rm(path)
-  return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
+  return await listDirectory({ pathSegments: removePrivatePrefix(pathSegments).slice(0, -1) })
 }
 
 
@@ -168,16 +167,23 @@ function fakeStreamIterator(address, options) {
 // ⚗️
 
 
+export function isPrefixSegment(s) {
+  return s === "public" || s === "private"
+}
+
+
 /* Drive doesn't show a "private" root directory, only a "public" one.
    So we need to prefix with "private" when necessary.
 */
-function prefixedPath(pathSegments) {
+export function prefixedPath(pathSegments) {
   return isPrefixSegment( pathSegments[0] )
     ? pathSegments.join("/")
     : [ "private", ...pathSegments ].join("/")
 }
 
 
-function isPrefixSegment(s) {
-  return s === "public" || s === "private"
+export function removePrivatePrefix(pathSegments) {
+  return pathSegments[0] === "private"
+    ? pathSegments.slice(1)
+    : pathSegments
 }

@@ -127,7 +127,9 @@ const exe = (port, method, options = {}) => app.ports[port].subscribe(async a =>
     results = await fs[method]({ ...a, ...options })
 
     app.ports.ipfsGotDirectoryList.send({
-      pathSegments: a.pathSegments.slice(0, options.listParent ? -1 : undefined),
+      pathSegments: fs.removePrivatePrefix(
+        a.pathSegments.slice(0, options.listParent ? -1 : undefined)
+      ),
       results
     })
 
