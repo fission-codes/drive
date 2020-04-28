@@ -114,8 +114,7 @@ right model =
             Routing.Undecided ->
                 case model.mode of
                     Mode.Default ->
-                        [ explore
-                        ]
+                        [ explore ]
 
                     Mode.PersonalDomain ->
                         []
@@ -123,8 +122,8 @@ right model =
             --
             Routing.CreateAccount _ ->
                 [ action
-                    Link
-                    [ A.href (Routing.routeUrl Routing.LinkAccount model.url) ]
+                    Button
+                    [ E.onClick (Reset Routing.linkAccount) ]
                     FeatherIcons.user
                     [ Html.text "Sign in" ]
 
@@ -163,8 +162,8 @@ right model =
 treeActions model =
     [ if Maybe.isNothing model.authenticated then
         action
-            Link
-            [ A.href (Routing.routeUrl Routing.linkAccount model.url) ]
+            Button
+            [ E.onClick (Reset Routing.linkAccount) ]
             FeatherIcons.user
             [ Html.text "Sign in" ]
 
@@ -225,8 +224,8 @@ addCreateAction model =
 
 createAccount model =
     action
-        Link
-        [ A.href (Routing.routeUrl Routing.createAccount model.url) ]
+        Button
+        [ E.onClick (Reset Routing.createAccount) ]
         FeatherIcons.user
         [ Html.text "Create account" ]
 
