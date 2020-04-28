@@ -149,6 +149,7 @@ inputScreen m =
                             |> FeatherIcons.withSize 24
                             |> Common.wrapIcon
                                 [ T.animation_spin
+                                , T.block
                                 , T.text_purple_tint
                                 ]
 
