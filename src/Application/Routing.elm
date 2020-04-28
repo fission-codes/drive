@@ -50,31 +50,31 @@ linkAccount =
 
 routeFromUrl : Mode -> Url -> Route
 routeFromUrl mode url =
-    case basePath url of
-        "" ->
-            Undecided
+    case mode of
+        Mode.Default ->
+            case basePath url of
+                "" ->
+                    Undecided
 
-        "account/create" ->
-            createAccount
+                "account/create" ->
+                    createAccount
 
-        "account/link" ->
-            LinkAccount
+                "account/link" ->
+                    LinkAccount
 
-        "explore/ipfs" ->
-            Explore
+                "explore/ipfs" ->
+                    Explore
 
-        -----------------------------------------
-        -- Tree
-        -----------------------------------------
-        path ->
-            let
-                pathSegments =
-                    path
-                        |> String.chop "/"
-                        |> String.split "/"
-            in
-            case mode of
-                Mode.Default ->
+                -----------------------------------------
+                -- Tree
+                -----------------------------------------
+                path ->
+                    let
+                        pathSegments =
+                            path
+                                |> String.chop "/"
+                                |> String.split "/"
+                    in
                     case pathSegments of
                         root :: rest ->
                             Tree { root = root } rest
@@ -82,8 +82,22 @@ routeFromUrl mode url =
                         [] ->
                             Undecided
 
-                Mode.PersonalDomain ->
-                    PersonalTree pathSegments
+        Mode.PersonalDomain ->
+            case basePath url of
+                "" ->
+                    Undecided
+
+                "account/link" ->
+                    LinkAccount
+
+                -----------------------------------------
+                -- Tree
+                -----------------------------------------
+                path ->
+                    path
+                        |> String.chop "/"
+                        |> String.split "/"
+                        |> PersonalTree
 
 
 adjustUrl : Url -> Route -> Url

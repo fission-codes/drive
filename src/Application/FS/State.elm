@@ -12,6 +12,8 @@ import Types exposing (..)
 
 
 -- 🚀
+--
+-- SETUP
 
 
 boot : Manager
@@ -28,6 +30,12 @@ boot model =
             GetDirectoryList
                 |> Return.task
                 |> return model
+
+
+
+-- 🐚
+--
+-- LIFE
 
 
 listDirectory : Manager

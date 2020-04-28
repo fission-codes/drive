@@ -53,7 +53,12 @@ init flags url navKey =
                     Cmd.none
 
                 ( Just f, _ ) ->
-                    Navigation.replaceUrl navKey ("#/" ++ f.unresolved)
+                    case mode of
+                        Mode.Default ->
+                            Navigation.replaceUrl navKey ("#/" ++ f.unresolved)
+
+                        Mode.PersonalDomain ->
+                            Cmd.none
 
                 _ ->
                     Cmd.none
@@ -87,7 +92,7 @@ init flags url navKey =
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
-      , foundation = loadedFoundation
+      , foundation = Debug.log "foundation" loadedFoundation
       , helpfulNote = Nothing
       , ipfs = Ipfs.Connecting
       , isFocused = False

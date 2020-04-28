@@ -12,6 +12,7 @@ import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html
 import Maybe.Extra as Maybe
+import Mode
 import RemoteData exposing (RemoteData(..))
 import Routing
 import Styling as S
@@ -45,27 +46,12 @@ notAuthenticated model =
         --
         , Html.div
             [ T.flex, T.mt_8 ]
-            [ S.buttonLink
-                [ A.href (Routing.routeUrl Routing.createAccount model.url)
+            [ case model.mode of
+                Mode.Default ->
+                    createAccount model
 
-                --
-                , T.bg_purple
-                , T.flex
-                , T.items_center
-                ]
-                [ Html.span
-                    [ T.mr_2
-                    , T.opacity_30
-                    , T.text_white
-                    , T.w_4
-                    ]
-                    [ Common.View.Svg.icon
-                        { gradient = Nothing }
-                    ]
-
-                --
-                , Html.text "Create an account"
-                ]
+                Mode.PersonalDomain ->
+                    Html.nothing
 
             --
             , S.button
@@ -76,6 +62,31 @@ notAuthenticated model =
                 ]
                 [ Html.text "Sign in" ]
             ]
+        ]
+
+
+createAccount : Model -> Html Msg
+createAccount model =
+    S.buttonLink
+        [ A.href (Routing.routeUrl Routing.createAccount model.url)
+
+        --
+        , T.bg_purple
+        , T.flex
+        , T.items_center
+        ]
+        [ Html.span
+            [ T.mr_2
+            , T.opacity_30
+            , T.text_white
+            , T.w_4
+            ]
+            [ Common.View.Svg.icon
+                { gradient = Nothing }
+            ]
+
+        --
+        , Html.text "Create an account"
         ]
 
 

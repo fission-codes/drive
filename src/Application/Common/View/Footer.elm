@@ -9,6 +9,7 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Maybe.Extra as Maybe
+import Mode
 import Routing
 import Styling as S
 import Tailwind as T
@@ -111,8 +112,13 @@ right model =
         ]
         (case model.route of
             Routing.Undecided ->
-                [ explore
-                ]
+                case model.mode of
+                    Mode.Default ->
+                        [ explore
+                        ]
+
+                    Mode.PersonalDomain ->
+                        []
 
             --
             Routing.CreateAccount _ ->
@@ -134,9 +140,14 @@ right model =
                     [ createAccount model ]
 
             Routing.LinkAccount ->
-                [ createAccount model
-                , explore
-                ]
+                case model.mode of
+                    Mode.Default ->
+                        [ createAccount model
+                        , explore
+                        ]
+
+                    Mode.PersonalDomain ->
+                        []
 
             -----------------------------------------
             -- Tree
