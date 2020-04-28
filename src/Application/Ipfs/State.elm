@@ -21,7 +21,108 @@ import Types exposing (..)
 
 
 
+-- 🚀
+--
+-- SETUP
+
+
+{-| Part Un.
+
+IPFS connection is set up.
+This happens at boot time.
+
+Then one of the following scenarios occur:
+
+1.  A foundation is already present (cached), boot file system.
+2.  The app has a DNS Link that needs to be resolved.
+3.  Do nothing.
+
+-}
+setupCompleted : Manager
+setupCompleted model =
+    case model.foundation of
+        Just _ ->
+            FS.boot { model | ipfs = Ipfs.InitialListing }
+
+        Nothing ->
+            case Routing.treeRoot model.url model.route of
+                Just root ->
+                    return
+                        { model | ipfs = Ipfs.InitialListing }
+                        (Ports.ipfsResolveAddress root)
+
+                Nothing ->
+                    Return.singleton { model | ipfs = Ipfs.Ready }
+
+
+{-| Part Deux.
+
+A foundation has been resolved.
+
+-}
+gotResolvedAddress : Foundation -> Manager
+gotResolvedAddress foundation model =
+    let
+        changeUrl =
+            -- Do I need to put the ipfs address in the url?
+            case model.mode of
+                Mode.Default ->
+                    model.url.fragment
+                        |> Maybe.withDefault ""
+                        |> String.startsWith ("/" ++ foundation.unresolved)
+                        |> not
+
+                Mode.PersonalDomain ->
+                    False
+
+        ipfs =
+            if changeUrl then
+                model.ipfs
+
+            else
+                Ipfs.InitialListing
+    in
+    { model | ipfs = ipfs, foundation = Just foundation }
+        |> Return.singleton
+        |> (if changeUrl then
+                -- If the url needs to change, issue a navigation command
+                ("#/" ++ foundation.unresolved)
+                    |> Navigation.pushUrl model.navKey
+                    |> Return.command
+
+            else
+                -- Otherwise boot up the file system
+                Return.andThen FS.boot
+           )
+        |> Return.command (Ports.storeFoundation foundation)
+
+
+
+-- 🐚
+--
+-- LIFE
+
+
+replaceResolvedAddress : { cid : String } -> Manager
+replaceResolvedAddress { cid } model =
+    case model.foundation of
+        Just oldFoundation ->
+            let
+                newFoundation =
+                    { oldFoundation | resolved = cid }
+            in
+            return
+                { model | foundation = Just newFoundation }
+                (Ports.storeFoundation newFoundation)
+
+        Nothing ->
+            Return.singleton model
+
+
+
 -- DIRECTORY LIST
+--
+-- Regular IPFS.
 
 
 getDirectoryList : Manager
@@ -154,81 +255,3 @@ gotError error model =
             | exploreInput = Maybe.map .unresolved model.foundation
             , ipfs = Ipfs.Error error
         }
-
-
-
--- SETUP
-
-
-gotResolvedAddress : Foundation -> Manager
-gotResolvedAddress foundation model =
-    let
-        changeUrl =
-            -- Do I need to put the ipfs address in the url?
-            case model.mode of
-                Mode.Default ->
-                    model.url.fragment
-                        |> Maybe.withDefault ""
-                        |> String.startsWith ("/" ++ foundation.unresolved)
-                        |> not
-
-                Mode.PersonalDomain ->
-                    False
-
-        ipfs =
-            if changeUrl then
-                model.ipfs
-
-            else
-                Ipfs.InitialListing
-    in
-    { model | ipfs = ipfs, foundation = Just foundation }
-        |> Return.singleton
-        |> (if changeUrl then
-                -- If the url needs to change, issue a navigation command
-                ("#/" ++ foundation.unresolved)
-                    |> Navigation.pushUrl model.navKey
-                    |> Return.command
-
-            else
-                -- Otherwise boot up the file system
-                Return.andThen FS.boot
-           )
-        |> Return.command (Ports.storeFoundation foundation)
-
-
-setupCompleted : Manager
-setupCompleted model =
-    case model.foundation of
-        Just _ ->
-            FS.boot { model | ipfs = Ipfs.InitialListing }
-
-        Nothing ->
-            case Routing.treeRoot model.url model.route of
-                Just root ->
-                    return
-                        { model | ipfs = Ipfs.InitialListing }
-                        (Ports.ipfsResolveAddress root)
-
-                Nothing ->
-                    Return.singleton { model | ipfs = Ipfs.Ready }
-
-
-
--- 🐚
-
-
-replaceResolvedAddress : { cid : String } -> Manager
-replaceResolvedAddress { cid } model =
-    case model.foundation of
-        Just oldFoundation ->
-            let
-                newFoundation =
-                    { oldFoundation | resolved = cid }
-            in
-            return
-                { model | foundation = Just newFoundation }
-                (Ports.storeFoundation newFoundation)
-
-        Nothing ->
-            Return.singleton model
