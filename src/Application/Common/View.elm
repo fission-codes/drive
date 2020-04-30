@@ -52,8 +52,8 @@ fadeOutRight =
 -- STATES
 
 
-shouldShowExplore : Model -> Bool
-shouldShowExplore m =
+isPreppingTree : Model -> Bool
+isPreppingTree m =
     case ( m.foundation, m.ipfs ) of
         ( Just _, Ipfs.Ready ) ->
             False

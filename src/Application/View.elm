@@ -62,18 +62,10 @@ body m =
         -- Tree
         -----------------------------------------
         ( _, Routing.PersonalTree _ ) ->
-            if Common.shouldShowExplore m then
-                Explore.view m
-
-            else
-                Drive.view m
+            treeView m
 
         ( _, Routing.Tree _ _ ) ->
-            if Common.shouldShowExplore m then
-                Explore.view m
-
-            else
-                Drive.view m
+            treeView m
 
     -----------------------------------------
     -- Context Menu
@@ -134,6 +126,22 @@ rootAttributes m =
         [ E.on "focusout" (Decode.succeed Blurred)
         , E.on "focusin" (Decode.succeed Focused)
         ]
+
+
+treeView : Model -> Html Msg
+treeView m =
+    if Common.isPreppingTree m then
+        if Maybe.isJust m.authenticated then
+            [ Html.text "Just a moment, loading your file system." ]
+                |> Html.div [ T.italic, T.mt_3 ]
+                |> List.singleton
+                |> Common.loadingScreen
+
+        else
+            Explore.view m
+
+    else
+        Drive.view m
 
 
 
