@@ -67,27 +67,29 @@ notAuthenticated model =
 
 createAccount : Model -> Html Msg
 createAccount model =
-    S.buttonLink
-        [ A.href (Routing.routeUrl Routing.createAccount model.url)
-
-        --
-        , T.bg_purple
-        , T.flex
-        , T.items_center
+    [ Html.span
+        [ T.mr_2
+        , T.opacity_30
+        , T.text_white
+        , T.w_4
         ]
-        [ Html.span
-            [ T.mr_2
-            , T.opacity_30
-            , T.text_white
-            , T.w_4
-            ]
-            [ Common.View.Svg.icon
-                { gradient = Nothing }
-            ]
-
-        --
-        , Html.text "Create an account"
+        [ Common.View.Svg.icon
+            { gradient = Nothing }
         ]
+
+    --
+    , Html.text "Create an account"
+    ]
+        |> Html.div
+            [ T.flex
+            , T.items_center
+            , T.pt_px
+            ]
+        |> List.singleton
+        |> S.buttonLink
+            [ A.href (Routing.routeUrl Routing.createAccount model.url)
+            , T.bg_purple
+            ]
 
 
 

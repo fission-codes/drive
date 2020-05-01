@@ -79,52 +79,20 @@ shouldShowLoadingAnimation m =
 
 introLogo : Html msg
 introLogo =
-    Html.div
-        [ T.antialiased
-        , T.font_display
-        , T.font_light
-        , T.leading_none
-        , T.tracking_widest
-        , T.text_6xl
-        , T.uppercase
+    Html.a
+        [ A.href "#/"
+
+        --
+        , T.block
+        , T.max_w_sm
+        , T.relative
+        , T.w_full
         ]
-        [ Html.span
-            []
-            [ Html.text "Fission " ]
-        , Html.span
-            [ T.relative ]
-            [ Html.text "Drive"
-            , Html.div
-                [ A.style "font-size" "11.5px"
-                , A.style "letter-spacing" "1.5px"
-                , A.style "padding" "0px 3px 0 4px"
-
-                --
-                , T.absolute
-                , T.bg_gray_300
-                , T.font_body
-                , T.font_normal
-                , T.leading_relaxed
-                , T.mt_px
-                , T.px_1
-                , T.right_0
-                , T.rounded_sm
-                , T.subpixel_antialiased
-                , T.top_0
-                , T.tracking_wider
-                , T.transform
-                , T.translate_x_5
-                , T.translate_y_1
-                , T.text_gray_600
-                , T.text_xs
-
-                -- Dark mode
-                ------------
-                , T.dark__bg_gray_200
-                , T.dark__text_gray_400
-                ]
-                [ Html.text "BETA" ]
+        [ Html.div
+            [ A.style "background-image" "url(images/logo/drive_full_gradient_purple_haze.svg)"
+            , A.style "padding-top" "28.0386934%"
             ]
+            []
         ]
 
 
@@ -132,7 +100,7 @@ introText : List (Html msg) -> Html msg
 introText =
     Html.div
         [ T.max_w_xl
-        , T.mt_5
+        , T.mt_4
         , T.text_gray_300
 
         -- Dark mode

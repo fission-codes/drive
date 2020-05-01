@@ -71,8 +71,8 @@ left =
           -- Logo
           -----------------------------------------
           Html.img
-            [ A.src "images/badge-solid-faded.svg"
-            , A.width 28
+            [ A.src "images/logo/drive_short_gradient_purple_haze.svg"
+            , A.width 30
 
             --
             , T.opacity_70
@@ -83,11 +83,10 @@ left =
         -- App name
         -----------------------------------------
         , Html.span
-            [ T.font_display
-            , T.font_medium
+            [ T.font_bold
+            , T.font_display
             , T.leading_tight
-            , T.ml_3
-            , T.pl_px
+            , T.ml_2
             , T.text_gray_400
             , T.text_sm
             , T.tracking_wider

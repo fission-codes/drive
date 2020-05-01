@@ -41,7 +41,7 @@ export default {
       ...defaultTheme.fontFamily,
 
       body: [ kit.fonts.body, ...defaultTheme.fontFamily.sans ],
-      display: [ kit.fonts.display, ...defaultTheme.fontFamily.serif ],
+      display: [ "Nunito", kit.fonts.display, ...defaultTheme.fontFamily.serif ],
       mono: [ kit.fonts.mono, ...defaultTheme.fontFamily.mono ],
     },
 
