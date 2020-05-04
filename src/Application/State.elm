@@ -72,8 +72,8 @@ init flags url navKey =
             -- When the following is a `Just`,
             -- it will not load from a dnslink and
             -- use the cached cid instead.
-            if flags.lastFsOperation + 2 * 60 * 1000 > flags.currentTime then
-                -- Last file-system change was only two minutes ago, use the cached cid.
+            if flags.lastFsOperation + 15 * 60 * 1000 > flags.currentTime then
+                -- Last file-system change was only 15 minutes ago, use the cached cid.
                 -- This is done because of the delay on DNS updates.
                 Maybe.andThen
                     (\_ -> flags.foundation)
