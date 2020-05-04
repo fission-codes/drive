@@ -192,9 +192,19 @@ sortingFunction : { isGroundFloor : Bool } -> Item -> Item -> Order
 sortingFunction { isGroundFloor } a b =
     -- Put directories on top,
     -- and then sort alphabetically by name
-    case ( a.kind, b.kind, isGroundFloor && a.name == "public" ) of
+    let
+        ( aIsPublic, bIsPublic ) =
+            ( a.name == "public"
+            , b.name == "public"
+            )
+    in
+    case ( a.kind, b.kind, isGroundFloor && (aIsPublic || bIsPublic) ) of
         ( _, _, True ) ->
-            LT
+            if aIsPublic then
+                LT
+
+            else
+                GT
 
         ( Directory, Directory, _ ) ->
             compare (String.toLower a.name) (String.toLower b.name)
