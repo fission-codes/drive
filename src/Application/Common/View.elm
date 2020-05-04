@@ -22,11 +22,11 @@ blobUrlsDecoder =
         |> Decode.map (\blobs -> Types.AddFiles { blobs = blobs })
 
 
-blobUrlObjectDecoder : Decode.Decoder { name : String, url : String }
+blobUrlObjectDecoder : Decode.Decoder { path : String, url : String }
 blobUrlObjectDecoder =
     Decode.map2
-        (\name url -> { name = name, url = url })
-        (Decode.field "name" Decode.string)
+        (\path url -> { path = path, url = url })
+        (Decode.field "path" Decode.string)
         (Decode.field "url" Decode.string)
 
 

@@ -125,9 +125,9 @@ async function ensureArray(result) {
 
 async function lookupDns(domain) {
   try {
-    await sdk.misc.dns.lookupDnsLink(domain)
+    return await sdk.misc.dns.lookupDnsLink(domain)
 
-  } catch (_) {
+  } catch (err) {
     return null
 
   }

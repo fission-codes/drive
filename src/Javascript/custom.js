@@ -14,8 +14,37 @@ Custom Elements.
 // we make Blob URLS and pass those around.
 
 
+function reducePromises(fn, list) {
+  return list.reduce(
+    (p, x) => p.then(a => fn(x).then(b => [ ...a, ...b ])),
+    Promise.resolve([])
+  )
+}
+
+
+function handleEntry(entry) {
+  return new Promise(resolve => {
+    if (entry.isDirectory) {
+      entry.createReader().readEntries(entries => {
+        // Handle directories recursively
+        reducePromises(handleEntry, entries).then(resolve)
+      })
+
+    } else {
+      entry.file(file => {
+        resolve([ handleFile(file) ])
+      })
+
+    }
+  })
+}
+
+
 function handleFile(file) {
-  return { name: file.name, url: URL.createObjectURL(file) }
+  return {
+    path: file.webkitRelativePath || file.name,
+    url: URL.createObjectURL(file)
+  }
 }
 
 
@@ -28,6 +57,7 @@ class ContentUploader extends HTMLElement {
     const inputElement = document.createElement("input")
     inputElement.multiple = true
     inputElement.type = "file"
+    inputElement.webkitdirectory = true
 
     inputElement.style.position = "absolute"
     inputElement.style.top = "-1000px"
@@ -57,10 +87,20 @@ class DropZone extends HTMLElement {
     super()
 
     this.addEventListener("drop", event => {
-      const blobs = [ ...event.dataTransfer.files ].map(handleFile)
-      const blobsEvent = new CustomEvent("dropBlobs", { detail: { blobs } })
+      if (!event.dataTransfer.items) {
+        console.error("Browser doesn't support this method of uploading files.")
+        return
+      }
 
-      this.dispatchEvent(blobsEvent)
+      reducePromises(
+        item => handleEntry(item.webkitGetAsEntry()),
+        Array.from(event.dataTransfer.items)
+
+      ).then(blobs => {
+        const blobsEvent = new CustomEvent("dropBlobs", { detail: { blobs } })
+        this.dispatchEvent(blobsEvent)
+
+      })
     })
   }
 

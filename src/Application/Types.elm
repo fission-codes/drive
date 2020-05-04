@@ -118,7 +118,7 @@ type Msg
       -- Drive
       -----------------------------------------
     | ActivateSidebarMode Drive.Sidebar.Mode
-    | AddFiles { blobs : List { name : String, url : String } }
+    | AddFiles { blobs : List { path : String, url : String } }
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
     | CopyToClipboard { clip : String, notification : String }

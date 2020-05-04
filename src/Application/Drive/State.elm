@@ -31,7 +31,7 @@ activateSidebarMode mode model =
     Return.singleton { model | sidebarMode = mode }
 
 
-addFiles : { blobs : List { name : String, url : String } } -> Manager
+addFiles : { blobs : List { path : String, url : String } } -> Manager
 addFiles { blobs } model =
     { blobs = blobs
     , pathSegments = Routing.treePathSegments model.route

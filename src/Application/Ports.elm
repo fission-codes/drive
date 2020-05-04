@@ -35,7 +35,7 @@ port storeFoundation : Foundation -> Cmd msg
 
 
 port fsAddContent :
-    { blobs : List { name : String, url : String }
+    { blobs : List { path : String, url : String }
     , pathSegments : List String
     }
     -> Cmd msg

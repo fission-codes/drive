@@ -20,13 +20,14 @@ let fs
 
 
 export async function add({ blobs, pathSegments }) {
-  const path = prefixedPath(pathSegments)
+  const basePath = prefixedPath(pathSegments)
 
-  await blobs.reduce(async (acc, { name, url }) => {
+  await blobs.reduce(async (acc, { path, url }) => {
     await acc
     const fileOrBlob = await fetch(url).then(r => r.blob())
+    const fullPath = (basePath.length ? basePath + "/" : "") + path
     const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
-    await fs.add(`${path}/${name}`, blob)
+    await fs.add(fullPath, blob)
     URL.revokeObjectURL(url)
   }, Promise.resolve(null))
 
