@@ -39,11 +39,6 @@ export async function listDirectory(address) {
 }
 
 
-export async function prefetchTree(address) {
-  return await ipfs.dag.tree(address, { recursive: true })
-}
-
-
 export async function replaceDnsLinkInAddress(address) {
   const splitted = address.replace(/(^\/|\/$)/m, "").split("/")
   const firstPart = splitted[0]
@@ -54,7 +49,7 @@ export async function replaceDnsLinkInAddress(address) {
 
   return {
     isDnsLink,
-    resolved: [replacedPart].concat(splitted.slice(1)).join("/"),
+    resolved: replacedPart && [replacedPart].concat(splitted.slice(1)).join("/"),
     unresolved: isDnsLink ? [cleanedPart].concat(splitted.slice(1)).join("/") : address
   }
 }
@@ -130,11 +125,10 @@ async function ensureArray(result) {
 
 async function lookupDns(domain) {
   try {
-    const result = await ipfs.dns(domain)
-    return result.replace(/^\/ipfs\//, "")
+    return await sdk.misc.dns.lookupDnsLink(domain)
 
-  } catch (_) {
-    return domain
+  } catch (err) {
+    return null
 
   }
 }

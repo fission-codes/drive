@@ -9,11 +9,16 @@ import Drive.View.Details as Details
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Events.Extra as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
+import Ipfs
+import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Result.Extra as Result
 import Routing exposing (Route(..))
+import Styling as S
 import Tailwind as T
 import Types exposing (..)
 import Url.Builder
@@ -129,69 +134,33 @@ addOrCreateForm model =
 
         --
         , Html.form
-            [ T.flex
+            [ E.onSubmit CreateDirectory
+
+            --
+            , T.flex
             , T.max_w_md
             ]
-            [ Html.input
-                [ A.placeholder "Box of Magic"
-
-                --
-                -- , case m.ipfs of
-                --     Ipfs.Error _ ->
-                --         T.border_pink_tint
-                --
-                --     _ ->
-                --         T.border_gray_500
-                --
-                --
-                , T.appearance_none
-                , T.bg_transparent
-                , T.border_2
-                , T.border_gray_500
-                , T.flex_auto
-                , T.leading_relaxed
-                , T.outline_none
-                , T.px_4
-                , T.py_2
-                , T.rounded
-                , T.text_inherit
-                , T.text_base
+            [ S.textField
+                [ A.placeholder "Magic Box"
+                , E.onInput GotCreateDirectoryInput
                 , T.w_0
-
-                --
-                -- , case m.ipfs of
-                --     Ipfs.Error _ ->
-                --         T.focus__border_dark_pink
-                --
-                --     _ ->
-                --         T.focus__border_purple_tint
-                --
-                -- Dark mode
-                ------------
-                , T.dark__border_gray_200
                 ]
                 []
 
             --
-            , Html.button
-                [ T.antialiased
-                , T.appearance_none
-                , T.bg_purple
-                , T.font_semibold
+            , S.button
+                [ T.bg_purple
                 , T.ml_3
                 , T.px_6
-                , T.py_3
-                , T.relative
-                , T.rounded
                 , T.text_tiny
-                , T.text_white
-                , T.tracking_wider
-                , T.uppercase
-
-                --
-                , T.focus__shadow_outline
                 ]
-                [ Html.text "Create"
+                [ if model.ipfs == Ipfs.FileSystemOperation Ipfs.CreatingDirectory then
+                    Common.loadingAnimationWithAttributes
+                        [ T.text_purple_tint ]
+                        { size = S.iconSize }
+
+                  else
+                    Html.text "Create"
                 ]
             ]
 
@@ -204,36 +173,45 @@ addOrCreateForm model =
 
         --
         , Html.div
-            [ E.onClick AskUserForFilesToAdd
-
-            --
-            , A.style "min-height" "90px"
-            , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "21.5%")
-
-            --
-            , T.border_2
-            , T.border_dashed
-            , T.border_gray_500
-            , T.block
-            , T.cursor_pointer
-            , T.h_0
-            , T.overflow_hidden
-            , T.relative
-            , T.rounded
+            [ T.relative
             , T.text_center
-
-            -- Dark mode
-            ------------
-            , T.dark__border_darkness_above
             ]
-            [ Html.div
+            [ Html.node
+                "fs-content-uploader"
+                [ E.on "changeBlobs" Common.blobUrlsDecoder
+
+                --
+                , A.style "min-height" "108px"
+                , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "22.5%")
+
+                --
+                , T.border_2
+                , T.border_dashed
+                , T.border_gray_500
+                , T.block
+                , T.cursor_pointer
+                , T.h_0
+                , T.overflow_hidden
+                , T.rounded
+
+                -- Dark mode
+                ------------
+                , T.dark__border_darkness_above
+                ]
+                []
+
+            --
+            , Html.div
                 [ T.absolute
+                , T.flex
                 , T.font_light
                 , T.italic
+                , T.justify_center
                 , T.leading_tight
                 , T.left_1over2
                 , T.neg_translate_x_1over2
                 , T.neg_translate_y_1over2
+                , T.pointer_events_none
                 , T.px_4
                 , T.text_gray_400
                 , T.top_1over2
@@ -245,7 +223,14 @@ addOrCreateForm model =
                 ------------
                 , T.dark__text_gray_300
                 ]
-                [ Html.text "Click to choose, or drop some files" ]
+                [ if model.ipfs == Ipfs.FileSystemOperation Ipfs.AddingFiles then
+                    Common.loadingAnimationWithAttributes
+                        []
+                        { size = S.iconSize }
+
+                  else
+                    Html.text "Click to choose, or drop some files"
+                ]
             ]
         ]
 
@@ -269,14 +254,16 @@ detailsForSelection model =
             |> Maybe.andThen
                 (\path ->
                     model.directoryList
+                        |> Result.map .items
                         |> Result.withDefault []
                         |> List.find (.path >> (==) path)
                 )
             |> Maybe.map
-                (Html.Lazy.lazy5
+                (Html.Lazy.lazy6
                     Details.view
-                    model.currentTime
                     (Common.base { presentable = False } model)
+                    (Result.unwrap True (.floor >> (==) 1) model.directoryList)
+                    model.currentTime
                     model.expandSidebar
                     model.showPreviewOverlay
                 )

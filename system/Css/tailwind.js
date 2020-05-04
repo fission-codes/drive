@@ -30,7 +30,6 @@ export default {
 
       "white_05": "rgba(255, 255, 255, 0.05)",
 
-      "current-color": "currentColor",
       "inherit": "inherit",
       "transparent": "transparent"
     },
@@ -42,7 +41,7 @@ export default {
       ...defaultTheme.fontFamily,
 
       body: [ kit.fonts.body, ...defaultTheme.fontFamily.sans ],
-      display: [ kit.fonts.display, ...defaultTheme.fontFamily.serif ],
+      display: [ "Nunito", kit.fonts.display, ...defaultTheme.fontFamily.serif ],
       mono: [ kit.fonts.mono, ...defaultTheme.fontFamily.mono ],
     },
 

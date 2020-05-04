@@ -1,9 +1,13 @@
 module Drive.ContextMenu exposing (hamburger, item)
 
+import Common
 import ContextMenu exposing (..)
 import Drive.Item exposing (Kind(..))
 import Drive.Sidebar as Sidebar
 import FeatherIcons
+import List.Ext as List
+import Maybe.Extra as Maybe
+import Routing
 import Types exposing (..)
 
 
@@ -11,19 +15,25 @@ import Types exposing (..)
 -- 🍔
 
 
-hamburger : { authenticated : Bool } -> ContextMenu Msg
-hamburger { authenticated } =
-    ContextMenu.build
-        TopRight
-        (if authenticated then
-            authenticatedBurgers ++ [ Divider ] ++ alwaysBurgers
+hamburger : Model -> ContextMenu Msg
+hamburger model =
+    (if Common.isAuthenticatedAndNotExploring model then
+        yourBurgers
 
-         else
-            alwaysBurgers
-        )
+     else if Maybe.isJust model.authenticated then
+        model.authenticated
+            |> Maybe.map .dnsLink
+            |> Maybe.withDefault ""
+            |> authenticatedOtherBurgers
+
+     else
+        unauthenticatedBurgers
+    )
+        |> List.add ([ Divider ] ++ alwaysBurgers)
+        |> ContextMenu.build TopRight
 
 
-authenticatedBurgers =
+yourBurgers =
     [ Item
         { icon = FeatherIcons.upload
         , label = "Add files"
@@ -44,18 +54,77 @@ authenticatedBurgers =
         , href = Nothing
         , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
         }
+
+    -- TODO:
+    --
+    -- , Item
+    --     { icon = FeatherIcons.user
+    --     , label = "Sign out"
+    --     , active = False
+    --
+    --     --
+    --     , href = Nothing
+    --     , msg = Just (Reset Routing.Undecided)
+    --     }
+    ]
+
+
+authenticatedOtherBurgers dnsLink =
+    [ Item
+        { icon = FeatherIcons.hardDrive
+        , label = "My Drive"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            []
+                |> Routing.Tree { root = dnsLink }
+                |> GoToRoute
+                |> Just
+        }
+    ]
+
+
+unauthenticatedBurgers =
+    [ Item
+        { icon = FeatherIcons.user
+        , label = "Sign in"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            Routing.linkAccount
+                |> GoToRoute
+                |> Just
+        }
+
+    --
+    , Item
+        { icon = FeatherIcons.user
+        , label = "Create account"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            Routing.createAccount
+                |> GoToRoute
+                |> Just
+        }
     ]
 
 
 alwaysBurgers =
     [ Item
         { icon = FeatherIcons.hash
-        , label = "Change CID"
+        , label = "Explore"
         , active = False
 
         --
         , href = Nothing
-        , msg = Just Reset
+        , msg = Just (Reset Routing.Explore)
         }
 
     --
@@ -86,20 +155,35 @@ alwaysBurgers =
 -- ITEM
 
 
-item : Drive.Item.Item -> ContextMenu Msg
-item context =
+item : ContextMenu.Hook -> { isGroundFloor : Bool } -> Drive.Item.Item -> ContextMenu Msg
+item hook { isGroundFloor } context =
     ContextMenu.build
-        BottomCenter
+        hook
         (case context.kind of
             Directory ->
-                [ driveLink context
-                , copyCid context
-                ]
+                List.append
+                    [ driveLink context
+                    , copyCid context
+                    ]
+                    (if isGroundFloor && context.name == "public" then
+                        []
+
+                     else
+                        [ Divider
+                        , removeItem context
+                        ]
+                    )
 
             _ ->
                 [ driveLink context
                 , contentLink context
                 , copyCid context
+
+                --
+                , Divider
+
+                --
+                , removeItem context
                 ]
         )
 
@@ -151,5 +235,20 @@ driveLink context =
             , presentable = True
             }
                 |> CopyPublicUrl
+                |> Just
+        }
+
+
+removeItem context =
+    Item
+        { icon = FeatherIcons.trash2
+        , label = "Remove"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            context
+                |> RemoveItem
                 |> Just
         }

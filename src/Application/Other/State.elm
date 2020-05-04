@@ -3,8 +3,8 @@ module Other.State exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Drive.State as Drive
+import FS.State as FS
 import Ipfs
-import Ipfs.State
 import Keyboard
 import Maybe.Extra as Maybe
 import Ports
@@ -93,6 +93,15 @@ focused model =
 -- URL
 
 
+goToRoute : Route -> Manager
+goToRoute route model =
+    route
+        |> Routing.adjustUrl model.url
+        |> Url.toString
+        |> Navigation.pushUrl model.navKey
+        |> return model
+
+
 linkClicked : Browser.UrlRequest -> Manager
 linkClicked urlRequest model =
     case urlRequest of
@@ -115,16 +124,22 @@ urlChanged url old =
             old.ipfs == Ipfs.Connecting
 
         route =
-            Routing.routeFromUrl url
+            Routing.routeFromUrl old.mode url
+
+        newRoot =
+            Routing.treeRoot url route
+
+        oldRoot =
+            Routing.treeRoot url old.route
 
         isTreeRoute =
-            Maybe.isJust (Routing.treeRoot route)
+            Maybe.isJust newRoot
 
         needsResolve =
-            Routing.treeRoot route /= Maybe.map .unresolved old.foundation
+            newRoot /= Maybe.map .unresolved old.foundation
 
         isInitialListing =
-            Routing.treeRoot old.route /= Maybe.map .unresolved old.foundation
+            oldRoot /= Maybe.map .unresolved old.foundation
     in
     { old
         | ipfs =
@@ -150,21 +165,19 @@ urlChanged url old =
         , selectedPath = Nothing
         , url = url
     }
-        |> Return.singleton
-        |> Return.effect_
-            (\new ->
+        |> (\new ->
                 if stillConnecting || not isTreeRoute then
-                    Cmd.none
+                    Return.singleton new
 
                 else if needsResolve then
-                    new.route
-                        |> Routing.treeRoot
+                    newRoot
                         |> Maybe.map Ports.ipfsResolveAddress
                         |> Maybe.withDefault Cmd.none
+                        |> return new
 
                 else if new.route /= old.route && Maybe.isJust old.foundation then
-                    Ipfs.State.getDirectoryListCmd new
+                    FS.listDirectory new
 
                 else
-                    Cmd.none
-            )
+                    Return.singleton new
+           )

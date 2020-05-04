@@ -4,13 +4,14 @@ import Browser.Navigation as Navigation
 import Common
 import Common.State as Common
 import Debouncing
-import Drive.Item exposing (Item)
+import Drive.Item as Item exposing (Item)
 import Drive.Sidebar
 import File exposing (File)
 import File.Download
 import File.Select
 import Html.Events.Extra.Drag as Drag
-import Ipfs
+import Ipfs exposing (FileSystemOperation(..), Status(..))
+import List.Ext as List
 import List.Extra as List
 import Ports
 import Result.Extra as Result
@@ -30,15 +31,13 @@ activateSidebarMode mode model =
     Return.singleton { model | sidebarMode = mode }
 
 
-addFiles : File -> List File -> Manager
-addFiles file otherFiles =
-    -- TODO
-    Return.singleton
-
-
-askUserForFilesToAdd : Manager
-askUserForFilesToAdd =
-    Return.communicate (File.Select.files [] AddFiles)
+addFiles : { blobs : List { path : String, url : String } } -> Manager
+addFiles { blobs } model =
+    { blobs = blobs
+    , pathSegments = Routing.treePathSegments model.route
+    }
+        |> Ports.fsAddContent
+        |> return { model | ipfs = FileSystemOperation AddingFiles }
 
 
 closeSidebar : Manager
@@ -73,7 +72,7 @@ copyPublicUrl { item, presentable } model =
                 "Copied Content URL to clipboard."
     in
     item
-        |> Drive.Item.publicUrl base
+        |> Item.publicUrl base
         |> Ports.copyToClipboard
         |> Return.return model
         |> Return.command (Ports.showNotification notification)
@@ -87,11 +86,27 @@ copyToClipboard { clip, notification } model =
         |> Return.command (Ports.showNotification notification)
 
 
+createDirectory : Manager
+createDirectory model =
+    case String.trim model.createDirectoryInput of
+        "" ->
+            Return.singleton model
+
+        directoryName ->
+            model.route
+                |> Routing.treePathSegments
+                |> List.add [ directoryName ]
+                |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
+                |> return { model | ipfs = FileSystemOperation CreatingDirectory }
+
+
 digDeeper : { directoryName : String } -> Manager
 digDeeper { directoryName } model =
     let
-        directoryList =
-            Result.withDefault [] model.directoryList
+        items =
+            model.directoryList
+                |> Result.map .items
+                |> Result.withDefault []
 
         currentPathSegments =
             Routing.treePathSegments model.route
@@ -104,7 +119,7 @@ digDeeper { directoryName } model =
                 _ ->
                     currentPathSegments
 
-        updatedDirectoryList =
+        updatedItems =
             List.map
                 (\i ->
                     if i.name == directoryName then
@@ -113,7 +128,10 @@ digDeeper { directoryName } model =
                     else
                         { i | loading = False }
                 )
-                directoryList
+                items
+
+        updatedDirectoryList =
+            Result.map (\l -> { l | items = updatedItems }) model.directoryList
     in
     [ directoryName ]
         |> List.append pathSegments
@@ -121,19 +139,19 @@ digDeeper { directoryName } model =
         |> Routing.adjustUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
-        |> Return.return { model | directoryList = Ok updatedDirectoryList }
+        |> Return.return { model | directoryList = updatedDirectoryList }
 
 
 digDeeperUsingSelection : Manager
 digDeeperUsingSelection model =
     case ( model.directoryList, model.selectedPath ) of
-        ( Ok items, Just path ) ->
+        ( Ok { items }, Just path ) ->
             items
                 |> List.find
                     (.path >> (==) path)
                 |> Maybe.map
                     (\item ->
-                        if item.kind == Drive.Item.Directory then
+                        if item.kind == Item.Directory then
                             digDeeper { directoryName = item.name } model
 
                         else
@@ -149,19 +167,14 @@ digDeeperUsingSelection model =
 downloadItem : Item -> Manager
 downloadItem item model =
     item
-        |> Drive.Item.publicUrl (Common.base { presentable = False } model)
+        |> Item.publicUrl (Common.base { presentable = False } model)
         |> File.Download.url
         |> return model
 
 
-droppedSomeFiles : Drag.Event -> Manager
-droppedSomeFiles event =
-    -- TODO
-    let
-        files =
-            event.dataTransfer.files
-    in
-    Common.hideHelpfulNote
+gotCreateDirectoryInput : String -> Manager
+gotCreateDirectoryInput input model =
+    Return.singleton { model | createDirectoryInput = input }
 
 
 goUp : { floor : Int } -> Manager
@@ -182,7 +195,7 @@ goUp { floor } model =
             |> Return.command
                 ({ on = True }
                     |> ToggleLoadingOverlay
-                    |> Debouncing.loadingInput
+                    |> Debouncing.loading.provideInput
                     |> Return.task
                 )
 
@@ -196,6 +209,14 @@ goUpOneLevel model =
         |> Routing.treePathSegments
         |> List.length
         |> (\x -> goUp { floor = x } model)
+
+
+removeItem : Item -> Manager
+removeItem item model =
+    item
+        |> Item.pathProperties
+        |> Ports.fsRemoveItem
+        |> return { model | ipfs = FileSystemOperation Deleting }
 
 
 select : Item -> Manager
@@ -255,7 +276,7 @@ toggleSidebarMode mode model =
 makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Manager
 makeItemSelector indexModifier fallbackIndexFn model =
     case ( model.directoryList, model.selectedPath ) of
-        ( Ok items, Just selectedPath ) ->
+        ( Ok { items }, Just selectedPath ) ->
             items
                 |> List.findIndex (.path >> (==) selectedPath)
                 |> Maybe.map indexModifier
@@ -263,7 +284,7 @@ makeItemSelector indexModifier fallbackIndexFn model =
                 |> Maybe.map (\item -> select item model)
                 |> Maybe.withDefault (Return.singleton model)
 
-        ( Ok items, Nothing ) ->
+        ( Ok { items }, Nothing ) ->
             items
                 |> List.getAt (fallbackIndexFn items)
                 |> Maybe.map (\item -> select item model)

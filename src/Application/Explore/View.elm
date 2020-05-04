@@ -8,6 +8,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Ipfs
+import Routing
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -44,31 +45,10 @@ inputScreen m =
         , T.justify_center
         , T.text_center
         ]
-        [ Html.div
-            [ T.antialiased
-            , T.font_display
-            , T.font_light
-            , T.leading_tight
-            , T.text_6xl
-            , T.tracking_widest
-            , T.uppercase
-            ]
-            [ Html.text "Fission Drive" ]
-
-        --
-        , Html.div
-            [ T.max_w_md
-            , T.mt_5
-            , T.text_gray_300
-
-            -- Dark mode
-            ------------
-            , T.dark__text_gray_400
-            ]
-            [ Html.text """
-                This is a Preview release which will evolve into your personal Fission Drive. Enter any public IPFS hash or use the example hash.
-              """
-            ]
+        [ Common.introLogo
+        , Common.introText [ Html.text """
+            Enter any public IPFS hash or DNSLink domain.
+          """ ]
 
         --
         , Html.form
@@ -77,10 +57,10 @@ inputScreen m =
                     E.onSubmit Bypass
 
                 Ipfs.InitialListing ->
-                    E.onSubmit Reset
+                    E.onSubmit (Reset Routing.Explore)
 
                 _ ->
-                    E.onSubmit Explore
+                    E.onSubmit ChangeCid
 
             --
             , T.flex
@@ -118,7 +98,7 @@ inputScreen m =
                 --
                 , case m.ipfs of
                     Ipfs.Error _ ->
-                        T.focus__border_dark_pink
+                        T.focus__border_red
 
                     _ ->
                         T.focus__border_purple_tint
@@ -130,7 +110,7 @@ inputScreen m =
                 --
                 , case m.ipfs of
                     Ipfs.Error _ ->
-                        T.dark__focus__border_dark_pink
+                        T.dark__focus__border_red
 
                     _ ->
                         T.dark__focus__border_purple
@@ -141,7 +121,7 @@ inputScreen m =
             , Html.button
                 [ case m.ipfs of
                     Ipfs.Error _ ->
-                        T.bg_dark_pink
+                        T.bg_red
 
                     _ ->
                         T.bg_purple
@@ -165,14 +145,9 @@ inputScreen m =
                 ]
                 [ case m.ipfs of
                     Ipfs.InitialListing ->
-                        FeatherIcons.loader
-                            |> FeatherIcons.withSize 24
-                            |> FeatherIcons.toHtml []
-                            |> List.singleton
-                            |> Html.div
-                                [ T.animation_spin
-                                , T.text_purple_tint
-                                ]
+                        Common.loadingAnimationWithAttributes
+                            [ T.text_purple_tint ]
+                            { size = S.iconSize }
 
                     _ ->
                         Html.span

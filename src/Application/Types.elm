@@ -3,19 +3,24 @@ module Types exposing (..)
 {-| Root-level types.
 -}
 
+import Authentication.Types exposing (SignUpContext)
 import Browser
 import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
+import Coordinates exposing (Coordinates)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Item exposing (Item)
 import Drive.Sidebar
 import File exposing (File)
+import Foundation exposing (Foundation)
 import Html.Events.Extra.Drag as Drag
 import Html.Events.Extra.Mouse as Mouse
 import Ipfs
 import Json.Decode as Json
 import Keyboard
 import Management
+import Mode exposing (Mode)
+import RemoteData exposing (RemoteData)
 import Routing exposing (Route)
 import Time
 import Url exposing (Url)
@@ -28,7 +33,10 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { foundation : Maybe Foundation
+    { authenticated : Maybe { dnsLink : String }
+    , currentTime : Int
+    , foundation : Maybe Foundation
+    , lastFsOperation : Int
     , viewportSize : { height : Int, width : Int }
     }
 
@@ -40,9 +48,9 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { authenticated : Bool
+    { authenticated : Maybe { dnsLink : String }
     , currentTime : Time.Posix
-    , directoryList : Result String (List Item)
+    , directoryList : Result String { floor : Int, items : List Item }
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
     , exploreInput : Maybe String
@@ -50,6 +58,7 @@ type alias Model =
     , helpfulNote : Maybe { faded : Bool, note : String }
     , ipfs : Ipfs.Status
     , isFocused : Bool
+    , mode : Mode
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
     , route : Route
@@ -63,10 +72,17 @@ type alias Model =
     -----------------------------------------
     , loadingDebouncer : Debouncer Msg
     , notificationsDebouncer : Debouncer Msg
+    , usernameAvailabilityDebouncer : Debouncer Msg
+
+    -----------------------------------------
+    -- Remote Data
+    -----------------------------------------
+    , reCreateAccount : RemoteData String ()
 
     -----------------------------------------
     -- Sidebar
     -----------------------------------------
+    , createDirectoryInput : String
     , expandSidebar : Bool
     , showPreviewOverlay : Bool
     , sidebarMode : Drive.Sidebar.Mode
@@ -82,23 +98,36 @@ type alias Model =
 type Msg
     = Bypass
       -----------------------------------------
+      -- Authentication
+      -----------------------------------------
+    | CheckIfUsernameIsAvailable
+    | CreateAccount SignUpContext
+    | GotCreateAccountFailure String
+    | GotCreateAccountSuccess { dnsLink : String }
+    | GotSignUpEmailInput String
+    | GotSignUpUsernameInput String
+    | GotUsernameAvailability { available : Bool, valid : Bool }
+    | SignIn
+      -----------------------------------------
       -- Debouncers
       -----------------------------------------
     | LoadingDebouncerMsg (Debouncer.Msg Msg)
     | NotificationsDebouncerMsg (Debouncer.Msg Msg)
+    | UsernameAvailabilityDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
       -- Drive
       -----------------------------------------
     | ActivateSidebarMode Drive.Sidebar.Mode
-    | AddFiles File (List File)
-    | AskUserForFilesToAdd
+    | AddFiles { blobs : List { path : String, url : String } }
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
     | CopyToClipboard { clip : String, notification : String }
+    | CreateDirectory
     | DigDeeper { directoryName : String }
     | DownloadItem Item
-    | DroppedSomeFiles Drag.Event
+    | GotCreateDirectoryInput String
     | GoUp { floor : Int }
+    | RemoveItem Item
     | Select Item
     | ShowPreviewOverlay
     | ToggleExpandedSidebar
@@ -106,14 +135,19 @@ type Msg
       -----------------------------------------
       -- Explore
       -----------------------------------------
-    | Explore
+    | ChangeCid
     | GotInput String
-    | Reset
+    | Reset Route
+      -----------------------------------------
+      -- File System
+      -----------------------------------------
+    | GotFsError String
       -----------------------------------------
       -- Ipfs
       -----------------------------------------
+    | GetDirectoryList
     | GotDirectoryList Json.Value
-    | GotError String
+    | GotIpfsError String
     | GotResolvedAddress Foundation
     | ReplaceResolvedAddress { cid : String }
     | SetupCompleted
@@ -124,12 +158,14 @@ type Msg
     | RemoveContextMenu
     | RemoveHelpfulNote
     | ShowContextMenu (ContextMenu Msg) Mouse.Event
+    | ShowContextMenuWithCoordinates Coordinates (ContextMenu Msg)
     | ShowHelpfulNote String
       -----------------------------------------
       -- 🐚 Other
       -----------------------------------------
     | Blurred
     | Focused
+    | GoToRoute Route
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | ScreenSizeChanged Int Int
@@ -146,14 +182,3 @@ type alias Organizer model =
 
 type alias Manager =
     Organizer Model
-
-
-
--- 🧩
-
-
-type alias Foundation =
-    { isDnsLink : Bool
-    , resolved : String
-    , unresolved : String
-    }

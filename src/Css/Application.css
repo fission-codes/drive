@@ -59,10 +59,38 @@ textarea::placeholder {
 }
 
 
+input:-moz-ui-invalid,
+textarea:-moz-ui-invalid {
+  @apply border-pink outline-none shadow-none;
+}
+
+
+input:user-invalid,
+textarea:user-invalid {
+  @apply border-pink outline-none shadow-none;
+}
+
+
+input:focus,
+textarea:focus {
+  @apply border-purple-tint;
+}
+
+
 @screen dark {
   input::placeholder,
   textarea::placeholder {
     @apply text-gray-300 opacity-75;
+  }
+
+  input:user-invalid,
+  textarea:user-invalid {
+    @apply border-pink-shade;
+  }
+
+  input:focus,
+  textarea:focus {
+    @apply border-purple-shade;
   }
 }
 

@@ -55,6 +55,16 @@ ifThenElse condition x y =
         y
 
 
+isAuthenticatedAndNotExploring : Model -> Bool
+isAuthenticatedAndNotExploring model =
+    case ( model.authenticated, model.foundation ) of
+        ( Just { dnsLink }, Just { unresolved } ) ->
+            dnsLink == unresolved
+
+        _ ->
+            False
+
+
 sizeInWords : Int -> String
 sizeInWords sizeInBytes =
     let

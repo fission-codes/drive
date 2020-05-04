@@ -1,7 +1,8 @@
 port module Ports exposing (..)
 
+import Foundation exposing (Foundation)
 import Json.Decode as Json
-import Types exposing (Foundation)
+import Types
 
 
 
@@ -11,7 +12,10 @@ import Types exposing (Foundation)
 port copyToClipboard : String -> Cmd msg
 
 
-port renderMedia : { id : String, name : String, path : String } -> Cmd msg
+port renderMedia : { id : String, name : String, path : String, useFS : Bool } -> Cmd msg
+
+
+port removeStoredAuthDnsLink : () -> Cmd msg
 
 
 port removeStoredFoundation : () -> Cmd msg
@@ -20,7 +24,33 @@ port removeStoredFoundation : () -> Cmd msg
 port showNotification : String -> Cmd msg
 
 
+port storeAuthDnsLink : String -> Cmd msg
+
+
 port storeFoundation : Foundation -> Cmd msg
+
+
+
+-- 📣  ░░  FILE SYSTEM
+
+
+port fsAddContent :
+    { blobs : List { path : String, url : String }
+    , pathSegments : List String
+    }
+    -> Cmd msg
+
+
+port fsCreateDirectory : { pathSegments : List String } -> Cmd msg
+
+
+port fsListDirectory : { pathSegments : List String } -> Cmd msg
+
+
+port fsLoad : { cid : String, pathSegments : List String } -> Cmd msg
+
+
+port fsRemoveItem : { pathSegments : List String } -> Cmd msg
 
 
 
@@ -30,9 +60,6 @@ port storeFoundation : Foundation -> Cmd msg
 port ipfsListDirectory : { address : String, pathSegments : List String } -> Cmd msg
 
 
-port ipfsPrefetchTree : String -> Cmd msg
-
-
 port ipfsResolveAddress : String -> Cmd msg
 
 
@@ -40,14 +67,40 @@ port ipfsSetup : () -> Cmd msg
 
 
 
--- 📣  ░░  SDK
+-- 📣  ░░  USER
 
 
-port sdkCreateDirectoryPath : { address : String, pathSegments : List String } -> Cmd msg
+port annihilateKeys : () -> Cmd msg
+
+
+port checkIfUsernameIsAvailable : String -> Cmd msg
+
+
+port createAccount : { email : String, username : String } -> Cmd msg
 
 
 
 -- 📰
+
+
+port gotCreateAccountFailure : (String -> msg) -> Sub msg
+
+
+port gotCreateAccountSuccess : ({ dnsLink : String } -> msg) -> Sub msg
+
+
+port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg
+
+
+
+-- 📰  ░░  FILE SYSTEM
+
+
+port fsGotError : (String -> msg) -> Sub msg
+
+
+
+-- 📰  ░░  IPFS
 
 
 port ipfsCompletedSetup : (() -> msg) -> Sub msg

@@ -178,26 +178,44 @@ nameProperties name =
     }
 
 
+pathProperties : Item -> { pathSegments : List String }
+pathProperties item =
+    { pathSegments = String.split "/" item.path }
+
+
 publicUrl : String -> Item -> String
 publicUrl base item =
     String.chopEnd "/" base ++ "/" ++ item.name
 
 
-sortingFunction : Item -> Item -> Order
-sortingFunction a b =
+sortingFunction : { isGroundFloor : Bool } -> Item -> Item -> Order
+sortingFunction { isGroundFloor } a b =
     -- Put directories on top,
     -- and then sort alphabetically by name
-    case ( a.kind, b.kind ) of
-        ( Directory, Directory ) ->
+    let
+        ( aIsPublic, bIsPublic ) =
+            ( a.name == "public"
+            , b.name == "public"
+            )
+    in
+    case ( a.kind, b.kind, isGroundFloor && (aIsPublic || bIsPublic) ) of
+        ( _, _, True ) ->
+            if aIsPublic then
+                LT
+
+            else
+                GT
+
+        ( Directory, Directory, _ ) ->
             compare (String.toLower a.name) (String.toLower b.name)
 
-        ( Directory, _ ) ->
+        ( Directory, _, _ ) ->
             LT
 
-        ( _, Directory ) ->
+        ( _, Directory, _ ) ->
             GT
 
-        ( _, _ ) ->
+        ( _, _, _ ) ->
             compare (String.toLower a.name) (String.toLower b.name)
 
 
@@ -257,3 +275,52 @@ kindName kind =
         --
         Other ->
             "File"
+
+
+nameIcon : Item -> Maybe FeatherIcons.Icon
+nameIcon item =
+    nameIconForBasename item.nameProperties.base
+
+
+nameIconForBasename : String -> Maybe FeatherIcons.Icon
+nameIconForBasename basename =
+    case basename of
+        "Apps" ->
+            Just FeatherIcons.package
+
+        "Applications" ->
+            Just FeatherIcons.package
+
+        --
+        "Audio" ->
+            Just FeatherIcons.music
+
+        "Music" ->
+            Just FeatherIcons.music
+
+        --
+        "Docs" ->
+            Just FeatherIcons.fileText
+
+        "Documents" ->
+            Just FeatherIcons.fileText
+
+        --
+        "Movies" ->
+            Just FeatherIcons.video
+
+        "Video" ->
+            Just FeatherIcons.video
+
+        "Videos" ->
+            Just FeatherIcons.video
+
+        --
+        "Photos" ->
+            Just FeatherIcons.image
+
+        "Pictures" ->
+            Just FeatherIcons.image
+
+        _ ->
+            Nothing

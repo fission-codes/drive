@@ -1,8 +1,9 @@
 module Drive.View exposing (view)
 
-import Common
+import Common exposing (ifThenElse)
 import Common.View as Common
 import Common.View.Footer as Footer
+import ContextMenu
 import Drive.ContextMenu as ContextMenu
 import Drive.Item exposing (Item, Kind(..))
 import Drive.Sidebar as Sidebar
@@ -11,8 +12,11 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Events.Ext as E
 import Html.Events.Extra.Mouse as M
+import Html.Events.Extra.Touch as T
 import Html.Extra as Html exposing (nothing)
+import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Routing exposing (Route(..))
@@ -34,7 +38,7 @@ view model =
         , T.min_h_screen
         ]
         [ header model
-        , content model
+        , primary model
 
         --
         , Html.div
@@ -90,9 +94,7 @@ header model =
               -----------------------------------------
               FeatherIcons.hardDrive
                 |> FeatherIcons.withSize S.iconSize
-                |> FeatherIcons.toHtml []
-                |> List.singleton
-                |> Html.div
+                |> Common.wrapIcon
                     [ T.mr_5
                     , T.opacity_50
                     , T.text_purple
@@ -121,7 +123,7 @@ header model =
                             Just <| rootPathPart model segments
 
                         else if idx == 0 then
-                            Just <| activePathPart segment
+                            Just <| activePathPart (amountOfSegments - idx + 1) segment
 
                         else if showEntirePath && idx == amountOfSegments then
                             Just <| rootPathPart model segments
@@ -160,7 +162,7 @@ header model =
                             Just <| rootPathPart model segments
 
                         else if idx == 0 then
-                            Just <| activePathPart segment
+                            Just <| activePathPart (amountOfSegments - idx + 1) segment
 
                         else if idx == 1 then
                             Just <| inactivePathPart (amountOfSegments - idx + 1) "…"
@@ -231,13 +233,10 @@ header model =
                 ]
                 [ FeatherIcons.menu
                     |> FeatherIcons.withSize S.iconSize
-                    |> FeatherIcons.toHtml []
+                    |> Common.wrapIcon [ T.pointer_events_none ]
                     |> List.singleton
                     |> Html.span
-                        [ T.pointer_events_none ]
-                    |> List.singleton
-                    |> Html.span
-                        [ { authenticated = model.authenticated }
+                        [ model
                             |> ContextMenu.hamburger
                             |> ShowContextMenu
                             |> M.onClick
@@ -252,12 +251,12 @@ header model =
 
 
 inactivePathPart : Int -> String -> Html Msg
-inactivePathPart idx text =
+inactivePathPart floor text =
     Html.span
         [ A.class "underline-thick"
 
         --
-        , { floor = idx }
+        , { floor = floor }
             |> GoUp
             |> E.onClick
 
@@ -273,14 +272,14 @@ inactivePathPart idx text =
         , T.dark__tdc_gray_200
         , T.dark__text_gray_400
         ]
-        [ Html.text text ]
+        [ namePart floor text ]
 
 
-activePathPart : String -> Html Msg
-activePathPart text =
+activePathPart : Int -> String -> Html Msg
+activePathPart floor text =
     Html.span
         [ T.text_purple ]
-        [ Html.text text ]
+        [ namePart floor text ]
 
 
 pathSeparator : Html Msg
@@ -359,59 +358,76 @@ rootPathPart model segments =
         [ Html.text text ]
 
 
+namePart : Int -> String -> Html Msg
+namePart floor text =
+    let
+        isPublicRootDir =
+            floor == 2 && text == "public"
+    in
+    if isPublicRootDir then
+        Html.map never publicDirPart
+
+    else
+        case Drive.Item.nameIconForBasename text of
+            Just icon ->
+                breadcrumbIcon icon
+
+            Nothing ->
+                Html.text text
+
+
+publicDirPart : Html Never
+publicDirPart =
+    breadcrumbIcon FeatherIcons.globe
+
+
+breadcrumbIcon : FeatherIcons.Icon -> Html msg
+breadcrumbIcon icon =
+    icon
+        |> FeatherIcons.withSize 24
+        |> FeatherIcons.toHtml []
+        |> List.singleton
+        |> Html.div [ A.style "vertical-align" "sub", T.inline_block ]
+
+
 
 -- MAIN
 
 
-content : Model -> Html Msg
-content model =
+primary : Model -> Html Msg
+primary model =
     case model.directoryList of
-        Ok [] ->
-            empty
-
         Ok directoryList ->
-            contentAvailable model directoryList
+            mainLayout
+                model
+                (case directoryList.items of
+                    [] ->
+                        if model.expandSidebar then
+                            Html.nothing
+
+                        else
+                            empty model
+
+                    _ ->
+                        contentAvailable model directoryList
+                )
 
         Err err ->
-            -- Error is handled by the root view,
-            -- which will render the explore view.
-            empty
+            Html.div
+                [ T.flex
+                , T.flex_1
+                , T.items_center
+                , T.justify_center
+                , T.p_5
+                ]
+                [ Html.div
+                    [ T.max_w_md ]
+                    [ Html.text err ]
+                ]
 
 
-empty : Html Msg
-empty =
-    Html.div
-        [ T.flex
-        , T.flex_auto
-        , T.flex_col
-        , T.items_center
-        , T.justify_center
-        , T.leading_snug
-        , T.text_center
-        , T.text_gray_300
-
-        -- Dark mode
-        ------------
-        , T.dark__text_gray_400
-        ]
-        [ FeatherIcons.folder
-            |> FeatherIcons.withSize 88
-            |> FeatherIcons.toHtml []
-            |> List.singleton
-            |> Html.div [ T.opacity_30 ]
-
-        --
-        , Html.div
-            [ T.mt_4, T.text_lg ]
-            [ Html.text "Nothing to see here,"
-            , Html.br [] []
-            , Html.text "empty directory"
-            ]
-        ]
-
-
-contentAvailable : Model -> List Item -> Html Msg
-contentAvailable model directoryList =
+mainLayout : Model -> Html Msg -> Html Msg
+mainLayout model leftSide =
     Html.div
         [ T.flex
         , T.flex_auto
@@ -430,31 +446,7 @@ contentAvailable model directoryList =
             [ -----------------------------------------
               -- Left
               -----------------------------------------
-              Html.div
-                (List.append
-                    [ A.id "drive-items"
-
-                    --
-                    , T.flex_auto
-                    , T.w_1over2
-                    ]
-                    (let
-                        hideContent =
-                            Maybe.isJust model.selectedPath
-                                || (model.sidebarMode /= Sidebar.defaultMode)
-                     in
-                     if model.expandSidebar then
-                        [ T.hidden ]
-
-                     else if hideContent then
-                        [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
-
-                     else
-                        [ T.pr_12, T.lg__pr_24 ]
-                    )
-                )
-                [ list model directoryList
-                ]
+              leftSide
 
             -----------------------------------------
             -- Right
@@ -464,12 +456,112 @@ contentAvailable model directoryList =
         ]
 
 
+empty : Model -> Html Msg
+empty model =
+    let
+        isAuthenticated =
+            Maybe.isJust model.authenticated
+
+        hideContent =
+            model.sidebarMode /= Sidebar.defaultMode
+    in
+    Html.div
+        [ if isAuthenticated then
+            E.onClick (ToggleSidebarMode Sidebar.AddOrCreate)
+
+          else
+            E.onClick Bypass
+
+        --
+        , ifThenElse hideContent T.hidden T.flex
+        , ifThenElse isAuthenticated T.cursor_pointer T.cursor_default
+
+        --
+        , T.flex_auto
+        , T.flex_col
+        , T.items_center
+        , T.justify_center
+        , T.leading_snug
+        , T.text_center
+        , T.text_gray_300
+
+        --
+        , T.md__flex
+
+        -- Dark mode
+        ------------
+        , T.dark__text_gray_400
+        ]
+        [ if isAuthenticated then
+            FeatherIcons.plus
+                |> FeatherIcons.withSize 88
+                |> Common.wrapIcon [ T.opacity_30 ]
+
+          else
+            FeatherIcons.folder
+                |> FeatherIcons.withSize 88
+                |> Common.wrapIcon [ T.opacity_30 ]
+
+        --
+        , Html.div
+            [ T.mt_4
+            , T.text_lg
+            ]
+            (case model.authenticated of
+                Just _ ->
+                    [ Html.text "Nothing here yet,"
+                    , Html.br [] []
+                    , Html.text "click or drag to add"
+                    ]
+
+                Nothing ->
+                    [ Html.text "Nothing to see here,"
+                    , Html.br [] []
+                    , Html.text "empty directory"
+                    ]
+            )
+        ]
+
+
+contentAvailable : Model -> { floor : Int, items : List Item } -> Html Msg
+contentAvailable model directoryList =
+    Html.div
+        (List.append
+            [ A.id "drive-items"
+
+            --
+            , T.flex_auto
+            , T.w_1over2
+            ]
+            (let
+                hideContent =
+                    Maybe.isJust model.selectedPath
+                        || (model.sidebarMode /= Sidebar.defaultMode)
+             in
+             if model.expandSidebar then
+                [ T.hidden ]
+
+             else if hideContent then
+                [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
+
+             else
+                [ T.pr_12, T.lg__pr_24 ]
+            )
+        )
+        [ list model directoryList
+        ]
+
+
 
 -- MAIN  /  LIST
 
 
-list : Model -> List Item -> Html Msg
+list : Model -> { floor : Int, items : List Item } -> Html Msg
 list model directoryList =
+    let
+        isGroundFloor =
+            directoryList.floor == 1
+    in
     Html.div
         [ T.text_lg ]
         [ Html.div
@@ -489,8 +581,8 @@ list model directoryList =
         -----------------------------------------
         -- Tree
         -----------------------------------------
-        , directoryList
-            |> List.map (listItem model.selectedPath)
+        , directoryList.items
+            |> List.map (listItem isGroundFloor model.selectedPath)
             |> Html.div []
 
         -----------------------------------------
@@ -507,7 +599,7 @@ list model directoryList =
                             ( d, f + 1, s + i.size )
                     )
                     ( 0, 0, 0 )
-                    directoryList
+                    directoryList.items
 
             sizeString =
                 Common.sizeInWords size
@@ -550,26 +642,61 @@ list model directoryList =
         ]
 
 
-listItem : Maybe String -> Item -> Html Msg
-listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Bool -> Maybe String -> Item -> Html Msg
+listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path } as item) =
     let
+        { base } =
+            nameProperties
+
         selected =
             selectedPath == Just path
+
+        isPublicRootDir =
+            isGroundFloor && name == "public"
     in
     Html.div
         [ case kind of
             Directory ->
                 { directoryName = name }
                     |> DigDeeper
-                    |> E.onClick
+                    |> E.onTap
 
             _ ->
                 item
                     |> Select
-                    |> E.onClick
+                    |> E.onTap
+
+        -- Show context menu on right click,
+        -- or when holding, without moving, the item on touch devices.
+        , item
+            |> ContextMenu.item
+                ContextMenu.TopCenterWithoutOffset
+                { isGroundFloor = isGroundFloor }
+            |> ShowContextMenu
+            |> M.onContextMenu
 
         --
-        , T.border_b
+        , E.custom
+            "longtap"
+            (Decode.map2
+                (\x y ->
+                    { message =
+                        item
+                            |> ContextMenu.item
+                                ContextMenu.TopCenterWithoutOffset
+                                { isGroundFloor = isGroundFloor }
+                            |> ShowContextMenuWithCoordinates { x = x, y = y }
+
+                    --
+                    , stopPropagation = True
+                    , preventDefault = False
+                    }
+                )
+                (Decode.field "x" Decode.float)
+                (Decode.field "y" Decode.float)
+            )
+
+        --
         , T.border_gray_700
         , T.cursor_pointer
         , T.flex
@@ -577,6 +704,13 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         , T.items_center
         , T.mt_px
         , T.py_4
+
+        --
+        , if isPublicRootDir then
+            T.border_b_2
+
+          else
+            T.border_b
 
         --
         , if selected then
@@ -599,8 +733,14 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         [ -----------------------------------------
           -- Icon
           -----------------------------------------
-          kind
-            |> Drive.Item.kindIcon
+          (if isPublicRootDir then
+            FeatherIcons.globe
+
+           else
+            item
+                |> Drive.Item.nameIcon
+                |> Maybe.withDefault (Drive.Item.kindIcon kind)
+          )
             |> FeatherIcons.withSize S.iconSize
             |> FeatherIcons.toHtml []
             |> List.singleton
@@ -611,7 +751,11 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         -----------------------------------------
         , Html.span
             [ T.flex_auto, T.ml_5, T.truncate ]
-            [ Html.text nameProperties.base
+            [ if isPublicRootDir then
+                Html.text "Public"
+
+              else
+                Html.text nameProperties.base
 
             --
             , case nameProperties.extension of
@@ -653,15 +797,11 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         -- Tail
         -----------------------------------------
         , if loading then
-            FeatherIcons.loader
-                |> FeatherIcons.withSize S.iconSize
-                |> FeatherIcons.toHtml []
-                |> List.singleton
-                |> Html.span
-                    [ T.animation_spin
-                    , T.ml_2
-                    , T.text_gray_300
-                    ]
+            Common.loadingAnimationWithAttributes
+                [ T.ml_2
+                , T.text_gray_300
+                ]
+                { size = S.iconSize }
 
           else
             nothing
@@ -670,9 +810,7 @@ listItem selectedPath ({ kind, loading, name, nameProperties, path } as item) =
         , if selected then
             FeatherIcons.arrowRight
                 |> FeatherIcons.withSize S.iconSize
-                |> FeatherIcons.toHtml []
-                |> List.singleton
-                |> Html.span [ T.ml_2, T.opacity_50 ]
+                |> Common.wrapIcon [ T.ml_2, T.opacity_50 ]
 
           else
             nothing

@@ -31,6 +31,7 @@ type alias ItemProperties msg =
 
 type Hook
     = BottomCenter
+    | TopCenterWithoutOffset
     | TopRight
 
 

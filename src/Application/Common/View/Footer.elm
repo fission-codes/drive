@@ -1,5 +1,6 @@
 module Common.View.Footer exposing (view)
 
+import Common
 import Common.View as Common
 import Drive.Sidebar
 import FeatherIcons
@@ -7,6 +8,9 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
+import Maybe.Extra as Maybe
+import Mode
+import Routing
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -67,8 +71,8 @@ left =
           -- Logo
           -----------------------------------------
           Html.img
-            [ A.src "images/badge-solid-faded.svg"
-            , A.width 28
+            [ A.src "images/logo/drive_short_gradient_purple_haze.svg"
+            , A.width 30
 
             --
             , T.opacity_70
@@ -79,11 +83,10 @@ left =
         -- App name
         -----------------------------------------
         , Html.span
-            [ T.font_display
-            , T.font_medium
+            [ T.font_bold
+            , T.font_display
             , T.leading_tight
-            , T.ml_3
-            , T.pl_px
+            , T.ml_2
             , T.text_gray_400
             , T.text_sm
             , T.tracking_wider
@@ -106,54 +109,88 @@ right model =
         --
         , T.sm__scale_100
         ]
-        (if Common.shouldShowExplore model then
-            [ action
-                Link
-                [ A.href "https://guide.fission.codes/drive"
-                , A.rel "noopener noreferrer"
-                , A.target "_blank"
-                ]
-                FeatherIcons.book
-                [ Html.text "Guide" ]
+        (case model.route of
+            Routing.Undecided ->
+                case model.mode of
+                    Mode.Default ->
+                        [ explore ]
+
+                    Mode.PersonalDomain ->
+                        []
 
             --
-            , action
-                Link
-                [ A.href "https://fission.codes/support"
-                , A.rel "noopener noreferrer"
-                , A.target "_blank"
+            Routing.CreateAccount _ ->
+                [ action
+                    Button
+                    [ E.onClick (Reset Routing.linkAccount) ]
+                    FeatherIcons.user
+                    [ Html.text "Sign in" ]
+
+                --
+                , explore
                 ]
-                FeatherIcons.lifeBuoy
-                [ Html.text "Support" ]
-            ]
 
-         else
-            [ if model.authenticated then
-                addCreateAction model
+            Routing.Explore ->
+                if Maybe.isJust model.authenticated then
+                    [ myDrive model ]
 
-              else
-                Html.nothing
+                else
+                    [ createAccount model ]
 
-            --
-            , action
-                Button
-                [ { clip = Url.toString model.url
-                  , notification = "Copied Drive URL to clipboard."
-                  }
-                    |> CopyToClipboard
-                    |> E.onClick
-                ]
-                FeatherIcons.share2
-                [ Html.text "Copy Link" ]
+            Routing.LinkAccount ->
+                case model.mode of
+                    Mode.Default ->
+                        [ createAccount model
+                        , explore
+                        ]
 
-            --
-            , action
-                Button
-                [ E.onClick Reset ]
-                FeatherIcons.hash
-                [ Html.text "Change CID" ]
-            ]
+                    Mode.PersonalDomain ->
+                        []
+
+            -----------------------------------------
+            -- Tree
+            -----------------------------------------
+            Routing.PersonalTree _ ->
+                treeActions model
+
+            Routing.Tree _ _ ->
+                treeActions model
         )
+
+
+treeActions model =
+    [ if Maybe.isNothing model.authenticated then
+        action
+            Button
+            [ E.onClick (Reset Routing.linkAccount) ]
+            FeatherIcons.user
+            [ Html.text "Sign in" ]
+
+      else
+        Html.nothing
+
+    --
+    , if Common.isAuthenticatedAndNotExploring model then
+        addCreateAction model
+
+      else if Maybe.isJust model.authenticated then
+        myDrive model
+
+      else
+        createAccount model
+
+    --
+    , action
+        Button
+        [ { clip = Url.toString model.url
+          , notification = "Copied Drive URL to clipboard."
+          }
+            |> CopyToClipboard
+            |> E.onClick
+        ]
+        FeatherIcons.share2
+        [ Html.text "Copy Link" ]
+    ]
 
 
 
@@ -182,6 +219,38 @@ addCreateAction model =
         ]
         FeatherIcons.plus
         [ Html.text "Add / Create" ]
+
+
+createAccount model =
+    action
+        Button
+        [ E.onClick (Reset Routing.createAccount) ]
+        FeatherIcons.user
+        [ Html.text "Create account" ]
+
+
+explore =
+    action
+        Button
+        [ E.onClick (Reset Routing.Explore) ]
+        FeatherIcons.hash
+        [ Html.text "Explore" ]
+
+
+myDrive model =
+    case model.authenticated of
+        Just { dnsLink } ->
+            action
+                Link
+                [ model.url
+                    |> Routing.routeUrl (Routing.Tree { root = dnsLink } [])
+                    |> A.href
+                ]
+                FeatherIcons.hardDrive
+                [ Html.text "My Drive" ]
+
+        Nothing ->
+            Html.nothing
 
 
 

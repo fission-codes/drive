@@ -1,10 +1,12 @@
 module Common.State exposing (..)
 
 import ContextMenu exposing (ContextMenu, Hook(..))
+import Coordinates exposing (Coordinates)
 import Debouncing
 import Drive.Item
 import Html.Events.Extra.Mouse as Mouse
 import List.Extra as List
+import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
 import Return.Extra as Return
@@ -23,7 +25,7 @@ hideHelpfulNote model =
         |> Return.singleton
         |> Return.command
             (RemoveHelpfulNote
-                |> Debouncing.notificationsInput
+                |> Debouncing.notifications.provideInput
                 |> Return.task
             )
 
@@ -34,6 +36,7 @@ potentiallyRenderMedia model =
         Maybe.andThen
             (\path ->
                 model.directoryList
+                    |> Result.map .items
                     |> Result.withDefault []
                     |> List.find (.path >> (==) path)
             )
@@ -44,6 +47,7 @@ potentiallyRenderMedia model =
                 { id = item.id
                 , name = item.name
                 , path = item.path
+                , useFS = Maybe.isJust model.authenticated
                 }
                     |> Ports.renderMedia
                     |> return model
@@ -77,26 +81,40 @@ showContextMenu menu event model =
             -- TODO: We need to get the element width
             case ContextMenu.hook menu of
                 BottomCenter ->
-                    9
+                    Tuple.first event.offsetPos - 9
+
+                TopCenterWithoutOffset ->
+                    0
 
                 TopRight ->
-                    22
+                    Tuple.first event.offsetPos - 22
 
         yOffset =
             case ContextMenu.hook menu of
                 BottomCenter ->
+                    Tuple.second event.offsetPos + 15
+
+                TopCenterWithoutOffset ->
                     -15
 
                 TopRight ->
-                    40
+                    Tuple.second event.offsetPos - 40
 
         menuWithPosition =
-            { x = Tuple.first event.clientPos - Tuple.first event.offsetPos + xOffset
-            , y = Tuple.second event.clientPos - Tuple.second event.offsetPos + yOffset
+            { x = Tuple.first event.clientPos - xOffset
+            , y = Tuple.second event.clientPos - yOffset
             }
                 |> ContextMenu.position menu
     in
     Return.singleton { model | contextMenu = Just menuWithPosition }
+
+
+showContextMenuWithCoordinates : Coordinates -> ContextMenu Msg -> Manager
+showContextMenuWithCoordinates coordinates menu model =
+    coordinates
+        |> ContextMenu.position menu
+        |> (\c -> { model | contextMenu = Just c })
+        |> Return.singleton
 
 
 showHelpfulNote : String -> Manager
@@ -104,6 +122,6 @@ showHelpfulNote note model =
     return
         { model | helpfulNote = Just { faded = False, note = note } }
         (HideHelpfulNote
-            |> Debouncing.notificationsInput
+            |> Debouncing.notifications.provideInput
             |> Return.task
         )

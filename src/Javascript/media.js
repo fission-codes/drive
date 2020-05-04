@@ -7,13 +7,15 @@ Everything involving media.
 */
 
 import "./web_modules/render-media.js"
+
+import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 
 
 let stream
 
 
-export function render({ id, name, path }) {
+export function render({ id, name, path, useFS }) {
   const containerId = id
 
   // Get container node
@@ -23,6 +25,11 @@ export function render({ id, name, path }) {
   container.childNodes.forEach(c => {
     container.removeChild(c)
   })
+
+  // Streaming method
+  const makeStream = useFS
+    ? fs.fakeStream
+    : ipfs.stream
 
   // Initialize stream
   const file = address => ({
@@ -37,7 +44,7 @@ export function render({ id, name, path }) {
         stream.destroy()
       }
 
-      stream = ipfs.stream(address, { offset: start, length: end && end - start })
+      stream = makeStream(address, { offset: start, length: end && end - start })
       stream.on("error", console.error)
 
       return stream

@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Authentication.View as Authentication
 import Browser
 import Common.View as Common
 import Common.View.ContextMenu
@@ -10,12 +11,13 @@ import Drive.View as Drive
 import Explore.View as Explore
 import Html exposing (Html)
 import Html.Events as E
+import Html.Events.Ext as E
 import Html.Events.Extra.Drag as Drag
 import Html.Extra as Html
 import Html.Lazy as Lazy
 import Json.Decode as Decode
 import Maybe.Extra as Maybe
-import Routing exposing (Route(..))
+import Routing
 import Styling as S
 import Tailwind as T
 import Types exposing (..)
@@ -38,20 +40,32 @@ body m =
     [ -----------------------------------------
       -- Main
       -----------------------------------------
-      if Common.shouldShowLoadingAnimation m then
-        Html.div
-            [ T.absolute
-            , T.left_1over2
-            , T.neg_translate_y_1over2
-            , T.top_1over2
-            ]
-            [ Common.loadingAnimation ]
+      case ( Common.shouldShowLoadingAnimation m, m.route ) of
+        ( True, _ ) ->
+            Common.loadingScreen []
 
-      else if Common.shouldShowExplore m then
-        Explore.view m
+        ( _, Routing.Undecided ) ->
+            Authentication.notAuthenticated m
 
-      else
-        Drive.view m
+        --
+        ( _, Routing.CreateAccount context ) ->
+            Authentication.signUp context m
+
+        ( _, Routing.Explore ) ->
+            Explore.view m
+
+        ( _, Routing.LinkAccount ) ->
+            -- TODO
+            Authentication.notAuthenticated m
+
+        -----------------------------------------
+        -- Tree
+        -----------------------------------------
+        ( _, Routing.PersonalTree _ ) ->
+            treeView m
+
+        ( _, Routing.Tree _ _ ) ->
+            treeView m
 
     -----------------------------------------
     -- Context Menu
@@ -80,15 +94,17 @@ body m =
         m.contextMenu
         m.helpfulNote
     ]
-        |> Html.div
+        |> Html.node
+            "fs-drop-zone"
             (case m.route of
-                Tree _ _ ->
+                Routing.Tree _ _ ->
                     { onOver = \_ -> ShowHelpfulNote "Drop to add it to your drive"
-                    , onDrop = DroppedSomeFiles
+                    , onDrop = \_ -> HideHelpfulNote
                     , onEnter = Nothing
                     , onLeave = Nothing
                     }
                         |> Drag.onFileFromOS
+                        |> List.append [ E.on "dropBlobs" Common.blobUrlsDecoder ]
                         |> List.append (rootAttributes m)
 
                 _ ->
@@ -99,17 +115,33 @@ body m =
 
 rootAttributes : Model -> List (Html.Attribute Msg)
 rootAttributes m =
-    [ E.on "focusout" (Decode.succeed Blurred)
-    , E.on "focusin" (Decode.succeed Focused)
+    List.append
+        (case m.contextMenu of
+            Just _ ->
+                [ E.onTap RemoveContextMenu ]
 
-    --
-    , case m.contextMenu of
-        Just _ ->
-            E.onClick RemoveContextMenu
+            Nothing ->
+                []
+        )
+        [ E.on "focusout" (Decode.succeed Blurred)
+        , E.on "focusin" (Decode.succeed Focused)
+        ]
 
-        Nothing ->
-            E.onClick Bypass
-    ]
+
+treeView : Model -> Html Msg
+treeView m =
+    if Common.isPreppingTree m then
+        if Maybe.isJust m.authenticated then
+            [ Html.text "Just a moment, loading your file system." ]
+                |> Html.div [ T.italic, T.mt_3 ]
+                |> List.singleton
+                |> Common.loadingScreen
+
+        else
+            Explore.view m
+
+    else
+        Drive.view m
 
 
 
