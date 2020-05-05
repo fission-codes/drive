@@ -24,6 +24,7 @@ base { presentable } model =
                      else
                         foundation.resolved
                     )
+                |> List.map Url.percentEncode
                 |> String.join "/"
                 |> (if presentable then
                         model.url

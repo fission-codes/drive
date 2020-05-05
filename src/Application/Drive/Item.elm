@@ -6,6 +6,7 @@ import List.Extra as List
 import Murmur3
 import String.Ext as String
 import Time
+import Url
 
 
 
@@ -185,7 +186,7 @@ pathProperties item =
 
 publicUrl : String -> Item -> String
 publicUrl base item =
-    String.chopEnd "/" base ++ "/" ++ item.name
+    String.chopEnd "/" base ++ "/" ++ Url.percentEncode item.name
 
 
 sortingFunction : { isGroundFloor : Bool } -> Item -> Item -> Order

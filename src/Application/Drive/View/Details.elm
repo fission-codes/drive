@@ -28,15 +28,11 @@ import Url.Builder
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
-view : String -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
-view base isGroundFloor currentTime expandSidebar showPreviewOverlay item =
-    let
-        publicUrl =
-            Drive.Item.publicUrl base item
-    in
+view : Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
+view isGroundFloor currentTime expandSidebar showPreviewOverlay item =
     Html.div
         []
-        [ overlay publicUrl isGroundFloor currentTime expandSidebar showPreviewOverlay item
+        [ overlay isGroundFloor currentTime expandSidebar showPreviewOverlay item
         , dataContainer item
         , extra item
         ]
@@ -46,8 +42,8 @@ view base isGroundFloor currentTime expandSidebar showPreviewOverlay item =
 -- OVERLAY
 
 
-overlay : String -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
-overlay publicUrl isGroundFloor currentTime expandSidebar showPreviewOverlay item =
+overlay : Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
+overlay isGroundFloor currentTime expandSidebar showPreviewOverlay item =
     let
         defaultAttributes =
             [ T.absolute
@@ -95,7 +91,7 @@ overlay publicUrl isGroundFloor currentTime expandSidebar showPreviewOverlay ite
             , T.relative
             , T.z_10
             ]
-            (overlayContents isGroundFloor publicUrl currentTime item)
+            (overlayContents isGroundFloor currentTime item)
 
         --
         , Html.div
@@ -126,8 +122,8 @@ overlay publicUrl isGroundFloor currentTime expandSidebar showPreviewOverlay ite
         ]
 
 
-overlayContents : Bool -> String -> Time.Posix -> Item -> List (Html Msg)
-overlayContents isGroundFloor publicUrl currentTime item =
+overlayContents : Bool -> Time.Posix -> Item -> List (Html Msg)
+overlayContents isGroundFloor currentTime item =
     let
         isPublicRootDir =
             isGroundFloor && item.name == "public"

@@ -253,9 +253,8 @@ detailsForSelection model =
                         |> List.find (.path >> (==) path)
                 )
             |> Maybe.map
-                (Html.Lazy.lazy6
+                (Html.Lazy.lazy5
                     Details.view
-                    (Common.base { presentable = False } model)
                     (Result.unwrap True (.floor >> (==) 1) model.directoryList)
                     model.currentTime
                     model.expandSidebar
