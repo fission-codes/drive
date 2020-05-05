@@ -109,7 +109,7 @@ iframe {
    ------- */
 
 .sidebar {
-  height: calc(100vh - 99px - 32px * 2 - 92px - 2px);
+  height: calc(100vh - 99px - 32px * 2 - 94px - 2px);
   top: 131px;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }

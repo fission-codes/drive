@@ -13,11 +13,13 @@ import Html.Events.Extra.Drag as Drag
 import Ipfs exposing (FileSystemOperation(..), Status(..))
 import List.Ext as List
 import List.Extra as List
+import Notifications
 import Ports
 import Result.Extra as Result
 import Return exposing (return)
 import Return.Extra as Return
 import Routing
+import Toasty
 import Types exposing (..)
 import Url
 
@@ -38,6 +40,12 @@ addFiles { blobs } model =
     }
         |> Ports.fsAddContent
         |> return { model | ipfs = FileSystemOperation AddingFiles }
+        -- Notification
+        |> Toasty.addConditionalToast
+            (\m -> m.ipfs == FileSystemOperation AddingFiles)
+            Notifications.config
+            ToastyMsg
+            (Notifications.loadingIndication "Uploading files")
 
 
 closeSidebar : Manager
@@ -221,6 +229,12 @@ removeItem item model =
         |> Item.pathProperties
         |> Ports.fsRemoveItem
         |> return { model | ipfs = FileSystemOperation Deleting }
+        -- Notification
+        |> Toasty.addConditionalToast
+            (\m -> m.ipfs == FileSystemOperation Deleting)
+            Notifications.config
+            ToastyMsg
+            (Notifications.loadingIndication <| "Removing “" ++ item.name ++ "”")
 
 
 select : Item -> Manager

@@ -17,6 +17,7 @@ import Ipfs.State as Ipfs
 import Keyboard
 import Maybe.Extra as Maybe
 import Mode
+import Notifications
 import Other.State as Other
 import Ports
 import RemoteData
@@ -24,6 +25,7 @@ import Return
 import Routing
 import Task
 import Time
+import Toasty
 import Types exposing (..)
 import Url exposing (Url)
 
@@ -102,6 +104,7 @@ init flags url navKey =
       , viewportSize = flags.viewportSize
       , selectedPath = Nothing
       , showLoadingOverlay = False
+      , toasties = Toasty.initialState
       , url = url
 
       -- Debouncers
@@ -312,6 +315,9 @@ update msg =
 
         SetCurrentTime a ->
             Other.setCurrentTime a
+
+        ToastyMsg a ->
+            Toasty.update Notifications.config ToastyMsg a
 
         ToggleLoadingOverlay a ->
             Other.toggleLoadingOverlay a

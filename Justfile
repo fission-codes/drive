@@ -97,6 +97,9 @@ environment := "dev"
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
 	curl https://wzrd.in/debug-standalone/render-media@3.4.0 -o web_modules/render-media.js
 
+	# Elm git dependencies
+	{{node_bin}}/elm-git-install
+
 
 
 # Parts

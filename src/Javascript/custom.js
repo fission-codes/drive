@@ -57,7 +57,6 @@ class ContentUploader extends HTMLElement {
     const inputElement = document.createElement("input")
     inputElement.multiple = true
     inputElement.type = "file"
-    inputElement.webkitdirectory = true
 
     inputElement.style.position = "absolute"
     inputElement.style.top = "-1000px"

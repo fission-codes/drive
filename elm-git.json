@@ -1,0 +1,8 @@
+{
+    "git-dependencies": {
+        "direct": {
+            "git@github.com:malinoff/toasty.git": "e387b045a6677e96e22f369305c411c2de882ecd"
+        },
+        "indirect": {}
+    }
+}

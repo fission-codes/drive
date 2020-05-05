@@ -20,9 +20,11 @@ import Json.Decode as Json
 import Keyboard
 import Management
 import Mode exposing (Mode)
+import Notifications exposing (Notification)
 import RemoteData exposing (RemoteData)
 import Routing exposing (Route)
 import Time
+import Toasty
 import Url exposing (Url)
 
 
@@ -65,6 +67,7 @@ type alias Model =
     , viewportSize : { height : Int, width : Int }
     , selectedPath : Maybe String
     , showLoadingOverlay : Bool
+    , toasties : Toasty.Stack (Notification Msg)
     , url : Url
 
     -----------------------------------------
@@ -170,6 +173,7 @@ type Msg
     | LinkClicked Browser.UrlRequest
     | ScreenSizeChanged Int Int
     | SetCurrentTime Time.Posix
+    | ToastyMsg (Toasty.Msg (Notification Msg) Model)
     | ToggleLoadingOverlay { on : Bool }
     | UrlChanged Url
 

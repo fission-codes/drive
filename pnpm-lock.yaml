@@ -1750,7 +1750,7 @@ packages:
     dependencies:
       is-git-url: 1.0.0
       semver: 5.7.1
-      simple-git: 1.131.0
+      simple-git: 1.132.0
       upath: 1.2.0
     dev: true
     engines:
@@ -3754,12 +3754,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-UKmYnafJjCxh2tEZvJdHDvhSgSk=
-  /simple-git/1.131.0:
+  /simple-git/1.132.0:
     dependencies:
       debug: 4.1.1
     dev: true
     resolution:
-      integrity: sha512-z/art7YYtmPnnLItT/j+nKwJt6ap6nHZ4D8sYo9PdCKK/ug56SN6m/evfxJk7uDV3e9JuCa8qIyDU2P3cxmiNQ==
+      integrity: sha512-xauHm1YqCTom1sC9eOjfq3/9RKiUA9iPnxBbrY2DdL8l4ADMu0jjM5l5lphQP5YWNqAL2aXC/OeuQ76vHtW5fg==
   /slash/3.0.0:
     dev: true
     engines:

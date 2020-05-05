@@ -223,13 +223,7 @@ addOrCreateForm model =
                 ------------
                 , T.dark__text_gray_300
                 ]
-                [ if model.ipfs == Ipfs.FileSystemOperation Ipfs.AddingFiles then
-                    Common.loadingAnimationWithAttributes
-                        []
-                        { size = S.iconSize }
-
-                  else
-                    Html.text "Click to choose, or drop some files"
+                [ Html.text "Click to choose, or drop some files"
                 ]
             ]
         ]
