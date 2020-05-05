@@ -56,9 +56,6 @@ export async function replaceDnsLinkInAddress(address) {
 
 
 export async function setup() {
-  const isSafari =
-    /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-
   ipfs = await getIpfs({
     permissions: [
       "cat",
@@ -73,9 +70,7 @@ export async function setup() {
 
     browserPeers: [ PEER_WSS ],
     localPeers: [ PEER_TCP ],
-    jsIpfs: isSafari
-      ? "https://unpkg.com/ipfs@0.40.0/dist/index.min.js"
-      : "./web_modules/ipfs.js"
+    jsIpfs: "./web_modules/ipfs.js"
   })
 
   window.ipfs = ipfs
