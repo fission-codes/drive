@@ -112,7 +112,7 @@ header model =
                     toFloat (String.length <| String.join " / " segments)
 
                 showEntirePath =
-                    a / b > 17.5
+                    (a / b) > 21.5
               in
               segments
                 |> List.append [ "ROOT" ]
