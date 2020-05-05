@@ -139,7 +139,11 @@ digDeeper { directoryName } model =
         |> Routing.adjustUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
-        |> Return.return { model | directoryList = updatedDirectoryList }
+        |> Return.return
+            { model
+                | directoryList = updatedDirectoryList
+                , sidebarMode = Drive.Sidebar.defaultMode
+            }
 
 
 digDeeperUsingSelection : Manager
