@@ -186,7 +186,11 @@ pathProperties item =
 
 publicUrl : String -> Item -> String
 publicUrl base item =
-    String.chopEnd "/" base ++ "/" ++ Url.percentEncode item.name
+    if String.endsWith item.name base then
+        base
+
+    else
+        String.chopEnd "/" base ++ "/" ++ Url.percentEncode item.name
 
 
 sortingFunction : { isGroundFloor : Bool } -> Item -> Item -> Order
