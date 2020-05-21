@@ -1,6 +1,5 @@
 module Routing exposing (..)
 
-import Authentication.Types as Authentication
 import Mode exposing (Mode)
 import RemoteData
 import String.Ext as String
@@ -15,33 +14,12 @@ import Url.Parser as Url exposing (..)
 type Route
     = Undecided
       --
-    | CreateAccount Authentication.SignUpContext
     | Explore
-    | LinkAccount
       -----------------------------------------
       -- Tree
       -----------------------------------------
     | PersonalTree (List String)
     | Tree { root : String } (List String)
-
-
-
--- 🏔
-
-
-createAccount : Route
-createAccount =
-    CreateAccount
-        { email = ""
-        , username = ""
-        , usernameIsAvailable = RemoteData.NotAsked
-        , usernameIsValid = True
-        }
-
-
-linkAccount : Route
-linkAccount =
-    LinkAccount
 
 
 
@@ -55,12 +33,6 @@ routeFromUrl mode url =
             case basePath url of
                 "" ->
                     Undecided
-
-                "account/create" ->
-                    createAccount
-
-                "account/link" ->
-                    LinkAccount
 
                 "explore/ipfs" ->
                     Explore
@@ -87,9 +59,6 @@ routeFromUrl mode url =
                 "" ->
                     Undecided
 
-                "account/link" ->
-                    LinkAccount
-
                 -----------------------------------------
                 -- Tree
                 -----------------------------------------
@@ -107,14 +76,8 @@ adjustUrl url route =
             { url | fragment = Nothing }
 
         --
-        CreateAccount _ ->
-            { url | fragment = Just "/account/create" }
-
         Explore ->
             { url | fragment = Just "/explore/ipfs" }
-
-        LinkAccount ->
-            { url | fragment = Just "/account/link" }
 
         -----------------------------------------
         -- Tree

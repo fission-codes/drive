@@ -3,7 +3,6 @@ module Types exposing (..)
 {-| Root-level types.
 -}
 
-import Authentication.Types exposing (SignUpContext)
 import Browser
 import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
@@ -21,7 +20,6 @@ import Keyboard
 import Management
 import Mode exposing (Mode)
 import Notifications exposing (Notification)
-import RemoteData exposing (RemoteData)
 import Routing exposing (Route)
 import Time
 import Toasty
@@ -37,6 +35,7 @@ import Url exposing (Url)
 type alias Flags =
     { authenticated : Maybe { dnsLink : String }
     , currentTime : Int
+    , didKey : String
     , foundation : Maybe Foundation
     , lastFsOperation : Int
     , viewportSize : { height : Int, width : Int }
@@ -52,6 +51,7 @@ type alias Flags =
 type alias Model =
     { authenticated : Maybe { dnsLink : String }
     , currentTime : Time.Posix
+    , didKey : String
     , directoryList : Result String { floor : Int, items : List Item }
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
@@ -78,11 +78,6 @@ type alias Model =
     , usernameAvailabilityDebouncer : Debouncer Msg
 
     -----------------------------------------
-    -- Remote Data
-    -----------------------------------------
-    , reCreateAccount : RemoteData String ()
-
-    -----------------------------------------
     -- Sidebar
     -----------------------------------------
     , createDirectoryInput : String
@@ -103,13 +98,6 @@ type Msg
       -----------------------------------------
       -- Authentication
       -----------------------------------------
-    | CheckIfUsernameIsAvailable
-    | CreateAccount SignUpContext
-    | GotCreateAccountFailure String
-    | GotCreateAccountSuccess { dnsLink : String }
-    | GotSignUpEmailInput String
-    | GotSignUpUsernameInput String
-    | GotUsernameAvailability { available : Bool, valid : Bool }
     | SignIn
       -----------------------------------------
       -- Debouncers

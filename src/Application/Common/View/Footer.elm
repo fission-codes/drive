@@ -1,5 +1,6 @@
 module Common.View.Footer exposing (view)
 
+import Authentication.External exposing (createAccountUrl)
 import Common
 import Common.View as Common
 import Drive.Sidebar
@@ -118,34 +119,12 @@ right model =
                     Mode.PersonalDomain ->
                         []
 
-            --
-            Routing.CreateAccount _ ->
-                [ action
-                    Button
-                    [ E.onClick (Reset Routing.linkAccount) ]
-                    FeatherIcons.user
-                    [ Html.text "Sign in" ]
-
-                --
-                , explore
-                ]
-
             Routing.Explore ->
                 if Maybe.isJust model.authenticated then
                     [ myDrive model ]
 
                 else
                     [ createAccount model ]
-
-            Routing.LinkAccount ->
-                case model.mode of
-                    Mode.Default ->
-                        [ createAccount model
-                        , explore
-                        ]
-
-                    Mode.PersonalDomain ->
-                        []
 
             -----------------------------------------
             -- Tree
@@ -162,7 +141,7 @@ treeActions model =
     [ if Maybe.isNothing model.authenticated then
         action
             Button
-            [ E.onClick (Reset Routing.linkAccount) ]
+            [ A.href "TODO" ]
             FeatherIcons.user
             [ Html.text "Sign in" ]
 
@@ -224,7 +203,7 @@ addCreateAction model =
 createAccount model =
     action
         Button
-        [ E.onClick (Reset Routing.createAccount) ]
+        [ A.href (createAccountUrl model.didKey model.url) ]
         FeatherIcons.user
         [ Html.text "Create account" ]
 

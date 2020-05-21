@@ -1,5 +1,6 @@
 module Drive.ContextMenu exposing (hamburger, item)
 
+import Authentication.External exposing (createAccountUrl)
 import Common
 import ContextMenu exposing (..)
 import Drive.Item exposing (Kind(..))
@@ -27,7 +28,7 @@ hamburger model =
             |> authenticatedOtherBurgers
 
      else
-        unauthenticatedBurgers
+        unauthenticatedBurgers model
     )
         |> List.add ([ Divider ] ++ alwaysBurgers)
         |> ContextMenu.build TopRight
@@ -86,7 +87,7 @@ authenticatedOtherBurgers dnsLink =
     ]
 
 
-unauthenticatedBurgers =
+unauthenticatedBurgers model =
     [ Item
         { icon = FeatherIcons.user
         , label = "Sign in"
@@ -94,10 +95,7 @@ unauthenticatedBurgers =
 
         --
         , href = Nothing
-        , msg =
-            Routing.linkAccount
-                |> GoToRoute
-                |> Just
+        , msg = Nothing
         }
 
     --
@@ -107,11 +105,8 @@ unauthenticatedBurgers =
         , active = False
 
         --
-        , href = Nothing
-        , msg =
-            Routing.createAccount
-                |> GoToRoute
-                |> Just
+        , href = Just (createAccountUrl model.didKey model.url)
+        , msg = Nothing
         }
     ]
 

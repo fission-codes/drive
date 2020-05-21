@@ -20,7 +20,6 @@ import Mode
 import Notifications
 import Other.State as Other
 import Ports
-import RemoteData
 import Return
 import Routing
 import Task
@@ -90,6 +89,7 @@ init flags url navKey =
       { authenticated = flags.authenticated
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
+      , didKey = flags.didKey
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
@@ -112,10 +112,6 @@ init flags url navKey =
       , loadingDebouncer = Debouncing.loading.debouncer
       , notificationsDebouncer = Debouncing.notifications.debouncer
       , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
-
-      -- Remote Data
-      --------------
-      , reCreateAccount = RemoteData.NotAsked
 
       -- Sidebar
       ----------
@@ -148,27 +144,6 @@ update msg =
         -----------------------------------------
         -- Authentication
         -----------------------------------------
-        CheckIfUsernameIsAvailable ->
-            Authentication.checkIfUsernameIsAvailable
-
-        CreateAccount a ->
-            Authentication.createAccount a
-
-        GotCreateAccountFailure a ->
-            Authentication.gotCreateAccountFailure a
-
-        GotCreateAccountSuccess a ->
-            Authentication.gotCreateAccountSuccess a
-
-        GotSignUpEmailInput a ->
-            Authentication.gotSignUpEmailInput a
-
-        GotSignUpUsernameInput a ->
-            Authentication.gotSignUpUsernameInput a
-
-        GotUsernameAvailability a ->
-            Authentication.gotUsernameAvailability a
-
         SignIn ->
             Authentication.signIn
 
@@ -339,9 +314,6 @@ subscriptions model =
         , Ports.ipfsGotError GotIpfsError
         , Ports.ipfsGotResolvedAddress GotResolvedAddress
         , Ports.ipfsReplaceResolvedAddress ReplaceResolvedAddress
-        , Ports.gotCreateAccountFailure GotCreateAccountFailure
-        , Ports.gotCreateAccountSuccess GotCreateAccountSuccess
-        , Ports.gotUsernameAvailability GotUsernameAvailability
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

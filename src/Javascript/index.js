@@ -25,18 +25,43 @@ import * as media from "./media.js"
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
 
-window.sdk = sdk
+let app
 
 
-const app = Elm.Main.init({
-  node: document.getElementById("elm"),
-  flags: {
-    authenticated: authenticated(),
-    currentTime: Date.now(),
-    foundation: foundation(),
-    lastFsOperation: lastFsOperation(),
-    viewportSize: { height: window.innerHeight, width: window.innerWidth }
-  }
+sdk.user.didKey().then(didKey => {
+  // Initialize app
+  app = Elm.Main.init({
+    node: document.getElementById("elm"),
+    flags: {
+      authenticated: authenticated(),
+      currentTime: Date.now(),
+      didKey: didKey,
+      foundation: foundation(),
+      lastFsOperation: lastFsOperation(),
+      viewportSize: { height: window.innerHeight, width: window.innerWidth }
+    }
+  })
+
+  // Ports
+  app.ports.copyToClipboard.subscribe(copyToClipboard)
+  // app.ports.removeStoredAuthDnsLink.subscribe(removeStoredAuthDnsLink)
+  app.ports.removeStoredFoundation.subscribe(removeStoredFoundation)
+  app.ports.renderMedia.subscribe(renderMedia)
+  app.ports.showNotification.subscribe(showNotification)
+  app.ports.storeAuthDnsLink.subscribe(storeAuthDnsLink)
+  app.ports.storeFoundation.subscribe(storeFoundation)
+
+  // Ports (FS)
+  exe("fsAddContent", "add")
+  exe("fsCreateDirectory", "createDirecory", { listParent: true })
+  exe("fsListDirectory", "listDirectory")
+  exe("fsLoad", "load", { syncHook })
+  exe("fsRemoveItem", "removeItem", { listParent: true })
+
+  // Ports (IPFS)
+  app.ports.ipfsListDirectory.subscribe(ipfsListDirectory)
+  app.ports.ipfsResolveAddress.subscribe(ipfsResolveAddress)
+  app.ports.ipfsSetup.subscribe(ipfsSetup)
 })
 
 
@@ -44,8 +69,7 @@ const app = Elm.Main.init({
 // Ports
 // =====
 
-app.ports.copyToClipboard.subscribe(text => {
-
+function copyToClipboard(text) {
   // Insert a textarea element
   const el = document.createElement("textarea")
 
@@ -73,28 +97,27 @@ app.ports.copyToClipboard.subscribe(text => {
     document.getSelection().removeAllRanges()
     document.getSelection().addRange(selected)
   }
+}
 
-})
 
-
-// app.ports.removeStoredAuthDnsLink.subscribe(_ => {
+// function removeStoredAuthDnsLink(_) {
 //   localStorage.removeItem("fissionDrive.authlink")
-// })
+// }
 
 
-app.ports.removeStoredFoundation.subscribe(_ => {
+function removeStoredFoundation(_) {
   localStorage.removeItem("fissionDrive.foundation")
-})
+}
 
 
-app.ports.renderMedia.subscribe(a => {
+function renderMedia(a) {
   // Wait for DOM to render
   // TODO: Needs improvement, should use MutationObserver instead of port.
   setTimeout(_ => media.render(a), 250)
-})
+}
 
 
-app.ports.showNotification.subscribe(text => {
+function showNotification(text) {
   if (Notification.permission === "granted") {
     new Notification(text)
 
@@ -104,43 +127,45 @@ app.ports.showNotification.subscribe(text => {
     })
 
   }
-})
+}
 
 
-app.ports.storeAuthDnsLink.subscribe(dnsLink => {
+function storeAuthDnsLink(dnsLink) {
   localStorage.setItem("fissionDrive.authlink", dnsLink)
-})
+}
 
 
-app.ports.storeFoundation.subscribe(foundation => {
+function storeFoundation(foundation) {
   localStorage.setItem("fissionDrive.foundation", JSON.stringify(foundation))
-})
+}
 
 
 // FS
 // --
 
-const exe = (port, method, options = {}) => app.ports[port].subscribe(async a => {
-  let results
+function exe(port, method, options = {}) {
+  app.ports[port].subscribe(async a => {
+    let results
 
-  try {
-    results = await fs[method]({ ...a, ...options })
+    try {
+      results = await fs[method]({ ...a, ...options })
 
-    app.ports.ipfsGotDirectoryList.send({
-      pathSegments: fs.removePrivatePrefix(
-        a.pathSegments.slice(0, options.listParent ? -1 : undefined)
-      ),
-      results
-    })
+      app.ports.ipfsGotDirectoryList.send({
+        pathSegments: fs.removePrivatePrefix(
+          a.pathSegments.slice(0, options.listParent ? -1 : undefined)
+        ),
+        results
+      })
 
-  } catch (e) {
-    reportFileSystemError(e)
+    } catch (e) {
+      reportFileSystemError(e)
 
-  }
-})
+    }
+  })
+}
 
 
-const syncHook = async cid => {
+async function syncHook(cid) {
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
   localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
   console.log("Syncing …", cid)
@@ -148,24 +173,17 @@ const syncHook = async cid => {
 }
 
 
-exe("fsAddContent", "add")
-exe("fsCreateDirectory", "createDirecory", { listParent: true })
-exe("fsListDirectory", "listDirectory")
-exe("fsLoad", "load", { syncHook })
-exe("fsRemoveItem", "removeItem", { listParent: true })
-
-
 // IPFS
 // ----
 
-app.ports.ipfsListDirectory.subscribe(({ address, pathSegments }) => {
+function ipfsListDirectory({ address, pathSegments }) {
   ipfs.listDirectory(address)
     .then(results => app.ports.ipfsGotDirectoryList.send({ pathSegments, results }))
     .catch(reportIpfsError)
-})
+}
 
 
-app.ports.ipfsResolveAddress.subscribe(async address => {
+async function ipfsResolveAddress(address) {
   const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
 
   if (resolvedResult.resolved) {
@@ -176,71 +194,22 @@ app.ports.ipfsResolveAddress.subscribe(async address => {
     cachedFoundation && app.ports.ipfsGotResolvedAddress.send(cachedFoundation)
 
   }
-})
+}
 
 
-app.ports.ipfsSetup.subscribe(_ => {
+function ipfsSetup(_) {
   ipfs.setup()
     .then(app.ports.ipfsCompletedSetup.send)
     .catch(reportIpfsError)
-})
+}
 
 
 // User
 // ----
 
-// app.ports.annihilateKeys.subscribe(_ => {
+// function annihilateKeys(_) {
 //   sdk.keystore.clear()
 // })
-
-
-app.ports.checkIfUsernameIsAvailable.subscribe(async username => {
-  if (sdk.user.isUsernameValid(username)) {
-    const isAvailable = await sdk.user.isUsernameAvailable(username)
-    app.ports.gotUsernameAvailability.send({ available: isAvailable, valid: true })
-
-  } else {
-    app.ports.gotUsernameAvailability.send({ available: false, valid: false })
-
-  }
-})
-
-
-app.ports.createAccount.subscribe(async userProps => {
-  let response
-
-  try {
-    response = await sdk.user.createAccount(userProps, api.endpoint)
-  } catch (_) {
-    response = { status: 500 }
-  }
-
-  if (response.status < 300) {
-    const dnsLink = `${userProps.username}.fission.name`
-
-    localStorage.setItem("fissionDrive.authlink", dnsLink)
-
-    await fs.createNew()
-    await fs.addSampleData()
-    await fs.updateRoot()
-
-    app.ports.gotCreateAccountSuccess.send({
-      dnsLink
-    })
-
-    app.ports.ipfsGotResolvedAddress.send({
-      isDnsLink: true,
-      resolved: await fs.cid(),
-      unresolved: dnsLink
-    })
-
-  } else {
-    app.ports.gotCreateAccountFailure.send(
-      "Unable to create an account, maybe you have one already?"
-    )
-
-  }
-})
 
 
 

@@ -50,15 +50,8 @@ body m =
             Authentication.notAuthenticated m
 
         --
-        ( _, Routing.CreateAccount context ) ->
-            Authentication.signUp context m
-
         ( _, Routing.Explore ) ->
             Explore.view m
-
-        ( _, Routing.LinkAccount ) ->
-            -- TODO
-            Authentication.notAuthenticated m
 
         -----------------------------------------
         -- Tree
