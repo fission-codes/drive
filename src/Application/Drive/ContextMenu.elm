@@ -1,6 +1,6 @@
 module Drive.ContextMenu exposing (hamburger, item)
 
-import Authentication.External exposing (createAccountUrl)
+import Authentication.External exposing (authenticationUrl)
 import Common
 import ContextMenu exposing (..)
 import Drive.Item exposing (Kind(..))
@@ -94,18 +94,7 @@ unauthenticatedBurgers model =
         , active = False
 
         --
-        , href = Nothing
-        , msg = Nothing
-        }
-
-    --
-    , Item
-        { icon = FeatherIcons.user
-        , label = "Create account"
-        , active = False
-
-        --
-        , href = Just (createAccountUrl model.didKey model.url)
+        , href = Just { newTab = False, url = authenticationUrl model.didKey model.url }
         , msg = Nothing
         }
     ]
@@ -129,7 +118,7 @@ alwaysBurgers =
         , active = False
 
         --
-        , href = Just "https://guide.fission.codes/drive"
+        , href = Just { newTab = True, url = "https://guide.fission.codes/drive" }
         , msg = Nothing
         }
 
@@ -140,7 +129,7 @@ alwaysBurgers =
         , active = False
 
         --
-        , href = Just "https://fission.codes/support"
+        , href = Just { newTab = True, url = "https://fission.codes/support" }
         , msg = Nothing
         }
     ]

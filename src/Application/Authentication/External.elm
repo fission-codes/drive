@@ -20,8 +20,8 @@ host =
 -- 🛠
 
 
-createAccountUrl : String -> Url -> String
-createAccountUrl didKey url =
+authenticationUrl : String -> Url -> String
+authenticationUrl didKey url =
     [ Url.string "didKey" didKey
     , Url.string "redirectTo" (Url.toString url)
     ]

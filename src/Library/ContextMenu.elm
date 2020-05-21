@@ -24,7 +24,7 @@ type alias ItemProperties msg =
     , active : Bool
 
     --
-    , href : Maybe String
+    , href : Maybe { newTab : Bool, url : String }
     , msg : Maybe msg
     }
 

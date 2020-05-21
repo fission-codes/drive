@@ -1,6 +1,6 @@
 module Authentication.View exposing (..)
 
-import Authentication.External exposing (createAccountUrl)
+import Authentication.External exposing (authenticationUrl)
 import Common exposing (ifThenElse)
 import Common.View as Common
 import Common.View.Footer as Footer
@@ -43,24 +43,12 @@ notAuthenticated model =
         , Common.introText aboutFissionDrive
 
         --
-        , Html.div
-            [ T.flex, T.mt_8 ]
-            [ case model.mode of
-                Mode.Default ->
-                    createAccount model
+        , case model.mode of
+            Mode.Default ->
+                createAccount model
 
-                Mode.PersonalDomain ->
-                    Html.nothing
-
-            --
-            , S.button
-                [ T.bg_gray_200
-                , T.ml_3
-                , T.opacity_25
-                , T.pointer_events_none
-                ]
-                [ Html.text "Sign in" ]
-            ]
+            Mode.PersonalDomain ->
+                Html.nothing
         ]
 
 
@@ -77,7 +65,7 @@ createAccount model =
         ]
 
     --
-    , Html.text "Create an account"
+    , Html.text "Sign in with Fission"
     ]
         |> Html.div
             [ T.flex
@@ -86,8 +74,10 @@ createAccount model =
             ]
         |> List.singleton
         |> S.buttonLink
-            [ A.href (createAccountUrl model.didKey model.url)
+            [ A.href (authenticationUrl model.didKey model.url)
             , T.bg_purple
+            , T.mt_8
+            , T.mx_auto
             ]
 
 

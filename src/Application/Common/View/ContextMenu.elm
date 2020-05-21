@@ -1,6 +1,6 @@
 module Common.View.ContextMenu exposing (view)
 
-import Common
+import Common exposing (ifThenElse)
 import ContextMenu exposing (..)
 import FeatherIcons
 import Html exposing (Html)
@@ -106,9 +106,9 @@ itemView { icon, label, href, msg, active } =
             itemClasses
             (case ( href, msg ) of
                 ( Just h, _ ) ->
-                    [ A.href h
+                    [ A.href h.url
                     , A.rel "noopener noreferrer"
-                    , A.target "_blank"
+                    , A.target (ifThenElse h.newTab "_blank" "_self")
                     ]
 
                 ( _, Just m ) ->

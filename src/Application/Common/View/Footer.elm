@@ -1,6 +1,6 @@
 module Common.View.Footer exposing (view)
 
-import Authentication.External exposing (createAccountUrl)
+import Authentication.External exposing (authenticationUrl)
 import Common
 import Common.View as Common
 import Drive.Sidebar
@@ -124,7 +124,7 @@ right model =
                     [ myDrive model ]
 
                 else
-                    [ createAccount model ]
+                    [ signIn model ]
 
             -----------------------------------------
             -- Tree
@@ -139,11 +139,7 @@ right model =
 
 treeActions model =
     [ if Maybe.isNothing model.authenticated then
-        action
-            Button
-            [ A.href "TODO" ]
-            FeatherIcons.user
-            [ Html.text "Sign in" ]
+        signIn model
 
       else
         Html.nothing
@@ -156,7 +152,7 @@ treeActions model =
         myDrive model
 
       else
-        createAccount model
+        Html.nothing
 
     --
     , action
@@ -200,14 +196,6 @@ addCreateAction model =
         [ Html.text "Add / Create" ]
 
 
-createAccount model =
-    action
-        Button
-        [ A.href (createAccountUrl model.didKey model.url) ]
-        FeatherIcons.user
-        [ Html.text "Create account" ]
-
-
 explore =
     action
         Button
@@ -230,6 +218,14 @@ myDrive model =
 
         Nothing ->
             Html.nothing
+
+
+signIn model =
+    action
+        Link
+        [ A.href (authenticationUrl model.didKey model.url) ]
+        FeatherIcons.user
+        [ Html.text "Sign in" ]
 
 
 
