@@ -223,7 +223,7 @@ myDrive model =
 signIn model =
     action
         Link
-        [ A.href (authenticationUrl model.didKey model.url) ]
+        [ A.href (authenticationUrl model.did model.url) ]
         FeatherIcons.user
         [ Html.text "Sign in" ]
 

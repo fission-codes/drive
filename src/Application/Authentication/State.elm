@@ -16,11 +16,15 @@ signIn model =
     case model.foundation of
         Just { unresolved } ->
             { model
-                | authenticated = Just { dnsLink = unresolved }
-                , ipfs = Ipfs.InitialListing
+                | ipfs = Ipfs.InitialListing
             }
                 |> FS.boot
-                |> Return.command (Ports.storeAuthDnsLink unresolved)
+                |> Return.command
+                    (Ports.storeAuthEssentials
+                        { dnsLink = unresolved
+                        , ucan = "TODO"
+                        }
+                    )
 
         Nothing ->
             Return.singleton model

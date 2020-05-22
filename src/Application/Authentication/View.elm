@@ -74,7 +74,7 @@ createAccount model =
             ]
         |> List.singleton
         |> S.buttonLink
-            [ A.href (authenticationUrl model.didKey model.url)
+            [ A.href (authenticationUrl model.did model.url)
             , T.bg_purple
             , T.mt_8
             , T.mx_auto

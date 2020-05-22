@@ -28,14 +28,14 @@ import * as media from "./media.js"
 let app
 
 
-sdk.user.didKey().then(didKey => {
+sdk.user.didKey().then(did => {
   // Initialize app
   app = Elm.Main.init({
     node: document.getElementById("elm"),
     flags: {
       authenticated: authenticated(),
       currentTime: Date.now(),
-      didKey: didKey,
+      did: did,
       foundation: foundation(),
       lastFsOperation: lastFsOperation(),
       viewportSize: { height: window.innerHeight, width: window.innerWidth }
@@ -44,11 +44,11 @@ sdk.user.didKey().then(didKey => {
 
   // Ports
   app.ports.copyToClipboard.subscribe(copyToClipboard)
-  // app.ports.removeStoredAuthDnsLink.subscribe(removeStoredAuthDnsLink)
+  // app.ports.removeStoredAuthEssentials.subscribe(removeStoredAuthEssentials)
   app.ports.removeStoredFoundation.subscribe(removeStoredFoundation)
   app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
-  app.ports.storeAuthDnsLink.subscribe(storeAuthDnsLink)
+  app.ports.storeAuthEssentials.subscribe(storeAuthEssentials)
   app.ports.storeFoundation.subscribe(storeFoundation)
 
   // Ports (FS)
@@ -100,8 +100,8 @@ function copyToClipboard(text) {
 }
 
 
-// function removeStoredAuthDnsLink(_) {
-//   localStorage.removeItem("fissionDrive.authlink")
+// function removeStoredAuthEssentials(_) {
+//   localStorage.removeItem("fissionDrive.auth")
 // }
 
 
@@ -130,8 +130,8 @@ function showNotification(text) {
 }
 
 
-function storeAuthDnsLink(dnsLink) {
-  localStorage.setItem("fissionDrive.authlink", dnsLink)
+function storeAuthEssentials(details) {
+  localStorage.setItem("fissionDrive.auth", JSON.stringify(details))
 }
 
 
@@ -223,8 +223,14 @@ tocca({
 
 
 function authenticated() {
-  const stored = localStorage.getItem("fissionDrive.authlink")
-  return stored ? { dnsLink: stored } : null
+  const stored = localStorage.getItem("fissionDrive.auth")
+  return stored ? JSON.parse(stored) : null
+}
+
+
+function foundation() {
+  const stored = localStorage.getItem("fissionDrive.foundation")
+  return stored ? JSON.parse(stored) : null
 }
 
 
@@ -242,10 +248,4 @@ function reportFileSystemError(err) {
 function reportIpfsError(err) {
   app.ports.ipfsGotError.send(err.message || err)
   console.error(err)
-}
-
-
-function foundation() {
-  const stored = localStorage.getItem("fissionDrive.foundation")
-  return stored ? JSON.parse(stored) : null
 }

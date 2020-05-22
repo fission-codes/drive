@@ -1,9 +1,10 @@
 module State exposing (init, subscriptions, update)
 
+import Authentication.External as Authentication
 import Authentication.State as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
-import Common exposing (defaultDnsLink)
+import Common exposing (defaultDnsLink, ifThenElse)
 import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
@@ -47,12 +48,28 @@ init flags url navKey =
         route =
             Routing.routeFromUrl mode url
 
+        authEssentialsFromUrl =
+            Authentication.essentialsFromUrl url
+
         urlCmd =
-            case ( flags.foundation, route ) of
-                ( Just _, Routing.Tree _ _ ) ->
+            case ( authEssentialsFromUrl, flags.foundation, route ) of
+                ( Just essentials, _, _ ) ->
+                    case mode of
+                        Mode.Default ->
+                            { url
+                                | fragment = Just ("/" ++ essentials.dnsLink)
+                                , query = Nothing
+                            }
+                                |> Url.toString
+                                |> Navigation.replaceUrl navKey
+
+                        Mode.PersonalDomain ->
+                            Cmd.none
+
+                ( Nothing, Just _, Routing.Tree _ _ ) ->
                     Cmd.none
 
-                ( Just f, _ ) ->
+                ( Nothing, Just f, _ ) ->
                     case mode of
                         Mode.Default ->
                             Navigation.replaceUrl navKey ("#/" ++ f.unresolved)
@@ -86,10 +103,10 @@ init flags url navKey =
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { authenticated = flags.authenticated
+      { authenticated = Maybe.or authEssentialsFromUrl flags.authenticated
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
-      , didKey = flags.didKey
+      , did = flags.did
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
@@ -126,6 +143,7 @@ init flags url navKey =
     , Cmd.batch
         [ Ports.ipfsSetup ()
         , Task.perform SetCurrentTime Time.now
+        , Maybe.unwrap Cmd.none Ports.storeAuthEssentials authEssentialsFromUrl
         , urlCmd
         ]
     )
@@ -140,12 +158,6 @@ update msg =
     case msg of
         Bypass ->
             Return.singleton
-
-        -----------------------------------------
-        -- Authentication
-        -----------------------------------------
-        SignIn ->
-            Authentication.signIn
 
         -----------------------------------------
         -- Debouncers

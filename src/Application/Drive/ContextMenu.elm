@@ -94,7 +94,7 @@ unauthenticatedBurgers model =
         , active = False
 
         --
-        , href = Just { newTab = False, url = authenticationUrl model.didKey model.url }
+        , href = Just { newTab = False, url = authenticationUrl model.did model.url }
         , msg = Nothing
         }
     ]

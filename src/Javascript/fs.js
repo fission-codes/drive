@@ -137,7 +137,11 @@ export async function removeItem({ pathSegments }) {
 
 
 export async function updateRoot() {
-  await sdk.user.updateRoot(fs, api.endpoint)
+  await sdk.user.updateRoot({
+    apiEndpoint: api.endpoint,
+    authUcan: "TODO",
+    fileSystem: fs
+  })
 }
 
 

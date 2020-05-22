@@ -1,5 +1,6 @@
 port module Ports exposing (..)
 
+import Authentication.External.Essentials as Authentication
 import Foundation exposing (Foundation)
 import Json.Decode as Json
 import Types
@@ -15,7 +16,7 @@ port copyToClipboard : String -> Cmd msg
 port renderMedia : { id : String, name : String, path : String, useFS : Bool } -> Cmd msg
 
 
-port removeStoredAuthDnsLink : () -> Cmd msg
+port removeStoredAuthEssentials : () -> Cmd msg
 
 
 port removeStoredFoundation : () -> Cmd msg
@@ -24,7 +25,7 @@ port removeStoredFoundation : () -> Cmd msg
 port showNotification : String -> Cmd msg
 
 
-port storeAuthDnsLink : String -> Cmd msg
+port storeAuthEssentials : Authentication.Essentials -> Cmd msg
 
 
 port storeFoundation : Foundation -> Cmd msg
@@ -71,25 +72,6 @@ port ipfsSetup : () -> Cmd msg
 
 
 port annihilateKeys : () -> Cmd msg
-
-
-port checkIfUsernameIsAvailable : String -> Cmd msg
-
-
-port createAccount : { email : String, username : String } -> Cmd msg
-
-
-
--- 📰
-
-
-port gotCreateAccountFailure : (String -> msg) -> Sub msg
-
-
-port gotCreateAccountSuccess : ({ dnsLink : String } -> msg) -> Sub msg
-
-
-port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg
 
 
 

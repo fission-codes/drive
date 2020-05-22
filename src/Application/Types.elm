@@ -3,6 +3,7 @@ module Types exposing (..)
 {-| Root-level types.
 -}
 
+import Authentication.External.Essentials as Authentication
 import Browser
 import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
@@ -33,9 +34,9 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { authenticated : Maybe { dnsLink : String }
+    { authenticated : Maybe Authentication.Essentials
     , currentTime : Int
-    , didKey : String
+    , did : String
     , foundation : Maybe Foundation
     , lastFsOperation : Int
     , viewportSize : { height : Int, width : Int }
@@ -49,9 +50,9 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { authenticated : Maybe { dnsLink : String }
+    { authenticated : Maybe Authentication.Essentials
     , currentTime : Time.Posix
-    , didKey : String
+    , did : String
     , directoryList : Result String { floor : Int, items : List Item }
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
@@ -95,10 +96,6 @@ type alias Model =
 -}
 type Msg
     = Bypass
-      -----------------------------------------
-      -- Authentication
-      -----------------------------------------
-    | SignIn
       -----------------------------------------
       -- Debouncers
       -----------------------------------------

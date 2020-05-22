@@ -1,10 +1,14 @@
-module Authentication.External exposing (..)
+module Authentication.External exposing (authenticationUrl, essentialsFromUrl, host)
 
 {-| Regarding `auth.fission.codes`
 -}
 
+import Authentication.External.Essentials exposing (Essentials)
+import Maybe.Extra as Maybe
 import Url exposing (Url)
-import Url.Builder as Url
+import Url.Builder as Builder
+import Url.Parser as Parser
+import Url.Parser.Query as Query
 
 
 
@@ -21,9 +25,33 @@ host =
 
 
 authenticationUrl : String -> Url -> String
-authenticationUrl didKey url =
-    [ Url.string "didKey" didKey
-    , Url.string "redirectTo" (Url.toString url)
+authenticationUrl did url =
+    [ Builder.string "did" did
+    , Builder.string "redirectTo" (Url.toString url)
     ]
-        |> Url.absolute [ "create-account" ]
+        |> Builder.absolute []
         |> String.append host
+
+
+essentialsFromUrl : Url -> Maybe Essentials
+essentialsFromUrl url =
+    { url | path = "" }
+        |> Parser.parse (Parser.query essentialQueryParser)
+        |> Maybe.join
+
+
+
+-- ㊙️
+
+
+essentialQueryParser =
+    Query.map2
+        (Maybe.map2
+            (\a b ->
+                { dnsLink = b ++ ".fission.name"
+                , ucan = a
+                }
+            )
+        )
+        (Query.string "ucan")
+        (Query.string "username")
