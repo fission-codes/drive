@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+
+  <base href="../" />
+
+  <meta charset="utf-8">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Fission Drive - Your Web Native File System</title>
+
+  <!-- Favicons & Mobile settings -->
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="application.css" />
+
+</head>
+<body>
+
+
+  <main id="elm">
+
+    <!--
+      APPLICATION PLACEHOLDER
+      =======================
+      This `noscript` element will be shown if Javascript is disabled.
+    -->
+    <noscript data-nosnippet>
+      Doesn't work without Javascript unfortunately.
+    </noscript>
+
+  </main>
+
+
+  <!-- Scripts -->
+  <script src="loaders.js"></script>
+  <script>
+    const n = document.getElementById("elm")
+    if (n.querySelector("noscript")) addLoader(n)
+  </script>
+  <script src="web_modules/fission-sdk.umd.js"></script>
+  <script>
+    fissionSdk.user.didKey().then(did => {
+      const params = new URL(location).searchParams
+
+      const authServer = params.get("authServer") || "https://auth.fission.codes"
+      const newUser = params.get("newUser")
+      const redirectTo = location.origin
+
+      window.location.href = [
+        authServer,
+        "?did=", encodeURIComponent(did),
+        "&redirectTo=", encodeURIComponent(redirectTo),
+        (newUser ? "&newUser=" + newUser : ""),
+      ].join("")
+    })
+  </script>
+
+
+</body>
+</html>

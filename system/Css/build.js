@@ -32,7 +32,12 @@ const flow = [
   isProduction
 
   ? purgecss({
-    content: [ "./build/**/*.html", "./build/application.js" ],
+    content: [
+      "./build/**/*.html",
+      "./build/application.js",
+      "./src/Javascript/loaders.js"
+    ],
+
     defaultExtractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || [],
     whitelist: [ "iframe" ]
   })

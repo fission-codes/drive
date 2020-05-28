@@ -100,6 +100,9 @@ environment := "dev"
 	# Elm git dependencies
 	{{node_bin}}/elm-git-install
 
+	# For `src/Static/Html/Reception.html`
+	cp node_modules/fission-sdk/index.umd.js web_modules/fission-sdk.umd.js
+
 
 
 # Parts
@@ -129,6 +132,10 @@ environment := "dev"
 	echo "⚙️  Copying HTML"
 	cp {{src_dir}}/Static/Html/Application.html {{build_dir}}/index.html
 	cp {{build_dir}}/index.html {{build_dir}}/200.html
+
+	mkdir -p {{build_dir}}/reception
+	cp {{src_dir}}/Static/Html/Reception.html {{build_dir}}/reception/index.html
+
 
 
 @images:
