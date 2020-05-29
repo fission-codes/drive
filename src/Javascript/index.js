@@ -25,6 +25,9 @@ import * as media from "./media.js"
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
 
+window.sdk = sdk
+
+
 let app
 
 
@@ -43,8 +46,9 @@ sdk.user.didKey().then(did => {
   })
 
   // Ports
+  app.ports.annihilateKeys.subscribe(annihilateKeys)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
-  // app.ports.removeStoredAuthEssentials.subscribe(removeStoredAuthEssentials)
+  app.ports.removeStoredAuthEssentials.subscribe(removeStoredAuthEssentials)
   app.ports.removeStoredFoundation.subscribe(removeStoredFoundation)
   app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
@@ -101,13 +105,14 @@ function copyToClipboard(text) {
 }
 
 
-// function removeStoredAuthEssentials(_) {
-//   localStorage.removeItem("fissionDrive.auth")
-// }
+function removeStoredAuthEssentials(_) {
+  localStorage.removeItem("fissionDrive.auth")
+}
 
 
 function removeStoredFoundation(_) {
   localStorage.removeItem("fissionDrive.foundation")
+  localStorage.removeItem("fissionDrive.lastFsOperation")
 }
 
 
@@ -182,6 +187,7 @@ async function syncHook(cid) {
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
   localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
   console.log("Syncing …", cid)
+
   await fs.updateRoot(ucan)
 }
 
@@ -220,9 +226,9 @@ function ipfsSetup(_) {
 // User
 // ----
 
-// function annihilateKeys(_) {
-//   sdk.keystore.clear()
-// })
+function annihilateKeys(_) {
+  sdk.keystore.clear()
+}
 
 
 

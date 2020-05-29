@@ -1,7 +1,6 @@
 module State exposing (init, subscriptions, update)
 
 import Authentication.External as Authentication
-import Authentication.State as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
 import Common exposing (defaultDnsLink, ifThenElse)

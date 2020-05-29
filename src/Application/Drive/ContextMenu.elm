@@ -56,17 +56,16 @@ yourBurgers =
         , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
         }
 
-    -- TODO:
     --
-    -- , Item
-    --     { icon = FeatherIcons.user
-    --     , label = "Sign out"
-    --     , active = False
-    --
-    --     --
-    --     , href = Nothing
-    --     , msg = Just (Reset Routing.Undecided)
-    --     }
+    , Item
+        { icon = FeatherIcons.user
+        , label = "Sign out"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg = Just (Reset Routing.Undecided)
+        }
     ]
 
 
