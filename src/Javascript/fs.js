@@ -149,10 +149,10 @@ export async function removeItem({ pathSegments }) {
 }
 
 
-export async function updateRoot() {
+export async function updateRoot(authUcan) {
   await sdk.user.updateRoot({
     apiEndpoint: api.endpoint,
-    authUcan: "TODO",
+    authUcan: authUcan,
     fileSystem: fs
   })
 }

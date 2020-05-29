@@ -177,10 +177,12 @@ async function freshUser({ cid, dnsLink }) {
 
 
 async function syncHook(cid) {
+  const { ucan } = authenticated()
+
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
   localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
   console.log("Syncing …", cid)
-  await fs.updateRoot()
+  await fs.updateRoot(ucan)
 }
 
 
