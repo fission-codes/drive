@@ -16,8 +16,7 @@ import Url.Parser.Query as Query
 
 
 host =
-    -- "https://auth.fission.codes"
-    "http://localhost:8001"
+    "https://auth.fission.codes"
 
 
 
@@ -45,13 +44,15 @@ essentialsFromUrl url =
 
 
 essentialQueryParser =
-    Query.map2
-        (Maybe.map2
-            (\a b ->
-                { dnsLink = b ++ ".fission.name"
-                , ucan = a
+    Query.map3
+        (Maybe.map3
+            (\a b c ->
+                { dnsLink = c ++ ".fission.name"
+                , newUser = a == "t"
+                , ucan = b
                 }
             )
         )
+        (Query.string "newUser")
         (Query.string "ucan")
         (Query.string "username")

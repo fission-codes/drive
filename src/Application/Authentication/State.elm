@@ -22,6 +22,7 @@ signIn model =
                 |> Return.command
                     (Ports.storeAuthEssentials
                         { dnsLink = unresolved
+                        , newUser = True
                         , ucan = "TODO"
                         }
                     )

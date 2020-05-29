@@ -57,8 +57,17 @@ export async function cid() {
 }
 
 
-export async function createNew() {
+export async function createNew({ callback, dnsLink, pathSegments, syncHook }) {
   fs = await sdk.fs.empty()
+
+  await addSampleData()
+
+  fs.addSyncHook(syncHook)
+
+  const cid = await fs.sync()
+  await callback({ cid, dnsLink })
+
+  return await listDirectory({ pathSegments })
 }
 
 
@@ -118,10 +127,14 @@ export async function listDirectory({ pathSegments }) {
 
 export async function load({ cid, pathSegments, syncHook }) {
   fs = await sdk.fs.fromCID(cid)
+
+  const isUpgrade = !fs
+
   fs = fs || await sdk.fs.upgradePublicCID(cid)
 
   if (fs) {
     fs.addSyncHook(syncHook)
+    if (isUpgrade) fs.sync()
     return await listDirectory({ pathSegments })
   } else {
     throw "Not a Fission File System"

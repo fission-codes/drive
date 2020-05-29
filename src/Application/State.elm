@@ -38,7 +38,6 @@ init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
         mode =
-            -- TODO:
             -- if String.endsWith ".fission.name" url.host then
             --     Mode.PersonalDomain
             --
@@ -95,7 +94,13 @@ init flags url navKey =
                 -- This is done because of the delay on DNS updates.
                 Maybe.andThen
                     (\_ -> flags.foundation)
-                    flags.authenticated
+                    (case authEssentialsFromUrl of
+                        Just _ ->
+                            Nothing
+
+                        Nothing ->
+                            flags.authenticated
+                    )
 
             else
                 Nothing

@@ -18,6 +18,7 @@ import Return.Extra as Return
 import Routing exposing (Route(..))
 import Task
 import Types exposing (..)
+import Url
 
 
 
@@ -40,11 +41,26 @@ Then one of the following scenarios occur:
 -}
 setupCompleted : Manager
 setupCompleted model =
-    case model.foundation of
-        Just _ ->
+    case
+        ( model.foundation
+        , model.authenticated
+        )
+    of
+        ( Just _, _ ) ->
             FS.boot { model | ipfs = Ipfs.InitialListing }
 
-        Nothing ->
+        ( Nothing, Just essentials ) ->
+            if essentials.newUser then
+                return
+                    { model | ipfs = Ipfs.InitialListing }
+                    (Ports.fsNew { dnsLink = essentials.dnsLink })
+
+            else
+                return
+                    { model | ipfs = Ipfs.InitialListing }
+                    (Ports.ipfsResolveAddress essentials.dnsLink)
+
+        ( Nothing, _ ) ->
             case Routing.treeRoot model.url model.route of
                 Just root ->
                     return
@@ -63,7 +79,7 @@ A foundation has been resolved.
 gotResolvedAddress : Foundation -> Manager
 gotResolvedAddress foundation model =
     let
-        changeUrl =
+        shouldChangeUrl =
             -- Do I need to put the ipfs address in the url?
             case model.mode of
                 Mode.Default ->
@@ -76,7 +92,7 @@ gotResolvedAddress foundation model =
                     False
 
         ipfs =
-            if changeUrl then
+            if shouldChangeUrl then
                 model.ipfs
 
             else
@@ -84,11 +100,14 @@ gotResolvedAddress foundation model =
     in
     { model | ipfs = ipfs, foundation = Just foundation }
         |> Return.singleton
-        |> (if changeUrl then
+        |> (if shouldChangeUrl then
                 -- If the url needs to change, issue a navigation command
                 ("#/" ++ foundation.unresolved)
                     |> Navigation.pushUrl model.navKey
                     |> Return.command
+
+            else if Maybe.map .newUser model.authenticated == Just True then
+                identity
 
             else
                 -- Otherwise boot up the file system
@@ -101,6 +120,16 @@ gotResolvedAddress foundation model =
 -- 🐚
 --
 -- LIFE
+-- TODO
+-- changeUrl : String -> Model -> Cmd Msg
+-- changeUrl fragmentPath model =
+--     let
+--         url =
+--             model.url
+--     in
+--     { url | query = Nothing, fragment = Just ("/" ++ fragmentPath) }
+--         |> Url.toString
+--         |> Navigation.pushUrl model.navKey
 
 
 replaceResolvedAddress : { cid : String } -> Manager

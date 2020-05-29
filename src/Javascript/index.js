@@ -56,6 +56,7 @@ sdk.user.didKey().then(did => {
   exe("fsCreateDirectory", "createDirecory", { listParent: true })
   exe("fsListDirectory", "listDirectory")
   exe("fsLoad", "load", { syncHook })
+  exe("fsNew", "createNew", { callback: freshUser, syncHook })
   exe("fsRemoveItem", "removeItem", { listParent: true })
 
   // Ports (IPFS)
@@ -145,14 +146,15 @@ function storeFoundation(foundation) {
 
 function exe(port, method, options = {}) {
   app.ports[port].subscribe(async a => {
+    let args = { pathSegments: [], ...a, ...options }
     let results
 
     try {
-      results = await fs[method]({ ...a, ...options })
+      results = await fs[method](args)
 
       app.ports.ipfsGotDirectoryList.send({
         pathSegments: fs.removePrivatePrefix(
-          a.pathSegments.slice(0, options.listParent ? -1 : undefined)
+          args.pathSegments.slice(0, options.listParent ? -1 : undefined)
         ),
         results
       })
@@ -161,6 +163,15 @@ function exe(port, method, options = {}) {
       reportFileSystemError(e)
 
     }
+  })
+}
+
+
+async function freshUser({ cid, dnsLink }) {
+  app.ports.ipfsGotResolvedAddress.send({
+    isDnsLink: true,
+    resolved: cid,
+    unresolved: dnsLink
   })
 }
 
@@ -185,6 +196,8 @@ function ipfsListDirectory({ address, pathSegments }) {
 
 async function ipfsResolveAddress(address) {
   const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
+
+  console.log("resolved!", resolvedResult)
 
   if (resolvedResult.resolved) {
     app.ports.ipfsGotResolvedAddress.send(resolvedResult)

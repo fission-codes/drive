@@ -51,6 +51,9 @@ port fsListDirectory : { pathSegments : List String } -> Cmd msg
 port fsLoad : { cid : String, pathSegments : List String } -> Cmd msg
 
 
+port fsNew : { dnsLink : String } -> Cmd msg
+
+
 port fsRemoveItem : { pathSegments : List String } -> Cmd msg
 
 
