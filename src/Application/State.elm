@@ -104,11 +104,16 @@ init flags url navKey =
 
             else
                 Nothing
+
+        authenticated =
+            Maybe.or
+                authEssentialsFromUrl
+                (Maybe.map (\a -> { a | newUser = False }) flags.authenticated)
     in
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { authenticated = Maybe.or authEssentialsFromUrl flags.authenticated
+      { authenticated = authenticated
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
       , did = flags.did

@@ -50,7 +50,10 @@ setupCompleted model =
             FS.boot { model | ipfs = Ipfs.InitialListing }
 
         ( Nothing, Just essentials ) ->
-            if essentials.newUser then
+            if model.route == Explore then
+                Return.singleton { model | ipfs = Ipfs.Ready }
+
+            else if essentials.newUser then
                 return
                     { model | ipfs = Ipfs.InitialListing }
                     (Ports.fsNew { dnsLink = essentials.dnsLink })

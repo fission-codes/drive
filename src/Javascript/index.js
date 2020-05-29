@@ -197,8 +197,6 @@ function ipfsListDirectory({ address, pathSegments }) {
 async function ipfsResolveAddress(address) {
   const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
 
-  console.log("resolved!", resolvedResult)
-
   if (resolvedResult.resolved) {
     app.ports.ipfsGotResolvedAddress.send(resolvedResult)
 
