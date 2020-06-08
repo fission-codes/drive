@@ -117,6 +117,14 @@ toggleLoadingOverlay { on } model =
     Return.singleton { model | showLoadingOverlay = on }
 
 
+{-| This function is responsible for changing the application state based on the URL.
+
+Scenarios include:
+
+  - Listing a directory
+  - Resolving a new foundation
+
+-}
 urlChanged : Url -> Manager
 urlChanged url old =
     let

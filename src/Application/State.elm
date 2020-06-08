@@ -50,6 +50,13 @@ init flags url navKey =
             Authentication.essentialsFromUrl url
 
         urlCmd =
+            -- Scenarios:
+            --
+            -- 1. When authenticating (ie. there's ucan in the url),
+            --    remove the ucan from the url and store it in memory.
+            -- 2. When a foundation is present, but we're not at the
+            --    correct url, then change the url.
+            --
             case ( authEssentialsFromUrl, flags.foundation, route ) of
                 ( Just essentials, _, _ ) ->
                     case mode of
@@ -85,9 +92,11 @@ init flags url navKey =
                 |> Maybe.withDefault defaultDnsLink
 
         loadedFoundation =
+            --
             -- When the following is a `Just`,
             -- it will not load from a dnslink and
             -- use the cached cid instead.
+            --
             if flags.lastFsOperation + 15 * 60 * 1000 > flags.currentTime then
                 -- Last file-system change was only 15 minutes ago, use the cached cid.
                 -- This is done because of the delay on DNS updates.

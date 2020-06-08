@@ -35,7 +35,7 @@ This happens at boot time.
 Then one of the following scenarios occur:
 
 1.  A foundation is already present (cached), boot file system.
-2.  The app has a DNS Link that needs to be resolved.
+2.  The app has an IPFS address that needs to be resolved.
 3.  Do nothing.
 
 -}
@@ -77,6 +77,7 @@ setupCompleted model =
 {-| Part Deux.
 
 A foundation has been resolved.
+This function can change the URL and stores the foundation in localStorage.
 
 -}
 gotResolvedAddress : Foundation -> Manager
@@ -123,16 +124,6 @@ gotResolvedAddress foundation model =
 -- 🐚
 --
 -- LIFE
--- TODO
--- changeUrl : String -> Model -> Cmd Msg
--- changeUrl fragmentPath model =
---     let
---         url =
---             model.url
---     in
---     { url | query = Nothing, fragment = Just ("/" ++ fragmentPath) }
---         |> Url.toString
---         |> Navigation.pushUrl model.navKey
 
 
 replaceResolvedAddress : { cid : String } -> Manager
