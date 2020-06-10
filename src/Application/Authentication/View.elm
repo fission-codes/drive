@@ -1,6 +1,5 @@
 module Authentication.View exposing (..)
 
-import Authentication.External exposing (authenticationUrl)
 import Common exposing (ifThenElse)
 import Common.View as Common
 import Common.View.Footer as Footer
@@ -73,8 +72,8 @@ createAccount model =
             , T.pt_px
             ]
         |> List.singleton
-        |> S.buttonLink
-            [ A.href (authenticationUrl model.did model.url)
+        |> S.button
+            [ E.onClick RedirectToLobby
             , T.bg_purple
             , T.mt_8
             , T.mx_auto

@@ -47,7 +47,7 @@ gotInput input model =
 reset : Route -> Manager
 reset route model =
     [ Ports.annihilateKeys ()
-    , Ports.removeStoredAuthEssentials ()
+    , Ports.deauthenticate ()
     , Ports.removeStoredFoundation ()
     ]
         |> Cmd.batch

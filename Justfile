@@ -75,7 +75,7 @@ environment := "dev"
 		--hot \
 		--start-page=index.html \
 		-- --output={{build_dir}}/application.js \
-		# --debug
+		--debug
 
 
 @elm-housekeeping:

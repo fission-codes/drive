@@ -1,6 +1,5 @@
 port module Ports exposing (..)
 
-import Authentication.External.Essentials as Authentication
 import Foundation exposing (Foundation)
 import Json.Decode as Json
 import Types
@@ -13,19 +12,19 @@ import Types
 port copyToClipboard : String -> Cmd msg
 
 
+port deauthenticate : () -> Cmd msg
+
+
+port redirectToLobby : () -> Cmd msg
+
+
 port renderMedia : { id : String, name : String, path : String, useFS : Bool } -> Cmd msg
-
-
-port removeStoredAuthEssentials : () -> Cmd msg
 
 
 port removeStoredFoundation : () -> Cmd msg
 
 
 port showNotification : String -> Cmd msg
-
-
-port storeAuthEssentials : Authentication.Essentials -> Cmd msg
 
 
 port storeFoundation : Foundation -> Cmd msg

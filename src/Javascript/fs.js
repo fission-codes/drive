@@ -9,8 +9,6 @@ Everything involving the Fission File System.
 import "./web_modules/it-to-stream.js"
 import sdk from "./web_modules/fission-sdk.js"
 
-import * as api from "./api.js"
-
 
 let fs
 
@@ -146,15 +144,6 @@ export async function removeItem({ pathSegments }) {
   const path = prefixedPath(pathSegments)
   await fs.rm(path)
   return await listDirectory({ pathSegments: removePrivatePrefix(pathSegments).slice(0, -1) })
-}
-
-
-export async function updateRoot(authUcan) {
-  await sdk.user.updateRoot({
-    apiEndpoint: api.endpoint,
-    authUcan: authUcan,
-    fileSystem: fs
-  })
 }
 
 

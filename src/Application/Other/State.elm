@@ -9,6 +9,7 @@ import Keyboard
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
+import Return.Extra as Return
 import Routing exposing (Route(..))
 import Time
 import Types exposing (..)
@@ -110,6 +111,11 @@ linkClicked urlRequest model =
 
         Browser.External href ->
             return model (Navigation.load href)
+
+
+redirectToLobby : Manager
+redirectToLobby =
+    Return.communicate (Ports.redirectToLobby ())
 
 
 toggleLoadingOverlay : { on : Bool } -> Manager

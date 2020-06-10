@@ -3,7 +3,7 @@ module Types exposing (..)
 {-| Root-level types.
 -}
 
-import Authentication.External.Essentials as Authentication
+import Authentication.Essentials as Authentication
 import Browser
 import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
@@ -36,7 +36,6 @@ import Url exposing (Url)
 type alias Flags =
     { authenticated : Maybe Authentication.Essentials
     , currentTime : Int
-    , did : String
     , foundation : Maybe Foundation
     , lastFsOperation : Int
     , viewportSize : { height : Int, width : Int }
@@ -52,7 +51,6 @@ type alias Flags =
 type alias Model =
     { authenticated : Maybe Authentication.Essentials
     , currentTime : Time.Posix
-    , did : String
     , directoryList : Result String { floor : Int, items : List Item }
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
@@ -156,6 +154,7 @@ type Msg
     | GoToRoute Route
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
+    | RedirectToLobby
     | ScreenSizeChanged Int Int
     | SetCurrentTime Time.Posix
     | ToastyMsg (Toasty.Msg (Notification Msg) Model)

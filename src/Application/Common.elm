@@ -59,8 +59,8 @@ ifThenElse condition x y =
 isAuthenticatedAndNotExploring : Model -> Bool
 isAuthenticatedAndNotExploring model =
     case ( model.authenticated, model.foundation ) of
-        ( Just { dnsLink }, Just { unresolved } ) ->
-            dnsLink == unresolved
+        ( Just { username }, Just { unresolved } ) ->
+            username ++ ".fission.name" == unresolved
 
         _ ->
             False

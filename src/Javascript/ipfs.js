@@ -120,7 +120,7 @@ async function ensureArray(result) {
 
 async function lookupDns(domain) {
   try {
-    return await sdk.misc.dns.lookupDnsLink(domain)
+    return await sdk.dns.lookupDnsLink(domain)
 
   } catch (err) {
     return null

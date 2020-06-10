@@ -1,5 +1,6 @@
 module Ipfs.State exposing (..)
 
+import Authentication.Essentials exposing (dnsLink)
 import Browser.Dom as Dom
 import Browser.Navigation as Navigation
 import Common.State as Common
@@ -56,14 +57,14 @@ setupCompleted model =
             else if essentials.newUser then
                 return
                     { model | ipfs = Ipfs.InitialListing }
-                    (Ports.fsNew { dnsLink = essentials.dnsLink })
+                    (Ports.fsNew { dnsLink = dnsLink essentials })
 
             else
                 return
                     { model | ipfs = Ipfs.InitialListing }
-                    (Ports.ipfsResolveAddress essentials.dnsLink)
+                    (Ports.ipfsResolveAddress <| dnsLink essentials)
 
-        ( Nothing, _ ) ->
+        ( Nothing, Nothing ) ->
             case Routing.treeRoot model.url model.route of
                 Just root ->
                     return

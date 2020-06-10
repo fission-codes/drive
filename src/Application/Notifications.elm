@@ -74,4 +74,4 @@ view : Notification msg -> Html msg
 view notification =
     case notification of
         Indication html ->
-            html
+            Html.div [ T.mt_3 ] [ html ]

@@ -1,6 +1,6 @@
 module Common.View.Footer exposing (view)
 
-import Authentication.External exposing (authenticationUrl)
+import Authentication.Essentials as Authentication
 import Common
 import Common.View as Common
 import Drive.Sidebar
@@ -206,7 +206,11 @@ explore =
 
 myDrive model =
     case model.authenticated of
-        Just { dnsLink } ->
+        Just essentials ->
+            let
+                dnsLink =
+                    Authentication.dnsLink essentials
+            in
             action
                 Link
                 [ model.url
@@ -222,8 +226,8 @@ myDrive model =
 
 signIn model =
     action
-        Link
-        [ A.href (authenticationUrl model.did model.url) ]
+        Button
+        [ E.onClick RedirectToLobby ]
         FeatherIcons.user
         [ Html.text "Sign in" ]
 

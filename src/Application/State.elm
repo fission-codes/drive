@@ -1,6 +1,6 @@
 module State exposing (init, subscriptions, update)
 
-import Authentication.External as Authentication
+import Authentication.Essentials as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
 import Common exposing (defaultDnsLink, ifThenElse)
@@ -46,27 +46,18 @@ init flags url navKey =
         route =
             Routing.routeFromUrl mode url
 
-        authEssentialsFromUrl =
-            Authentication.essentialsFromUrl url
-
         urlCmd =
             -- Scenarios:
             --
-            -- 1. When authenticating (ie. there's ucan in the url),
-            --    remove the ucan from the url and store it in memory.
+            -- 1. When authenticating, make sure the correct foundation is in place.
             -- 2. When a foundation is present, but we're not at the
             --    correct url, then change the url.
             --
-            case ( authEssentialsFromUrl, flags.foundation, route ) of
+            case ( flags.authenticated, flags.foundation, route ) of
                 ( Just essentials, _, _ ) ->
                     case mode of
                         Mode.Default ->
-                            { url
-                                | fragment = Just ("/" ++ essentials.dnsLink)
-                                , query = Nothing
-                            }
-                                |> Url.toString
-                                |> Navigation.replaceUrl navKey
+                            Navigation.replaceUrl navKey ("#/" ++ Authentication.dnsLink essentials)
 
                         Mode.PersonalDomain ->
                             Cmd.none
@@ -101,30 +92,24 @@ init flags url navKey =
                 -- Last file-system change was only 15 minutes ago, use the cached cid.
                 -- This is done because of the delay on DNS updates.
                 Maybe.andThen
-                    (\_ -> flags.foundation)
-                    (case authEssentialsFromUrl of
-                        Just _ ->
+                    (\{ newUser } ->
+                        if newUser then
                             Nothing
 
-                        Nothing ->
-                            flags.authenticated
+                        else
+                            flags.foundation
                     )
+                    flags.authenticated
 
             else
                 Nothing
-
-        authenticated =
-            Maybe.or
-                authEssentialsFromUrl
-                (Maybe.map (\a -> { a | newUser = False }) flags.authenticated)
     in
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { authenticated = authenticated
+      { authenticated = flags.authenticated
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
-      , did = flags.did
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
       , exploreInput = Just exploreInput
@@ -161,7 +146,6 @@ init flags url navKey =
     , Cmd.batch
         [ Ports.ipfsSetup ()
         , Task.perform SetCurrentTime Time.now
-        , Maybe.unwrap Cmd.none Ports.storeAuthEssentials authEssentialsFromUrl
         , urlCmd
         ]
     )
@@ -314,6 +298,9 @@ update msg =
 
         LinkClicked a ->
             Other.linkClicked a
+
+        RedirectToLobby ->
+            Other.redirectToLobby
 
         ScreenSizeChanged a b ->
             Other.screenSizeChanged a b

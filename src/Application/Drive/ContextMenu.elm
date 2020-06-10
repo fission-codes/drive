@@ -1,6 +1,6 @@
 module Drive.ContextMenu exposing (hamburger, item)
 
-import Authentication.External exposing (authenticationUrl)
+import Authentication.Essentials as Authentication
 import Common
 import ContextMenu exposing (..)
 import Drive.Item exposing (Kind(..))
@@ -23,7 +23,7 @@ hamburger model =
 
      else if Maybe.isJust model.authenticated then
         model.authenticated
-            |> Maybe.map .dnsLink
+            |> Maybe.map Authentication.dnsLink
             |> Maybe.withDefault ""
             |> authenticatedOtherBurgers
 
@@ -93,8 +93,8 @@ unauthenticatedBurgers model =
         , active = False
 
         --
-        , href = Just { newTab = False, url = authenticationUrl model.did model.url }
-        , msg = Nothing
+        , href = Nothing
+        , msg = Just RedirectToLobby
         }
     ]
 

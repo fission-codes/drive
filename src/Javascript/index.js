@@ -31,14 +31,16 @@ window.sdk = sdk
 let app
 
 
-sdk.user.didKey().then(did => {
+sdk.isAuthenticated().then(props => {
+  const { authenticated, newUser, username } = props
+  console.log(props)
+
   // Initialize app
   app = Elm.Main.init({
     node: document.getElementById("elm"),
     flags: {
-      authenticated: authenticated(),
+      authenticated: authenticated ? { newUser, username } : null,
       currentTime: Date.now(),
-      did: did,
       foundation: foundation(),
       lastFsOperation: lastFsOperation(),
       viewportSize: { height: window.innerHeight, width: window.innerWidth }
@@ -48,11 +50,11 @@ sdk.user.didKey().then(did => {
   // Ports
   app.ports.annihilateKeys.subscribe(annihilateKeys)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
-  app.ports.removeStoredAuthEssentials.subscribe(removeStoredAuthEssentials)
+  app.ports.deauthenticate.subscribe(deauthenticate)
+  app.ports.redirectToLobby.subscribe(redirectToLobby)
   app.ports.removeStoredFoundation.subscribe(removeStoredFoundation)
   app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
-  app.ports.storeAuthEssentials.subscribe(storeAuthEssentials)
   app.ports.storeFoundation.subscribe(storeFoundation)
 
   // Ports (FS)
@@ -105,8 +107,13 @@ function copyToClipboard(text) {
 }
 
 
-function removeStoredAuthEssentials(_) {
-  localStorage.removeItem("fissionDrive.auth")
+function deauthenticate() {
+  sdk.deauthenticate()
+}
+
+
+function redirectToLobby() {
+  sdk.redirectToLobby()
 }
 
 
@@ -133,11 +140,6 @@ function showNotification(text) {
     })
 
   }
-}
-
-
-function storeAuthEssentials(details) {
-  localStorage.setItem("fissionDrive.auth", JSON.stringify(details))
 }
 
 
@@ -182,13 +184,14 @@ async function freshUser({ cid, dnsLink }) {
 
 
 async function syncHook(cid) {
-  const { ucan } = authenticated()
-
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
   localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
   console.log("Syncing …", cid)
 
-  await fs.updateRoot(ucan)
+  await sdk.updateDataRoot({
+    apiEndpoint: api.endpoint,
+    cid: cid
+  })
 }
 
 
@@ -239,12 +242,6 @@ tocca({
   dbltapThreshold: 400,
   tapThreshold: 250
 })
-
-
-function authenticated() {
-  const stored = localStorage.getItem("fissionDrive.auth")
-  return stored ? JSON.parse(stored) : null
-}
 
 
 function foundation() {
