@@ -144,30 +144,40 @@ item hook { isGroundFloor } context =
         hook
         (case context.kind of
             Directory ->
-                List.append
-                    [ driveLink context
-                    , copyCid context
-                    ]
-                    (if isGroundFloor && context.name == "public" then
-                        []
+                [ driveLink context
+                ]
+                    |> (if String.startsWith "public/" context.path then
+                            List.add [ copyCid context ]
 
-                     else
-                        [ Divider
-                        , removeItem context
-                        ]
-                    )
+                        else
+                            identity
+                       )
+                    |> List.add
+                        (if isGroundFloor && context.name == "public" then
+                            []
+
+                         else
+                            [ Divider
+                            , removeItem context
+                            ]
+                        )
 
             _ ->
                 [ driveLink context
                 , contentLink context
-                , copyCid context
-
-                --
-                , Divider
-
-                --
-                , removeItem context
                 ]
+                    |> (if String.startsWith "public/" context.path then
+                            List.add [ copyCid context ]
+
+                        else
+                            identity
+                       )
+                    |> List.add
+                        [ Divider
+
+                        --
+                        , removeItem context
+                        ]
         )
 
 
