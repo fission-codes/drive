@@ -6,10 +6,8 @@ import Common.State as Common
 import Debouncing
 import Drive.Item as Item exposing (Item)
 import Drive.Sidebar
-import File exposing (File)
+import File
 import File.Download
-import File.Select
-import Html.Events.Extra.Drag as Drag
 import Ipfs exposing (FileSystemOperation(..), Status(..))
 import List.Ext as List
 import List.Extra as List

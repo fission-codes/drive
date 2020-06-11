@@ -1,7 +1,6 @@
 module Routing exposing (..)
 
 import Mode exposing (Mode)
-import RemoteData
 import String.Ext as String
 import Url exposing (Url)
 import Url.Parser as Url exposing (..)

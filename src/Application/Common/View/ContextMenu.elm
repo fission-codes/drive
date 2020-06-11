@@ -8,7 +8,6 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html
-import Json.Decode
 import Tailwind as T
 import Types exposing (Msg(..))
 

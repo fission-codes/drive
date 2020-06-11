@@ -11,9 +11,7 @@ import Coordinates exposing (Coordinates)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Item exposing (Item)
 import Drive.Sidebar
-import File exposing (File)
 import Foundation exposing (Foundation)
-import Html.Events.Extra.Drag as Drag
 import Html.Events.Extra.Mouse as Mouse
 import Ipfs
 import Json.Decode as Json

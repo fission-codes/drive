@@ -1,6 +1,5 @@
 module Explore.State exposing (..)
 
-import Browser.Navigation as Navigation
 import Common
 import Drive.Sidebar
 import Ipfs

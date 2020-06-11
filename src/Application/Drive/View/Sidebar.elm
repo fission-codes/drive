@@ -13,7 +13,6 @@ import Html.Events.Extra as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
 import Ipfs
-import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Result.Extra as Result

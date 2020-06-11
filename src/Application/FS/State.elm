@@ -1,9 +1,7 @@
 module FS.State exposing (..)
 
 import Common
-import Foundation
 import Ipfs
-import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
 import Return.Extra as Return

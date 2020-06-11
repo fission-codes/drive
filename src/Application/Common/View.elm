@@ -5,7 +5,6 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Ipfs
 import Json.Decode as Decode
-import Routing
 import Tailwind as T
 import Types exposing (Model, Msg)
 

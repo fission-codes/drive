@@ -1,18 +1,14 @@
 module Authentication.View exposing (..)
 
-import Common exposing (ifThenElse)
+import Common
 import Common.View as Common
 import Common.View.Footer as Footer
 import Common.View.Svg
-import FeatherIcons
 import Html exposing (Html)
-import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html
-import Maybe.Extra as Maybe
 import Mode
-import Routing
 import Styling as S
 import Tailwind as T
 import Types exposing (..)

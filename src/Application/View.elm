@@ -19,7 +19,6 @@ import Json.Decode as Decode
 import Maybe.Extra as Maybe
 import Notifications
 import Routing
-import Styling as S
 import Tailwind as T
 import Toasty
 import Types exposing (..)

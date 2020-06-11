@@ -3,7 +3,6 @@ module Explore.View exposing (view)
 import Common
 import Common.View as Common
 import Common.View.Footer as Footer
-import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E

@@ -1,8 +1,6 @@
 module Common.View.HelpfulNote exposing (view)
 
-import Common
 import Html exposing (Html)
-import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Styling as S
