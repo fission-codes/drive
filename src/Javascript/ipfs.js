@@ -70,7 +70,7 @@ export async function setup() {
 
     browserPeers: [ PEER_WSS ],
     localPeers: [ PEER_TCP ],
-    jsIpfs: "./web_modules/ipfs.js"
+    jsIpfs: "./web_modules/ipfs.min.js"
   })
 
   window.ipfs = ipfs
