@@ -33,6 +33,7 @@ config =
             ]
         |> Toasty.itemAttrs
             [ T.bg_gray_300
+            , T.mt_3
             , T.p_4
             , T.rounded
             , T.shadow_md
@@ -74,4 +75,4 @@ view : Notification msg -> Html msg
 view notification =
     case notification of
         Indication html ->
-            Html.div [ T.mt_3 ] [ html ]
+            html
