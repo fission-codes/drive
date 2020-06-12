@@ -188,9 +188,8 @@ async function syncHook(cid) {
   localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
   console.log("Syncing …", cid)
 
-  await sdk.updateDataRoot({
-    apiEndpoint: api.endpoint,
-    cid: cid
+  await sdk.updateDataRoot(cid, {
+    apiEndpoint: api.endpoint
   })
 }
 
