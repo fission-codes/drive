@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/52007072cf459d02de6b49f5ca13229a7a03f4c6
-  fission-sdk: 0.6.2
+  fission-sdk: 0.7.0
   get-ipfs: 1.2.0
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.1.2
@@ -982,10 +982,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-MPtoySlAZQ37VoLaPcTHCu1RWJ4llDkULYZIzOYxlhxBqYPB0RsRlmMU0R6tahtFe27mIdkHV+551ZWV4PLmVw==
-  /@types/lodash/4.14.150:
-    dev: false
-    resolution:
-      integrity: sha512-kMNLM5JBcasgYscD9x/Gvr6lTAv2NVgsKtet/hm93qMyf/D1pt+7jeEZklKJKxMVmXjxbRVQQGfqDSfipYCO6w==
   /@types/minimist/1.2.0:
     dev: true
     resolution:
@@ -1637,12 +1633,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
-  /decode-uri-component/0.2.0:
-    dev: false
-    engines:
-      node: '>=0.10'
-    resolution:
-      integrity: sha1-6zkTMzRYd1y4TNGh+uBiEGu4dUU=
   /decompress-response/5.0.0:
     dependencies:
       mimic-response: 2.1.0
@@ -1973,22 +1963,20 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
-  /fission-sdk/0.6.2:
+  /fission-sdk/0.7.0:
     dependencies:
-      '@types/lodash': 4.14.150
       base58-universal: 1.0.0
       borc: 2.1.2
       get-ipfs: 1.2.0
       ipld-dag-pb: 0.18.4
-      keystore-idb: 0.11.1
-      lodash: 4.17.15
+      keystore-idb: 0.12.0
+      localforage: 1.7.3
       make-error: 1.3.6
-      query-string: 6.12.1
     dev: false
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-tSIAb3YaH44G6Em7uLSgospM2yani+RTMKchI8QIuodFy9tpJS9hjsp8jR7qlPEEtkgRos+Kio+fhQPvbGVBiw==
+      integrity: sha512-pJtju6G6xf8aZifrg9P4jwoUBSF7mcsZgP8AWDUsyRbu8ScZwAifklAebEl6p9lHDFVd1Etc+MCP0jy6MdS8jQ==
   /follow-redirects/1.10.0:
     dependencies:
       debug: 3.2.6
@@ -2522,14 +2510,14 @@ packages:
     dev: true
     resolution:
       integrity: sha512-kVTF+08x25PQ0CjuVc0gRM9EUPb0Fe9Ln/utFOgcdxEIOHuU7ooBk/UPTd7t1M91pP35m0MU1T8M5P7vP1bRRw==
-  /keystore-idb/0.11.1:
+  /keystore-idb/0.12.0:
     dependencies:
       localforage: 1.7.3
     dev: false
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-1+0mkbriz9591KvYK3ZJ62m7HFmIhmboSxZLKOvcolspFc6F274tIMZ6oUx7iISVIBfShQqbANPZceZARV8Kzw==
+      integrity: sha512-3xfMYM1lCat92xBLGRf4HdG/wmegd8E4PgZAb0wCj8mLS3tG5QJyN3Ep1KnnALjwA+0qlRjDk1rG3SZzY1pLKA==
   /keyv/4.0.0:
     dependencies:
       json-buffer: 3.0.1
@@ -2597,6 +2585,7 @@ packages:
     resolution:
       integrity: sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
   /lodash/4.17.15:
+    dev: true
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /log-symbols/2.2.0:
@@ -3424,16 +3413,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-5oDBxiT9VonwKmEMohPFRFZrj8fdSVKxHPwq7G5Rx/2pXicZFJu+D4m5bb3NuV0sSK3ooNxq5jFIwwHzifP5FA==
-  /query-string/6.12.1:
-    dependencies:
-      decode-uri-component: 0.2.0
-      split-on-first: 1.1.0
-      strict-uri-encode: 2.0.0
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-OHj+zzfRMyj3rmo/6G8a5Ifvw3AleL/EbcHMD27YA31Q+cO5lfmQxECkImuNVjcskLcvBRVHNAB3w6udMs1eAA==
   /quick-lru/4.0.1:
     dev: true
     engines:
@@ -3848,12 +3827,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-J+FWzZoynJEXGphVIS+XEh3kFSjZX/1i9gFBaWQcB+/tmpe2qUsSBABpcxqxnAxFdiUFEgAX1bjYGQvIZmoz9Q==
-  /split-on-first/1.1.0:
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
   /ssri/8.0.0:
     dependencies:
       minipass: 3.1.1
@@ -3868,12 +3841,6 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
-  /strict-uri-encode/2.0.0:
-    dev: false
-    engines:
-      node: '>=4'
-    resolution:
-      integrity: sha1-ucczDHBChi9rFC3CdLvMWGbONUY=
   /string_decoder/1.1.1:
     dependencies:
       safe-buffer: 5.1.2
@@ -4242,7 +4209,7 @@ specifiers:
   elm-impfix: ^1.0.8
   elm-live: ^4.0.1
   fission-kit: 'fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6'
-  fission-sdk: 0.6.2
+  fission-sdk: 0.7.0
   get-ipfs: ^1.2.0
   html-minifier-terser: ^5.0.5
   postcss: ^7.0.26

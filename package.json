@@ -3,7 +3,7 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6",
-    "fission-sdk": "0.6.2",
+    "fission-sdk": "0.7.0",
     "get-ipfs": "^1.2.0"
   },
   "devDependencies": {
