@@ -56,7 +56,10 @@ init flags url navKey =
                 ( Just essentials, _, _ ) ->
                     case mode of
                         Mode.Default ->
-                            Navigation.replaceUrl navKey ("#/" ++ Authentication.dnsLink essentials)
+                            essentials
+                                |> Authentication.dnsLink flags.usersDomain
+                                |> String.append "#/"
+                                |> Navigation.replaceUrl navKey
 
                         Mode.PersonalDomain ->
                             Cmd.none
@@ -125,6 +128,7 @@ init flags url navKey =
       , showLoadingOverlay = False
       , toasties = Toasty.initialState
       , url = url
+      , usersDomain = flags.usersDomain
 
       -- Debouncers
       -------------

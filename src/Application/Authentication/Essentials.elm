@@ -9,6 +9,6 @@ type alias Essentials =
     }
 
 
-dnsLink : Essentials -> String
-dnsLink { username } =
-    username ++ ".fission.name"
+dnsLink : String -> Essentials -> String
+dnsLink usersDomain { username } =
+    username ++ "." ++ usersDomain

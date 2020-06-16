@@ -209,7 +209,7 @@ myDrive model =
         Just essentials ->
             let
                 dnsLink =
-                    Authentication.dnsLink essentials
+                    Authentication.dnsLink model.usersDomain essentials
             in
             action
                 Link

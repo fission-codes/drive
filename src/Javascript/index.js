@@ -15,17 +15,17 @@ import sdk from "./web_modules/fission-sdk.js"
 import "./analytics.js"
 import "./custom.js"
 
-import * as api from "./api.js"
+import * as endpoints from "./endpoints.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 
 
+window.sdk = sdk
+
+
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
-
-
-window.sdk = sdk
 
 
 let app
@@ -33,7 +33,6 @@ let app
 
 sdk.isAuthenticated().then(props => {
   const { authenticated, newUser, username } = props
-  console.log(props)
 
   // Initialize app
   app = Elm.Main.init({
@@ -43,6 +42,7 @@ sdk.isAuthenticated().then(props => {
       currentTime: Date.now(),
       foundation: foundation(),
       lastFsOperation: lastFsOperation(),
+      usersDomain: endpoints.users,
       viewportSize: { height: window.innerHeight, width: window.innerWidth }
     }
   })
@@ -113,7 +113,7 @@ function deauthenticate() {
 
 
 function redirectToLobby() {
-  sdk.redirectToLobby()
+  sdk.redirectToLobby(undefined, endpoints.lobby)
 }
 
 
@@ -189,7 +189,7 @@ async function syncHook(cid) {
   console.log("Syncing …", cid)
 
   await sdk.updateDataRoot(cid, {
-    apiEndpoint: api.endpoint
+    apiEndpoint: endpoints.api
   })
 }
 

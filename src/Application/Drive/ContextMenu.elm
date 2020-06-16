@@ -23,7 +23,7 @@ hamburger model =
 
      else if Maybe.isJust model.authenticated then
         model.authenticated
-            |> Maybe.map Authentication.dnsLink
+            |> Maybe.map (Authentication.dnsLink model.usersDomain)
             |> Maybe.withDefault ""
             |> authenticatedOtherBurgers
 

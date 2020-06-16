@@ -36,6 +36,7 @@ type alias Flags =
     , currentTime : Int
     , foundation : Maybe Foundation
     , lastFsOperation : Int
+    , usersDomain : String
     , viewportSize : { height : Int, width : Int }
     }
 
@@ -66,6 +67,7 @@ type alias Model =
     , showLoadingOverlay : Bool
     , toasties : Toasty.Stack (Notification Msg)
     , url : Url
+    , usersDomain : String
 
     -----------------------------------------
     -- Debouncers

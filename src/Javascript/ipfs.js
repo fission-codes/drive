@@ -8,18 +8,12 @@ Everything involving IPFS.
 
 import "./web_modules/is-ipfs.js"
 import "./web_modules/it-to-stream.js"
-import getIpfs from "./web_modules/get-ipfs.js"
 import sdk from "./web_modules/fission-sdk.js"
+
+import * as endpoints from "./endpoints.js"
 
 
 let ipfs
-
-
-// 🏔
-
-
-const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
-const PEER_TCP = "/ip4/3.215.160.238/tcp/4001/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
 
 
 
@@ -44,7 +38,7 @@ export async function replaceDnsLinkInAddress(address) {
   const firstPart = splitted[0]
 
   const isDnsLink = !IsIpfs.cid(firstPart)
-  const cleanedPart = firstPart.includes(".") ? firstPart : `${firstPart}.fission.name`
+  const cleanedPart = firstPart.includes(".") ? firstPart : `${firstPart}.${endpoints.users}`
   const replacedPart = isDnsLink ? await lookupDns(cleanedPart) : firstPart
 
   return {
@@ -56,7 +50,7 @@ export async function replaceDnsLinkInAddress(address) {
 
 
 export async function setup() {
-  ipfs = await getIpfs({
+  ipfs = await sdk.ipfs.getIpfs({
     permissions: [
       "cat",
       "dag.tree",
@@ -68,13 +62,10 @@ export async function setup() {
       "version",
     ],
 
-    browserPeers: [ PEER_WSS ],
-    localPeers: [ PEER_TCP ],
     jsIpfs: "./web_modules/ipfs.min.js"
   })
 
   window.ipfs = ipfs
-  sdk.ipfs.setIpfs(ipfs)
 
   return null
 }

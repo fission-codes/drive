@@ -57,12 +57,12 @@ setupCompleted model =
             else if essentials.newUser then
                 return
                     { model | ipfs = Ipfs.InitialListing }
-                    (Ports.fsNew { dnsLink = dnsLink essentials })
+                    (Ports.fsNew { dnsLink = dnsLink model.usersDomain essentials })
 
             else
                 return
                     { model | ipfs = Ipfs.InitialListing }
-                    (Ports.ipfsResolveAddress <| dnsLink essentials)
+                    (Ports.ipfsResolveAddress <| dnsLink model.usersDomain essentials)
 
         ( Nothing, Nothing ) ->
             case Routing.treeRoot model.url model.route of

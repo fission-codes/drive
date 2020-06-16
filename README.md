@@ -5,7 +5,7 @@
 [![Discord](https://img.shields.io/discord/478735028319158273.svg)](https://discord.gg/zAQBDEq)
 [![Discourse](https://img.shields.io/discourse/https/talk.fission.codes/topics)](https://talk.fission.codes)
 
-The Drive application that lives on your `fission.name` domain.
+First-party application for your Fission filesystem.
 
 
 ## Quickstart

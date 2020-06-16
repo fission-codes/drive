@@ -1,5 +1,6 @@
 module Common exposing (..)
 
+import Authentication.Essentials
 import Round
 import Routing
 import String.Ext as String
@@ -59,8 +60,8 @@ ifThenElse condition x y =
 isAuthenticatedAndNotExploring : Model -> Bool
 isAuthenticatedAndNotExploring model =
     case ( model.authenticated, model.foundation ) of
-        ( Just { username }, Just { unresolved } ) ->
-            username ++ ".fission.name" == unresolved
+        ( Just essentials, Just { unresolved } ) ->
+            Authentication.Essentials.dnsLink model.usersDomain essentials == unresolved
 
         _ ->
             False
