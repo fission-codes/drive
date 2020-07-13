@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/52007072cf459d02de6b49f5ca13229a7a03f4c6
-  fission-sdk: 0.8.0
+  fission-sdk: 0.9.1
   get-ipfs: 1.2.0
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.1.2
@@ -1964,20 +1964,20 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
-  /fission-sdk/0.8.0:
+  /fission-sdk/0.9.1:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
       get-ipfs: 1.2.0
       ipld-dag-pb: 0.18.4
-      keystore-idb: 0.12.0
+      keystore-idb: 0.13.0
       localforage: 1.7.3
       make-error: 1.3.6
     dev: false
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-d6kd6NimrwPUue3mPtqpF1acwrd4TmgYd+RSS7chJ0sJyANMIMXiVgDThvsPH81yJd1jfh3i45v+HEceHMUHBw==
+      integrity: sha512-znl7K3Qhg8D7ps4VCq1GmKD0Q0SvkwvWtlCG0SkCOHicXhOHYsP2651N7Z27SA4/GMvAdvD8GDiRlg0cPaMw1A==
   /follow-redirects/1.10.0:
     dependencies:
       debug: 3.2.6
@@ -2511,14 +2511,14 @@ packages:
     dev: true
     resolution:
       integrity: sha512-kVTF+08x25PQ0CjuVc0gRM9EUPb0Fe9Ln/utFOgcdxEIOHuU7ooBk/UPTd7t1M91pP35m0MU1T8M5P7vP1bRRw==
-  /keystore-idb/0.12.0:
+  /keystore-idb/0.13.0:
     dependencies:
       localforage: 1.7.3
     dev: false
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-3xfMYM1lCat92xBLGRf4HdG/wmegd8E4PgZAb0wCj8mLS3tG5QJyN3Ep1KnnALjwA+0qlRjDk1rG3SZzY1pLKA==
+      integrity: sha512-dGE1Hca3Z8TV8hL0CXuVMYt5L5ZvCTFWy4cR3a885xRT9JeDExpFaI1m2KBqPn/zkrFvIyg7Q6x26U7fRH7MAA==
   /keyv/4.0.0:
     dependencies:
       json-buffer: 3.0.1
@@ -4217,7 +4217,7 @@ specifiers:
   elm-impfix: ^1.0.8
   elm-live: ^4.0.1
   fission-kit: fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6
-  fission-sdk: 0.8.0
+  fission-sdk: 0.9.1
   get-ipfs: ^1.2.0
   html-minifier-terser: ^5.0.5
   mustache: ^4.0.1
