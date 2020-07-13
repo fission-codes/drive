@@ -4,12 +4,14 @@ export NODE_OPTIONS := "--no-warnings"
 # Variables
 # ---------
 
-build_dir 	:= "./build"
-node_bin 		:= "./node_modules/.bin"
-src_dir 		:= "./src"
-sys_dir			:= "./system"
+build_dir 						:= "./build"
+node_bin 							:= "./node_modules/.bin"
+src_dir 							:= "./src"
+sys_dir								:= "./system"
 
-environment := "dev"
+environment 					:= "dev"
+default_config 				:= "config/default.json"
+production_config 		:= "config/production.json"
 
 
 
@@ -17,6 +19,13 @@ environment := "dev"
 # -----
 
 @default: dev
+
+
+@apply-config config=default_config:
+	echo "🎛  Applying config \`{{config}}\`"
+	{{node_bin}}/mustache {{config}} {{build_dir}}/index.html > {{build_dir}}/index.applied.html
+	rm {{build_dir}}/index.html
+	mv {{build_dir}}/index.applied.html {{build_dir}}/index.html
 
 
 @build: clean css-large html elm javascript-dependencies javascript meta images (_report "Build success")
@@ -91,7 +100,7 @@ environment := "dev"
 
 	# Download other dependencies
 	# (note, alternative to wzrd.in → https://bundle.run)
-	curl https://unpkg.com/ipfs@0.46.0/dist/index.min.js -o web_modules/ipfs.min.js
+	curl https://unpkg.com/ipfs@0.47.0/dist/index.min.js -o web_modules/ipfs.min.js
 	curl https://unpkg.com/is-ipfs@1.0.3/dist/index.js -o web_modules/is-ipfs.js
 	curl https://unpkg.com/tocca@2.0.9/Tocca.js -o web_modules/tocca.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
@@ -136,6 +145,15 @@ environment := "dev"
 	mkdir -p {{build_dir}}/reception
 	cp {{src_dir}}/Static/Html/Reception.html {{build_dir}}/reception/index.html
 
+	just environment={{environment}} html-apply-config
+
+
+@html-apply-config:
+	if [ "{{environment}}" == "production" ]; then \
+		just apply-config \"{{production_config}}\" ; \
+	else \
+		just apply-config ; \
+	fi
 
 
 @images:

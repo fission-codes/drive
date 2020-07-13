@@ -1,0 +1,5 @@
+{
+  "API_ENDPOINT": "https://runfission.com",
+  "DATA_ROOT_DOMAIN": "fission.name",
+  "LOBBY": "https://auth.fission.codes"
+}

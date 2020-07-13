@@ -19,6 +19,7 @@ import * as endpoints from "./endpoints.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
+import { debounce } from "./common.js"
 
 
 window.sdk = sdk
@@ -183,14 +184,16 @@ async function freshUser({ cid, dnsLink }) {
 }
 
 
-async function syncHook(cid) {
-  app.ports.ipfsReplaceResolvedAddress.send({ cid })
-  localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
-  console.log("Syncing …", cid)
+function syncHook(cid) {
+  debounce(async () => {
+    app.ports.ipfsReplaceResolvedAddress.send({ cid })
+    localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
+    console.log("Syncing …", cid)
 
-  await sdk.updateDataRoot(cid, {
-    apiEndpoint: endpoints.api
-  })
+    await sdk.updateDataRoot(cid, {
+      apiEndpoint: endpoints.api
+    })
+  }, 5000)
 }
 
 

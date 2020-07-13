@@ -9,6 +9,7 @@ devDependencies:
   elm-impfix: 1.0.8
   elm-live: 4.0.2
   html-minifier-terser: 5.0.5
+  mustache: 4.0.1
   postcss: 7.0.27
   postcss-csso: 4.0.0_postcss@7.0.27
   postcss-elm-tailwind: 0.8.0_postcss@7.0.27
@@ -2896,6 +2897,13 @@ packages:
       node: '>=8.0.0'
     resolution:
       integrity: sha512-/sF3ee6zvScXMb1XFJ8gDsSnY+X8PbOyjIuBhtgis10W2Jx4ZjIhikUCIF9c4gpJxVnQIsPAFrSwTCuAjicP6g==
+  /mustache/4.0.1:
+    dev: true
+    engines:
+      npm: '>=1.4.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-yL5VE97+OXn4+Er3THSmTdCFCtx5hHWzrolvH+JObZnUYwuaG7XV+Ch4fR2cIrcYI0tFHxS7iyFYl14bW8y2sA==
   /nice-try/1.0.5:
     dev: true
     resolution:
@@ -4208,10 +4216,11 @@ specifiers:
   elm-git-install: ^0.1.3
   elm-impfix: ^1.0.8
   elm-live: ^4.0.1
-  fission-kit: 'fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6'
+  fission-kit: fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6
   fission-sdk: 0.8.0
   get-ipfs: ^1.2.0
   html-minifier-terser: ^5.0.5
+  mustache: ^4.0.1
   postcss: ^7.0.26
   postcss-csso: ^4.0.0
   postcss-elm-tailwind: 0.8.0

@@ -13,6 +13,7 @@
     "elm-impfix": "^1.0.8",
     "elm-live": "^4.0.1",
     "html-minifier-terser": "^5.0.5",
+    "mustache": "^4.0.1",
     "postcss": "^7.0.26",
     "postcss-csso": "^4.0.0",
     "postcss-elm-tailwind": "0.8.0",
