@@ -244,7 +244,7 @@ function annihilateKeys(_) {
 // 🛠
 // ==
 
-window.overrideFileSysten = (dnsLink) => {
+window.overrideFileSystem = (dnsLink) => {
   fs.createNew({
     callback: freshUser,
     pathSegments: [],

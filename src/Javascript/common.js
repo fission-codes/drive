@@ -27,7 +27,7 @@ export const throttle =
 
     clearTimeout(secondCallTimeoutId)
 
-    timeoutId = setTimeout(() => {
+    setTimeout(() => {
       callback(...lastestArgs)
       inTimeout = false
       secondCall = false

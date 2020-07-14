@@ -112,7 +112,11 @@ async function ensureArray(result) {
 
 async function lookupDns(domain) {
   try {
-    return await sdk.dns.lookupDnsLink(domain)
+    if (domain.endsWith(DATA_ROOT_DOMAIN)) {
+      return await sdk.dataRoot(domain.split(".")[0], DATA_ROOT_DOMAIN)
+    } else {
+      return await sdk.dns.lookupDnsLink(domain)
+    }
 
   } catch (err) {
     return null
