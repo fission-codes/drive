@@ -10,9 +10,26 @@ export const debounce =
 
 
 export const throttle =
-  (callback, time = 250, wasCalledBefore, lastestArgs) =>
+  (callback, time = 250, inTimeout, secondCall, lastestArgs, secondCallTimeoutId) =>
   (...args) => {
     lastestArgs = args
-    if (wasCalledBefore) { return } else { wasCalledBefore = true }
-    setTimeout(() => { callback(...lastestArgs); wasCalledBefore = false }, time)
+
+    if (inTimeout) {
+      return
+    } else if (!secondCall) {
+      callback(...lastestArgs)
+      secondCall = true
+      secondCallTimeoutId = setTimeout(() => secondCall = false, time)
+      return
+    } else {
+      inTimeout = true
+    }
+
+    clearTimeout(secondCallTimeoutId)
+
+    timeoutId = setTimeout(() => {
+      callback(...lastestArgs)
+      inTimeout = false
+      secondCall = false
+    }, time)
   }

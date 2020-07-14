@@ -57,10 +57,9 @@ export async function cid() {
 
 export async function createNew({ callback, dnsLink, pathSegments, syncHook }) {
   fs = await sdk.fs.empty()
+  fs.addSyncHook(syncHook)
 
   await addSampleData()
-
-  fs.addSyncHook(syncHook)
 
   const cid = await fs.sync()
   await callback({ cid, dnsLink })

@@ -244,6 +244,16 @@ function annihilateKeys(_) {
 // 🛠
 // ==
 
+window.overrideFileSysten = (dnsLink) => {
+  fs.createNew({
+    callback: freshUser,
+    pathSegments: [],
+    dnsLink,
+    syncHook
+  })
+}
+
+
 tocca({
   dbltapThreshold: 400,
   tapThreshold: 250
