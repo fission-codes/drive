@@ -184,16 +184,20 @@ async function freshUser({ cid, dnsLink }) {
 }
 
 
-function syncHook(cid) {
-  debounce(async () => {
-    app.ports.ipfsReplaceResolvedAddress.send({ cid })
-    localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
-    console.log("Syncing …", cid)
+const syncHook_ = debounce(cid => {
+  console.log("Syncing …", cid)
 
-    await sdk.updateDataRoot(cid, {
-      apiEndpoint: endpoints.api
-    })
-  }, 5000)
+  app.ports.ipfsReplaceResolvedAddress.send({ cid })
+  localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
+
+  sdk.updateDataRoot(cid, {
+    apiEndpoint: endpoints.api
+  })
+}, 5000)
+
+
+function syncHook(cid) {
+  return syncHook_(cid)
 }
 
 
