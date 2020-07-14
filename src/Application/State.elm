@@ -3,7 +3,7 @@ module State exposing (init, subscriptions, update)
 import Authentication.Essentials as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
-import Common exposing (defaultDnsLink)
+import Common exposing (defaultDnsLink, ifThenElse)
 import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
@@ -45,39 +45,6 @@ init flags url navKey =
         route =
             Routing.routeFromUrl mode url
 
-        urlCmd =
-            -- Scenarios:
-            --
-            -- 1. When authenticating, make sure the correct foundation is in place.
-            -- 2. When a foundation is present, but we're not at the
-            --    correct url, then change the url.
-            --
-            case ( flags.authenticated, flags.foundation, route ) of
-                ( Just essentials, _, _ ) ->
-                    case mode of
-                        Mode.Default ->
-                            essentials
-                                |> Authentication.dnsLink flags.usersDomain
-                                |> String.append "#/"
-                                |> Navigation.replaceUrl navKey
-
-                        Mode.PersonalDomain ->
-                            Cmd.none
-
-                ( Nothing, Just _, Routing.Tree _ _ ) ->
-                    Cmd.none
-
-                ( Nothing, Just f, _ ) ->
-                    case mode of
-                        Mode.Default ->
-                            Navigation.replaceUrl navKey ("#/" ++ f.unresolved)
-
-                        Mode.PersonalDomain ->
-                            Cmd.none
-
-                _ ->
-                    Cmd.none
-
         exploreInput =
             flags.foundation
                 |> Maybe.map .unresolved
@@ -94,13 +61,7 @@ init flags url navKey =
                 -- Last file-system change was only 15 minutes ago, use the cached cid.
                 -- This is done because of the delay on DNS updates.
                 Maybe.andThen
-                    (\{ newUser } ->
-                        if newUser then
-                            Nothing
-
-                        else
-                            flags.foundation
-                    )
+                    (\{ newUser } -> ifThenElse newUser Nothing flags.foundation)
                     flags.authenticated
 
             else
@@ -149,9 +110,57 @@ init flags url navKey =
     , Cmd.batch
         [ Ports.ipfsSetup ()
         , Task.perform SetCurrentTime Time.now
-        , urlCmd
+        , urlCmd flags mode navKey route url
         ]
     )
+
+
+urlCmd flags mode navKey route url =
+    -- Scenarios:
+    --
+    -- 1. When authenticating, make sure the correct foundation is in place.
+    -- 2. When a foundation is present, but we're not at the
+    --    correct url, then change the url.
+    --
+    case ( flags.authenticated, flags.foundation, route ) of
+        ( Just essentials, _, _ ) ->
+            case mode of
+                Mode.Default ->
+                    let
+                        dnsLink =
+                            Authentication.dnsLink flags.usersDomain essentials
+                    in
+                    case url.fragment of
+                        Just frag ->
+                            if String.startsWith ("/" ++ dnsLink) frag then
+                                Cmd.none
+
+                            else
+                                dnsLink
+                                    |> String.append "#/"
+                                    |> Navigation.replaceUrl navKey
+
+                        Nothing ->
+                            dnsLink
+                                |> String.append "#/"
+                                |> Navigation.replaceUrl navKey
+
+                Mode.PersonalDomain ->
+                    Cmd.none
+
+        ( Nothing, Just _, Routing.Tree _ _ ) ->
+            Cmd.none
+
+        ( Nothing, Just f, _ ) ->
+            case mode of
+                Mode.Default ->
+                    Navigation.replaceUrl navKey ("#/" ++ f.unresolved)
+
+                Mode.PersonalDomain ->
+                    Cmd.none
+
+        _ ->
+            Cmd.none
 
 
 
