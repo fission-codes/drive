@@ -19,7 +19,7 @@ import * as endpoints from "./endpoints.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
-import { debounce } from "./common.js"
+import { throttle } from "./common.js"
 
 
 window.sdk = sdk
@@ -184,7 +184,7 @@ async function freshUser({ cid, dnsLink }) {
 }
 
 
-const syncHook_ = debounce(cid => {
+const syncHook_ = throttle(cid => {
   console.log("Syncing …", cid)
 
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
