@@ -103,7 +103,7 @@ export async function listDirectory({ pathSegments }) {
 
   // Add a fictional "public" directory when listing the "root"
   if (isListingRoot) {
-    const publicCid = await fs.publicTree.put()
+    const publicCid = fs.root.links.public.cid
 
     return [
       {
