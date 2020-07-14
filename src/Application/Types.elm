@@ -17,6 +17,7 @@ import Ipfs
 import Json.Decode as Json
 import Keyboard
 import Management
+import Modal exposing (Modal)
 import Mode exposing (Mode)
 import Notifications exposing (Notification)
 import Routing exposing (Route)
@@ -58,6 +59,7 @@ type alias Model =
     , helpfulNote : Maybe { faded : Bool, note : String }
     , ipfs : Ipfs.Status
     , isFocused : Bool
+    , modal : Maybe (Modal Msg)
     , mode : Mode
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key

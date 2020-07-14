@@ -17,6 +17,7 @@ import Html.Extra as Html
 import Html.Lazy as Lazy
 import Json.Decode as Decode
 import Maybe.Extra as Maybe
+import Modal exposing (Modal)
 import Notifications
 import Routing
 import Tailwind as T
@@ -72,6 +73,16 @@ body m =
             Html.nothing
 
     -----------------------------------------
+    -- Modal
+    -----------------------------------------
+    , case m.modal of
+        Just modal ->
+            Modal.view modal
+
+        Nothing ->
+            Html.nothing
+
+    -----------------------------------------
     -- Helpful Note
     -----------------------------------------
     -- Is shown, for example, when dragging files onto Fission Drive.
@@ -92,10 +103,11 @@ body m =
     -----------------------------------------
     -- Overlay
     -----------------------------------------
-    , Lazy.lazy2
+    , Lazy.lazy3
         overlay
         m.contextMenu
         m.helpfulNote
+        m.modal
     ]
         |> Html.node
             "fs-drop-zone"
@@ -151,11 +163,14 @@ treeView m =
 -- OVERLAY
 
 
-overlay : Maybe (ContextMenu Msg) -> Maybe { faded : Bool, note : String } -> Html Msg
-overlay contextMenu helpfulNote =
+overlay : Maybe (ContextMenu Msg) -> Maybe { faded : Bool, note : String } -> Maybe (Modal Msg) -> Html Msg
+overlay contextMenu helpfulNote modal =
     let
         shouldBeShown =
-            Maybe.isJust contextMenu || Maybe.unwrap False (.faded >> not) helpfulNote
+            False
+                || Maybe.isJust contextMenu
+                || Maybe.unwrap False (.faded >> not) helpfulNote
+                || Maybe.isJust modal
     in
     Html.div
         [ T.fixed

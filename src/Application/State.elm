@@ -80,6 +80,7 @@ init flags url navKey =
       , helpfulNote = Nothing
       , ipfs = Ipfs.Connecting
       , isFocused = False
+      , modal = Nothing
       , mode = mode
       , navKey = navKey
       , route = route
