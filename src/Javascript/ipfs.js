@@ -45,13 +45,13 @@ export async function replaceDnsLinkInAddress(address) {
   return {
     isDnsLink,
     resolved: replacedPart && [replacedPart].concat(splitted.slice(1)).join("/"),
-    unresolved: isDnsLink ? [cleanedPart].concat(splitted.slice(1)).join("/") : address
+    unresolved: firstPart
   }
 }
 
 
 export async function setup() {
-  ipfs = Ipfs.create({
+  ipfs = await Ipfs.create({
     config: {
       Bootstrap: [
         "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"

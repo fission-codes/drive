@@ -55,14 +55,14 @@ export async function cid() {
 }
 
 
-export async function createNew({ callback, dnsLink, pathSegments, syncHook }) {
+export async function createNew({ callback, pathSegments, syncHook, username }) {
   fs = await sdk.fs.empty()
   fs.addSyncHook(syncHook)
 
   await addSampleData()
 
   const cid = await fs.sync()
-  await callback({ cid, dnsLink })
+  await callback({ cid, username })
 
   return await listDirectory({ pathSegments })
 }
@@ -101,6 +101,7 @@ export async function listDirectory({ pathSegments }) {
   }))
 
   // Add a fictional "public" directory when listing the "root"
+  // (ie. the "root" = "/private")
   if (isListingRoot) {
     const publicCid = fs.root.links.public
       ? fs.root.links.public.cid

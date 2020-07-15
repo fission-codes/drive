@@ -206,15 +206,11 @@ explore =
 
 myDrive model =
     case model.authenticated of
-        Just essentials ->
-            let
-                dnsLink =
-                    Authentication.dnsLink model.usersDomain essentials
-            in
+        Just { username } ->
             action
                 Link
                 [ model.url
-                    |> Routing.routeUrl (Routing.Tree { root = dnsLink } [])
+                    |> Routing.routeUrl (Routing.Tree { root = username } [])
                     |> A.href
                 ]
                 FeatherIcons.hardDrive

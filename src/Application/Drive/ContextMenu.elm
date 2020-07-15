@@ -23,7 +23,7 @@ hamburger model =
 
      else if Maybe.isJust model.authenticated then
         model.authenticated
-            |> Maybe.map (Authentication.dnsLink model.usersDomain)
+            |> Maybe.map .username
             |> Maybe.withDefault ""
             |> authenticatedOtherBurgers
 
@@ -69,7 +69,7 @@ yourBurgers =
     ]
 
 
-authenticatedOtherBurgers dnsLink =
+authenticatedOtherBurgers username =
     [ Item
         { icon = FeatherIcons.hardDrive
         , label = "My Drive"
@@ -79,7 +79,7 @@ authenticatedOtherBurgers dnsLink =
         , href = Nothing
         , msg =
             []
-                |> Routing.Tree { root = dnsLink }
+                |> Routing.Tree { root = username }
                 |> GoToRoute
                 |> Just
         }

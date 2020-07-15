@@ -124,25 +124,21 @@ urlCmd flags mode navKey route url =
     --    correct url, then change the url.
     --
     case ( flags.authenticated, flags.foundation, route ) of
-        ( Just essentials, _, _ ) ->
+        ( Just { username }, _, _ ) ->
             case mode of
                 Mode.Default ->
-                    let
-                        dnsLink =
-                            Authentication.dnsLink flags.usersDomain essentials
-                    in
                     case url.fragment of
                         Just frag ->
-                            if String.startsWith ("/" ++ dnsLink) frag then
+                            if String.startsWith ("/" ++ username) frag then
                                 Cmd.none
 
                             else
-                                dnsLink
+                                username
                                     |> String.append "#/"
                                     |> Navigation.replaceUrl navKey
 
                         Nothing ->
-                            dnsLink
+                            username
                                 |> String.append "#/"
                                 |> Navigation.replaceUrl navKey
 

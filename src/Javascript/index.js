@@ -176,11 +176,11 @@ function exe(port, method, options = {}) {
 }
 
 
-async function freshUser({ cid, dnsLink }) {
+async function freshUser({ cid, username }) {
   app.ports.ipfsGotResolvedAddress.send({
     isDnsLink: true,
     resolved: cid,
-    unresolved: dnsLink
+    unresolved: username
   })
 }
 
