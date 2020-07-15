@@ -269,10 +269,10 @@ renameItem item model =
                         Err e ->
                             Err e
             in
-            { newName = newName
-            , pathSegments = Routing.treePathSegments model.route ++ [ item.name ]
+            { currentPathSegments = String.split "/" item.path
+            , pathSegments = Routing.treePathSegments model.route ++ [ newName ]
             }
-                |> Ports.fsRenameItem
+                |> Ports.fsMoveItem
                 |> return { model | directoryList = newDirectoryList }
                 |> andThen Common.hideModal
 
