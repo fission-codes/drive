@@ -220,7 +220,12 @@ async function ipfsResolveAddress(address) {
 
   } else {
     const cachedFoundation = foundation()
-    cachedFoundation && app.ports.ipfsGotResolvedAddress.send(cachedFoundation)
+
+    if (cachedFoundation) {
+      app.ports.ipfsGotResolvedAddress.send(cachedFoundation)
+    } else {
+      window.overrideFileSystem(address)
+    }
 
   }
 }
