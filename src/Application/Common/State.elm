@@ -3,6 +3,7 @@ module Common.State exposing (..)
 import ContextMenu exposing (ContextMenu, Hook(..))
 import Coordinates exposing (Coordinates)
 import Debouncing
+import Dict
 import Drive.Item
 import Html.Events.Extra.Mouse as Mouse
 import List.Extra as List
@@ -28,6 +29,11 @@ hideHelpfulNote model =
                 |> Debouncing.notifications.provideInput
                 |> Return.task
             )
+
+
+hideModal : Manager
+hideModal model =
+    Return.singleton { model | modal = Nothing }
 
 
 potentiallyRenderMedia : Manager
@@ -71,6 +77,18 @@ removeHelpfulNote model =
             Return.singleton { model | helpfulNote = Nothing }
 
         _ ->
+            Return.singleton model
+
+
+setModalState : String -> String -> Manager
+setModalState k v model =
+    case model.modal of
+        Just modal ->
+            { modal | state = Dict.insert k v modal.state }
+                |> (\m -> { model | modal = Just m })
+                |> Return.singleton
+
+        Nothing ->
             Return.singleton model
 
 

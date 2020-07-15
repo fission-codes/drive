@@ -1,28 +1,38 @@
 module Drive.Modals exposing (..)
 
+import Dict
+import Drive.Item as Item exposing (Item, Kind(..))
 import Html exposing (Html)
 import Html.Attributes as A
+import Html.Events as E
 import Modal exposing (Modal)
 import Styling as S
 import Tailwind as T
-import Types exposing (Msg)
+import Types exposing (Msg(..))
 
 
 
 -- ⚗️
 
 
-renameFile : Modal Msg
-renameFile =
+renameItem : Item -> Modal Msg
+renameItem item =
     { confirmationButtons =
         [ S.button
-            [ T.bg_purple ]
+            [ E.onClick (RenameItem item)
+
+            --
+            , T.bg_purple
+            ]
             [ Html.text "Rename"
             ]
 
         --
         , S.button
-            [ T.bg_gray_500
+            [ E.onClick HideModal
+
+            --
+            , T.bg_gray_500
             , T.ml_4
 
             -- Dark mode
@@ -34,12 +44,24 @@ renameFile =
         ]
     , content =
         [ S.textField
-            [ A.placeholder "File name"
+            [ A.placeholder "Name"
+            , A.value item.name
+            , E.onInput (SetModalState "name")
 
             --
             , T.w_full
             ]
             []
         ]
-    , title = "Rename file"
+    , onSubmit =
+        RenameItem item
+    , state =
+        Dict.empty
+    , title =
+        case item.kind of
+            Directory ->
+                "Rename directory"
+
+            _ ->
+                "Rename file"
     }

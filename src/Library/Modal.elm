@@ -1,6 +1,8 @@
 module Modal exposing (..)
 
+import Dict exposing (Dict)
 import Html exposing (Html)
+import Html.Events as E
 import Tailwind as T
 
 
@@ -11,6 +13,8 @@ import Tailwind as T
 type alias Modal msg =
     { confirmationButtons : List (Html msg)
     , content : List (Html msg)
+    , onSubmit : msg
+    , state : Dict String String
     , title : String
     }
 
@@ -52,18 +56,20 @@ view modal =
         -----------------------------------------
         -- Content
         -----------------------------------------
-        , Html.section
-            []
-            modal.content
+        , Html.form
+            [ E.onSubmit modal.onSubmit ]
+            [ Html.div
+                []
+                modal.content
 
-        -----------------------------------------
-        -- Confirmation Buttons
-        -----------------------------------------
-        , Html.div
-            [ T.flex
-            , T.items_center
-            , T.justify_center
-            , T.mt_5
+            -- Confirmation Buttons
+            -----------------------
+            , Html.div
+                [ T.flex
+                , T.items_center
+                , T.justify_center
+                , T.mt_5
+                ]
+                modal.confirmationButtons
             ]
-            modal.confirmationButtons
         ]

@@ -56,6 +56,9 @@ port fsNew : { dnsLink : String } -> Cmd msg
 port fsRemoveItem : { pathSegments : List String } -> Cmd msg
 
 
+port fsRenameItem : { newName : String, pathSegments : List String } -> Cmd msg
+
+
 
 -- 📣  ░░  IPFS
 

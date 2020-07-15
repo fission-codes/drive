@@ -222,11 +222,17 @@ update msg =
         RemoveItem a ->
             Drive.removeItem a
 
+        RenameItem a ->
+            Drive.renameItem a
+
         Select a ->
             Drive.select a
 
         ShowPreviewOverlay ->
             Drive.showPreviewOverlay
+
+        ShowRenameItemModal a ->
+            Drive.showRenameItemModal a
 
         ToggleExpandedSidebar ->
             Drive.toggleExpandedSidebar
@@ -279,11 +285,17 @@ update msg =
         HideHelpfulNote ->
             Common.hideHelpfulNote
 
+        HideModal ->
+            Common.hideModal
+
         RemoveContextMenu ->
             Common.removeContextMenu
 
         RemoveHelpfulNote ->
             Common.removeHelpfulNote
+
+        SetModalState a b ->
+            Common.setModalState a b
 
         ShowContextMenu a b ->
             Common.showContextMenu a b

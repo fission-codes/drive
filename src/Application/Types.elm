@@ -116,8 +116,10 @@ type Msg
     | GotCreateDirectoryInput String
     | GoUp { floor : Int }
     | RemoveItem Item
+    | RenameItem Item
     | Select Item
     | ShowPreviewOverlay
+    | ShowRenameItemModal Item
     | ToggleExpandedSidebar
     | ToggleSidebarMode Drive.Sidebar.Mode
       -----------------------------------------
@@ -143,8 +145,10 @@ type Msg
       -- 🌏 Common
       -----------------------------------------
     | HideHelpfulNote
+    | HideModal
     | RemoveContextMenu
     | RemoveHelpfulNote
+    | SetModalState String String
     | ShowContextMenu (ContextMenu Msg) Mouse.Event
     | ShowContextMenuWithCoordinates Coordinates (ContextMenu Msg)
     | ShowHelpfulNote String

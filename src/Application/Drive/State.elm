@@ -4,7 +4,9 @@ import Browser.Navigation as Navigation
 import Common
 import Common.State as Common
 import Debouncing
-import Drive.Item as Item exposing (Item)
+import Dict
+import Drive.Item as Item exposing (Item, Kind(..))
+import Drive.Modals
 import Drive.Sidebar
 import File
 import File.Download
@@ -14,7 +16,7 @@ import List.Extra as List
 import Notifications
 import Ports
 import Result.Extra as Result
-import Return exposing (return)
+import Return exposing (andThen, return)
 import Return.Extra as Return
 import Routing
 import Toasty
@@ -235,6 +237,49 @@ removeItem item model =
             (Notifications.loadingIndication <| "Removing “" ++ item.name ++ "”")
 
 
+renameItem : Item -> Manager
+renameItem item model =
+    case Maybe.andThen (.state >> Dict.get "name") model.modal of
+        Just newName ->
+            let
+                newNameProps =
+                    case item.kind of
+                        Directory ->
+                            { base = newName
+                            , extension = ""
+                            }
+
+                        _ ->
+                            Item.nameProperties newName
+
+                newDirectoryList =
+                    case model.directoryList of
+                        Ok a ->
+                            a.items
+                                |> List.map
+                                    (\i ->
+                                        if i.id == item.id then
+                                            { i | name = newName, nameProperties = newNameProps }
+
+                                        else
+                                            i
+                                    )
+                                |> (\items -> Ok { a | items = items })
+
+                        Err e ->
+                            Err e
+            in
+            { newName = newName
+            , pathSegments = Routing.treePathSegments model.route ++ [ item.name ]
+            }
+                |> Ports.fsRenameItem
+                |> return { model | directoryList = newDirectoryList }
+                |> andThen Common.hideModal
+
+        Nothing ->
+            Common.hideModal model
+
+
 select : Item -> Manager
 select item model =
     Common.potentiallyRenderMedia
@@ -261,6 +306,11 @@ selectPreviousItem =
 showPreviewOverlay : Manager
 showPreviewOverlay model =
     Return.singleton { model | showPreviewOverlay = True }
+
+
+showRenameItemModal : Item -> Manager
+showRenameItemModal item model =
+    Return.singleton { model | modal = Just (Drive.Modals.renameItem item) }
 
 
 toggleExpandedSidebar : Manager

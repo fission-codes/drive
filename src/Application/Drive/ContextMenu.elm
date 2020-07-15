@@ -158,6 +158,7 @@ item hook { isGroundFloor } context =
 
                          else
                             [ Divider
+                            , renameItem context
                             , removeItem context
                             ]
                         )
@@ -174,8 +175,7 @@ item hook { isGroundFloor } context =
                        )
                     |> List.add
                         [ Divider
-
-                        --
+                        , renameItem context
                         , removeItem context
                         ]
         )
@@ -228,6 +228,21 @@ driveLink context =
             , presentable = True
             }
                 |> CopyPublicUrl
+                |> Just
+        }
+
+
+renameItem context =
+    Item
+        { icon = FeatherIcons.edit2
+        , label = "Rename"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            context
+                |> ShowRenameItemModal
                 |> Just
         }
 

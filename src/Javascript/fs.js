@@ -148,6 +148,21 @@ export async function removeItem({ pathSegments }) {
 }
 
 
+export async function renameItem({ newName, pathSegments }) {
+  const parentPath = prefixedPath(pathSegments.slice(0, pathSegments.length - 1))
+  const parentTree = await fs.get(parentPath)
+
+  const path = prefixedPath(pathSegments)
+  const treeOrFile = await fs.get(path)
+
+  console.log(parentTree.getLinks())
+
+  // if (treeOrFile) {
+  //   await parentTree.updateDirectChild(treeOrFile, newName)
+  // }
+}
+
+
 
 // STREAMING
 

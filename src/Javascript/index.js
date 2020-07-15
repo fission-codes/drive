@@ -65,6 +65,7 @@ sdk.isAuthenticated().then(props => {
   exe("fsLoad", "load", { syncHook })
   exe("fsNew", "createNew", { callback: freshUser, syncHook })
   exe("fsRemoveItem", "removeItem", { listParent: true })
+  exe("fsRenameItem", "renameItem", { listParent: true })
 
   // Ports (IPFS)
   app.ports.ipfsListDirectory.subscribe(ipfsListDirectory)
