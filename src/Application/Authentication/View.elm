@@ -73,6 +73,7 @@ createAccount model =
             , T.bg_purple
             , T.mt_8
             , T.mx_auto
+            , T.text_sm
             ]
 
 

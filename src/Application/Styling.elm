@@ -66,7 +66,6 @@ buttonWithNode node attributes =
             , T.py_3
             , T.relative
             , T.rounded
-            , T.text_sm
             , T.text_white
             , T.tracking_wider
             , T.transition_colors

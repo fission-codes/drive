@@ -23,6 +23,7 @@ renameItem item =
 
             --
             , T.bg_purple
+            , T.text_tiny
             ]
             [ Html.text "Rename"
             ]
@@ -33,7 +34,8 @@ renameItem item =
 
             --
             , T.bg_gray_500
-            , T.ml_4
+            , T.ml_3
+            , T.text_tiny
 
             -- Dark mode
             ------------
@@ -49,7 +51,8 @@ renameItem item =
             , E.onInput (SetModalState "name")
 
             --
-            , T.w_full
+            , T.max_w_xs
+            , T.w_screen
             ]
             []
         ]
