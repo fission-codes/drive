@@ -3,7 +3,7 @@ module Other.State exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Drive.State as Drive
-import FS.State as FS
+import Fs.State as Fs
 import Ipfs
 import Keyboard
 import Maybe.Extra as Maybe
@@ -94,15 +94,6 @@ focused model =
 -- URL
 
 
-goToRoute : Route -> Manager
-goToRoute route model =
-    route
-        |> Routing.adjustUrl model.url
-        |> Url.toString
-        |> Navigation.pushUrl model.navKey
-        |> return model
-
-
 linkClicked : Browser.UrlRequest -> Manager
 linkClicked urlRequest model =
     case urlRequest of
@@ -190,7 +181,7 @@ urlChanged url old =
                         |> return new
 
                 else if new.route /= old.route && Maybe.isJust old.foundation then
-                    FS.listDirectory new
+                    Fs.listDirectory new
 
                 else
                     Return.singleton new

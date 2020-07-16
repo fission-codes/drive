@@ -1,13 +1,14 @@
 module Explore.State exposing (..)
 
 import Common
+import Common.State as Common
 import Drive.Sidebar
 import Ipfs
 import Maybe.Extra as Maybe
 import Other.State as Other
 import Ports
 import Return exposing (andThen, return)
-import Routing exposing (Route)
+import Routing exposing (Route(..))
 import Types exposing (..)
 import Url
 
@@ -33,6 +34,17 @@ changeCid model =
                 (Ports.ipfsResolveAddress input)
 
 
+explore : Manager
+explore model =
+    Common.goToRoute
+        Explore
+        { model
+            | ipfs = Ipfs.Ready
+            , isFocused = False
+            , sidebarMode = Drive.Sidebar.defaultMode
+        }
+
+
 gotInput : String -> Manager
 gotInput input model =
     Return.singleton
@@ -41,21 +53,3 @@ gotInput input model =
             , exploreInput = Just input
             , foundation = Nothing
         }
-
-
-reset : Route -> Manager
-reset route model =
-    [ Ports.annihilateKeys ()
-    , Ports.deauthenticate ()
-    , Ports.removeStoredFoundation ()
-    ]
-        |> Cmd.batch
-        |> return
-            { model
-                | directoryList = Ok { floor = 1, items = [] }
-                , exploreInput = Just Common.defaultDnsLink
-                , foundation = Nothing
-                , selectedPath = Nothing
-            }
-        |> andThen
-            (Other.goToRoute route)

@@ -60,12 +60,16 @@ export async function setup() {
         Swarm: []
       }
     },
+    init: {
+      repo: "ipfs-1594919576812",
+      repoAutoMigrate: true
+    },
     preload: {
-      enabled: false,
-      addresses: []
+      enabled: false
     }
   })
 
+  sdk.ipfs.setIpfs(ipfs)
   window.ipfs = ipfs
 
   return null

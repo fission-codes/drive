@@ -250,12 +250,12 @@ function annihilateKeys(_) {
 // 🛠
 // ==
 
-window.overrideFileSystem = (dnsLink) => {
+window.overrideFileSystem = (username) => {
   fs.createNew({
     callback: freshUser,
     pathSegments: [],
-    dnsLink,
-    syncHook
+    syncHook,
+    username
   })
 }
 
@@ -278,12 +278,12 @@ function lastFsOperation() {
 
 
 function reportFileSystemError(err) {
-  app.ports.fsGotError.send(err.message || err || "")
   console.error(err)
+  app.ports.fsGotError.send(err.message || err || "")
 }
 
 
 function reportIpfsError(err) {
-  app.ports.ipfsGotError.send(err.message || err)
   console.error(err)
+  app.ports.ipfsGotError.send(err.message || err)
 }

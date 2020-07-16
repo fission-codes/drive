@@ -70,27 +70,19 @@ production_config 		:= "config/production.json"
 
 
 @dev: clean build
-	just elm-dev & \
+	just dev-server & \
 	just watch
 
 
-@elm-dev:
-	# Uses https://github.com/wking-io/elm-live
-	# NOTE: Uses hot-module reloading
-	pnpm run elm-dev -- {{src_dir}}/Application/Main.elm \
-		--dir={{build_dir}} \
-		--path-to-elm=`which elm` \
-		--pushstate \
-		--hot \
-		--start-page=index.html \
-		-- --output={{build_dir}}/application.js \
-		# --debug
+@dev-server:
+	echo "🤵  Start a web server at http://localhost:8000"
+	devd --quiet build --port=8000 --all
 
 
 @elm-housekeeping:
-	echo "> Running elm-impfix"
+	echo "🧹  Running elm-impfix"
 	{{node_bin}}/elm-impfix "{{src_dir}}/**/*.elm" --replace
-	echo "> Running elm-format"
+	echo "🧹  Running elm-format"
 	elm-format {{src_dir}} --yes
 
 
@@ -100,10 +92,10 @@ production_config 		:= "config/production.json"
 
 	# Download other dependencies
 	# (note, alternative to wzrd.in → https://bundle.run)
-	curl https://unpkg.com/ipfs@0.47.0/dist/index.min.js -o web_modules/ipfs.min.js
+	curl https://unpkg.com/ipfs@0.48.0/dist/index.min.js -o web_modules/ipfs.min.js
 	curl https://unpkg.com/is-ipfs@1.0.3/dist/index.js -o web_modules/is-ipfs.js
 	curl https://unpkg.com/tocca@2.0.9/Tocca.js -o web_modules/tocca.js
-	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.1 -o web_modules/it-to-stream.js
+	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.2 -o web_modules/it-to-stream.js
 	curl https://wzrd.in/debug-standalone/render-media@3.4.3 -o web_modules/render-media.js
 
 	# Elm git dependencies
@@ -133,7 +125,7 @@ production_config 		:= "config/production.json"
 	if [ "{{environment}}" == "production" ]; then \
 		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize ; \
 	else \
-		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js ; \
+		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug ; \
 	fi
 
 
@@ -186,6 +178,7 @@ production_config 		:= "config/production.json"
 	echo "👀  Watching for changes"
 	just watch-css-src & \
 	just watch-css-sys & \
+	just watch-elm & \
 	just watch-html & \
 	just watch-images & \
 	just watch-js

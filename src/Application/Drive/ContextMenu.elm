@@ -107,7 +107,7 @@ alwaysBurgers =
 
         --
         , href = Nothing
-        , msg = Just (Reset Routing.Explore)
+        , msg = Just GoExplore
         }
 
     --

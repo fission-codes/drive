@@ -10,7 +10,7 @@ import Debouncing
 import Drive.Sidebar
 import Drive.State as Drive
 import Explore.State as Explore
-import FS.State as FS
+import Fs.State as Fs
 import Ipfs
 import Ipfs.State as Ipfs
 import Keyboard
@@ -46,10 +46,14 @@ init flags url navKey =
             Routing.routeFromUrl mode url
 
         exploreInput =
-            flags.foundation
-                |> Maybe.map .unresolved
-                |> Maybe.orElse (Routing.treeRoot url route)
-                |> Maybe.withDefault defaultDnsLink
+            if Maybe.isJust flags.authenticated then
+                defaultDnsLink
+
+            else
+                flags.foundation
+                    |> Maybe.map .unresolved
+                    |> Maybe.orElse (Routing.treeRoot url route)
+                    |> Maybe.withDefault defaultDnsLink
 
         loadedFoundation =
             --
@@ -111,53 +115,8 @@ init flags url navKey =
     , Cmd.batch
         [ Ports.ipfsSetup ()
         , Task.perform SetCurrentTime Time.now
-        , urlCmd flags mode navKey route url
         ]
     )
-
-
-urlCmd flags mode navKey route url =
-    -- Scenarios:
-    --
-    -- 1. When authenticating, make sure the correct foundation is in place.
-    -- 2. When a foundation is present, but we're not at the
-    --    correct url, then change the url.
-    --
-    case ( flags.authenticated, flags.foundation, route ) of
-        ( Just { username }, _, _ ) ->
-            case mode of
-                Mode.Default ->
-                    case url.fragment of
-                        Just frag ->
-                            if String.startsWith ("/" ++ username) frag then
-                                Cmd.none
-
-                            else
-                                username
-                                    |> String.append "#/"
-                                    |> Navigation.replaceUrl navKey
-
-                        Nothing ->
-                            username
-                                |> String.append "#/"
-                                |> Navigation.replaceUrl navKey
-
-                Mode.PersonalDomain ->
-                    Cmd.none
-
-        ( Nothing, Just _, Routing.Tree _ _ ) ->
-            Cmd.none
-
-        ( Nothing, Just f, _ ) ->
-            case mode of
-                Mode.Default ->
-                    Navigation.replaceUrl navKey ("#/" ++ f.unresolved)
-
-                Mode.PersonalDomain ->
-                    Cmd.none
-
-        _ ->
-            Cmd.none
 
 
 
@@ -242,17 +201,17 @@ update msg =
         ChangeCid ->
             Explore.changeCid
 
+        GoExplore ->
+            Explore.explore
+
         GotInput a ->
             Explore.gotInput a
-
-        Reset a ->
-            Explore.reset a
 
         -----------------------------------------
         -- File System
         -----------------------------------------
         GotFsError a ->
-            FS.gotError a
+            Fs.gotError a
 
         -----------------------------------------
         -- Ipfs
@@ -278,6 +237,9 @@ update msg =
         -----------------------------------------
         -- 🌏 Common
         -----------------------------------------
+        GoToRoute a ->
+            Common.goToRoute a
+
         HideHelpfulNote ->
             Common.hideHelpfulNote
 
@@ -289,6 +251,9 @@ update msg =
 
         RemoveHelpfulNote ->
             Common.removeHelpfulNote
+
+        Reset a ->
+            Common.reset a
 
         SetModalState a b ->
             Common.setModalState a b
@@ -310,9 +275,6 @@ update msg =
 
         Focused ->
             Other.focused
-
-        GoToRoute a ->
-            Other.goToRoute a
 
         KeyboardInteraction a ->
             Other.keyboardInteraction a

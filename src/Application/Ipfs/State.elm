@@ -6,8 +6,8 @@ import Browser.Navigation as Navigation
 import Common.State as Common
 import Debouncing
 import Drive.Item
-import FS.State as FS
 import Foundation exposing (Foundation)
+import Fs.State as Fs
 import Ipfs
 import Json.Decode as Json
 import List.Extra as List
@@ -48,7 +48,7 @@ setupCompleted model =
         )
     of
         ( Just _, _ ) ->
-            FS.boot { model | ipfs = Ipfs.InitialListing }
+            Fs.loadOrList { model | ipfs = Ipfs.InitialListing }
 
         ( Nothing, Just essentials ) ->
             if model.route == Explore then
@@ -116,7 +116,7 @@ gotResolvedAddress foundation model =
 
             else
                 -- Otherwise boot up the file system
-                Return.andThen FS.boot
+                Return.andThen Fs.loadOrList
            )
         |> Return.command (Ports.storeFoundation foundation)
 

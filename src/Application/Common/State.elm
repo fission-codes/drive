@@ -1,5 +1,7 @@
 module Common.State exposing (..)
 
+import Browser.Navigation as Navigation
+import Common exposing (defaultDnsLink)
 import ContextMenu exposing (ContextMenu, Hook(..))
 import Coordinates exposing (Coordinates)
 import Debouncing
@@ -9,13 +11,24 @@ import Html.Events.Extra.Mouse as Mouse
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Ports
-import Return exposing (return)
+import Return exposing (andThen, return)
 import Return.Extra as Return
+import Routing exposing (Route)
 import Types exposing (..)
+import Url
 
 
 
 -- 📣
+
+
+goToRoute : Route -> Manager
+goToRoute route model =
+    route
+        |> Routing.adjustUrl model.url
+        |> Url.toString
+        |> Navigation.pushUrl model.navKey
+        |> return model
 
 
 hideHelpfulNote : Manager
@@ -78,6 +91,24 @@ removeHelpfulNote model =
 
         _ ->
             Return.singleton model
+
+
+reset : Route -> Manager
+reset route model =
+    [ Ports.annihilateKeys ()
+    , Ports.deauthenticate ()
+    , Ports.removeStoredFoundation ()
+    ]
+        |> Cmd.batch
+        |> return
+            { model
+                | directoryList = Ok { floor = 1, items = [] }
+                , exploreInput = Just defaultDnsLink
+                , foundation = Nothing
+                , selectedPath = Nothing
+            }
+        |> andThen
+            (goToRoute route)
 
 
 setModalState : String -> String -> Manager

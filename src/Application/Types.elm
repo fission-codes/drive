@@ -126,8 +126,8 @@ type Msg
       -- Explore
       -----------------------------------------
     | ChangeCid
+    | GoExplore
     | GotInput String
-    | Reset Route
       -----------------------------------------
       -- File System
       -----------------------------------------
@@ -144,10 +144,12 @@ type Msg
       -----------------------------------------
       -- 🌏 Common
       -----------------------------------------
+    | GoToRoute Route
     | HideHelpfulNote
     | HideModal
     | RemoveContextMenu
     | RemoveHelpfulNote
+    | Reset Route
     | SetModalState String String
     | ShowContextMenu (ContextMenu Msg) Mouse.Event
     | ShowContextMenuWithCoordinates Coordinates (ContextMenu Msg)
@@ -157,7 +159,6 @@ type Msg
       -----------------------------------------
     | Blurred
     | Focused
-    | GoToRoute Route
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | RedirectToLobby

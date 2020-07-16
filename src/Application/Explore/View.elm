@@ -56,7 +56,7 @@ inputScreen m =
                     E.onSubmit Bypass
 
                 Ipfs.InitialListing ->
-                    E.onSubmit (Reset Routing.Explore)
+                    E.onSubmit GoExplore
 
                 _ ->
                     E.onSubmit ChangeCid
