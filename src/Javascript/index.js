@@ -62,7 +62,7 @@ sdk.isAuthenticated().then(props => {
   exe("fsAddContent", "add")
   exe("fsCreateDirectory", "createDirecory", { listParent: true })
   exe("fsListDirectory", "listDirectory")
-  exe("fsLoad", "load", { syncHook })
+  exe("fsLoad", "load", { newCallback: freshUser, syncHook })
   exe("fsMoveItem", "moveItem", { listParent: true })
   exe("fsNew", "createNew", { callback: freshUser, syncHook })
   exe("fsRemoveItem", "removeItem", { listParent: true })

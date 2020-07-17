@@ -125,19 +125,17 @@ export async function listDirectory({ pathSegments }) {
 }
 
 
-export async function load({ cid, pathSegments, syncHook }) {
+export async function load({ cid, newCallback, pathSegments, syncHook }) {
   fs = await sdk.fs.fromCID(cid)
-
-  const isUpgrade = !fs
-
-  fs = fs || await sdk.fs.upgradePublicCID(cid)
 
   if (fs) {
     fs.addSyncHook(syncHook)
-    if (isUpgrade) fs.sync()
     return await listDirectory({ pathSegments })
   } else {
-    throw "Not a Fission File System"
+    const callback = newCallback
+    const username = await sdk.authenticatedUsername()
+
+    return await createNew({ callback, pathSegments, syncHook, username })
   }
 }
 

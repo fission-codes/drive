@@ -55,17 +55,11 @@ export async function setup() {
     config: {
       Bootstrap: [
         "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
-      ],
-      Addresses: {
-        Swarm: []
-      }
+      ]
     },
     init: {
       repo: "ipfs-1594919576812",
       repoAutoMigrate: true
-    },
-    preload: {
-      enabled: false
     }
   })
 
