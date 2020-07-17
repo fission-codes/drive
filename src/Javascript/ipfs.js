@@ -6,7 +6,6 @@ Everything involving IPFS.
 
 */
 
-import "./web_modules/ipfs.min.js"
 import "./web_modules/is-ipfs.js"
 import "./web_modules/it-to-stream.js"
 import sdk from "./web_modules/fission-sdk.js"
@@ -51,20 +50,7 @@ export async function replaceDnsLinkInAddress(address) {
 
 
 export async function setup() {
-  ipfs = await Ipfs.create({
-    config: {
-      Bootstrap: [
-        "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
-      ]
-    },
-    init: {
-      repo: "ipfs-1594919576812",
-      repoAutoMigrate: true
-    }
-  })
-
-  sdk.ipfs.setIpfs(ipfs)
-  window.ipfs = ipfs
+  await sdk.ipfs.get()
 
   return null
 }

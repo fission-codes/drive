@@ -92,7 +92,6 @@ production_config 		:= "config/production.json"
 
 	# Download other dependencies
 	# (note, alternative to wzrd.in → https://bundle.run)
-	curl https://unpkg.com/ipfs@0.48.0/dist/index.min.js -o web_modules/ipfs.min.js
 	curl https://unpkg.com/is-ipfs@1.0.3/dist/index.js -o web_modules/is-ipfs.js
 	curl https://unpkg.com/tocca@2.0.9/Tocca.js -o web_modules/tocca.js
 	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.2 -o web_modules/it-to-stream.js

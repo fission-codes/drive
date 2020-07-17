@@ -20,10 +20,7 @@ import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 import { throttle } from "./common.js"
-
-
-window.sdk = sdk
-
+import { setup } from "./sdk.js"
 
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
@@ -32,6 +29,7 @@ window.sdk = sdk
 let app
 
 
+sdk.setup.ipfs(setup.ipfs)
 sdk.isAuthenticated().then(props => {
   const { authenticated, newUser, username } = props
 
