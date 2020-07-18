@@ -19,14 +19,18 @@ let
 
   stable   = import stablepkgs   {};
   unstable = import unstablepkgs {};
+
 in
   stablepkgs.stdenv.mkDerivation {
     name = "fission-drive";
 
     buildInputs = [
       # General
+      stable.curl
       stable.devd
-      stable.nodejs
+      stable.openssl
+      stable.nodejs-13_x
+      stable.watchexec
 
       # Language Specific
       stable.elmPackages.elm
@@ -42,6 +46,6 @@ in
 
     shellHook = ''
       echo "Welcome to the"
-      figlet "Fission Drive Shell" | lolcat -a -s 50
+      ${stable.figlet}/bin/figlet "Fission Drive Shell" | lolcat -a -s 50
     '';
 }
