@@ -28,7 +28,6 @@ in
       # General
       stable.curl
       stable.devd
-      stable.openssl
       stable.nodejs-13_x
       stable.watchexec
 
