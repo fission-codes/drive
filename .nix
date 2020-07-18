@@ -24,6 +24,7 @@ in
     name = "fission-drive";
 
     buildInputs = [
+      stable.devd
       stable.elmPackages.elm
 
       stable.lolcat
