@@ -24,12 +24,19 @@ in
     name = "fission-drive";
 
     buildInputs = [
+      # General
       stable.devd
-      stable.elmPackages.elm
+      stable.nodejs
 
+      # Language Specific
+      stable.elmPackages.elm
+      stable.nodePackages.pnpm
+
+      # Fun
       stable.lolcat
       stable.figlet
 
+      # Unstable
       unstable.just
     ];
 
