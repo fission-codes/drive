@@ -57,7 +57,7 @@ export async function cid() {
 
 export async function createNew({ callback, pathSegments, syncHook, username }) {
   fs = await sdk.fs.empty()
-  fs.addSyncHook(syncHook)
+  fs.syncHooks.push(syncHook)
 
   await addSampleData()
 
@@ -129,7 +129,7 @@ export async function load({ cid, newCallback, pathSegments, syncHook }) {
   fs = await sdk.fs.fromCID(cid)
 
   if (fs) {
-    fs.addSyncHook(syncHook)
+    fs.syncHooks.push(syncHook)
     return await listDirectory({ pathSegments })
   } else {
     const callback = newCallback

@@ -15,7 +15,6 @@ import sdk from "./web_modules/fission-sdk.js"
 import "./analytics.js"
 import "./custom.js"
 
-import * as endpoints from "./endpoints.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
@@ -26,22 +25,34 @@ import { setup } from "./sdk.js"
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
 
+sdk.setup.endpoints({
+  api: API_ENDPOINT,
+  lobby: LOBBY,
+  user: DATA_ROOT_DOMAIN
+})
+
+sdk.setup.ipfs(setup.ipfs)
+
+
+
+// 🚀
+
+
 let app
 
 
-sdk.setup.ipfs(setup.ipfs)
 sdk.isAuthenticated().then(props => {
-  const { authenticated, newUser, username } = props
+  const { authenticated, newUser, throughLobby, username } = props
 
   // Initialize app
   app = Elm.Main.init({
     node: document.getElementById("elm"),
     flags: {
-      authenticated: authenticated ? { newUser, username } : null,
+      authenticated: authenticated ? { newUser, throughLobby, username } : null,
       currentTime: Date.now(),
       foundation: foundation(),
       lastFsOperation: lastFsOperation(),
-      usersDomain: endpoints.users,
+      usersDomain: DATA_ROOT_DOMAIN,
       viewportSize: { height: window.innerHeight, width: window.innerWidth }
     }
   })
@@ -113,7 +124,7 @@ function deauthenticate() {
 
 
 function redirectToLobby() {
-  sdk.redirectToLobby(undefined, endpoints.lobby)
+  sdk.redirectToLobby(undefined)
 }
 
 
@@ -185,14 +196,9 @@ async function freshUser({ cid, username }) {
 
 const syncHook_ = throttle(cid => {
   console.log("Syncing …", cid)
-
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
   localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
-
-  sdk.updateDataRoot(cid, {
-    apiEndpoint: endpoints.api
-  })
-}, 5000)
+}, 500)
 
 
 function syncHook(cid) {
@@ -215,16 +221,6 @@ async function ipfsResolveAddress(address) {
 
   if (resolvedResult.resolved) {
     app.ports.ipfsGotResolvedAddress.send(resolvedResult)
-
-  } else {
-    const cachedFoundation = foundation()
-
-    if (cachedFoundation) {
-      app.ports.ipfsGotResolvedAddress.send(cachedFoundation)
-    } else {
-      window.overrideFileSystem(address)
-    }
-
   }
 }
 

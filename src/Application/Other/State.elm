@@ -181,7 +181,16 @@ urlChanged url old =
                         |> return new
 
                 else if new.route /= old.route && Maybe.isJust old.foundation then
-                    Fs.listDirectory new
+                    if Maybe.map .unresolved old.foundation == Maybe.map .username old.authenticated && isInitialListing then
+                        case old.foundation of
+                            Just f ->
+                                Fs.load f new
+
+                            Nothing ->
+                                Return.singleton new
+
+                    else
+                        Fs.listDirectory new
 
                 else
                     Return.singleton new

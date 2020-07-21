@@ -10,8 +10,6 @@ import "./web_modules/is-ipfs.js"
 import "./web_modules/it-to-stream.js"
 import sdk from "./web_modules/fission-sdk.js"
 
-import * as endpoints from "./endpoints.js"
-
 
 let ipfs
 
@@ -38,7 +36,7 @@ export async function replaceDnsLinkInAddress(address) {
   const firstPart = splitted[0]
 
   const isDnsLink = !IsIpfs.cid(firstPart)
-  const cleanedPart = firstPart.includes(".") ? firstPart : `${firstPart}.${endpoints.users}`
+  const cleanedPart = firstPart.includes(".") ? firstPart : `${firstPart}.${DATA_ROOT_DOMAIN}`
   const replacedPart = isDnsLink ? await lookupDns(cleanedPart) : firstPart
 
   return {
@@ -97,12 +95,13 @@ async function ensureArray(result) {
 async function lookupDns(domain) {
   try {
     if (domain.endsWith(DATA_ROOT_DOMAIN)) {
-      return await sdk.dataRoot(domain.split(".")[0], DATA_ROOT_DOMAIN)
+      return await sdk.dataRoot.lookup(domain.split(".")[0], DATA_ROOT_DOMAIN)
     } else {
       return await sdk.dns.lookupDnsLink(domain)
     }
 
   } catch (err) {
+    console.error(err)
     return null
 
   }

@@ -5,6 +5,8 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Ipfs
 import Json.Decode as Decode
+import Maybe.Extra as Maybe
+import Routing
 import Tailwind as T
 import Types exposing (Model, Msg)
 
@@ -69,7 +71,10 @@ isPreppingTree m =
 
 shouldShowLoadingAnimation : Model -> Bool
 shouldShowLoadingAnimation m =
-    m.ipfs == Ipfs.Connecting || m.showLoadingOverlay
+    m.showLoadingOverlay
+        || (m.ipfs == Ipfs.Connecting)
+        || (Maybe.isJust m.authenticated && m.route == Routing.Undecided)
+        || (Maybe.isJust m.authenticated && Maybe.isNothing m.foundation)
 
 
 
