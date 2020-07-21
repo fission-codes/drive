@@ -65,7 +65,7 @@ init flags url navKey =
                 -- Last file-system change was only 15 minutes ago, use the cached cid.
                 -- This is done because of the delay on DNS updates.
                 Maybe.andThen
-                    (\{ newUser } -> ifThenElse newUser Nothing flags.foundation)
+                    (\{ throughLobby } -> ifThenElse throughLobby Nothing flags.foundation)
                     flags.authenticated
 
             else
