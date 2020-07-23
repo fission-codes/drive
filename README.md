@@ -25,12 +25,14 @@ asdf install
 #    `brew install just`
 # 3. Install https://github.com/watchexec/watchexec
 #    `brew install watchexec`
-# 4. Install https://pnpm.js.org/
+# 4. Install https://github.com/cortesi/devd
+#    `brew install devd`
+# 5. Install https://pnpm.js.org/
 #    `brew install pnpm`
-# 5. (optional) Install https://github.com/avh4/elm-format
+# 6. (optional) Install https://github.com/avh4/elm-format
 #    `brew install elm-format`
 
-# 5. Install dependencies
+# 7. Install dependencies
 just install-deps
 
 # 🛠
