@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/52007072cf459d02de6b49f5ca13229a7a03f4c6
-  fission-sdk: 0.12.0
+  fission-sdk: 0.12.2
   get-ipfs: 1.2.0
 devDependencies:
   '@fullhuman/postcss-purgecss': 2.1.2
@@ -1755,7 +1755,7 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
-  /fission-sdk/0.12.0:
+  /fission-sdk/0.12.2:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -1769,7 +1769,7 @@ packages:
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-9VMuanT6uA/K7B+V2KILsKZKLlLqpiQqTmcz8RjvqtNZ2CFcFL38kfqBmNiV9GRSfIoVB+6dUy7QamxV0WJM3g==
+      integrity: sha512-wfC50SmeS28Nz4Z/6ovXVicqurlpCCKkngGSJzmC/yA8pEJBtW46/fDpEp3nf4CEleaOs8bXwL6SAjmKqCv1vg==
   /fs-extra/9.0.0:
     dependencies:
       at-least-node: 1.0.0
@@ -3691,7 +3691,7 @@ specifiers:
   elm-git-install: ^0.1.3
   elm-impfix: ^1.0.8
   fission-kit: fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6
-  fission-sdk: 0.12.0
+  fission-sdk: 0.12.2
   get-ipfs: ^1.2.0
   html-minifier-terser: ^5.0.5
   mustache: ^4.0.1
