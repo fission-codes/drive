@@ -149,8 +149,8 @@ production_config 		:= "config/production.json"
 
 @images:
 	echo "⚙️  Copying Images"
-	cp -r node_modules/fission-kit/images/ {{build_dir}}/images/
-	cp -r {{src_dir}}/Static/Images/ {{build_dir}}/images/
+	cp -RT node_modules/fission-kit/images/ {{build_dir}}/images/
+	cp -RT {{src_dir}}/Static/Images/ {{build_dir}}/images/
 
 
 @javascript:
@@ -161,12 +161,12 @@ production_config 		:= "config/production.json"
 
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
-	cp -r web_modules {{build_dir}}/web_modules/
+	cp -RT web_modules {{build_dir}}/web_modules/
 
 
 @meta:
 	echo "⚙️  Copying Meta files"
-	cp -p {{src_dir}}/Static/Meta/* {{build_dir}}/
+	cp -RT {{src_dir}}/Static/Meta/ {{build_dir}}/
 
 
 
