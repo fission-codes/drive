@@ -19,6 +19,7 @@ let ipfs
 
 
 export async function listDirectory(address) {
+  console.log(address)
   const result = await ensureArray(await ipfs.ls(address))
 
   if (result.length === 0) {
@@ -48,8 +49,7 @@ export async function replaceDnsLinkInAddress(address) {
 
 
 export async function setup() {
-  await sdk.ipfs.get()
-
+  ipfs = await sdk.ipfs.get()
   return null
 }
 
