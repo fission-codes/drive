@@ -45,7 +45,7 @@ base { presentable } model =
 
 defaultDnsLink : String
 defaultDnsLink =
-    "boris.fission.name"
+    "junior-angular-tulip.fission.app"
 
 
 ifThenElse : Bool -> a -> a -> a
