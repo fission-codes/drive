@@ -1,0 +1,5 @@
+{
+  "API_ENDPOINT": "https://runfission.net",
+  "DATA_ROOT_DOMAIN": "fissionuser.net",
+  "LOBBY": "http://localhost:8001"
+}

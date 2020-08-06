@@ -8,34 +8,20 @@
 First-party application for your Fission filesystem.
 
 
-## Quickstart
+## Development
+
+This project uses Nix to manage the project's environment. If you'd like to build this project without Nix, check out the dependencies in the `shell.nix` file (most are available through Homebrew as well).
 
 ```shell
-# 🍱
-# 1. Install programming languages
-#    (or install manually, see .tool-versions)
-#    (https://asdf-vm.com)
-#    `brew install asdf`
-#    `brew install gpg2`
-asdf plugin-add elm
-asdf plugin-add nodejs && bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring
-asdf install
-
-# 2. Install https://github.com/casey/just
-#    `brew install just`
-# 3. Install https://github.com/watchexec/watchexec
-#    `brew install watchexec`
-# 4. Install https://github.com/cortesi/devd
-#    `brew install devd`
-# 5. Install https://pnpm.js.org/
-#    `brew install pnpm`
-# 6. (optional) Install https://github.com/avh4/elm-format
-#    `brew install elm-format`
-
-# 7. Install dependencies
+# Install javascript dependencies
 just install-deps
 
-# 🛠
-# Build, watch & start server
+# Build, watch & serve
 just
+
+# Production build
+just production-build
+
+# Use a different config
+just config=local-lobby dev-build
 ```

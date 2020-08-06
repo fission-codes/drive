@@ -4,64 +4,27 @@ export NODE_OPTIONS := "--no-warnings"
 # Variables
 # ---------
 
-build_dir 						:= "./build"
-node_bin 							:= "./node_modules/.bin"
-src_dir 							:= "./src"
-sys_dir								:= "./system"
+build_dir				:= "./build"
+node_bin				:= "./node_modules/.bin"
+src_dir					:= "./src"
+sys_dir					:= "./system"
 
-environment 					:= "dev"
-default_config 				:= "config/default.json"
-production_config 		:= "config/production.json"
+config					:= "default"
 
 
 
 # Tasks
 # -----
 
-@default: dev
+@default: dev-build
+	just dev-server & just watch
 
 
-@apply-config config=default_config:
-	echo "🎛  Applying config \`{{config}}\`"
-	{{node_bin}}/mustache {{config}} {{build_dir}}/index.html > {{build_dir}}/index.applied.html
+@apply-config:
+	echo "🎛  Applying config \`config/{{config}}.json\`"
+	{{node_bin}}/mustache config/{{config}}.json {{build_dir}}/index.html > {{build_dir}}/index.applied.html
 	rm {{build_dir}}/index.html
 	mv {{build_dir}}/index.applied.html {{build_dir}}/index.html
-
-
-@build: clean css-large html elm javascript-dependencies javascript meta images (_report "Build success")
-
-
-@build-production:
-	just environment=production build css-small
-
-	echo "⚙️  Minifying Javascript Files"
-	{{node_bin}}/terser-dir \
-		{{build_dir}} \
-		--each --extension .js \
-		--patterns "**/*.js, !**/*.min.js" \
-		--pseparator ", " \
-		--output {{build_dir}} \
-		-- --compress --mangle
-
-	echo "⚙️  Minifying HTML Files"
-	{{node_bin}}/html-minifier-terser \
-		--input-dir {{build_dir}} \
-		--output-dir {{build_dir}} \
-		--file-ext html \
-		\
-		--collapse-whitespace --remove-comments --remove-optional-tags \
-		--remove-redundant-attributes \
-		--remove-tag-whitespace --use-short-doctype \
-		--minify-css true --minify-js true
-
-	echo "⚙️  Creating a nomodule build"
-	{{node_bin}}/snowpack \
-		--dest {{build_dir}}/web_modules \
-		--optimize \
-		--nomodule {{src_dir}}/Javascript/index.js \
-		--nomodule-output nomodule.min.js
-
-	rm {{build_dir}}/web_modules/*.map
 
 
 @clean:
@@ -69,9 +32,7 @@ production_config 		:= "config/production.json"
 	mkdir -p {{build_dir}}
 
 
-@dev: clean build
-	just dev-server & \
-	just watch
+@dev-build: clean css-large html apply-config elm javascript-dependencies javascript meta images (_report "Build success")
 
 
 @dev-server:
@@ -104,6 +65,39 @@ production_config 		:= "config/production.json"
 	cp node_modules/fission-sdk/index.umd.js web_modules/fission-sdk.umd.js
 
 
+@production-build:
+	just config=production build css-small
+
+	echo "⚙️  Minifying Javascript Files"
+	{{node_bin}}/terser-dir \
+		{{build_dir}} \
+		--each --extension .js \
+		--patterns "**/*.js, !**/*.min.js" \
+		--pseparator ", " \
+		--output {{build_dir}} \
+		-- --compress --mangle
+
+	echo "⚙️  Minifying HTML Files"
+	{{node_bin}}/html-minifier-terser \
+		--input-dir {{build_dir}} \
+		--output-dir {{build_dir}} \
+		--file-ext html \
+		\
+		--collapse-whitespace --remove-comments --remove-optional-tags \
+		--remove-redundant-attributes \
+		--remove-tag-whitespace --use-short-doctype \
+		--minify-css true --minify-js true
+
+	echo "⚙️  Creating a nomodule build"
+	{{node_bin}}/snowpack \
+		--dest {{build_dir}}/web_modules \
+		--optimize \
+		--nomodule {{src_dir}}/Javascript/index.js \
+		--nomodule-output nomodule.min.js
+
+	rm {{build_dir}}/web_modules/*.map
+
+
 
 # Parts
 # -----
@@ -121,7 +115,7 @@ production_config 		:= "config/production.json"
 
 @elm:
 	echo "⚙️  Compiling Elm"
-	if [ "{{environment}}" == "production" ]; then \
+	if [ "{{config}}" == "production" ]; then \
 		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize ; \
 	else \
 		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug ; \
@@ -135,16 +129,6 @@ production_config 		:= "config/production.json"
 
 	mkdir -p {{build_dir}}/reception
 	cp {{src_dir}}/Static/Html/Reception.html {{build_dir}}/reception/index.html
-
-	just environment={{environment}} html-apply-config
-
-
-@html-apply-config:
-	if [ "{{environment}}" == "production" ]; then \
-		just apply-config \"{{production_config}}\" ; \
-	else \
-		just apply-config ; \
-	fi
 
 
 @images:
