@@ -36,7 +36,6 @@ type alias Flags =
     { authenticated : Maybe Authentication.Essentials
     , currentTime : Int
     , foundation : Maybe Foundation
-    , lastFsOperation : Int
     , usersDomain : String
     , viewportSize : { height : Int, width : Int }
     }

@@ -54,11 +54,6 @@ setupCompleted model =
             if model.route == Explore then
                 Return.singleton { model | ipfs = Ipfs.Ready }
 
-            else if essentials.newUser then
-                return
-                    { model | ipfs = Ipfs.InitialListing }
-                    (Ports.fsNew { username = essentials.username })
-
             else
                 return
                     { model | ipfs = Ipfs.InitialListing }

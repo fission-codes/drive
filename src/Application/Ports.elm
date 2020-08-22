@@ -50,9 +50,6 @@ port fsListDirectory : { pathSegments : List String } -> Cmd msg
 port fsLoad : { cid : String, pathSegments : List String } -> Cmd msg
 
 
-port fsNew : { username : String } -> Cmd msg
-
-
 port fsRemoveItem : { pathSegments : List String } -> Cmd msg
 
 
