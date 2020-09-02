@@ -8,7 +8,7 @@ Everything involving IPFS.
 
 import "./web_modules/is-ipfs.js"
 import "./web_modules/it-to-stream.js"
-import sdk from "./web_modules/fission-sdk.js"
+import * as sdk from "./web_modules/webnative.js"
 
 
 let ipfs
@@ -19,7 +19,6 @@ let ipfs
 
 
 export async function listDirectory(address) {
-  console.log(address)
   const result = await ensureArray(await ipfs.ls(address))
 
   if (result.length === 0) {

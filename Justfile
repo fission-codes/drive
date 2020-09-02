@@ -40,6 +40,10 @@ config					:= "default"
 	devd --quiet build --port=8000 --all
 
 
+@download-web-module filename url:
+	curl --silent --show-error --fail -o web_modules/{{filename}} {{url}}
+
+
 @elm-housekeeping:
 	echo "🧹  Running elm-impfix"
 	{{node_bin}}/elm-impfix "{{src_dir}}/**/*.elm" --replace
@@ -49,24 +53,25 @@ config					:= "default"
 
 @install-deps: (_report "Installing required dependencies")
 	pnpm install
-	pnpm run snowpack -- --clean
+	mkdir -p web_modules
 
 	# Download other dependencies
 	# (note, alternative to wzrd.in → https://bundle.run)
-	curl https://unpkg.com/is-ipfs@1.0.3/dist/index.js -o web_modules/is-ipfs.js
-	curl https://unpkg.com/tocca@2.0.9/Tocca.js -o web_modules/tocca.js
-	curl https://wzrd.in/debug-standalone/it-to-stream@0.1.2 -o web_modules/it-to-stream.js
-	curl https://wzrd.in/debug-standalone/render-media@3.4.3 -o web_modules/render-media.js
+	just download-web-module is-ipfs.js https://unpkg.com/is-ipfs@1.0.3/dist/index.js
+	just download-web-module tocca.js https://unpkg.com/tocca@2.0.9/Tocca.js
+	just download-web-module it-to-stream.js https://wzrd.in/debug-standalone/it-to-stream@0.1.2
+	just download-web-module render-media.js https://wzrd.in/debug-standalone/render-media@3.4.3
 
 	# Elm git dependencies
 	{{node_bin}}/elm-git-install
 
-	# For `src/Static/Html/Reception.html`
-	cp node_modules/fission-sdk/index.umd.js web_modules/fission-sdk.umd.js
+	# SDK
+	cp node_modules/webnative/index.es5.js web_modules/webnative.js
+	cp node_modules/webnative/index.umd.js web_modules/webnative.umd.js
 
 
 @production-build:
-	just config=production build css-small
+	just config=production dev-build css-small
 
 	echo "⚙️  Minifying Javascript Files"
 	{{node_bin}}/terser-dir \
@@ -89,13 +94,11 @@ config					:= "default"
 		--minify-css true --minify-js true
 
 	echo "⚙️  Creating a nomodule build"
-	{{node_bin}}/snowpack \
-		--dest {{build_dir}}/web_modules \
-		--optimize \
-		--nomodule {{src_dir}}/Javascript/index.js \
-		--nomodule-output nomodule.min.js
-
-	rm {{build_dir}}/web_modules/*.map
+	{{node_bin}}/esbuild \
+		--bundle \
+		--minify \
+		--outfile={{build_dir}}/nomodule.min.js \
+		{{build_dir}}/index.js
 
 
 
@@ -116,7 +119,7 @@ config					:= "default"
 @elm:
 	echo "⚙️  Compiling Elm"
 	if [ "{{config}}" == "production" ]; then \
-		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize ; \
+		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug ; \
 	else \
 		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug ; \
 	fi

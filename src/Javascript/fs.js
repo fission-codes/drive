@@ -7,7 +7,7 @@ Everything involving the Fission File System.
 */
 
 import "./web_modules/it-to-stream.js"
-import sdk from "./web_modules/fission-sdk.js"
+import * as wn from "./web_modules/webnative.js"
 
 
 let fs
@@ -29,42 +29,22 @@ export async function add({ blobs, pathSegments }) {
     URL.revokeObjectURL(url)
   }, Promise.resolve(null))
 
+  await fs.publicise()
+
   return await listDirectory({ pathSegments })
-}
-
-
-export async function addSampleData() {
-  // TODO: We should maintain some dnslink with a standard set of data,
-  //       and then "import" that data here.
-  await fs.mkdir("private/Audio")
-  await fs.mkdir("private/Documents")
-  await fs.mkdir("private/Photos")
-  await fs.mkdir("private/Video")
 }
 
 
 export async function createDirecory({ pathSegments }) {
   const path = prefixedPath(pathSegments)
   await fs.mkdir(path)
+  await fs.publicise()
   return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
 }
 
 
 export async function cid() {
-  return (await fs.sync()).toString()
-}
-
-
-export async function createNew({ callback, pathSegments, syncHook, username }) {
-  fs = await sdk.fs.empty()
-  fs.syncHooks.push(syncHook)
-
-  await addSampleData()
-
-  const cid = await fs.sync()
-  await callback({ cid, username })
-
-  return await listDirectory({ pathSegments })
+  return (await fs.publicise()).toString()
 }
 
 
@@ -95,6 +75,7 @@ export async function listDirectory({ pathSegments }) {
   // Adjust list
   const list = rawList.map(l => ({
     ...l,
+    cid: l.pointer,
     path: `${path}/${l.name}`,
     size: l.size || 0,
     type: l.isFile ? "file" : "dir"
@@ -125,24 +106,18 @@ export async function listDirectory({ pathSegments }) {
 }
 
 
-export async function load({ cid, newCallback, pathSegments, syncHook }) {
-  fs = await sdk.fs.fromCID(cid)
+export async function load({ pathSegments, prerequisites, syncHook }) {
+  fs = await wn.loadFileSystem(prerequisites)
+  fs.syncHooks.push(syncHook)
 
-  if (fs) {
-    fs.syncHooks.push(syncHook)
-    return await listDirectory({ pathSegments })
-  } else {
-    const callback = newCallback
-    const username = await sdk.authenticatedUsername()
-
-    return await createNew({ callback, pathSegments, syncHook, username })
-  }
+  return await listDirectory({ pathSegments })
 }
 
 
 export async function removeItem({ pathSegments }) {
   const path = prefixedPath(pathSegments)
   await fs.rm(path)
+  await fs.publicise()
   return await listDirectory({ pathSegments: removePrivatePrefix(pathSegments).slice(0, -1) })
 }
 
@@ -152,6 +127,7 @@ export async function moveItem({ currentPathSegments, pathSegments }) {
   const newPath = prefixedPath(pathSegments)
 
   await fs.mv(currentPath, newPath)
+  await fs.publicise()
 }
 
 

@@ -10,7 +10,7 @@
 */
 
 import "./web_modules/tocca.js"
-import sdk from "./web_modules/fission-sdk.js"
+import * as wn from "./web_modules/webnative.js"
 
 import "./analytics.js"
 import "./custom.js"
@@ -25,24 +25,44 @@ import { setup } from "./sdk.js"
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
 
-sdk.setup.endpoints({
+self.wn = wn
+
+
+wn.setup.endpoints({
   api: API_ENDPOINT,
   lobby: LOBBY,
   user: DATA_ROOT_DOMAIN
 })
 
-sdk.setup.ipfs(setup.ipfs)
+wn.setup.ipfs(setup.ipfs)
+wn.setup.debug({ enabled: true })
 
 
 
 // 🚀
 
 
-let app
+let app, pre
 
 
-sdk.isAuthenticated().then(props => {
-  const { authenticated, newUser, throughLobby, username } = props
+wn.initialise({
+  app: {
+    name: "Drive",
+    creator: "Fission"
+  },
+
+  fs: {
+    privatePaths: [ "/" ],
+    publicPaths: [ "/" ]
+  },
+
+  loadFileSystem: false
+
+}).then(({ prerequisites, state }) => {
+  const { authenticated, newUser, throughLobby, username } = state
+
+  // Expose prerequisites
+  pre = prerequisites
 
   // Initialize app
   app = Elm.Main.init({
@@ -51,7 +71,6 @@ sdk.isAuthenticated().then(props => {
       authenticated: authenticated ? { newUser, throughLobby, username } : null,
       currentTime: Date.now(),
       foundation: foundation(),
-      lastFsOperation: lastFsOperation(),
       usersDomain: DATA_ROOT_DOMAIN,
       viewportSize: { height: window.innerHeight, width: window.innerWidth }
     }
@@ -61,7 +80,7 @@ sdk.isAuthenticated().then(props => {
   app.ports.annihilateKeys.subscribe(annihilateKeys)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.deauthenticate.subscribe(deauthenticate)
-  app.ports.redirectToLobby.subscribe(redirectToLobby)
+  app.ports.redirectToLobby.subscribe(() => wn.redirectToLobby(prerequisites))
   app.ports.removeStoredFoundation.subscribe(removeStoredFoundation)
   app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
@@ -71,9 +90,8 @@ sdk.isAuthenticated().then(props => {
   exe("fsAddContent", "add")
   exe("fsCreateDirectory", "createDirecory", { listParent: true })
   exe("fsListDirectory", "listDirectory")
-  exe("fsLoad", "load", { newCallback: freshUser, syncHook })
+  exe("fsLoad", "load", { prerequisites: pre, syncHook })
   exe("fsMoveItem", "moveItem", { listParent: true })
-  exe("fsNew", "createNew", { callback: freshUser, syncHook })
   exe("fsRemoveItem", "removeItem", { listParent: true })
 
   // Ports (IPFS)
@@ -119,18 +137,12 @@ function copyToClipboard(text) {
 
 
 function deauthenticate() {
-  sdk.deauthenticate()
-}
-
-
-function redirectToLobby() {
-  sdk.redirectToLobby(undefined)
+  wn.leave()
 }
 
 
 function removeStoredFoundation(_) {
   localStorage.removeItem("fissionDrive.foundation")
-  localStorage.removeItem("fissionDrive.lastFsOperation")
 }
 
 
@@ -185,19 +197,8 @@ function exe(port, method, options = {}) {
 }
 
 
-async function freshUser({ cid, username }) {
-  app.ports.ipfsGotResolvedAddress.send({
-    isDnsLink: true,
-    resolved: cid,
-    unresolved: username
-  })
-}
-
-
 const syncHook_ = throttle(cid => {
-  console.log("Syncing …", cid)
   app.ports.ipfsReplaceResolvedAddress.send({ cid })
-  localStorage.setItem("fissionDrive.lastFsOperation", Date.now().toString())
 }, 500)
 
 
@@ -236,23 +237,13 @@ function ipfsSetup(_) {
 // ----
 
 function annihilateKeys(_) {
-  sdk.keystore.clear()
+  wn.keystore.clear()
 }
 
 
 
 // 🛠
 // ==
-
-window.overrideFileSystem = (username) => {
-  fs.createNew({
-    callback: freshUser,
-    pathSegments: [],
-    syncHook,
-    username
-  })
-}
-
 
 tocca({
   dbltapThreshold: 400,
@@ -263,11 +254,6 @@ tocca({
 function foundation() {
   const stored = localStorage.getItem("fissionDrive.foundation")
   return stored ? JSON.parse(stored) : null
-}
-
-
-function lastFsOperation() {
-  return parseInt(localStorage.getItem("fissionDrive.lastFsOperation") || "0", 10)
 }
 
 
