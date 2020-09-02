@@ -119,7 +119,7 @@ config					:= "default"
 @elm:
 	echo "⚙️  Compiling Elm"
 	if [ "{{config}}" == "production" ]; then \
-		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug ; \
+		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize ; \
 	else \
 		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug ; \
 	fi
