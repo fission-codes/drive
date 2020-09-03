@@ -4,7 +4,7 @@
   "dependencies": {
     "fission-kit": "fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6",
     "get-ipfs": "^1.2.0",
-    "webnative": "0.17.2"
+    "webnative": "0.17.3"
   },
   "devDependencies": {
     "@babel/compat-data": "^7.11.0",
