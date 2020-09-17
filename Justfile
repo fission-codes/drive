@@ -32,7 +32,7 @@ config					:= "default"
 	mkdir -p {{build_dir}}
 
 
-@dev-build: clean css-large html apply-config elm javascript-dependencies javascript meta images (_report "Build success")
+@dev-build: clean css-large html apply-config elm-dev javascript-dependencies javascript meta images (_report "Build success")
 
 
 @dev-server:
@@ -71,34 +71,11 @@ config					:= "default"
 
 
 @production-build:
-	just config=production dev-build css-small
+	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify
 
-	echo "⚙️  Minifying Javascript Files"
-	{{node_bin}}/terser-dir \
-		{{build_dir}} \
-		--each --extension .js \
-		--patterns "**/*.js, !**/*.min.js" \
-		--pseparator ", " \
-		--output {{build_dir}} \
-		-- --compress --mangle
 
-	echo "⚙️  Minifying HTML Files"
-	{{node_bin}}/html-minifier-terser \
-		--input-dir {{build_dir}} \
-		--output-dir {{build_dir}} \
-		--file-ext html \
-		\
-		--collapse-whitespace --remove-comments --remove-optional-tags \
-		--remove-redundant-attributes \
-		--remove-tag-whitespace --use-short-doctype \
-		--minify-css true --minify-js true
-
-	echo "⚙️  Creating a nomodule build"
-	{{node_bin}}/esbuild \
-		--bundle \
-		--minify \
-		--outfile={{build_dir}}/nomodule.min.js \
-		{{build_dir}}/index.js
+@staging-build:
+	just clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify
 
 
 
@@ -116,13 +93,14 @@ config					:= "default"
 	NODE_ENV=production node {{sys_dir}}/Css/build.js
 
 
-@elm:
+@elm-dev:
 	echo "⚙️  Compiling Elm"
-	if [ "{{config}}" == "production" ]; then \
-		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize ; \
-	else \
-		elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug ; \
-	fi
+	elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug
+
+
+@elm-production:
+	echo "⚙️  Compiling Elm (optimised)"
+	elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize
 
 
 @html:
@@ -132,6 +110,19 @@ config					:= "default"
 
 	mkdir -p {{build_dir}}/reception
 	cp {{src_dir}}/Static/Html/Reception.html {{build_dir}}/reception/index.html
+
+
+@html-minify:
+	echo "⚙️  Minifying HTML Files"
+	{{node_bin}}/html-minifier-terser \
+		--input-dir {{build_dir}} \
+		--output-dir {{build_dir}} \
+		--file-ext html \
+		\
+		--collapse-whitespace --remove-comments --remove-optional-tags \
+		--remove-redundant-attributes \
+		--remove-tag-whitespace --use-short-doctype \
+		--minify-css true --minify-js true
 
 
 @images:
@@ -149,6 +140,26 @@ config					:= "default"
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
 	cp -RT web_modules {{build_dir}}/web_modules/
+
+
+@javascript-minify:
+	echo "⚙️  Minifying Javascript Files"
+	{{node_bin}}/terser-dir \
+		{{build_dir}} \
+		--each --extension .js \
+		--patterns "**/*.js, !**/*.min.js" \
+		--pseparator ", " \
+		--output {{build_dir}} \
+		-- --compress --mangle
+
+
+@javascript-nomodule:
+	echo "⚙️  Creating a nomodule build"
+	{{node_bin}}/esbuild \
+		--bundle \
+		--minify \
+		--outfile={{build_dir}}/nomodule.min.js \
+		{{build_dir}}/index.js
 
 
 @meta:
