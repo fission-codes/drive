@@ -183,7 +183,7 @@ config					:= "default"
 
 
 @watch-html:
-	watchexec -p -w {{src_dir}} -e "html" -- just html
+	watchexec -p -w {{src_dir}} -e "html" -- just html apply-config
 
 
 @watch-images:

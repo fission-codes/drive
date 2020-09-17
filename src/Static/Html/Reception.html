@@ -22,26 +22,14 @@
 <body>
 
 
-  <main id="elm">
-
-    <!--
-      APPLICATION PLACEHOLDER
-      =======================
-      This `noscript` element will be shown if Javascript is disabled.
-    -->
-    <noscript data-nosnippet>
-      Doesn't work without Javascript unfortunately.
-    </noscript>
-
-  </main>
+  <noscript data-nosnippet>
+    Doesn't work without Javascript unfortunately.
+  </noscript>
 
 
   <!-- Scripts -->
   <script src="loaders.js"></script>
-  <script>
-    const n = document.getElementById("elm")
-    if (n.querySelector("noscript")) addLoader(n)
-  </script>
+  <script>if (document.body.querySelector("noscript")) addLoader(document.body)</script>
   <script src="web_modules/webnative.umd.js"></script>
   <script>fissionSdk.redirectToLobby(location.origin)</script>
 

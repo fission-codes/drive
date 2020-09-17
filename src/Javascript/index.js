@@ -42,27 +42,29 @@ wn.setup.debug({ enabled: true })
 // 🚀
 
 
-let app, pre
+let app
 
 
 wn.initialise({
-  app: {
-    name: "Drive",
-    creator: "Fission"
-  },
 
-  fs: {
-    privatePaths: [ "/" ],
-    publicPaths: [ "/" ]
+  permissions: {
+    app: {
+      name: "Drive",
+      creator: "Fission"
+    },
+
+    fs: {
+      privatePaths: [ "/" ],
+      publicPaths: [ "/" ]
+    }
   },
 
   loadFileSystem: false
 
-}).then(({ prerequisites, state }) => {
-  const { authenticated, newUser, throughLobby, username } = state
+}).then(state => {
+  const { authenticated, newUser, permissions, throughLobby, username } = state
 
-  // Expose prerequisites
-  pre = prerequisites
+  console.log(state)
 
   // Initialize app
   app = Elm.Main.init({
@@ -80,7 +82,7 @@ wn.initialise({
   app.ports.annihilateKeys.subscribe(annihilateKeys)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.deauthenticate.subscribe(deauthenticate)
-  app.ports.redirectToLobby.subscribe(() => wn.redirectToLobby(prerequisites))
+  app.ports.redirectToLobby.subscribe(() => wn.redirectToLobby(permissions))
   app.ports.removeStoredFoundation.subscribe(removeStoredFoundation)
   app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
@@ -90,7 +92,7 @@ wn.initialise({
   exe("fsAddContent", "add")
   exe("fsCreateDirectory", "createDirecory", { listParent: true })
   exe("fsListDirectory", "listDirectory")
-  exe("fsLoad", "load", { prerequisites: pre, syncHook })
+  exe("fsLoad", "load", { permissions, syncHook })
   exe("fsMoveItem", "moveItem", { listParent: true })
   exe("fsRemoveItem", "removeItem", { listParent: true })
 

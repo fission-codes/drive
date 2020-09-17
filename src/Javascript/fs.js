@@ -29,7 +29,7 @@ export async function add({ blobs, pathSegments }) {
     URL.revokeObjectURL(url)
   }, Promise.resolve(null))
 
-  await fs.publicise()
+  await fs.publish()
 
   return await listDirectory({ pathSegments })
 }
@@ -38,13 +38,13 @@ export async function add({ blobs, pathSegments }) {
 export async function createDirecory({ pathSegments }) {
   const path = prefixedPath(pathSegments)
   await fs.mkdir(path)
-  await fs.publicise()
+  await fs.publish()
   return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
 }
 
 
 export async function cid() {
-  return (await fs.publicise()).toString()
+  return (await fs.publish()).toString()
 }
 
 
@@ -106,8 +106,8 @@ export async function listDirectory({ pathSegments }) {
 }
 
 
-export async function load({ pathSegments, prerequisites, syncHook }) {
-  fs = await wn.loadFileSystem(prerequisites)
+export async function load({ pathSegments, permissions, syncHook }) {
+  fs = await wn.loadFileSystem(permissions)
   fs.syncHooks.push(syncHook)
 
   return await listDirectory({ pathSegments })
@@ -117,7 +117,7 @@ export async function load({ pathSegments, prerequisites, syncHook }) {
 export async function removeItem({ pathSegments }) {
   const path = prefixedPath(pathSegments)
   await fs.rm(path)
-  await fs.publicise()
+  await fs.publish()
   return await listDirectory({ pathSegments: removePrivatePrefix(pathSegments).slice(0, -1) })
 }
 
@@ -127,7 +127,7 @@ export async function moveItem({ currentPathSegments, pathSegments }) {
   const newPath = prefixedPath(pathSegments)
 
   await fs.mv(currentPath, newPath)
-  await fs.publicise()
+  await fs.publish()
 }
 
 

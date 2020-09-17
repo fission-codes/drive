@@ -65,10 +65,7 @@
 
   <!-- Scripts -->
   <script src="loaders.js"></script>
-  <script>
-    const n = document.getElementById("elm")
-    if (n.querySelector("noscript")) addLoader(n)
-  </script>
+  <script>if (document.body.querySelector("noscript")) addLoader(document.body)</script>
 
 
   <!-- Service worker -->

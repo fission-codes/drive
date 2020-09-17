@@ -1,7 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/52007072cf459d02de6b49f5ca13229a7a03f4c6
-  get-ipfs: 1.2.0
-  webnative: 0.17.3
+  webnative: 0.19.0-alpha
 devDependencies:
   '@babel/compat-data': 7.11.0
   '@fullhuman/postcss-purgecss': 2.1.2
@@ -607,12 +606,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
-  /get-ipfs/1.2.0:
-    dev: false
-    engines:
-      node: '>=6.0.0'
-    resolution:
-      integrity: sha512-owHCiRbiwkp2x/Q1rSddo7Jv5t1p6oEEptEf++R8mCUY7xqFVjCVgOSpkLITXuLNaJuMM3aTuVPYGGWjSPqxkg==
   /glob-parent/5.1.0:
     dependencies:
       is-glob: 4.0.1
@@ -850,14 +843,14 @@ packages:
       graceful-fs: 4.2.3
     resolution:
       integrity: sha512-jR2b5v7d2vIOust+w3wtFKZIfpC2pnRmFAhAC/BuweZFQR8qZzxH1OyrQ10HmdVYiXWkYUqPVsz91cG7EL2FBg==
-  /keystore-idb/0.13.4:
+  /keystore-idb/0.13.5:
     dependencies:
       localforage: 1.7.3
     dev: false
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-jXYiTCebOUgz5qOwh9v3BoppUed3kNF9Xn55CZz3kmAKA3Ic0phB+Vx00yxnzlx6hQC0nce6txAi37TI046bZg==
+      integrity: sha512-J/zHzZBlzomp/2AwrkWFlRew/Iub3wd6eKe9xLVmQpy2vG80cI9SoyB0KpVx8/DdlwEEedPdUIDXvlGWWQCWMA==
   /lie/3.1.1:
     dependencies:
       immediate: 3.0.6
@@ -1695,13 +1688,13 @@ packages:
     dev: false
     resolution:
       integrity: sha1-2Ca4n3SQcy+rwMDtaT7Uddyynr8=
-  /webnative/0.17.3:
+  /webnative/0.19.0-alpha:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
       fission-bloom-filters: 1.4.0
       ipld-dag-pb: 0.18.4
-      keystore-idb: 0.13.4
+      keystore-idb: 0.13.5
       load-script2: 2.0.5
       localforage: 1.7.3
       make-error: 1.3.6
@@ -1709,9 +1702,9 @@ packages:
       yarn: 1.22.5
     dev: false
     engines:
-      node: '>=10.0.0'
+      node: '>=10.21.0'
     resolution:
-      integrity: sha512-aFNN7/JpHxGIJmiq3JR42EAELbjR6+iiqA8ljRciNrNgP6HI/EysPfucXPYneu/2vUcPQJ9MoSrjJa07n3MgLQ==
+      integrity: sha512-gyfO9t3Wtb/6TGXYm9o9D2YzCgalhupwmzRQW13B8esZYljX0Jw9FSyMtOEhvze+72yAW8z2XW15W8dTYphsmw==
   /wrappy/1.0.2:
     dev: true
     resolution:
@@ -1759,7 +1752,6 @@ specifiers:
   elm-impfix: ^1.0.8
   esbuild: ^0.6.29
   fission-kit: fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6
-  get-ipfs: ^1.2.0
   html-minifier-terser: ^5.0.5
   mustache: ^4.0.1
   postcss: ^7.0.26
@@ -1768,4 +1760,4 @@ specifiers:
   tailwindcss: ^1.3.4
   tailwindcss-animations: ^2.0.0
   terser-dir: ^1.0.7
-  webnative: 0.17.3
+  webnative: 0.19.0-alpha
