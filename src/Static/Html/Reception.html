@@ -31,7 +31,25 @@
   <script src="loaders.js"></script>
   <script>if (document.body.querySelector("noscript")) addLoader(document.body)</script>
   <script src="web_modules/webnative.umd.js"></script>
-  <script>fissionSdk.redirectToLobby(location.origin)</script>
+  <script>
+    webnative.setup.endpoints({
+      api: "{{{API_ENDPOINT}}}",
+      lobby: "{{{LOBBY}}}",
+      user: "{{{DATA_ROOT_DOMAIN}}}"
+    })
+
+    webnative.redirectToLobby({
+      app: {
+        name: "Drive",
+        creator: "Fission"
+      },
+
+      fs: {
+        privatePaths: [ "/" ],
+        publicPaths: [ "/" ]
+      }
+    }, location.origin)
+  </script>
 
 
 </body>

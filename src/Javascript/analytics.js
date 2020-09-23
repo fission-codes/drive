@@ -6,7 +6,7 @@ Analytics.
 
 */
 
-function setupOnFissionCodes() {
+export function setupOnFissionCodes() {
   // Only use analytics on *.fission.codes domains
   if (!location.host.endsWith(".fission.codes")) return
 

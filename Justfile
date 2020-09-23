@@ -26,6 +26,10 @@ config					:= "default"
 	rm {{build_dir}}/index.html
 	mv {{build_dir}}/index.applied.html {{build_dir}}/index.html
 
+	{{node_bin}}/mustache config/{{config}}.json {{build_dir}}/reception/index.html > {{build_dir}}/reception/index.applied.html
+	rm {{build_dir}}/reception/index.html
+	mv {{build_dir}}/reception/index.applied.html {{build_dir}}/reception/index.html
+
 
 @clean:
 	rm -rf {{build_dir}}
