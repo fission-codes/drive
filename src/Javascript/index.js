@@ -12,9 +12,9 @@
 import "./web_modules/tocca.js"
 import * as wn from "./web_modules/webnative.js"
 
-import "./analytics.js"
 import "./custom.js"
 
+import * as analytics from "./analytics.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
@@ -64,8 +64,6 @@ wn.initialise({
 }).then(state => {
   const { authenticated, newUser, permissions, throughLobby, username } = state
 
-  console.log(state)
-
   // Initialize app
   app = Elm.Main.init({
     node: document.getElementById("elm"),
@@ -100,6 +98,9 @@ wn.initialise({
   app.ports.ipfsListDirectory.subscribe(ipfsListDirectory)
   app.ports.ipfsResolveAddress.subscribe(ipfsResolveAddress)
   app.ports.ipfsSetup.subscribe(ipfsSetup)
+
+  // Other things
+  analytics.setupOnFissionCodes()
 })
 
 

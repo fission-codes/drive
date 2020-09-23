@@ -6,7 +6,9 @@ Analytics.
 
 */
 
-try {
+function setupOnFissionCodes() {
+  // Only use analytics on *.fission.codes domains
+  if (!location.host.endsWith(".fission.codes")) return
 
   (function(f, a, t, h, o, m) {
       a[h] = a[h] || function() {
@@ -20,5 +22,4 @@ try {
   fathom("set", "siteId", "CBUIQVIJ")
   fathom("set", "spa", "pushstate")
   fathom("trackPageview")
-
-} catch (_) {}
+}
