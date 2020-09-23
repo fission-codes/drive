@@ -47,8 +47,15 @@ setupCompleted model =
         , model.authenticated
         )
     of
-        ( Just _, _ ) ->
-            Fs.loadOrList { model | ipfs = Ipfs.InitialListing }
+        ( Just foundation, _ ) ->
+            Return.singleton { model | ipfs = Ipfs.InitialListing }
+                |> Return.andThen Fs.loadOrList
+                |> (if shouldChangeUrl foundation model then
+                        Return.command (changeUrl foundation model)
+
+                    else
+                        identity
+                   )
 
         ( Nothing, Just essentials ) ->
             if model.route == Explore then
@@ -79,20 +86,8 @@ This function can change the URL and stores the foundation in localStorage.
 gotResolvedAddress : Foundation -> Manager
 gotResolvedAddress foundation model =
     let
-        shouldChangeUrl =
-            -- Do I need to put the ipfs address in the url?
-            case model.mode of
-                Mode.Default ->
-                    model.url.fragment
-                        |> Maybe.withDefault ""
-                        |> String.startsWith ("/" ++ foundation.unresolved)
-                        |> not
-
-                Mode.PersonalDomain ->
-                    False
-
         ipfs =
-            if shouldChangeUrl then
+            if shouldChangeUrl foundation model then
                 model.ipfs
 
             else
@@ -100,11 +95,8 @@ gotResolvedAddress foundation model =
     in
     { model | ipfs = ipfs, foundation = Just foundation }
         |> Return.singleton
-        |> (if shouldChangeUrl then
-                -- If the url needs to change, issue a navigation command
-                ("#/" ++ foundation.unresolved)
-                    |> Navigation.pushUrl model.navKey
-                    |> Return.command
+        |> (if shouldChangeUrl foundation model then
+                Return.command (changeUrl foundation model)
 
             else if Maybe.map .newUser model.authenticated == Just True then
                 identity
@@ -274,3 +266,28 @@ gotError error model =
             | exploreInput = Maybe.map .unresolved model.foundation
             , ipfs = Ipfs.Error error
         }
+
+
+
+-- UTILITIES
+
+
+{-| Do I need to put the ipfs address in the url?
+-}
+shouldChangeUrl : Foundation -> Model -> Bool
+shouldChangeUrl foundation model =
+    case model.mode of
+        Mode.Default ->
+            model.url.fragment
+                |> Maybe.withDefault ""
+                |> String.startsWith ("/" ++ foundation.unresolved)
+                |> not
+
+        Mode.PersonalDomain ->
+            False
+
+
+changeUrl : Foundation -> Model -> Cmd Msg
+changeUrl foundation model =
+    ("#/" ++ foundation.unresolved)
+        |> Navigation.pushUrl model.navKey

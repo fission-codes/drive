@@ -1,5 +1,6 @@
 .deploy
 .fission.yaml
+.vscode/
 build
 elm-stuff
 node_modules
