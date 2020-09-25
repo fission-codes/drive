@@ -42,7 +42,7 @@ wn.setup.debug({ enabled: true })
 // 🚀
 
 
-let app
+let app, per
 
 
 wn.initialise({
@@ -100,6 +100,7 @@ wn.initialise({
   app.ports.ipfsSetup.subscribe(ipfsSetup)
 
   // Other things
+  per = permissions
   analytics.setupOnFissionCodes()
 })
 
@@ -225,6 +226,9 @@ async function ipfsResolveAddress(address) {
 
   if (resolvedResult.resolved) {
     app.ports.ipfsGotResolvedAddress.send(resolvedResult)
+  } else {
+    await fs.loadWithoutList({ permissions: per })
+    await ipfsResolveAddress(address)
   }
 }
 

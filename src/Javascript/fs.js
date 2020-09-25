@@ -107,10 +107,14 @@ export async function listDirectory({ pathSegments }) {
 
 
 export async function load({ pathSegments, permissions, syncHook }) {
-  fs = await wn.loadFileSystem(permissions)
+  await loadWithoutList({ permissions, syncHook })
   fs.syncHooks.push(syncHook)
-
   return await listDirectory({ pathSegments })
+}
+
+
+export async function loadWithoutList({ permissions }) {
+  fs = await wn.loadFileSystem(permissions)
 }
 
 
