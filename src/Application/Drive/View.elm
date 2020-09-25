@@ -19,10 +19,10 @@ import Html.Extra as Html exposing (nothing)
 import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Radix exposing (..)
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
-import Types exposing (..)
 import Url.Builder
 
 
@@ -300,18 +300,18 @@ rootPathPart : Model -> List String -> Html Msg
 rootPathPart model segments =
     let
         root =
-            model.foundation
-                |> Maybe.map .unresolved
-                |> Maybe.withDefault ""
+            case model.authenticated of
+                Just a ->
+                    a.username
+
+                Nothing ->
+                    ""
 
         rootLength =
             String.length root
 
-        isDnsLink =
-            Maybe.unwrap False .isDnsLink model.foundation
-
         isTooLong =
-            (isDnsLink && rootLength > 36) || not isDnsLink
+            rootLength > 36
 
         text =
             if isTooLong then

@@ -10,7 +10,7 @@ import List.Extra as List
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
-import Types exposing (..)
+import Radix exposing (..)
 import Url.Builder
 
 

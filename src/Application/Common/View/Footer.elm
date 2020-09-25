@@ -10,11 +10,10 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Maybe.Extra as Maybe
-import Mode
+import Radix exposing (..)
 import Routing
 import Styling as S
 import Tailwind as T
-import Types exposing (..)
 import Url
 
 
@@ -112,27 +111,12 @@ right model =
         ]
         (case model.route of
             Routing.Undecided ->
-                case model.mode of
-                    Mode.Default ->
-                        [ explore ]
-
-                    Mode.PersonalDomain ->
-                        []
-
-            Routing.Explore ->
-                if Maybe.isJust model.authenticated then
-                    [ myDrive model ]
-
-                else
-                    [ signIn model ]
+                []
 
             -----------------------------------------
             -- Tree
             -----------------------------------------
-            Routing.PersonalTree _ ->
-                treeActions model
-
-            Routing.Tree _ _ ->
+            Routing.Tree _ ->
                 treeActions model
         )
 
@@ -145,11 +129,8 @@ treeActions model =
         Html.nothing
 
     --
-    , if Common.isAuthenticatedAndNotExploring model then
+    , if Maybe.isJust model.authenticated then
         addCreateAction model
-
-      else if Maybe.isJust model.authenticated then
-        myDrive model
 
       else
         Html.nothing
@@ -194,30 +175,6 @@ addCreateAction model =
         ]
         FeatherIcons.plus
         [ Html.text "Add / Create" ]
-
-
-explore =
-    action
-        Button
-        [ E.onClick (Reset Routing.Explore) ]
-        FeatherIcons.hash
-        [ Html.text "Explore" ]
-
-
-myDrive model =
-    case model.authenticated of
-        Just { username } ->
-            action
-                Link
-                [ model.url
-                    |> Routing.routeUrl (Routing.Tree { root = username } [])
-                    |> A.href
-                ]
-                FeatherIcons.hardDrive
-                [ Html.text "My Drive" ]
-
-        Nothing ->
-            Html.nothing
 
 
 signIn model =

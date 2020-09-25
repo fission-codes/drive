@@ -1,7 +1,7 @@
 module Drive.Item exposing (..)
 
 import FeatherIcons
-import Ipfs
+import FileSystem
 import List.Extra as List
 import Murmur3
 import String.Ext as String
@@ -101,8 +101,8 @@ canRenderKind kind =
             False
 
 
-fromIpfs : Ipfs.ListItem -> Item
-fromIpfs { cid, name, path, posixTime, size, typ } =
+fromFileSystem : FileSystem.Item -> Item
+fromFileSystem { cid, name, path, posixTime, size, typ } =
     let
         nameProps =
             case typ of

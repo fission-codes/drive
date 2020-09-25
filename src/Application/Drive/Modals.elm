@@ -8,7 +8,7 @@ import Html.Events as E
 import Modal exposing (Modal)
 import Styling as S
 import Tailwind as T
-import Types exposing (Msg(..))
+import Radix exposing (Msg(..))
 
 
 

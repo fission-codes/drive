@@ -18,7 +18,7 @@ import Styling as S
 import Tailwind as T
 import Time
 import Time.Distance
-import Types exposing (..)
+import Radix exposing (..)
 import Url.Builder
 
 

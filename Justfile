@@ -194,7 +194,7 @@ config					:= "default"
 
 
 @watch-elm:
-	watchexec -p -w {{src_dir}} -e "elm" -- just elm
+	watchexec -p -w {{src_dir}} -e "elm" -- just elm-dev
 
 
 @watch-html:

@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import State exposing (init, subscriptions, update)
-import Types exposing (..)
+import Radix exposing (..)
 import View exposing (view)
 
 

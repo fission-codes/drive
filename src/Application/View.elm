@@ -8,7 +8,6 @@ import Common.View.HelpfulNote
 import ContextMenu exposing (ContextMenu)
 import Drive.Item exposing (Kind(..))
 import Drive.View as Drive
-import Explore.View as Explore
 import Html exposing (Html)
 import Html.Events as E
 import Html.Events.Ext as E
@@ -19,10 +18,10 @@ import Json.Decode as Decode
 import Maybe.Extra as Maybe
 import Modal exposing (Modal)
 import Notifications
+import Radix exposing (..)
 import Routing
 import Tailwind as T
 import Toasty
-import Types exposing (..)
 import Url.Builder
 
 
@@ -49,17 +48,10 @@ body m =
         ( _, Routing.Undecided ) ->
             Authentication.notAuthenticated m
 
-        --
-        ( _, Routing.Explore ) ->
-            Explore.view m
-
         -----------------------------------------
         -- Tree
         -----------------------------------------
-        ( _, Routing.PersonalTree _ ) ->
-            treeView m
-
-        ( _, Routing.Tree _ _ ) ->
+        ( _, Routing.Tree _ ) ->
             treeView m
 
     -----------------------------------------
@@ -112,7 +104,7 @@ body m =
         |> Html.node
             "fs-drop-zone"
             (case m.route of
-                Routing.Tree _ _ ->
+                Routing.Tree _ ->
                     { onOver = \_ -> ShowHelpfulNote "Drop to add it to your drive"
                     , onDrop = \_ -> HideHelpfulNote
                     , onEnter = Nothing
@@ -146,14 +138,10 @@ rootAttributes m =
 treeView : Model -> Html Msg
 treeView m =
     if Common.isPreppingTree m then
-        if Maybe.isJust m.authenticated then
-            [ Html.text "Just a moment, loading your file system." ]
-                |> Html.div [ T.italic, T.mt_3 ]
-                |> List.singleton
-                |> Common.loadingScreen
-
-        else
-            Explore.view m
+        [ Html.text "Just a moment, loading your file system." ]
+            |> Html.div [ T.italic, T.mt_3 ]
+            |> List.singleton
+            |> Common.loadingScreen
 
     else
         Drive.view m

@@ -1,14 +1,14 @@
 module Common.View exposing (..)
 
 import FeatherIcons
+import FileSystem
 import Html exposing (Html)
 import Html.Attributes as A
-import Ipfs
 import Json.Decode as Decode
 import Maybe.Extra as Maybe
+import Radix exposing (Model, Msg)
 import Routing
 import Tailwind as T
-import Types exposing (Model, Msg)
 
 
 
@@ -20,7 +20,7 @@ blobUrlsDecoder =
     blobUrlObjectDecoder
         |> Decode.list
         |> Decode.at [ "detail", "blobs" ]
-        |> Decode.map (\blobs -> Types.AddFiles { blobs = blobs })
+        |> Decode.map (\blobs -> Radix.AddFiles { blobs = blobs })
 
 
 blobUrlObjectDecoder : Decode.Decoder { path : String, url : String }
@@ -55,14 +55,14 @@ fadeOutRight =
 
 isPreppingTree : Model -> Bool
 isPreppingTree m =
-    case ( m.foundation, m.ipfs ) of
-        ( Just _, Ipfs.Ready ) ->
+    case m.fileSystemStatus of
+        FileSystem.Ready ->
             False
 
-        ( Just _, Ipfs.AdditionalListing ) ->
+        FileSystem.AdditionalListing ->
             False
 
-        ( Just _, Ipfs.FileSystemOperation _ ) ->
+        FileSystem.Operation _ ->
             False
 
         _ ->
@@ -71,10 +71,7 @@ isPreppingTree m =
 
 shouldShowLoadingAnimation : Model -> Bool
 shouldShowLoadingAnimation m =
-    m.showLoadingOverlay
-        || (m.ipfs == Ipfs.Connecting)
-        || (Maybe.isJust m.authenticated && m.route == Routing.Undecided)
-        || (Maybe.isJust m.authenticated && Maybe.isNothing m.foundation)
+    m.showLoadingOverlay || (m.fileSystemStatus == FileSystem.Loading)
 
 
 

@@ -6,20 +6,20 @@ import Drive.Item exposing (Kind(..))
 import Drive.Sidebar exposing (..)
 import Drive.View.Common as Drive
 import Drive.View.Details as Details
+import FileSystem
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
-import Ipfs
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Radix exposing (..)
 import Result.Extra as Result
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
-import Types exposing (..)
 import Url.Builder
 
 
@@ -153,7 +153,7 @@ addOrCreateForm model =
                 , T.px_6
                 , T.text_tiny
                 ]
-                [ if model.ipfs == Ipfs.FileSystemOperation Ipfs.CreatingDirectory then
+                [ if model.fileSystemStatus == FileSystem.Operation FileSystem.CreatingDirectory then
                     Common.loadingAnimationWithAttributes
                         [ T.text_purple_tint ]
                         { size = S.iconSize }
