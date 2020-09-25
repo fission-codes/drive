@@ -1,6 +1,5 @@
 module Routing exposing (..)
 
-import Mode exposing (Mode)
 import String.Ext as String
 import Url exposing (Url)
 import Url.Parser as Url exposing (..)
@@ -12,60 +11,31 @@ import Url.Parser as Url exposing (..)
 
 type Route
     = Undecided
-      --
-    | Explore
-      -----------------------------------------
-      -- Tree
-      -----------------------------------------
-    | PersonalTree (List String)
-    | Tree { root : String } (List String)
+    | Tree (List String)
 
 
 
 -- 🛠
 
 
-routeFromUrl : Mode -> Url -> Route
-routeFromUrl mode url =
-    case mode of
-        Mode.Default ->
-            case basePath url of
-                "" ->
-                    Undecided
+routeFromUrl : Bool -> Url -> Route
+routeFromUrl isAuthenticated url =
+    case basePath url of
+        "" ->
+            if isAuthenticated then
+                Tree []
 
-                "explore/ipfs" ->
-                    Explore
+            else
+                Undecided
 
-                -----------------------------------------
-                -- Tree
-                -----------------------------------------
-                path ->
-                    let
-                        pathSegments =
-                            path
-                                |> String.chop "/"
-                                |> String.split "/"
-                    in
-                    case pathSegments of
-                        root :: rest ->
-                            Tree { root = root } rest
-
-                        [] ->
-                            Undecided
-
-        Mode.PersonalDomain ->
-            case basePath url of
-                "" ->
-                    Undecided
-
-                -----------------------------------------
-                -- Tree
-                -----------------------------------------
-                path ->
-                    path
-                        |> String.chop "/"
-                        |> String.split "/"
-                        |> PersonalTree
+        -----------------------------------------
+        -- Tree
+        -----------------------------------------
+        path ->
+            path
+                |> String.chop "/"
+                |> String.split "/"
+                |> Tree
 
 
 adjustUrl : Url -> Route -> Url
@@ -74,27 +44,8 @@ adjustUrl url route =
         Undecided ->
             { url | fragment = Nothing }
 
-        --
-        Explore ->
-            { url | fragment = Just "/explore/ipfs" }
-
-        -----------------------------------------
-        -- Tree
-        -----------------------------------------
-        PersonalTree pathSegments ->
+        Tree pathSegments ->
             { url | fragment = Just ("/" ++ String.join "/" pathSegments) }
-
-        Tree { root } pathSegments ->
-            let
-                frag =
-                    case pathSegments of
-                        [] ->
-                            "/" ++ root
-
-                        _ ->
-                            "/" ++ root ++ "/" ++ String.join "/" pathSegments
-            in
-            { url | fragment = Just frag }
 
 
 routeUrl : Route -> Url -> String
@@ -138,43 +89,18 @@ treePath =
 treePathSegments : Route -> List String
 treePathSegments route =
     case route of
-        PersonalTree pathSegments ->
-            pathSegments
-
-        Tree _ pathSegments ->
+        Tree pathSegments ->
             pathSegments
 
         _ ->
             []
 
 
-treeRoot : Url -> Route -> Maybe String
-treeRoot url route =
-    case route of
-        PersonalTree _ ->
-            case url.host of
-                "localhost" ->
-                    -- TODO: Remove
-                    Just "icidasset-test"
-
-                host ->
-                    Just ("files." ++ host)
-
-        Tree { root } _ ->
-            Just root
-
-        _ ->
-            Nothing
-
-
 addTreePathSegments : Route -> List String -> Route
 addTreePathSegments route segments =
     case route of
-        PersonalTree pathSegments ->
-            PersonalTree (List.append pathSegments segments)
-
-        Tree properties pathSegments ->
-            Tree properties (List.append pathSegments segments)
+        Tree pathSegments ->
+            Tree (List.append pathSegments segments)
 
         _ ->
             route
@@ -183,11 +109,8 @@ addTreePathSegments route segments =
 replaceTreePathSegments : Route -> List String -> Route
 replaceTreePathSegments route segments =
     case route of
-        PersonalTree _ ->
-            PersonalTree segments
-
-        Tree properties _ ->
-            Tree properties segments
+        Tree _ ->
+            Tree segments
 
         _ ->
             route

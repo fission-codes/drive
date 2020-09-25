@@ -3,28 +3,25 @@ module State exposing (init, subscriptions, update)
 import Authentication.Essentials as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
-import Common exposing (defaultDnsLink, ifThenElse)
+import Common exposing (ifThenElse)
 import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
 import Drive.Sidebar
 import Drive.State as Drive
-import Explore.State as Explore
-import Fs.State as Fs
-import Ipfs
-import Ipfs.State as Ipfs
+import FileSystem
+import FileSystem.State as FileSystem
 import Keyboard
 import Maybe.Extra as Maybe
-import Mode
 import Notifications
 import Other.State as Other
 import Ports
+import Radix exposing (..)
 import Return
 import Routing
 import Task
 import Time
 import Toasty
-import Types exposing (..)
 import Url exposing (Url)
 
 
@@ -35,29 +32,11 @@ import Url exposing (Url)
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        mode =
-            -- if String.endsWith ".fission.name" url.host then
-            --     Mode.PersonalDomain
-            --
-            -- else
-            Mode.Default
+        isAuthenticated =
+            Maybe.isJust flags.authenticated
 
         route =
-            Routing.routeFromUrl mode url
-
-        exploreInput =
-            if Maybe.isJust flags.authenticated then
-                defaultDnsLink
-
-            else
-                flags.foundation
-                    |> Maybe.map .unresolved
-                    |> Maybe.orElse (Routing.treeRoot url route)
-                    |> Maybe.withDefault defaultDnsLink
-
-        loadedFoundation =
-            -- TODO: Remove
-            flags.foundation
+            Routing.routeFromUrl isAuthenticated url
     in
     ( -----------------------------------------
       -- Model
@@ -67,13 +46,10 @@ init flags url navKey =
       , contextMenu = Nothing
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
-      , exploreInput = Just exploreInput
-      , foundation = loadedFoundation
+      , fileSystemStatus = FileSystem.InitialListing
       , helpfulNote = Nothing
-      , ipfs = Ipfs.Connecting
       , isFocused = False
       , modal = Nothing
-      , mode = mode
       , navKey = navKey
       , route = route
       , pressedKeys = []
@@ -88,7 +64,6 @@ init flags url navKey =
       -------------
       , loadingDebouncer = Debouncing.loading.debouncer
       , notificationsDebouncer = Debouncing.notifications.debouncer
-      , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
 
       -- Sidebar
       ----------
@@ -101,8 +76,17 @@ init flags url navKey =
       -- Command
       -----------------------------------------
     , Cmd.batch
-        [ Ports.ipfsSetup ()
-        , Task.perform SetCurrentTime Time.now
+        [ Task.perform SetCurrentTime Time.now
+
+        -- Load directory list if authenticated
+        , if isAuthenticated then
+            route
+                |> Routing.treePathSegments
+                |> (\seg -> { pathSegments = seg })
+                |> Ports.fsListDirectory
+
+          else
+            Cmd.none
         ]
     )
 
@@ -125,9 +109,6 @@ update msg =
 
         NotificationsDebouncerMsg a ->
             Debouncer.update update Debouncing.notifications.updateConfig a
-
-        UsernameAvailabilityDebouncerMsg a ->
-            Debouncer.update update Debouncing.usernameAvailability.updateConfig a
 
         -----------------------------------------
         -- Drive
@@ -184,43 +165,13 @@ update msg =
             Drive.toggleSidebarMode a
 
         -----------------------------------------
-        -- Explore
-        -----------------------------------------
-        ChangeCid ->
-            Explore.changeCid
-
-        GoExplore ->
-            Explore.explore
-
-        GotInput a ->
-            Explore.gotInput a
-
-        -----------------------------------------
         -- File System
         -----------------------------------------
+        GotFsDirectoryList a ->
+            FileSystem.gotDirectoryList a
+
         GotFsError a ->
-            Fs.gotError a
-
-        -----------------------------------------
-        -- Ipfs
-        -----------------------------------------
-        GetDirectoryList ->
-            Ipfs.getDirectoryList
-
-        GotDirectoryList a ->
-            Ipfs.gotDirectoryList a
-
-        GotIpfsError a ->
-            Ipfs.gotError a
-
-        GotResolvedAddress a ->
-            Ipfs.gotResolvedAddress a
-
-        ReplaceResolvedAddress a ->
-            Ipfs.replaceResolvedAddress a
-
-        SetupCompleted ->
-            Ipfs.setupCompleted
+            FileSystem.gotError a
 
         -----------------------------------------
         -- 🌏 Common
@@ -296,12 +247,8 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Ports.fsGotError GotFsError
-        , Ports.ipfsCompletedSetup (always SetupCompleted)
-        , Ports.ipfsGotDirectoryList GotDirectoryList
-        , Ports.ipfsGotError GotIpfsError
-        , Ports.ipfsGotResolvedAddress GotResolvedAddress
-        , Ports.ipfsReplaceResolvedAddress ReplaceResolvedAddress
+        [ Ports.fsGotDirectoryList GotFsDirectoryList
+        , Ports.fsGotError GotFsError
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

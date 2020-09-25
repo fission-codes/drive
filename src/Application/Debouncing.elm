@@ -2,7 +2,7 @@ module Debouncing exposing (..)
 
 import Debouncer.Messages as Debouncer exposing (Debouncer, Milliseconds, fromSeconds)
 import Return
-import Types exposing (..)
+import Radix exposing (..)
 
 
 
@@ -28,17 +28,6 @@ notifications =
         --
         , msg = NotificationsDebouncerMsg
         , settleAfter = fromSeconds 1
-        }
-
-
-usernameAvailability =
-    makeConfig
-        { getter = .usernameAvailabilityDebouncer
-        , setter = \debouncer model -> { model | usernameAvailabilityDebouncer = debouncer }
-
-        --
-        , msg = UsernameAvailabilityDebouncerMsg
-        , settleAfter = fromSeconds 0.75
         }
 
 

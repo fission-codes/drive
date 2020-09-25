@@ -10,17 +10,17 @@ import Drive.Modals
 import Drive.Sidebar
 import File
 import File.Download
-import Ipfs exposing (FileSystemOperation(..), Status(..))
+import FileSystem exposing (Operation(..))
 import List.Ext as List
 import List.Extra as List
 import Notifications
 import Ports
+import Radix exposing (..)
 import Result.Extra as Result
 import Return exposing (andThen, return)
 import Return.Extra as Return
 import Routing
 import Toasty
-import Types exposing (..)
 import Url
 
 
@@ -39,10 +39,10 @@ addFiles { blobs } model =
     , pathSegments = Routing.treePathSegments model.route
     }
         |> Ports.fsAddContent
-        |> return { model | ipfs = FileSystemOperation AddingFiles }
+        |> return { model | fileSystemStatus = FileSystem.Operation AddingFiles }
         -- Notification
         |> Toasty.addConditionalToast
-            (\m -> m.ipfs == FileSystemOperation AddingFiles)
+            (\m -> m.fileSystemStatus == FileSystem.Operation AddingFiles)
             Notifications.config
             ToastyMsg
             (Notifications.loadingIndication "Uploading files")
@@ -105,7 +105,7 @@ createDirectory model =
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
                 |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
-                |> return { model | ipfs = FileSystemOperation CreatingDirectory }
+                |> return { model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
 
 
 digDeeper : { directoryName : String } -> Manager
@@ -120,12 +120,14 @@ digDeeper { directoryName } model =
             Routing.treePathSegments model.route
 
         pathSegments =
-            case model.ipfs of
-                Ipfs.AdditionalListing ->
-                    Maybe.withDefault [] (List.init currentPathSegments)
-
-                _ ->
-                    currentPathSegments
+            -- TODO: Not sure why this is here?
+            -- case model.ipfs of
+            --     Ipfs.AdditionalListing ->
+            --         Maybe.withDefault [] (List.init currentPathSegments)
+            --
+            --     _ ->
+            --         currentPathSegments
+            currentPathSegments
 
         updatedItems =
             List.map
@@ -228,10 +230,10 @@ removeItem item model =
     item
         |> Item.pathProperties
         |> Ports.fsRemoveItem
-        |> return { model | ipfs = FileSystemOperation Deleting }
+        |> return { model | fileSystemStatus = FileSystem.Operation Deleting }
         -- Notification
         |> Toasty.addConditionalToast
-            (\m -> m.ipfs == FileSystemOperation Deleting)
+            (\m -> m.fileSystemStatus == FileSystem.Operation Deleting)
             Notifications.config
             ToastyMsg
             (Notifications.loadingIndication <| "Removing “" ++ item.name ++ "”")

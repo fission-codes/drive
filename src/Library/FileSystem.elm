@@ -1,4 +1,4 @@
-module Ipfs exposing (..)
+module FileSystem exposing (..)
 
 import Json.Decode as Json
 import Time
@@ -8,7 +8,7 @@ import Time
 -- 🧩
 
 
-type alias ListItem =
+type alias Item =
     { cid : String
     , name : String
     , path : String
@@ -19,18 +19,18 @@ type alias ListItem =
 
 
 type Status
-    = Connecting
+    = NotNeeded
+    | Loading
     | Error String
       --
     | InitialListing
     | AdditionalListing
-      --
-    | FileSystemOperation FileSystemOperation
+    | Operation Operation
       --
     | Ready
 
 
-type FileSystemOperation
+type Operation
     = AddingFiles
     | CreatingDirectory
     | Deleting
@@ -40,10 +40,10 @@ type FileSystemOperation
 -- DECODING
 
 
-listItemDecoder : Json.Decoder ListItem
-listItemDecoder =
+itemDecoder : Json.Decoder Item
+itemDecoder =
     Json.map6
-        ListItem
+        Item
         (Json.field "cid" Json.string)
         (Json.field "name" Json.string)
         (Json.field "path" Json.string)

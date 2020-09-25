@@ -16,7 +16,6 @@ import "./custom.js"
 
 import * as analytics from "./analytics.js"
 import * as fs from "./fs.js"
-import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 import { throttle } from "./common.js"
 import { setup } from "./sdk.js"
@@ -39,30 +38,35 @@ wn.setup.debug({ enabled: true })
 
 
 
+// 🍱
+
+
+const PERMISSIONS = {
+  app: {
+    name: "Drive",
+    creator: "Fission"
+  },
+
+  fs: {
+    privatePaths: [ "/" ],
+    publicPaths: [ "/" ]
+  }
+}
+
+
+
 // 🚀
 
 
-let app, per
+let app
 
 
-wn.initialise({
-
-  permissions: {
-    app: {
-      name: "Drive",
-      creator: "Fission"
-    },
-
-    fs: {
-      privatePaths: [ "/" ],
-      publicPaths: [ "/" ]
-    }
-  },
-
-  loadFileSystem: false
-
-}).then(state => {
+wn.initialise({ permissions: PERMISSIONS })
+  .then(state => {
   const { authenticated, newUser, permissions, throughLobby, username } = state
+
+  // File system
+  fs.setInstance(state.fs)
 
   // Initialize app
   app = Elm.Main.init({
@@ -70,37 +74,26 @@ wn.initialise({
     flags: {
       authenticated: authenticated ? { newUser, throughLobby, username } : null,
       currentTime: Date.now(),
-      foundation: foundation(),
       usersDomain: DATA_ROOT_DOMAIN,
       viewportSize: { height: window.innerHeight, width: window.innerWidth }
     }
   })
 
   // Ports
-  app.ports.annihilateKeys.subscribe(annihilateKeys)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.deauthenticate.subscribe(deauthenticate)
   app.ports.redirectToLobby.subscribe(() => wn.redirectToLobby(permissions))
-  app.ports.removeStoredFoundation.subscribe(removeStoredFoundation)
   app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
-  app.ports.storeFoundation.subscribe(storeFoundation)
 
   // Ports (FS)
   exe("fsAddContent", "add")
   exe("fsCreateDirectory", "createDirecory", { listParent: true })
   exe("fsListDirectory", "listDirectory")
-  exe("fsLoad", "load", { permissions, syncHook })
   exe("fsMoveItem", "moveItem", { listParent: true })
   exe("fsRemoveItem", "removeItem", { listParent: true })
 
-  // Ports (IPFS)
-  app.ports.ipfsListDirectory.subscribe(ipfsListDirectory)
-  app.ports.ipfsResolveAddress.subscribe(ipfsResolveAddress)
-  app.ports.ipfsSetup.subscribe(ipfsSetup)
-
   // Other things
-  per = permissions
   analytics.setupOnFissionCodes()
 })
 
@@ -145,11 +138,6 @@ function deauthenticate() {
 }
 
 
-function removeStoredFoundation(_) {
-  localStorage.removeItem("fissionDrive.foundation")
-}
-
-
 function renderMedia(a) {
   // Wait for DOM to render
   // TODO: Needs improvement, should use MutationObserver instead of port.
@@ -170,11 +158,6 @@ function showNotification(text) {
 }
 
 
-function storeFoundation(foundation) {
-  localStorage.setItem("fissionDrive.foundation", JSON.stringify(foundation))
-}
-
-
 // FS
 // --
 
@@ -186,7 +169,7 @@ function exe(port, method, options = {}) {
     try {
       results = await fs[method](args)
 
-      app.ports.ipfsGotDirectoryList.send({
+      app.ports.fsGotDirectoryList.send({
         pathSegments: fs.removePrivatePrefix(
           args.pathSegments.slice(0, options.listParent ? -1 : undefined)
         ),
@@ -201,53 +184,6 @@ function exe(port, method, options = {}) {
 }
 
 
-const syncHook_ = throttle(cid => {
-  app.ports.ipfsReplaceResolvedAddress.send({ cid })
-}, 500)
-
-
-function syncHook(cid) {
-  return syncHook_(cid)
-}
-
-
-// IPFS
-// ----
-
-function ipfsListDirectory({ address, pathSegments }) {
-  ipfs.listDirectory(address)
-    .then(results => app.ports.ipfsGotDirectoryList.send({ pathSegments, results }))
-    .catch(reportIpfsError)
-}
-
-
-async function ipfsResolveAddress(address) {
-  const resolvedResult = await ipfs.replaceDnsLinkInAddress(address)
-
-  if (resolvedResult.resolved) {
-    app.ports.ipfsGotResolvedAddress.send(resolvedResult)
-  } else {
-    await fs.loadWithoutList({ permissions: per })
-    await ipfsResolveAddress(address)
-  }
-}
-
-
-function ipfsSetup(_) {
-  ipfs.setup()
-    .then(app.ports.ipfsCompletedSetup.send)
-    .catch(reportIpfsError)
-}
-
-
-// User
-// ----
-
-function annihilateKeys(_) {
-  wn.keystore.clear()
-}
-
-
 
 // 🛠
 // ==
@@ -258,19 +194,7 @@ tocca({
 })
 
 
-function foundation() {
-  const stored = localStorage.getItem("fissionDrive.foundation")
-  return stored ? JSON.parse(stored) : null
-}
-
-
 function reportFileSystemError(err) {
   console.error(err)
   app.ports.fsGotError.send(err.message || err || "")
-}
-
-
-function reportIpfsError(err) {
-  console.error(err)
-  app.ports.ipfsGotError.send(err.message || err)
 }

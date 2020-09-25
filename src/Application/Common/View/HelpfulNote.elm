@@ -5,7 +5,7 @@ import Html.Events as E
 import Html.Extra as Html
 import Styling as S
 import Tailwind as T
-import Types exposing (Msg(..))
+import Radix exposing (Msg(..))
 
 
 

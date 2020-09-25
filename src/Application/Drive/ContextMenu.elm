@@ -8,8 +8,8 @@ import Drive.Sidebar as Sidebar
 import FeatherIcons
 import List.Ext as List
 import Maybe.Extra as Maybe
+import Radix exposing (..)
 import Routing
-import Types exposing (..)
 
 
 
@@ -18,14 +18,8 @@ import Types exposing (..)
 
 hamburger : Model -> ContextMenu Msg
 hamburger model =
-    (if Common.isAuthenticatedAndNotExploring model then
+    (if Maybe.isJust model.authenticated then
         yourBurgers
-
-     else if Maybe.isJust model.authenticated then
-        model.authenticated
-            |> Maybe.map .username
-            |> Maybe.withDefault ""
-            |> authenticatedOtherBurgers
 
      else
         unauthenticatedBurgers model
@@ -69,23 +63,6 @@ yourBurgers =
     ]
 
 
-authenticatedOtherBurgers username =
-    [ Item
-        { icon = FeatherIcons.hardDrive
-        , label = "My Drive"
-        , active = False
-
-        --
-        , href = Nothing
-        , msg =
-            []
-                |> Routing.Tree { root = username }
-                |> GoToRoute
-                |> Just
-        }
-    ]
-
-
 unauthenticatedBurgers model =
     [ Item
         { icon = FeatherIcons.user
@@ -101,17 +78,6 @@ unauthenticatedBurgers model =
 
 alwaysBurgers =
     [ Item
-        { icon = FeatherIcons.hash
-        , label = "Explore"
-        , active = False
-
-        --
-        , href = Nothing
-        , msg = Just GoExplore
-        }
-
-    --
-    , Item
         { icon = FeatherIcons.book
         , label = "Guide"
         , active = False

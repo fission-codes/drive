@@ -1,4 +1,4 @@
-module Types exposing (..)
+module Radix exposing (..)
 
 {-| Root-level types.
 -}
@@ -11,14 +11,12 @@ import Coordinates exposing (Coordinates)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Item exposing (Item)
 import Drive.Sidebar
-import Foundation exposing (Foundation)
+import FileSystem
 import Html.Events.Extra.Mouse as Mouse
-import Ipfs
 import Json.Decode as Json
 import Keyboard
 import Management
 import Modal exposing (Modal)
-import Mode exposing (Mode)
 import Notifications exposing (Notification)
 import Routing exposing (Route)
 import Time
@@ -35,7 +33,6 @@ import Url exposing (Url)
 type alias Flags =
     { authenticated : Maybe Authentication.Essentials
     , currentTime : Int
-    , foundation : Maybe Foundation
     , usersDomain : String
     , viewportSize : { height : Int, width : Int }
     }
@@ -53,13 +50,10 @@ type alias Model =
     , directoryList : Result String { floor : Int, items : List Item }
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
-    , exploreInput : Maybe String
-    , foundation : Maybe Foundation
     , helpfulNote : Maybe { faded : Bool, note : String }
-    , ipfs : Ipfs.Status
     , isFocused : Bool
+    , fileSystemStatus : FileSystem.Status
     , modal : Maybe (Modal Msg)
-    , mode : Mode
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
     , route : Route
@@ -75,7 +69,6 @@ type alias Model =
     -----------------------------------------
     , loadingDebouncer : Debouncer Msg
     , notificationsDebouncer : Debouncer Msg
-    , usernameAvailabilityDebouncer : Debouncer Msg
 
     -----------------------------------------
     -- Sidebar
@@ -100,7 +93,6 @@ type Msg
       -----------------------------------------
     | LoadingDebouncerMsg (Debouncer.Msg Msg)
     | NotificationsDebouncerMsg (Debouncer.Msg Msg)
-    | UsernameAvailabilityDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
       -- Drive
       -----------------------------------------
@@ -122,24 +114,10 @@ type Msg
     | ToggleExpandedSidebar
     | ToggleSidebarMode Drive.Sidebar.Mode
       -----------------------------------------
-      -- Explore
-      -----------------------------------------
-    | ChangeCid
-    | GoExplore
-    | GotInput String
-      -----------------------------------------
       -- File System
       -----------------------------------------
+    | GotFsDirectoryList Json.Value
     | GotFsError String
-      -----------------------------------------
-      -- Ipfs
-      -----------------------------------------
-    | GetDirectoryList
-    | GotDirectoryList Json.Value
-    | GotIpfsError String
-    | GotResolvedAddress Foundation
-    | ReplaceResolvedAddress { cid : String }
-    | SetupCompleted
       -----------------------------------------
       -- 🌏 Common
       -----------------------------------------

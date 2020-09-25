@@ -8,10 +8,9 @@ import Html exposing (Html)
 import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html
-import Mode
+import Radix exposing (..)
 import Styling as S
 import Tailwind as T
-import Types exposing (..)
 
 
 
@@ -36,14 +35,7 @@ notAuthenticated model =
         model
         [ Common.introLogo
         , Common.introText aboutFissionDrive
-
-        --
-        , case model.mode of
-            Mode.Default ->
-                createAccount model
-
-            Mode.PersonalDomain ->
-                Html.nothing
+        , createAccount model
         ]
 
 

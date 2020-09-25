@@ -1,10 +1,10 @@
 module Common exposing (..)
 
 import Authentication.Essentials
+import Radix exposing (Model)
 import Round
 import Routing
 import String.Ext as String
-import Types exposing (Model)
 import Url
 
 
@@ -14,38 +14,29 @@ import Url
 
 base : { presentable : Bool } -> Model -> String
 base { presentable } model =
-    case model.foundation of
-        Just foundation ->
-            model.route
-                |> Routing.treePathSegments
-                |> (::)
-                    (if presentable then
-                        foundation.unresolved
+    model.route
+        |> Routing.treePathSegments
+        -- TODO: Add domain/host
+        -- |> (::)
+        --     (if presentable then
+        --         foundation.unresolved
+        --
+        --      else
+        --         foundation.resolved
+        --     )
+        |> List.map Url.percentEncode
+        |> String.join "/"
+        |> (if presentable then
+                model.url
+                    |> (\u -> { u | path = "", query = Nothing, fragment = Nothing })
+                    |> Url.toString
+                    |> String.chopEnd "/"
+                    |> String.addSuffix "/#/"
+                    |> String.append
 
-                     else
-                        foundation.resolved
-                    )
-                |> List.map Url.percentEncode
-                |> String.join "/"
-                |> (if presentable then
-                        model.url
-                            |> (\u -> { u | path = "", query = Nothing, fragment = Nothing })
-                            |> Url.toString
-                            |> String.chopEnd "/"
-                            |> String.addSuffix "/#/"
-                            |> String.append
-
-                    else
-                        String.append "https://ipfs.runfission.com/ipfs/"
-                   )
-
-        Nothing ->
-            ""
-
-
-defaultDnsLink : String
-defaultDnsLink =
-    "junior-angular-tulip.fission.app"
+            else
+                String.append "https://ipfs.runfission.com/ipfs/"
+           )
 
 
 ifThenElse : Bool -> a -> a -> a
@@ -55,16 +46,6 @@ ifThenElse condition x y =
 
     else
         y
-
-
-isAuthenticatedAndNotExploring : Model -> Bool
-isAuthenticatedAndNotExploring model =
-    case ( model.authenticated, model.foundation ) of
-        ( Just { username }, Just { unresolved } ) ->
-            username == unresolved
-
-        _ ->
-            False
 
 
 sizeInWords : Int -> String

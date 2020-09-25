@@ -13,6 +13,14 @@ import * as wn from "./web_modules/webnative.js"
 let fs
 
 
+// 🚀
+
+
+export function setInstance(fileSystem) {
+  fs = fileSystem
+}
+
+
 
 // 🛠
 
@@ -103,18 +111,6 @@ export async function listDirectory({ pathSegments }) {
 
   // Default return
   return list
-}
-
-
-export async function load({ pathSegments, permissions, syncHook }) {
-  await loadWithoutList({ permissions, syncHook })
-  fs.syncHooks.push(syncHook)
-  return await listDirectory({ pathSegments })
-}
-
-
-export async function loadWithoutList({ permissions }) {
-  fs = await wn.loadFileSystem(permissions)
 }
 
 

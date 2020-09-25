@@ -1,7 +1,6 @@
 module Common.State exposing (..)
 
 import Browser.Navigation as Navigation
-import Common exposing (defaultDnsLink)
 import ContextMenu exposing (ContextMenu, Hook(..))
 import Coordinates exposing (Coordinates)
 import Debouncing
@@ -11,10 +10,10 @@ import Html.Events.Extra.Mouse as Mouse
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Ports
+import Radix exposing (..)
 import Return exposing (andThen, return)
 import Return.Extra as Return
 import Routing exposing (Route)
-import Types exposing (..)
 import Url
 
 
@@ -95,16 +94,12 @@ removeHelpfulNote model =
 
 reset : Route -> Manager
 reset route model =
-    [ Ports.annihilateKeys ()
-    , Ports.deauthenticate ()
-    , Ports.removeStoredFoundation ()
+    [ Ports.deauthenticate ()
     ]
         |> Cmd.batch
         |> return
             { model
                 | directoryList = Ok { floor = 1, items = [] }
-                , exploreInput = Just defaultDnsLink
-                , foundation = Nothing
                 , selectedPath = Nothing
             }
         |> andThen

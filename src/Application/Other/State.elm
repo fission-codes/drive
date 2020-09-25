@@ -3,16 +3,15 @@ module Other.State exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Drive.State as Drive
-import Fs.State as Fs
-import Ipfs
+import FileSystem
 import Keyboard
 import Maybe.Extra as Maybe
 import Ports
+import Radix exposing (..)
 import Return exposing (return)
 import Return.Extra as Return
 import Routing exposing (Route(..))
 import Time
-import Types exposing (..)
 import Url exposing (Url)
 
 
@@ -115,55 +114,31 @@ toggleLoadingOverlay { on } model =
 
 
 {-| This function is responsible for changing the application state based on the URL.
-
-Scenarios include:
-
-  - Listing a directory
-  - Resolving a new foundation
-
 -}
 urlChanged : Url -> Manager
 urlChanged url old =
     let
-        stillConnecting =
-            old.ipfs == Ipfs.Connecting
+        stillLoading =
+            old.fileSystemStatus == FileSystem.Loading
 
         route =
-            Routing.routeFromUrl old.mode url
-
-        newRoot =
-            Routing.treeRoot url route
-
-        oldRoot =
-            Routing.treeRoot url old.route
+            Routing.routeFromUrl (Maybe.isJust old.authenticated) url
 
         isTreeRoute =
-            Maybe.isJust newRoot
+            case route of
+                Tree _ ->
+                    True
 
-        needsResolve =
-            newRoot /= Maybe.map .unresolved old.foundation
-
-        isInitialListing =
-            oldRoot /= Maybe.map .unresolved old.foundation
+                _ ->
+                    False
     in
     { old
-        | ipfs =
-            if stillConnecting || not isTreeRoute || needsResolve then
-                old.ipfs
-
-            else if isInitialListing then
-                Ipfs.InitialListing
+        | fileSystemStatus =
+            if stillLoading || not isTreeRoute then
+                old.fileSystemStatus
 
             else
-                Ipfs.AdditionalListing
-
-        --
-        , foundation =
-            if needsResolve then
-                Nothing
-
-            else
-                old.foundation
+                FileSystem.AdditionalListing
 
         --
         , route = route
@@ -171,26 +146,13 @@ urlChanged url old =
         , url = url
     }
         |> (\new ->
-                if stillConnecting || not isTreeRoute then
+                if stillLoading || not isTreeRoute then
                     Return.singleton new
 
-                else if needsResolve then
-                    newRoot
-                        |> Maybe.map Ports.ipfsResolveAddress
-                        |> Maybe.withDefault Cmd.none
+                else if isTreeRoute && old.route /= new.route then
+                    { pathSegments = Routing.treePathSegments route }
+                        |> Ports.fsListDirectory
                         |> return new
-
-                else if new.route /= old.route && Maybe.isJust old.foundation then
-                    if Maybe.map .unresolved old.foundation == Maybe.map .username old.authenticated && isInitialListing then
-                        case old.foundation of
-                            Just f ->
-                                Fs.load f new
-
-                            Nothing ->
-                                Return.singleton new
-
-                    else
-                        Fs.listDirectory new
 
                 else
                     Return.singleton new
