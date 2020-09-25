@@ -6,6 +6,7 @@ import Coordinates exposing (Coordinates)
 import Debouncing
 import Dict
 import Drive.Item
+import FileSystem
 import Html.Events.Extra.Mouse as Mouse
 import List.Extra as List
 import Maybe.Extra as Maybe
@@ -99,7 +100,10 @@ reset route model =
         |> Cmd.batch
         |> return
             { model
-                | directoryList = Ok { floor = 1, items = [] }
+                | authenticated = Nothing
+                , directoryList = Ok { floor = 1, items = [] }
+                , fileSystemStatus = FileSystem.NotNeeded
+                , showLoadingOverlay = True
                 , selectedPath = Nothing
             }
         |> andThen

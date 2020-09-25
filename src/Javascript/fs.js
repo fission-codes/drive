@@ -83,7 +83,7 @@ export async function listDirectory({ pathSegments }) {
   // Adjust list
   const list = rawList.map(l => ({
     ...l,
-    cid: l.pointer,
+    cid: l.cid || l.pointer,
     path: `${path}/${l.name}`,
     size: l.size || 0,
     type: l.isFile ? "file" : "dir"

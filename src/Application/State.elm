@@ -37,6 +37,13 @@ init flags url navKey =
 
         route =
             Routing.routeFromUrl isAuthenticated url
+
+        fileSystemStatus =
+            if isAuthenticated then
+                FileSystem.InitialListing
+
+            else
+                FileSystem.NotNeeded
     in
     ( -----------------------------------------
       -- Model
@@ -46,7 +53,7 @@ init flags url navKey =
       , contextMenu = Nothing
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
-      , fileSystemStatus = FileSystem.InitialListing
+      , fileSystemStatus = fileSystemStatus
       , helpfulNote = Nothing
       , isFocused = False
       , modal = Nothing
