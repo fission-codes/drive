@@ -12,19 +12,43 @@ import Url
 -- 🛠
 
 
+{-| Prefix for public urls.
+
+    Examples:
+    - https://drive.fission.codes/#/icidasset/directory/goes/here
+    - https://ipfs.runfission.com/ipfs/CID/path/to/file
+
+-}
 base : { presentable : Bool } -> Model -> String
 base { presentable } model =
+    let
+        root =
+            Maybe.withDefault "" (Routing.treeRoot model.route)
+    in
     model.route
         |> Routing.treePathSegments
-        -- TODO: Add domain/host
-        -- |> (::)
-        --     (if presentable then
-        --         foundation.unresolved
-        --
-        --      else
-        --         foundation.resolved
-        --     )
-        |> List.map Url.percentEncode
+        |> (::)
+            (if presentable then
+                root
+                    |> filesDomain { usersDomain = model.usersDomain }
+                    |> String.chopEnd (".files." ++ model.usersDomain)
+
+             else
+                case model.fileSystemCid of
+                    Just cid ->
+                        cid
+
+                    Nothing ->
+                        filesDomain { usersDomain = model.usersDomain } root
+            )
+        |> List.map
+            (\part ->
+                if not presentable && part == "public" then
+                    "pretty"
+
+                else
+                    Url.percentEncode part
+            )
         |> String.join "/"
         |> (if presentable then
                 model.url
@@ -35,8 +59,40 @@ base { presentable } model =
                     |> String.append
 
             else
-                String.append "https://ipfs.runfission.com/ipfs/"
+                case model.fileSystemCid of
+                    Just _ ->
+                        String.append "https://ipfs.runfission.com/ipfs/"
+
+                    Nothing ->
+                        String.append "https://ipfs.runfission.com/ipns/"
            )
+
+
+filesDomain : { usersDomain : String } -> String -> String
+filesDomain { usersDomain } s =
+    if String.contains ".files." s then
+        s
+
+    else
+        case String.split "." s of
+            [] ->
+                s
+
+            [ x ] ->
+                x ++ ".files." ++ usersDomain
+
+            x :: y ->
+                x ++ ".files." ++ String.join "." y
+
+
+filesDomainFromTreeRoot : { usersDomain : String } -> Maybe String -> String
+filesDomainFromTreeRoot attributes maybeTreeRoot =
+    case maybeTreeRoot of
+        Just treeRoot ->
+            filesDomain attributes treeRoot
+
+        Nothing ->
+            ""
 
 
 ifThenElse : Bool -> a -> a -> a

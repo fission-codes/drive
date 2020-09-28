@@ -197,7 +197,7 @@ config					:= "default"
 
 
 @watch-css-sys:
-	watchexec -p --filter "tailwind" -e "js" -- just css-large
+	watchexec -p -w "./tailwind.js" -- just css-large
 
 
 @watch-elm:

@@ -37,6 +37,12 @@ gotDirectoryList json model =
                     (Json.field "results" Json.value)
                 |> Result.withDefault
                     json
+
+        maybeRootCid =
+            json
+                |> Json.decodeValue (Json.field "rootCid" Json.string)
+                |> Result.toMaybe
+                |> Maybe.orElse model.fileSystemCid
     in
     encodedDirList
         |> Json.decodeValue (Json.list FileSystem.itemDecoder)
@@ -78,6 +84,7 @@ gotDirectoryList json model =
 
                     --
                     , expandSidebar = Maybe.isJust selectedPath
+                    , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
                     , selectedPath = selectedPath
                     , showLoadingOverlay = False
@@ -94,4 +101,8 @@ gotDirectoryList json model =
 
 gotError : String -> Manager
 gotError error model =
-    Return.singleton { model | fileSystemStatus = FileSystem.Error error }
+    Return.singleton
+        { model
+            | fileSystemCid = Nothing
+            , fileSystemStatus = FileSystem.Error error
+        }

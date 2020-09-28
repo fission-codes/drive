@@ -65,6 +65,9 @@ isPreppingTree m =
         FileSystem.Operation _ ->
             False
 
+        FileSystem.Error _ ->
+            False
+
         _ ->
             True
 

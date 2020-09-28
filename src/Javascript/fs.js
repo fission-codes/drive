@@ -38,7 +38,6 @@ export async function add({ blobs, pathSegments }) {
   }, Promise.resolve(null))
 
   await fs.publish()
-
   return await listDirectory({ pathSegments })
 }
 
@@ -51,8 +50,27 @@ export async function createDirecory({ pathSegments }) {
 }
 
 
-export async function cid() {
-  return (await fs.publish()).toString()
+export async function downloadItem({ pathSegments }) {
+  const [ isIpfsPath, path ] =
+    pathSegments[1] === "pretty"
+      ? [ true, pathSegments.join("/") ]
+      : [ false, prefixedPath(pathSegments) ]
+
+  const blob = new Blob([
+    isIpfsPath
+      ? await wn.ipfs.catBuf(path)
+      : await fs.cat(path)
+  ])
+
+  const blobUrl = URL.createObjectURL(blob)
+
+  const a = document.createElement("a")
+  a.style = "display: none"
+  document.body.appendChild(a)
+  a.href = blobUrl
+  a.download = pathSegments[pathSegments.length - 1]
+  a.click()
+  URL.revokeObjectURL(blobUrl)
 }
 
 
@@ -65,23 +83,29 @@ export async function listDirectory({ pathSegments }) {
   const rawList = await (async _ => {
     try {
       return Object.values(await fs.ls(path))
+
     } catch (err) {
-      // We get an error if try to list a file.
-      // This a way around that issue.
-      const bananaSplit = path.split("/")
-      const dir = bananaSplit.slice(0, -1).join("/")
-      const file = bananaSplit[bananaSplit.length - 1]
+      if (err.message === "Can not `ls` a file") {
+        // We get an error if try to list a file.
+        // This a way around that issue.
+        const bananaSplit = path.split("/")
+        const dir = bananaSplit.slice(0, -1).join("/")
+        const file = bananaSplit[bananaSplit.length - 1]
 
-      path = dir
+        path = dir
 
-      return Object.values(await fs.ls(dir)).filter(l => {
-        return l.name === file
-      })
+        return Object.values(await fs.ls(dir)).filter(l => {
+          return l.name === file
+        })
+      } else {
+        throw err
+      }
+
     }
   })()
 
   // Adjust list
-  const list = rawList.map(l => ({
+  let results = rawList.map(l => ({
     ...l,
     cid: l.cid || l.pointer,
     path: `${path}/${l.name}`,
@@ -96,7 +120,7 @@ export async function listDirectory({ pathSegments }) {
       ? fs.root.links.public.cid
       : await fs.publicTree.put()
 
-    return [
+    results = [
       {
         name: "public",
         cid: publicCid,
@@ -105,12 +129,38 @@ export async function listDirectory({ pathSegments }) {
         type: "dir"
       },
 
-      ...list
+      ...results
     ]
   }
 
   // Default return
-  return list
+  return {
+    rootCid: await fs.root.put(),
+    results
+  }
+}
+
+
+/**
+ * More specifically, listing other people's public filesystems.
+ */
+export async function listPublicDirectory({ root, pathSegments }) {
+  const rootCid = await wn.dns.lookupDnsLink(root)
+
+  if (!rootCid) throw new Error(
+    "Couldn't find this filesystem"
+  )
+
+  const results = rootCid
+    ? Object
+        .values(await wn.ipfs.ls(`${rootCid}/pretty/${pathSegments.join("/")}`))
+        .map(a => ({ ...a, cid: a.cid.toString() }))
+    : []
+
+  return {
+    rootCid,
+    results
+  }
 }
 
 

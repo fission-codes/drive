@@ -6,6 +6,7 @@ Everything involving media.
 
 */
 
+import "./web_modules/it-to-stream.js"
 import "./web_modules/render-media.js"
 
 import * as fs from "./fs.js"
