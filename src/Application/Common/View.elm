@@ -121,7 +121,7 @@ loadingAnimationWithAttributes attributes { size } =
         |> FeatherIcons.withSize (toFloat size)
         |> wrapIcon
             (List.append
-                [ T.animation_spin
+                [ T.animate_spin
                 , T.block
                 ]
                 attributes

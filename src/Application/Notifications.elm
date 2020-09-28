@@ -52,7 +52,7 @@ loadingIndication text =
         |> FeatherIcons.toHtml []
         |> List.singleton
         |> Html.div
-            [ T.animation_spin
+            [ T.animate_spin
             , T.text_gray_900
             ]
         |> List.singleton

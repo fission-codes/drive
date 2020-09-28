@@ -7,7 +7,6 @@ export NODE_OPTIONS := "--no-warnings"
 build_dir				:= "./build"
 node_bin				:= "./node_modules/.bin"
 src_dir					:= "./src"
-sys_dir					:= "./system"
 
 config					:= "default"
 
@@ -88,13 +87,21 @@ config					:= "default"
 
 @css-large:
 	echo "⚙️  Compiling CSS & Elm Tailwind Module"
-	mkdir -p {{src_dir}}/Library
-	node {{sys_dir}}/Css/build.js
+	pnpx etc {{src_dir}}/Css/Application.css \
+	  --config tailwind.js \
+	  --elm-path {{src_dir}}/Library/Tailwind.elm \
+	  --output {{build_dir}}/application.css
 
 
 @css-small:
 	echo "⚙️  Compiling Minified CSS"
-	NODE_ENV=production node {{sys_dir}}/Css/build.js
+	NODE_ENV=production pnpx etc {{src_dir}}/Css/Application.css \
+	  --config tailwind.js \
+	  --output {{build_dir}}/application.css \
+		\
+	  --purge-content {{build_dir}}/**/*.html \
+	  --purge-content {{build_dir}}/application.js \
+		--purge-content {{src_dir}}/Javascript/loaders.js
 
 
 @elm-dev:
@@ -190,7 +197,7 @@ config					:= "default"
 
 
 @watch-css-sys:
-	watchexec -p -w {{sys_dir}}/Css -e "js" -- just css-large
+	watchexec -p --filter "tailwind" -e "js" -- just css-large
 
 
 @watch-elm:
