@@ -10,11 +10,12 @@ onTap msg =
     Html.Events.on "tap"
         (Decode.andThen
             (\button ->
-                if button /= 2 then
-                    Decode.succeed msg
+                case button of
+                    Just 2 ->
+                        Decode.fail "Ignore right click"
 
-                else
-                    Decode.fail "Ignore right click"
+                    _ ->
+                        Decode.succeed msg
             )
-            (Decode.at [ "originalEvent", "button" ] Decode.int)
+            (Decode.maybe (Decode.at [ "originalEvent", "button" ] Decode.int))
         )
