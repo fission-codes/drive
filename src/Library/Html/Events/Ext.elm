@@ -7,7 +7,8 @@ import Json.Decode as Decode
 
 onTap : msg -> Html.Attribute msg
 onTap msg =
-    Html.Events.on "tap"
+    Html.Events.custom
+        "click"
         (Decode.andThen
             (\button ->
                 case button of
@@ -15,7 +16,14 @@ onTap msg =
                         Decode.fail "Ignore right click"
 
                     _ ->
-                        Decode.succeed msg
+                        Decode.succeed
+                            { message = msg
+                            , stopPropagation = True
+                            , preventDefault = True
+                            }
             )
-            (Decode.maybe (Decode.at [ "originalEvent", "button" ] Decode.int))
+            (Decode.int
+                |> Decode.at [ "originalEvent", "button" ]
+                |> Decode.maybe
+            )
         )
