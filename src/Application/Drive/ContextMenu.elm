@@ -124,13 +124,23 @@ alwaysBurgers =
 
 item : ContextMenu.Hook -> { isGroundFloor : Bool } -> Drive.Item.Item -> ContextMenu Msg
 item hook { isGroundFloor } context =
+    let
+        isPublicPath =
+            String.startsWith "public/" context.path
+                || (context.path
+                        |> String.split "/"
+                        |> List.drop 1
+                        |> List.head
+                        |> (==) (Just "pretty")
+                   )
+    in
     ContextMenu.build
         hook
         (case context.kind of
             Directory ->
                 [ driveLink context
                 ]
-                    |> (if String.startsWith "public/" context.path then
+                    |> (if isPublicPath then
                             List.add [ copyCid context ]
 
                         else
@@ -150,13 +160,13 @@ item hook { isGroundFloor } context =
             _ ->
                 [ driveLink context
                 ]
-                    |> (if String.startsWith "public/" context.path then
+                    |> (if isPublicPath then
                             List.add [ contentLink context ]
 
                         else
                             identity
                        )
-                    |> (if String.startsWith "public/" context.path then
+                    |> (if isPublicPath then
                             List.add [ copyCid context ]
 
                         else

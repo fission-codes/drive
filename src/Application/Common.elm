@@ -27,6 +27,19 @@ base { presentable } model =
     in
     model.route
         |> Routing.treePathSegments
+        |> (\segments ->
+                case ( presentable, segments ) of
+                    ( False, first :: rest ) ->
+                        if first == "public" then
+                            "pretty" :: rest
+
+                        else
+                            "pretty" :: first :: rest
+
+                    _ ->
+                        segments
+           )
+        |> List.map Url.percentEncode
         |> (::)
             (if presentable then
                 root
@@ -40,14 +53,6 @@ base { presentable } model =
 
                     Nothing ->
                         filesDomain { usersDomain = model.usersDomain } root
-            )
-        |> List.map
-            (\part ->
-                if not presentable && part == "public" then
-                    "pretty"
-
-                else
-                    Url.percentEncode part
             )
         |> String.join "/"
         |> (if presentable then
