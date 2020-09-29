@@ -151,11 +151,21 @@ export async function listPublicDirectory({ root, pathSegments }) {
     "Couldn't find this filesystem"
   )
 
-  const results = rootCid
-    ? Object
-        .values(await wn.ipfs.ls(`${rootCid}/pretty/${pathSegments.join("/")}`))
+  const ipfs = await wn.ipfs.get()
+  const path = `${rootCid}/pretty/${pathSegments.join("/")}`
+  const stats = await ipfs.files.stat(`/ipfs/${path}`)
+  const isFile = stats.type === "file"
+
+  const results = isFile
+    ? [{
+        ...stats,
+        cid: stats.cid.toString(),
+        name: pathSegments[pathSegments.length - 1],
+        path
+      }]
+    : Object
+        .values(await wn.ipfs.ls(path))
         .map(a => ({ ...a, cid: a.cid.toString() }))
-    : []
 
   return {
     rootCid,
