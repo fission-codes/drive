@@ -63,7 +63,7 @@ imageFileExtensions =
 
 
 textFileExtensions =
-    [ "doc", "json", "txt", "toml", "yaml" ]
+    [ "doc", "json", "pdf", "txt", "toml", "yaml" ]
 
 
 videoFileExtensions =
