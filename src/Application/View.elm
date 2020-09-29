@@ -137,7 +137,7 @@ rootAttributes m =
 treeView : Model -> Html Msg
 treeView m =
     if Common.isPreppingTree m then
-        [ Html.text "Just a moment, loading your file system." ]
+        [ Html.text "Just a moment, loading the file system." ]
             |> Html.div [ T.italic, T.mt_3 ]
             |> List.singleton
             |> Common.loadingScreen
