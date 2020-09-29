@@ -2,6 +2,7 @@ module Other.State exposing (..)
 
 import Browser
 import Browser.Navigation as Navigation
+import Common
 import Drive.State as Drive
 import FileSystem
 import Keyboard
@@ -122,20 +123,31 @@ urlChanged url old =
             old.fileSystemStatus == FileSystem.Loading
 
         route =
-            Routing.routeFromUrl (Maybe.isJust old.authenticated) url
+            Routing.routeFromUrl old.authenticated url
 
         isTreeRoute =
             case route of
-                Tree _ ->
+                Tree _ _ ->
                     True
 
                 _ ->
                     False
+
+        ( oldRoot, newRoot ) =
+            ( Routing.treeRoot old.route
+            , Routing.treeRoot route
+            )
+
+        isDifferentRoot =
+            Maybe.isJust oldRoot && Maybe.isJust newRoot && oldRoot /= newRoot
     in
     { old
         | fileSystemStatus =
             if stillLoading || not isTreeRoute then
                 old.fileSystemStatus
+
+            else if isDifferentRoot then
+                FileSystem.InitialListing
 
             else
                 FileSystem.AdditionalListing
@@ -150,9 +162,21 @@ urlChanged url old =
                     Return.singleton new
 
                 else if isTreeRoute && old.route /= new.route then
-                    { pathSegments = Routing.treePathSegments route }
-                        |> Ports.fsListDirectory
-                        |> return new
+                    if Routing.isAuthenticatedTree new.authenticated new.route then
+                        { pathSegments = Routing.treePathSegments new.route }
+                            |> Ports.fsListDirectory
+                            |> return new
+
+                    else
+                        { pathSegments =
+                            Routing.treePathSegments new.route
+                        , root =
+                            Common.filesDomainFromTreeRoot
+                                { usersDomain = new.usersDomain }
+                                newRoot
+                        }
+                            |> Ports.fsListPublicDirectory
+                            |> return new
 
                 else
                     Return.singleton new

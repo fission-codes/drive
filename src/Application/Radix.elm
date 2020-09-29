@@ -52,6 +52,7 @@ type alias Model =
     , dragndropMode : Bool
     , helpfulNote : Maybe { faded : Bool, note : String }
     , isFocused : Bool
+    , fileSystemCid : Maybe String
     , fileSystemStatus : FileSystem.Status
     , modal : Maybe (Modal Msg)
     , navKey : Navigation.Key

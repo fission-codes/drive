@@ -18,11 +18,16 @@ import Routing
 
 hamburger : Model -> ContextMenu Msg
 hamburger model =
-    (if Maybe.isJust model.authenticated then
+    (if Routing.isAuthenticatedTree model.authenticated model.route then
         yourBurgers
 
      else
-        unauthenticatedBurgers model
+        case model.authenticated of
+            Just a ->
+                distractedBurgers a.username
+
+            Nothing ->
+                unauthenticatedBurgers
     )
         |> List.add ([ Divider ] ++ alwaysBurgers)
         |> ContextMenu.build TopRight
@@ -63,7 +68,20 @@ yourBurgers =
     ]
 
 
-unauthenticatedBurgers model =
+distractedBurgers username =
+    [ Item
+        { icon = FeatherIcons.hardDrive
+        , label = "My Drive"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg = Just (GoToRoute <| Routing.Tree { root = username } [])
+        }
+    ]
+
+
+unauthenticatedBurgers =
     [ Item
         { icon = FeatherIcons.user
         , label = "Sign in"
@@ -131,8 +149,13 @@ item hook { isGroundFloor } context =
 
             _ ->
                 [ driveLink context
-                , contentLink context
                 ]
+                    |> (if String.startsWith "public/" context.path then
+                            List.add [ contentLink context ]
+
+                        else
+                            identity
+                       )
                     |> (if String.startsWith "public/" context.path then
                             List.add [ copyCid context ]
 

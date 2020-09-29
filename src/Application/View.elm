@@ -51,7 +51,7 @@ body m =
         -----------------------------------------
         -- Tree
         -----------------------------------------
-        ( _, Routing.Tree _ ) ->
+        ( _, Routing.Tree _ _ ) ->
             treeView m
 
     -----------------------------------------
@@ -103,19 +103,18 @@ body m =
     ]
         |> Html.node
             "fs-drop-zone"
-            (case m.route of
-                Routing.Tree _ ->
-                    { onOver = \_ -> ShowHelpfulNote "Drop to add it to your drive"
-                    , onDrop = \_ -> HideHelpfulNote
-                    , onEnter = Nothing
-                    , onLeave = Nothing
-                    }
-                        |> Drag.onFileFromOS
-                        |> List.append [ E.on "dropBlobs" Common.blobUrlsDecoder ]
-                        |> List.append (rootAttributes m)
+            (if Routing.isAuthenticatedTree m.authenticated m.route then
+                { onOver = \_ -> ShowHelpfulNote "Drop to add it to your drive"
+                , onDrop = \_ -> HideHelpfulNote
+                , onEnter = Nothing
+                , onLeave = Nothing
+                }
+                    |> Drag.onFileFromOS
+                    |> List.append [ E.on "dropBlobs" Common.blobUrlsDecoder ]
+                    |> List.append (rootAttributes m)
 
-                _ ->
-                    rootAttributes m
+             else
+                rootAttributes m
             )
         |> List.singleton
 

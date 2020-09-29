@@ -1,5 +1,6 @@
 module Routing exposing (..)
 
+import Authentication.Essentials as Authentication
 import String.Ext as String
 import Url exposing (Url)
 import Url.Parser as Url exposing (..)
@@ -11,53 +12,49 @@ import Url.Parser as Url exposing (..)
 
 type Route
     = Undecided
-    | Tree (List String)
+    | Tree { root : String } (List String)
 
 
 
 -- 🛠
 
 
-routeFromUrl : Bool -> Url -> Route
-routeFromUrl isAuthenticated url =
+routeFromUrl : Maybe Authentication.Essentials -> Url -> Route
+routeFromUrl maybeAuth url =
     case basePath url of
         "" ->
-            if isAuthenticated then
-                Tree []
+            case maybeAuth of
+                Just a ->
+                    Tree { root = a.username } []
 
-            else
-                Undecided
+                Nothing ->
+                    Undecided
 
         -----------------------------------------
         -- Tree
         -----------------------------------------
         path ->
-            path
-                |> String.chop "/"
-                |> String.split "/"
-                |> Tree
+            case String.split "/" (String.chop "/" path) of
+                root :: rest ->
+                    Tree { root = root } rest
+
+                _ ->
+                    Undecided
 
 
 adjustUrl : Url -> Route -> Url
 adjustUrl url route =
+    { url | fragment = routeFragment route }
+
+
+routeFragment : Route -> Maybe String
+routeFragment route =
     case route of
         Undecided ->
-            { url | fragment = Nothing }
+            Nothing
 
-        Tree pathSegments ->
-            { url | fragment = Just ("/" ++ String.join "/" pathSegments) }
-
-
-routeUrl : Route -> Url -> String
-routeUrl route originalUrl =
-    route
-        |> adjustUrl originalUrl
-        |> Url.toString
-
-
-routeUrlF : Url -> Route -> String
-routeUrlF originalUrl route =
-    routeUrl route originalUrl
+        Tree { root } pathSegments ->
+            Just ("/" ++ String.join "/" (root :: pathSegments))
 
 
 
@@ -89,7 +86,7 @@ treePath =
 treePathSegments : Route -> List String
 treePathSegments route =
     case route of
-        Tree pathSegments ->
+        Tree _ pathSegments ->
             pathSegments
 
         _ ->
@@ -99,8 +96,8 @@ treePathSegments route =
 addTreePathSegments : Route -> List String -> Route
 addTreePathSegments route segments =
     case route of
-        Tree pathSegments ->
-            Tree (List.append pathSegments segments)
+        Tree attributes pathSegments ->
+            Tree attributes (List.append pathSegments segments)
 
         _ ->
             route
@@ -109,8 +106,28 @@ addTreePathSegments route segments =
 replaceTreePathSegments : Route -> List String -> Route
 replaceTreePathSegments route segments =
     case route of
-        Tree _ ->
-            Tree segments
+        Tree attributes _ ->
+            Tree attributes segments
 
         _ ->
             route
+
+
+treeRoot : Route -> Maybe String
+treeRoot route =
+    case route of
+        Tree { root } _ ->
+            Just root
+
+        _ ->
+            Nothing
+
+
+isAuthenticatedTree : Maybe Authentication.Essentials -> Route -> Bool
+isAuthenticatedTree auth route =
+    case route of
+        Tree { root } _ ->
+            (String.split "." root |> List.head) == Maybe.map .username auth
+
+        _ ->
+            False

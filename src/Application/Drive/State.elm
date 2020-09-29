@@ -181,8 +181,8 @@ digDeeperUsingSelection model =
 downloadItem : Item -> Manager
 downloadItem item model =
     item
-        |> Item.publicUrl (Common.base { presentable = False } model)
-        |> File.Download.url
+        |> Item.pathProperties
+        |> Ports.fsDownloadItem
         |> return model
 
 

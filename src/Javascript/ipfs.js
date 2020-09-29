@@ -10,12 +10,18 @@ import "./web_modules/it-to-stream.js"
 import * as wn from "./web_modules/webnative.js"
 
 
+let ipfs
+
+
 // 🛠
 
 
-export async function stream(address, opts) {
-  const ipfs = await wn.ipfs.get()
+export function setInstance(i) {
+  ipfs = i
+}
 
+
+export function stream(address, opts) {
   return ipfs.catReadableStream
     ? ipfs.catReadableStream(address, opts)
     : ipfs.files.catReadableStream

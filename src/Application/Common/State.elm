@@ -66,7 +66,7 @@ potentiallyRenderMedia model =
                 { id = item.id
                 , name = item.name
                 , path = item.path
-                , useFS = Maybe.isJust model.authenticated
+                , useFS = Routing.isAuthenticatedTree model.authenticated model.route
                 }
                     |> Ports.renderMedia
                     |> return model

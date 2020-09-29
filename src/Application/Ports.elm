@@ -37,7 +37,13 @@ port fsAddContent :
 port fsCreateDirectory : { pathSegments : List String } -> Cmd msg
 
 
+port fsDownloadItem : { pathSegments : List String } -> Cmd msg
+
+
 port fsListDirectory : { pathSegments : List String } -> Cmd msg
+
+
+port fsListPublicDirectory : { pathSegments : List String, root : String } -> Cmd msg
 
 
 port fsRemoveItem : { pathSegments : List String } -> Cmd msg

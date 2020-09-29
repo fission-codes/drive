@@ -9,6 +9,7 @@ import Drive.Item exposing (Item, Kind(..))
 import Drive.Sidebar as Sidebar
 import Drive.View.Sidebar as Sidebar
 import FeatherIcons
+import FileSystem
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
@@ -300,9 +301,9 @@ rootPathPart : Model -> List String -> Html Msg
 rootPathPart model segments =
     let
         root =
-            case model.authenticated of
-                Just a ->
-                    a.username
+            case Routing.treeRoot model.route of
+                Just r ->
+                    r
 
                 Nothing ->
                     ""
@@ -396,8 +397,14 @@ breadcrumbIcon icon =
 
 primary : Model -> Html Msg
 primary model =
-    case model.directoryList of
-        Ok directoryList ->
+    case ( model.fileSystemStatus, model.directoryList ) of
+        ( FileSystem.Error err, _ ) ->
+            errorView model.route err
+
+        ( _, Err err ) ->
+            errorView model.route err
+
+        ( _, Ok directoryList ) ->
             mainLayout
                 model
                 (case directoryList.items of
@@ -411,19 +418,6 @@ primary model =
                     _ ->
                         contentAvailable model directoryList
                 )
-
-        Err err ->
-            Html.div
-                [ T.flex
-                , T.flex_1
-                , T.items_center
-                , T.justify_center
-                , T.p_5
-                ]
-                [ Html.div
-                    [ T.max_w_md ]
-                    [ Html.text err ]
-                ]
 
 
 mainLayout : Model -> Html Msg -> Html Msg
@@ -452,6 +446,68 @@ mainLayout model leftSide =
             -- Right
             -----------------------------------------
             , Sidebar.view model
+            ]
+        ]
+
+
+errorView : Routing.Route -> String -> Html Msg
+errorView route err =
+    Html.div
+        [ T.flex_auto
+        , T.flex_col
+        , T.items_center
+        , T.justify_center
+        , T.leading_snug
+        , T.text_center
+        , T.text_gray_300
+
+        --
+        , T.md__flex
+
+        -- Dark mode
+        ------------
+        , T.dark__text_gray_400
+        ]
+        [ FeatherIcons.zapOff
+            |> FeatherIcons.withSize 88
+            |> Common.wrapIcon [ T.opacity_30 ]
+
+        --
+        , Html.div
+            [ T.max_w_md
+            , T.mt_5
+            , T.text_lg
+            ]
+            [ case err of
+                "file does not exist" ->
+                    Html.text "Couldn't find this item"
+
+                "Path does not exist" ->
+                    Html.text "Couldn't find this item"
+
+                _ ->
+                    Html.text err
+            ]
+
+        --
+        , S.buttonLink
+            [ if String.contains "filesystem" err then
+                A.href "#/"
+
+              else
+                []
+                    |> Routing.replaceTreePathSegments route
+                    |> Routing.routeFragment
+                    |> Maybe.withDefault "/"
+                    |> String.append "#"
+                    |> A.href
+
+            --
+            , T.bg_purple
+            , T.mt_5
+            , T.text_tiny
+            ]
+            [ Html.text "Get me out of here"
             ]
         ]
 

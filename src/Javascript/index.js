@@ -16,6 +16,7 @@ import "./custom.js"
 
 import * as analytics from "./analytics.js"
 import * as fs from "./fs.js"
+import * as ipfs from "./ipfs.js"
 import * as media from "./media.js"
 import { throttle } from "./common.js"
 import { setup } from "./sdk.js"
@@ -62,11 +63,12 @@ let app
 
 
 wn.initialise({ permissions: PERMISSIONS })
-  .then(state => {
+  .then(async state => {
   const { authenticated, newUser, permissions, throughLobby, username } = state
 
   // File system
   fs.setInstance(state.fs)
+  ipfs.setInstance(await wn.ipfs.get())
 
   // Initialize app
   app = Elm.Main.init({
@@ -82,7 +84,9 @@ wn.initialise({ permissions: PERMISSIONS })
   // Ports
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.deauthenticate.subscribe(deauthenticate)
-  app.ports.redirectToLobby.subscribe(() => wn.redirectToLobby(permissions))
+  app.ports.redirectToLobby.subscribe(() => {
+    wn.redirectToLobby(permissions, location.origin + location.pathname)
+  })
   app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
 
@@ -90,8 +94,11 @@ wn.initialise({ permissions: PERMISSIONS })
   exe("fsAddContent", "add")
   exe("fsCreateDirectory", "createDirecory", { listParent: true })
   exe("fsListDirectory", "listDirectory")
+  exe("fsListPublicDirectory", "listPublicDirectory")
   exe("fsMoveItem", "moveItem", { listParent: true })
   exe("fsRemoveItem", "removeItem", { listParent: true })
+
+  app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
   // Other things
   analytics.setupOnFissionCodes()
@@ -164,16 +171,16 @@ function showNotification(text) {
 function exe(port, method, options = {}) {
   app.ports[port].subscribe(async a => {
     let args = { pathSegments: [], ...a, ...options }
-    let results
 
     try {
-      results = await fs[method](args)
+      const { results, rootCid } = await fs[method](args)
 
       app.ports.fsGotDirectoryList.send({
         pathSegments: fs.removePrivatePrefix(
           args.pathSegments.slice(0, options.listParent ? -1 : undefined)
         ),
-        results
+        results,
+        rootCid
       })
 
     } catch (e) {
@@ -195,6 +202,7 @@ tocca({
 
 
 function reportFileSystemError(err) {
+  const msg = err.message || err || ""
   console.error(err)
-  app.ports.fsGotError.send(err.message || err || "")
+  app.ports.fsGotError.send(msg)
 }

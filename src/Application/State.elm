@@ -32,18 +32,22 @@ import Url exposing (Url)
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        isAuthenticated =
-            Maybe.isJust flags.authenticated
-
         route =
-            Routing.routeFromUrl isAuthenticated url
+            Routing.routeFromUrl flags.authenticated url
+
+        maybeTreeRoot =
+            Routing.treeRoot route
 
         fileSystemStatus =
-            if isAuthenticated then
+            if Maybe.isJust maybeTreeRoot then
                 FileSystem.InitialListing
 
             else
                 FileSystem.NotNeeded
+
+        needsRedirect =
+            (Routing.isAuthenticatedTree flags.authenticated route == False)
+                && (List.head (Routing.treePathSegments route) == Just "public")
     in
     ( -----------------------------------------
       -- Model
@@ -53,6 +57,7 @@ init flags url navKey =
       , contextMenu = Nothing
       , directoryList = Ok { floor = 1, items = [] }
       , dragndropMode = False
+      , fileSystemCid = Nothing
       , fileSystemStatus = fileSystemStatus
       , helpfulNote = Nothing
       , isFocused = False
@@ -85,12 +90,32 @@ init flags url navKey =
     , Cmd.batch
         [ Task.perform SetCurrentTime Time.now
 
-        -- Load directory list if authenticated
-        , if isAuthenticated then
+        -- FileSystem
+        -------------
+        , if needsRedirect then
             route
                 |> Routing.treePathSegments
-                |> (\seg -> { pathSegments = seg })
-                |> Ports.fsListDirectory
+                |> List.drop 1
+                |> Routing.replaceTreePathSegments route
+                |> Routing.adjustUrl url
+                |> Url.toString
+                |> Navigation.pushUrl navKey
+
+          else if Routing.isAuthenticatedTree flags.authenticated route then
+            -- List entire file system for the authenticated user
+            Ports.fsListDirectory
+                { pathSegments = Routing.treePathSegments route }
+
+          else if Maybe.isJust maybeTreeRoot then
+            -- List a public filesystem
+            Ports.fsListPublicDirectory
+                { pathSegments =
+                    Routing.treePathSegments route
+                , root =
+                    Common.filesDomainFromTreeRoot
+                        { usersDomain = flags.usersDomain }
+                        maybeTreeRoot
+                }
 
           else
             Cmd.none

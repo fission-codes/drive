@@ -116,24 +116,26 @@ right model =
             -----------------------------------------
             -- Tree
             -----------------------------------------
-            Routing.Tree _ ->
+            Routing.Tree _ _ ->
                 treeActions model
         )
 
 
 treeActions model =
-    [ if Maybe.isNothing model.authenticated then
-        signIn model
-
-      else
-        Html.nothing
-
-    --
-    , if Maybe.isJust model.authenticated then
+    let
+        isAuthenticatedTree =
+            Routing.isAuthenticatedTree model.authenticated model.route
+    in
+    [ if isAuthenticatedTree then
         addCreateAction model
 
       else
-        Html.nothing
+        case model.authenticated of
+            Just a ->
+                myDrive a.username
+
+            Nothing ->
+                signIn
 
     --
     , action
@@ -177,7 +179,15 @@ addCreateAction model =
         [ Html.text "Add / Create" ]
 
 
-signIn model =
+myDrive username =
+    action
+        Button
+        [ E.onClick (GoToRoute <| Routing.Tree { root = username } []) ]
+        FeatherIcons.hardDrive
+        [ Html.text "My Drive" ]
+
+
+signIn =
     action
         Button
         [ E.onClick RedirectToLobby ]
