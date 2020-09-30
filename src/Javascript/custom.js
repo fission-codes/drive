@@ -15,16 +15,19 @@ Custom Elements.
 
 
 function reducePromises(fn, list) {
-  return list.reduce(
-    (p, x) => p.then(a => fn(x).then(b => [ ...a, ...b ])),
-    Promise.resolve([])
-  )
+  return Promise
+    .all(list.map(fn))
+    .then(a => a.flat())
 }
 
 
 function handleEntry(entry) {
   return new Promise(resolve => {
-    if (entry.isDirectory) {
+    if (!entry) {
+      console.error("Dropzone issue, got `null` entry")
+      resolve([])
+
+    } else if (entry.isDirectory) {
       entry.createReader().readEntries(entries => {
         // Handle directories recursively
         reducePromises(handleEntry, entries).then(resolve)
@@ -32,7 +35,7 @@ function handleEntry(entry) {
 
     } else {
       entry.file(file => {
-        resolve([ handleFile(file) ])
+        resolve([ handleFile(file, entry.fullPath) ])
       })
 
     }
@@ -40,9 +43,9 @@ function handleEntry(entry) {
 }
 
 
-function handleFile(file) {
+function handleFile(file, path) {
   return {
-    path: file.webkitRelativePath || file.name,
+    path: path.replace(/^\//, "") || file.webkitRelativePath || file.name,
     url: URL.createObjectURL(file)
   }
 }
@@ -86,16 +89,26 @@ class DropZone extends HTMLElement {
     super()
 
     this.addEventListener("drop", event => {
-      if (!event.dataTransfer.items) {
+      if (!event.dataTransfer.items || !event.dataTransfer.files) {
         console.error("Browser doesn't support this method of uploading files.")
         return
       }
 
+      event.preventDefault()
+
+      const useItems = !!event.dataTransfer.items.length
+      const useFiles = !!event.dataTransfer.files.length
+
       reducePromises(
         item => handleEntry(item.webkitGetAsEntry()),
-        Array.from(event.dataTransfer.items)
+        Array.from(
+          useItems
+          ? event.dataTransfer.items
+          : event.dataTransfer.files
+        )
 
       ).then(blobs => {
+        console.log(blobs)
         const blobsEvent = new CustomEvent("dropBlobs", { detail: { blobs } })
         this.dispatchEvent(blobsEvent)
 
