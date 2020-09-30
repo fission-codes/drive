@@ -293,7 +293,16 @@ select item model =
     Common.potentiallyRenderMedia
         { model
             | selectedPath = Just item.path
-            , sidebarMode = Drive.Sidebar.DetailsForSelection
+            , sidebarMode =
+                case Debug.log "kind" item.kind of
+                    Code ->
+                        Drive.Sidebar.EditPlaintext
+
+                    Text ->
+                        Drive.Sidebar.EditPlaintext
+
+                    _ ->
+                        Drive.Sidebar.DetailsForSelection
         }
 
 

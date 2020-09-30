@@ -74,6 +74,9 @@ view_ model =
             DetailsForSelection ->
                 T.overflow_y_hidden
 
+            EditPlaintext ->
+                T.overflow_y_hidden
+
         -- Dark mode
         ------------
         , T.dark__bg_darkness_below
@@ -84,7 +87,84 @@ view_ model =
 
             DetailsForSelection ->
                 detailsForSelection model
+
+            EditPlaintext ->
+                editPlaintext model
         ]
+
+
+editPlaintext : Model -> Html Msg
+editPlaintext model =
+    Html.div
+        [ T.flex
+        , T.flex_col
+        , T.items_stretch
+        , T.h_full
+        , T.bg_gray_700
+        ]
+        [ Drive.sidebarControls
+            { above = False
+            , expanded = model.expandSidebar
+            }
+
+        --
+        , Html.textarea
+            [ T.w_full
+            , T.h_full
+            , T.bg_transparent
+            , T.bg_gray_900
+            , T.flex_grow
+            , T.p_8
+            , T.font_mono
+            , T.text_gray_100
+            , T.resize_none
+            ]
+            [ Html.text testText ]
+        , Html.div
+            [ T.flex
+            , T.items_center
+            , T.justify_end
+            , T.mt_px
+            , T.px_2
+            , T.pb_px
+            , T.relative
+            , T.h_12
+            ]
+            [ Html.div
+                [ T.absolute
+                , T.border_t
+                , T.border_gray_300
+                , T.left_0
+                , T.opacity_10
+                , T.top_0
+                , T.right_0
+                ]
+                []
+            ]
+        ]
+
+
+testText =
+    """<!Doctype html>
+<html>
+<head>
+    <title>My Fission Page</title>
+</head>
+<body>
+    <h1>Hi! This is my personal Webpage.</h1>
+    <p>
+        Feel free to scroll around.
+    </p>
+    <h2>My reading list</h2>
+    <ul>
+        <li>The power of Habit</li>
+        <li>Sustainable Architecture</li>
+        <li>Thinking fast and slow</li>
+        <li>Understanding Central Banks</li>
+        <li>Indistractable</li>
+    </ul>
+</body>
+</html>"""
 
 
 

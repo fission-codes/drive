@@ -6,6 +6,7 @@ module Drive.Sidebar exposing (..)
 type Mode
     = AddOrCreate
     | DetailsForSelection
+    | EditPlaintext
 
 
 
