@@ -75,7 +75,9 @@ export async function downloadItem({ pathSegments }) {
 
 
 export async function listDirectory({ pathSegments }) {
+  const ipfs = await wn.ipfs.get()
   const isListingRoot = pathSegments.length === 0
+  const rootCid = await fs.root.put()
 
   let path = prefixedPath(pathSegments)
 
@@ -105,13 +107,28 @@ export async function listDirectory({ pathSegments }) {
   })()
 
   // Adjust list
-  let results = rawList.map(l => ({
-    ...l,
-    cid: l.cid || l.pointer,
-    path: `${path}/${l.name}`,
-    size: l.size || 0,
-    type: l.isFile ? "file" : "dir"
-  }))
+  const isListingPublic = path.startsWith("public/") || path === "public"
+
+  let results = await Promise.all(
+    rawList.map(async l => ({
+      ...l,
+
+      cid: isListingPublic
+        ? (await ipfs.files.stat(
+            "/ipfs/"
+              + rootCid
+              + "/pretty/"
+              + path.replace(/^public\/?/, "").replace(/\/$/, "")
+              + "/"
+              + l.name
+          )).cid.toString()
+        : l.cid || l.pointer,
+
+      path: `${path}/${l.name}`,
+      size: l.size || 0,
+      type: l.isFile ? "file" : "dir"
+    }))
+  )
 
   // Add a fictional "public" directory when listing the "root"
   // (ie. the "root" = "/private")
@@ -135,7 +152,7 @@ export async function listDirectory({ pathSegments }) {
 
   // Default return
   return {
-    rootCid: await fs.root.put(),
+    rootCid,
     results
   }
 }
@@ -152,7 +169,7 @@ export async function listPublicDirectory({ root, pathSegments }) {
   )
 
   const ipfs = await wn.ipfs.get()
-  const path = `${rootCid}/pretty/${pathSegments.join("/")}`
+  const path = prettyPath(rootCid, pathSegments)
   const stats = await ipfs.files.stat(`/ipfs/${path}`)
   const isFile = stats.type === "file"
 
@@ -230,6 +247,11 @@ export function prefixedPath(pathSegments) {
   return isPrefixSegment( pathSegments[0] )
     ? pathSegments.join("/")
     : [ "private", ...pathSegments ].join("/")
+}
+
+
+export function prettyPath(rootCid, pathSegments) {
+  return `${rootCid}/pretty/${pathSegments.join("/")}`
 }
 
 

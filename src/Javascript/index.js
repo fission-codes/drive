@@ -70,6 +70,8 @@ wn.initialise({ permissions: PERMISSIONS })
   fs.setInstance(state.fs)
   ipfs.setInstance(await wn.ipfs.get())
 
+  window.fs = state.fs
+
   // Initialize app
   app = Elm.Main.init({
     node: document.getElementById("elm"),
