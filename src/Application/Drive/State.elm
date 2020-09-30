@@ -126,14 +126,12 @@ digDeeper { directoryName } model =
             Routing.treePathSegments model.route
 
         pathSegments =
-            -- TODO: Not sure why this is here?
-            -- case model.ipfs of
-            --     Ipfs.AdditionalListing ->
-            --         Maybe.withDefault [] (List.init currentPathSegments)
-            --
-            --     _ ->
-            --         currentPathSegments
-            currentPathSegments
+            case model.fileSystemStatus of
+                FileSystem.AdditionalListing ->
+                    Maybe.withDefault [] (List.init currentPathSegments)
+
+                _ ->
+                    currentPathSegments
 
         updatedItems =
             List.map
