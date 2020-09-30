@@ -45,7 +45,9 @@ function handleEntry(entry) {
 
 function handleFile(file, path) {
   return {
-    path: path.replace(/^\//, "") || file.webkitRelativePath || file.name,
+    path: (typeof path === "string" && path.replace(/^\//, ""))
+      || file.webkitRelativePath
+      || file.name,
     url: URL.createObjectURL(file)
   }
 }
