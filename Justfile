@@ -56,14 +56,15 @@ config					:= "default"
 
 @install-deps: (_report "Installing required dependencies")
 	pnpm install
+
+	rm -rf web_modules
 	mkdir -p web_modules
 
 	# Download other dependencies
-	# (note, alternative to wzrd.in → https://bundle.run)
 	just download-web-module is-ipfs.js https://unpkg.com/is-ipfs@1.0.3/dist/index.js
 	just download-web-module tocca.js https://unpkg.com/tocca@2.0.9/Tocca.js
-	just download-web-module it-to-stream.js https://wzrd.in/debug-standalone/it-to-stream@0.1.2
-	just download-web-module render-media.js https://wzrd.in/debug-standalone/render-media@3.4.3
+	just download-web-module it-to-stream.min.js https://bundle.run/it-to-stream@0.1.2
+	just download-web-module render-media.min.js https://bundle.run/render-media@3.4.3
 
 	# Elm git dependencies
 	{{node_bin}}/elm-git-install

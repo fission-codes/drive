@@ -6,7 +6,7 @@ Everything involving the Fission File System.
 
 */
 
-import "./web_modules/it-to-stream.js"
+import "./web_modules/it-to-stream.min.js"
 import * as wn from "./web_modules/webnative.js"
 
 
