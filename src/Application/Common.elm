@@ -109,6 +109,11 @@ ifThenElse condition x y =
         y
 
 
+isSingleFileView : Model -> Bool
+isSingleFileView model =
+    model.selectedPath == Just (Routing.treePath model.route)
+
+
 sizeInWords : Int -> String
 sizeInWords sizeInBytes =
     let

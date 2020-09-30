@@ -13,12 +13,12 @@ import Html.Events as E
 import Html.Events.Extra.Mouse as M
 import Html.Extra as Html
 import List.Extra as List
+import Radix exposing (..)
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
 import Time
 import Time.Distance
-import Radix exposing (..)
 import Url.Builder
 
 
@@ -28,11 +28,11 @@ import Url.Builder
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
-view : Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
-view isGroundFloor currentTime expandSidebar showPreviewOverlay item =
+view : Bool -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
+view isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item =
     Html.div
         []
-        [ overlay isGroundFloor currentTime expandSidebar showPreviewOverlay item
+        [ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item
         , dataContainer item
         , extra item
         ]
@@ -42,8 +42,8 @@ view isGroundFloor currentTime expandSidebar showPreviewOverlay item =
 -- OVERLAY
 
 
-overlay : Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
-overlay isGroundFloor currentTime expandSidebar showPreviewOverlay item =
+overlay : Bool -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
+overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item =
     let
         defaultAttributes =
             [ T.absolute
@@ -118,6 +118,7 @@ overlay isGroundFloor currentTime expandSidebar showPreviewOverlay item =
         , Drive.sidebarControls
             { above = True
             , expanded = expandSidebar
+            , canChangeSize = not isSingleFileView
             }
         ]
 

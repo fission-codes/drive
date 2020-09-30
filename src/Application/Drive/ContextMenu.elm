@@ -19,7 +19,7 @@ import Routing
 hamburger : Model -> ContextMenu Msg
 hamburger model =
     (if Routing.isAuthenticatedTree model.authenticated model.route then
-        yourBurgers
+        yourBurgers model
 
      else
         case model.authenticated of
@@ -33,39 +33,44 @@ hamburger model =
         |> ContextMenu.build TopRight
 
 
-yourBurgers =
-    [ Item
-        { icon = FeatherIcons.upload
-        , label = "Add files"
-        , active = False
+yourBurgers model =
+    List.append
+        (if Common.isSingleFileView model then
+            []
 
-        --
-        , href = Nothing
-        , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
-        }
+         else
+            [ Item
+                { icon = FeatherIcons.upload
+                , label = "Add files"
+                , active = False
 
-    --
-    , Item
-        { icon = FeatherIcons.folderPlus
-        , label = "Create directory"
-        , active = False
+                --
+                , href = Nothing
+                , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
+                }
 
-        --
-        , href = Nothing
-        , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
-        }
+            --
+            , Item
+                { icon = FeatherIcons.folderPlus
+                , label = "Create directory"
+                , active = False
 
-    --
-    , Item
-        { icon = FeatherIcons.user
-        , label = "Sign out"
-        , active = False
+                --
+                , href = Nothing
+                , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
+                }
+            ]
+        )
+        [ Item
+            { icon = FeatherIcons.user
+            , label = "Sign out"
+            , active = False
 
-        --
-        , href = Nothing
-        , msg = Just (Reset Routing.Undecided)
-        }
-    ]
+            --
+            , href = Nothing
+            , msg = Just (Reset Routing.Undecided)
+            }
+        ]
 
 
 distractedBurgers username =

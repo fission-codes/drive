@@ -97,6 +97,7 @@ addOrCreate model =
         []
         [ Drive.sidebarControls
             { above = False
+            , canChangeSize = Common.isSingleFileView model
             , expanded = model.expandSidebar
             }
 
@@ -252,9 +253,10 @@ detailsForSelection model =
                         |> List.find (.path >> (==) path)
                 )
             |> Maybe.map
-                (Html.Lazy.lazy5
+                (Html.Lazy.lazy6
                     Details.view
                     (Result.unwrap True (.floor >> (==) 1) model.directoryList)
+                    (Common.isSingleFileView model)
                     model.currentTime
                     model.expandSidebar
                     model.showPreviewOverlay

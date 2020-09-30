@@ -7,7 +7,7 @@ import Debouncing
 import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
 import Drive.Modals
-import Drive.Sidebar
+import Drive.Sidebar exposing (Mode(..))
 import File
 import File.Download
 import FileSystem exposing (Operation(..))
@@ -50,20 +50,26 @@ addFiles { blobs } model =
 
 closeSidebar : Manager
 closeSidebar model =
-    if model.sidebarMode == Drive.Sidebar.defaultMode then
-        Return.singleton
-            { model
-                | expandSidebar = False
-                , selectedPath = Nothing
-                , showPreviewOverlay = False
-            }
+    case model.sidebarMode of
+        DetailsForSelection ->
+            (if Common.isSingleFileView model then
+                goUpOneLevel
 
-    else
-        Common.potentiallyRenderMedia
-            { model
-                | expandSidebar = False
-                , sidebarMode = Drive.Sidebar.defaultMode
-            }
+             else
+                Return.singleton
+            )
+                { model
+                    | expandSidebar = False
+                    , selectedPath = Nothing
+                    , showPreviewOverlay = False
+                }
+
+        _ ->
+            Common.potentiallyRenderMedia
+                { model
+                    | expandSidebar = False
+                    , sidebarMode = Drive.Sidebar.defaultMode
+                }
 
 
 copyPublicUrl : { item : Item, presentable : Bool } -> Manager
@@ -317,7 +323,7 @@ showRenameItemModal item model =
 
 toggleExpandedSidebar : Manager
 toggleExpandedSidebar model =
-    Return.singleton { model | expandSidebar = not model.expandSidebar }
+    Common.potentiallyRenderMedia { model | expandSidebar = not model.expandSidebar }
 
 
 toggleSidebarMode : Drive.Sidebar.Mode -> Manager

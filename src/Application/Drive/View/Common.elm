@@ -7,10 +7,10 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import List.Extra as List
+import Radix exposing (..)
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
-import Radix exposing (..)
 import Url.Builder
 
 
@@ -18,8 +18,8 @@ import Url.Builder
 -- SIDEBAR
 
 
-sidebarControls : { above : Bool, expanded : Bool } -> Html Msg
-sidebarControls { above, expanded } =
+sidebarControls : { above : Bool, canChangeSize : Bool, expanded : Bool } -> Html Msg
+sidebarControls { above, canChangeSize, expanded } =
     let
         additionalAttributes =
             if above then
@@ -67,7 +67,8 @@ sidebarControls { above, expanded } =
             ]
             []
 
-        --
+        -- Expand
+        ---------
         , Html.div
             [ E.onClick ToggleExpandedSidebar
 
@@ -79,7 +80,11 @@ sidebarControls { above, expanded } =
             , T.py_3
 
             --
-            , T.md__flex
+            , if canChangeSize then
+                T.md__flex
+
+              else
+                T.md__hidden
             ]
             [ (if expanded then
                 FeatherIcons.minimize2
@@ -103,7 +108,8 @@ sidebarControls { above, expanded } =
                 ]
             ]
 
-        --
+        -- Close
+        --------
         , Html.div
             [ E.onClick CloseSidebar
 

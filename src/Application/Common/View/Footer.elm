@@ -126,7 +126,10 @@ treeActions model =
         isAuthenticatedTree =
             Routing.isAuthenticatedTree model.authenticated model.route
     in
-    [ if isAuthenticatedTree then
+    [ if Common.isSingleFileView model then
+        Html.nothing
+
+      else if isAuthenticatedTree then
         addCreateAction model
 
       else
