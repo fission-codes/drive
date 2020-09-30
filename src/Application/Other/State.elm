@@ -3,6 +3,7 @@ module Other.State exposing (..)
 import Browser
 import Browser.Navigation as Navigation
 import Common
+import Common.State as Common
 import Drive.State as Drive
 import FileSystem
 import Keyboard
@@ -64,7 +65,11 @@ screenSizeChanged width height model =
             , width = width
             }
     in
-    Return.singleton { model | contextMenu = Nothing, viewportSize = viewportSize }
+    Common.potentiallyRenderMedia
+        { model
+            | contextMenu = Nothing
+            , viewportSize = viewportSize
+        }
 
 
 setCurrentTime : Time.Posix -> Manager
