@@ -21,6 +21,14 @@ import Url exposing (Url)
 -- 🛠
 
 
+hideWelcomeMessage : Manager
+hideWelcomeMessage model =
+    model.authenticated
+        |> Maybe.map (\a -> { a | newUser = False })
+        |> (\a -> { model | authenticated = a })
+        |> Return.singleton
+
+
 keyboardInteraction : Keyboard.Msg -> Manager
 keyboardInteraction msg unmodified =
     (if unmodified.isFocused then

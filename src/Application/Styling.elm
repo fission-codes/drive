@@ -61,6 +61,7 @@ buttonWithNode node attributes =
             [ T.antialiased
             , T.appearance_none
             , T.font_semibold
+            , T.inline_block
             , T.leading_normal
             , T.px_5
             , T.py_3

@@ -247,6 +247,9 @@ update msg =
         Focused ->
             Other.focused
 
+        HideWelcomeMessage ->
+            Other.hideWelcomeMessage
+
         KeyboardInteraction a ->
             Other.keyboardInteraction a
 

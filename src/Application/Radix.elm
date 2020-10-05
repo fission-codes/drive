@@ -137,6 +137,7 @@ type Msg
       -----------------------------------------
     | Blurred
     | Focused
+    | HideWelcomeMessage
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | RedirectToLobby

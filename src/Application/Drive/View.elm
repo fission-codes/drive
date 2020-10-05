@@ -424,11 +424,116 @@ mainLayout : Model -> Html Msg -> Html Msg
 mainLayout model leftSide =
     Html.div
         [ T.flex
+        , T.flex_col
         , T.flex_auto
         , T.relative
         , T.z_0
         ]
-        [ Html.div
+        [ case Maybe.map .newUser model.authenticated of
+            Just True ->
+                Html.div
+                    [ T.container
+                    , T.flex
+                    , T.justify_start
+                    , T.mt_8
+                    , T.mx_auto
+                    , T.w_full
+                    ]
+                    [ Html.div
+                        [ T.bg_purple_tint
+                        , T.leading_relaxed
+                        , T.max_w_md
+                        , T.mx_6
+                        , T.p_6
+                        , T.relative
+                        , T.rounded
+                        , T.text_purple_shade
+                        , T.text_sm
+
+                        -- Dark mode
+                        ------------
+                        , T.dark__bg_darkness_above
+                        , T.dark__text_purple_tint
+                        ]
+                        [ Html.div
+                            []
+                            [ Html.strong
+                                [ T.font_semibold ]
+                                [ Html.text "Welcome to your Drive!" ]
+                            , Html.text " Here you can browse through your entire filesystem. This filesystem holds all your public and private data, which you can take with you to "
+                            , Html.a
+                                [ A.href "https://fission.codes/apps"
+                                , A.target "_blank"
+
+                                --
+                                , T.underline
+                                , T.underline_thick
+                                , T.tdc_purple_shade
+                                ]
+                                [ Html.text "various apps" ]
+                            , Html.text ". If you want to make an app yourself, check out the "
+                            , Html.a
+                                [ A.href "https://guide.fission.codes/hosting/installation"
+                                , A.target "_blank"
+
+                                --
+                                , T.underline
+                                , T.underline_thick
+                                , T.tdc_purple_shade
+                                ]
+                                [ Html.text "Fission CLI" ]
+                            , Html.text "."
+                            ]
+                        , Html.div
+                            [ T.mt_5, T.space_x_3 ]
+                            [ S.buttonLink
+                                [ A.href "https://fission.codes/apps"
+                                , A.target "_blank"
+
+                                --
+                                , T.bg_purple
+                                , T.text_xs
+                                ]
+                                [ Html.text "Browse apps" ]
+                            , S.buttonLink
+                                [ A.href "https://guide.fission.codes/hosting/installation"
+                                , A.target "_blank"
+
+                                --
+                                , T.bg_gray_200
+                                , T.text_xs
+                                ]
+                                [ Html.text "Download the CLI" ]
+                            ]
+
+                        -- Close button
+                        ---------------
+                        , Html.div
+                            [ A.title "Hide"
+                            , E.onClick HideWelcomeMessage
+
+                            --
+                            , T.absolute
+                            , T.bg_red
+                            , T.cursor_pointer
+                            , T.h_2
+                            , T.neg_translate_x_3
+                            , T.right_0
+                            , T.rounded_full
+                            , T.top_0
+                            , T.transform
+                            , T.translate_y_3
+                            , T.w_2
+                            ]
+                            []
+                        ]
+                    ]
+
+            _ ->
+                Html.nothing
+
+        --
+        , Html.div
             [ T.container
             , S.container_padding
             , T.flex
@@ -436,6 +541,7 @@ mainLayout model leftSide =
             , T.items_stretch
             , T.mx_auto
             , T.my_8
+            , T.w_full
             ]
             [ -----------------------------------------
               -- Left
