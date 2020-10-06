@@ -76,7 +76,7 @@ wn.initialise({ permissions: PERMISSIONS })
   app = Elm.Main.init({
     node: document.getElementById("elm"),
     flags: {
-      authenticated: authenticated ? { newUser: true, throughLobby, username } : null,
+      authenticated: authenticated ? { newUser, throughLobby, username } : null,
       currentTime: Date.now(),
       usersDomain: DATA_ROOT_DOMAIN,
       viewportSize: { height: window.innerHeight, width: window.innerWidth }

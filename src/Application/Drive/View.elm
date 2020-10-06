@@ -429,7 +429,10 @@ mainLayout model leftSide =
         , T.relative
         , T.z_0
         ]
-        [ case Maybe.map .newUser model.authenticated of
+        [ -----------------------------------------
+          -- Welcome message
+          -----------------------------------------
+          case Maybe.map .newUser model.authenticated of
             Just True ->
                 Html.div
                     [ T.container
@@ -440,20 +443,20 @@ mainLayout model leftSide =
                     , T.w_full
                     ]
                     [ Html.div
-                        [ T.bg_purple_tint
+                        [ T.bg_gray_600
                         , T.leading_relaxed
                         , T.max_w_md
-                        , T.mx_6
+                        , T.ml_6
                         , T.p_6
                         , T.relative
-                        , T.rounded
-                        , T.text_purple_shade
+                        , T.rounded_l_md
+                        , T.text_gray_300
                         , T.text_sm
 
                         -- Dark mode
                         ------------
                         , T.dark__bg_darkness_above
-                        , T.dark__text_purple_tint
+                        , T.dark__text_gray_400
                         ]
                         [ Html.div
                             []
@@ -468,7 +471,7 @@ mainLayout model leftSide =
                                 --
                                 , T.underline
                                 , T.underline_thick
-                                , T.tdc_purple_shade
+                                , T.tdc_pink_shade
                                 ]
                                 [ Html.text "various apps" ]
                             , Html.text ". If you want to make an app yourself, check out the "
@@ -479,60 +482,75 @@ mainLayout model leftSide =
                                 --
                                 , T.underline
                                 , T.underline_thick
-                                , T.tdc_purple_shade
+                                , T.tdc_pink_shade
                                 ]
                                 [ Html.text "Fission CLI" ]
                             , Html.text "."
                             ]
-                        , Html.div
-                            [ T.mt_5, T.space_x_3 ]
-                            [ S.buttonLink
-                                [ A.href "https://fission.codes/apps"
-                                , A.target "_blank"
-
-                                --
-                                , T.bg_purple
-                                , T.text_xs
-                                ]
-                                [ Html.text "Browse apps" ]
-                            , S.buttonLink
-                                [ A.href "https://guide.fission.codes/hosting/installation"
-                                , A.target "_blank"
-
-                                --
-                                , T.bg_gray_200
-                                , T.text_xs
-                                ]
-                                [ Html.text "Download the CLI" ]
-                            ]
-
-                        -- Close button
-                        ---------------
-                        , Html.div
-                            [ A.title "Hide"
-                            , E.onClick HideWelcomeMessage
-
-                            --
-                            , T.absolute
-                            , T.bg_red
-                            , T.cursor_pointer
-                            , T.h_2
-                            , T.neg_translate_x_3
-                            , T.right_0
-                            , T.rounded_full
-                            , T.top_0
-                            , T.transform
-                            , T.translate_y_3
-                            , T.w_2
-                            ]
-                            []
                         ]
+
+                    -------------------
+                    -- Close button bar
+                    -------------------
+                    , Html.div
+                        [ A.title "Hide"
+                        , E.onClick HideWelcomeMessage
+
+                        --
+                        , T.bg_red
+                        , T.bg_opacity_25
+                        , T.cursor_pointer
+                        , T.flex_shrink_0
+                        , T.mr_6
+                        , T.relative
+                        , T.rounded_r_md
+                        , T.text_pink_shade
+                        , T.w_8
+                        ]
+                        [ Html.div
+                            [ T.absolute
+                            , T.flex
+                            , T.items_center
+                            , T.left_1over2
+                            , T.neg_translate_x_1over2
+                            , T.neg_translate_y_1over2
+                            , T.rotate_90
+                            , T.transform
+                            , T.top_1over2
+                            ]
+                            [ FeatherIcons.x
+                                |> FeatherIcons.withSize 15
+                                |> Common.wrapIcon [ T.mt_px ]
+                            , Html.span
+                                [ T.inline_block
+                                , T.ml_1
+                                , T.text_xs
+                                , T.tracking_wider
+                                ]
+                                [ Html.text "CLOSE" ]
+                            ]
+                        ]
+
+                    --
+                    , Html.div
+                        [ A.class "drive-bg-pattern"
+                        , T.flex_auto
+                        , T.opacity_40
+                        , T.rounded_md
+
+                        -- Dark mode
+                        ------------
+                        , T.dark__opacity_20
+                        ]
+                        []
                     ]
 
             _ ->
                 Html.nothing
 
-        --
+        -----------------------------------------
+        -- Default content
+        -----------------------------------------
         , Html.div
             [ T.container
             , S.container_padding
@@ -543,14 +561,12 @@ mainLayout model leftSide =
             , T.my_8
             , T.w_full
             ]
-            [ -----------------------------------------
-              -- Left
-              -----------------------------------------
+            [ -- Left
+              -------
               leftSide
 
-            -----------------------------------------
             -- Right
-            -----------------------------------------
+            --------
             , Sidebar.view model
             ]
         ]

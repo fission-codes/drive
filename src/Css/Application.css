@@ -22,6 +22,18 @@ body {
 /* Utilities
    ========= */
 
+.drive-bg-pattern {
+  background-image: url("images/patterns/alchemy.gif");
+}
+
+
+@screen dark {
+  .drive-bg-pattern {
+    background-image: url("images/patterns/asteroids.jpg");
+  }
+}
+
+
 .underline-thick {
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
