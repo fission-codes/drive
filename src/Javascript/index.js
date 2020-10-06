@@ -175,7 +175,8 @@ function exe(port, method, options = {}) {
     let args = { pathSegments: [], ...a, ...options }
 
     try {
-      const { results, rootCid } = await fs[method](args)
+      const { results, rootCid } = (await fs[method](args)) || {}
+      if (!results) return
 
       app.ports.fsGotDirectoryList.send({
         pathSegments: fs.removePrivatePrefix(

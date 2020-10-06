@@ -1,5 +1,6 @@
 module Drive.State exposing (..)
 
+import Browser.Dom as Dom
 import Browser.Navigation as Navigation
 import Common
 import Common.State as Common
@@ -20,6 +21,7 @@ import Result.Extra as Result
 import Return exposing (andThen, return)
 import Return.Extra as Return
 import Routing
+import Task
 import Toasty
 import Url
 
@@ -316,7 +318,9 @@ showPreviewOverlay model =
 
 showRenameItemModal : Item -> Manager
 showRenameItemModal item model =
-    Return.singleton { model | modal = Just (Drive.Modals.renameItem item) }
+    return
+        { model | modal = Just (Drive.Modals.renameItem item) }
+        (Task.attempt (\_ -> Bypass) <| Dom.focus "modal__rename-item__input")
 
 
 toggleExpandedSidebar : Manager

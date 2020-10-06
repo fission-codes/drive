@@ -6,9 +6,9 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Modal exposing (Modal)
+import Radix exposing (Msg(..))
 import Styling as S
 import Tailwind as T
-import Radix exposing (Msg(..))
 
 
 
@@ -46,7 +46,8 @@ renameItem item =
         ]
     , content =
         [ S.textField
-            [ A.placeholder "Name"
+            [ A.id "modal__rename-item__input"
+            , A.placeholder "Name"
             , A.value item.name
             , E.onInput (SetModalState "name")
 
