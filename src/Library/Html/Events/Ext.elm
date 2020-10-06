@@ -19,7 +19,7 @@ onTap msg =
                         Decode.succeed
                             { message = msg
                             , stopPropagation = True
-                            , preventDefault = True
+                            , preventDefault = False
                             }
             )
             (Decode.int
