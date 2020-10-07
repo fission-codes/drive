@@ -74,7 +74,7 @@ view_ model =
             DetailsForSelection ->
                 T.overflow_y_hidden
 
-            EditPlaintext ->
+            EditPlaintext _ ->
                 T.overflow_y_hidden
 
         -- Dark mode
@@ -88,13 +88,13 @@ view_ model =
             DetailsForSelection ->
                 detailsForSelection model
 
-            EditPlaintext ->
-                editPlaintext model
+            EditPlaintext editorModel ->
+                plaintextEditor editorModel model
         ]
 
 
-editPlaintext : Model -> Html Msg
-editPlaintext model =
+plaintextEditor : EditorModel -> Model -> Html Msg
+plaintextEditor editorModel model =
     Html.div
         [ T.flex
         , T.flex_col
@@ -114,19 +114,21 @@ editPlaintext model =
             , T.bg_transparent
             , T.bg_gray_900
             , T.flex_grow
-            , T.p_8
+            , T.px_8
+            , T.pt_8
             , T.font_mono
             , T.text_gray_100
             , T.resize_none
             ]
-            [ Html.text testText ]
+            [ Html.text editorModel.text ]
         , Html.div
             [ T.flex
+            , T.flex_shrink_0
+            , T.space_x_2
             , T.items_center
             , T.justify_end
             , T.mt_px
-            , T.px_2
-            , T.pb_px
+            , T.p_2
             , T.relative
             , T.h_12
             ]
@@ -140,31 +142,49 @@ editPlaintext model =
                 , T.right_0
                 ]
                 []
+            , if editorModel.hasChanges then
+                Html.button
+                    [ T.text_gray_400
+                    , T.text_tiny
+                    , T.tracking_wide
+                    , T.px_4
+                    , T.py_2
+                    , T.uppercase
+                    ]
+                    [ Html.text "Cancel" ]
+
+              else
+                nothing
+            , if editorModel.hasChanges then
+                Html.button
+                    [ T.antialiased
+                    , T.appearance_none
+                    , T.bg_purple_shade
+                    , T.text_tiny
+                    , T.font_semibold
+                    , T.leading_normal
+                    , T.px_4
+                    , T.py_2
+                    , T.relative
+                    , T.rounded
+                    , T.text_white
+                    , T.tracking_wider
+                    , T.transition_colors
+                    , T.uppercase
+                    ]
+                    [ if model.fileSystemStatus == FileSystem.Operation FileSystem.CreatingDirectory then
+                        Common.loadingAnimationWithAttributes
+                            [ T.text_purple_tint ]
+                            { size = S.iconSize }
+
+                      else
+                        Html.text "Save"
+                    ]
+
+              else
+                nothing
             ]
         ]
-
-
-testText =
-    """<!Doctype html>
-<html>
-<head>
-    <title>My Fission Page</title>
-</head>
-<body>
-    <h1>Hi! This is my personal Webpage.</h1>
-    <p>
-        Feel free to scroll around.
-    </p>
-    <h2>My reading list</h2>
-    <ul>
-        <li>The power of Habit</li>
-        <li>Sustainable Architecture</li>
-        <li>Thinking fast and slow</li>
-        <li>Understanding Central Banks</li>
-        <li>Indistractable</li>
-    </ul>
-</body>
-</html>"""
 
 
 

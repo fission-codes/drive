@@ -5,6 +5,7 @@ import Common
 import Common.State as Common
 import Debouncing
 import Drive.Item
+import Drive.Sidebar as Sidebar
 import FileSystem
 import Json.Decode as Json
 import List.Extra as List
@@ -97,6 +98,22 @@ gotDirectoryList json model =
                 (always Bypass)
                 (Dom.setViewport 0 0)
             )
+
+
+gotItemUtf8 : { pathSegments : List String, text : String } -> Manager
+gotItemUtf8 { pathSegments, text } model =
+    (case model.sidebarMode of
+        Sidebar.EditPlaintext sidebar ->
+            { model
+                | sidebarMode =
+                    Sidebar.EditPlaintext
+                        { sidebar | text = text }
+            }
+
+        _ ->
+            model
+    )
+        |> Return.singleton
 
 
 gotError : String -> Manager

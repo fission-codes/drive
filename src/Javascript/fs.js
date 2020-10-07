@@ -208,6 +208,12 @@ export async function moveItem({ currentPathSegments, pathSegments }) {
 }
 
 
+export async function readItem({ pathSegments }) {
+  const path = prefixedPath(pathSegments);
+  return await fs.read(path);
+}
+
+
 
 // STREAMING
 

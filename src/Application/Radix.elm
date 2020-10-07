@@ -118,6 +118,7 @@ type Msg
       -- File System
       -----------------------------------------
     | GotFsDirectoryList Json.Value
+    | GotItemUtf8 { pathSegments : List String, text : String }
     | GotFsError String
       -----------------------------------------
       -- 🌏 Common

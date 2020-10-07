@@ -47,7 +47,7 @@ workbox_config 	:= "workbox.config.cjs"
 	devd --quiet build --port=8000 --all
 
 @hot-server:
-	echo "🔥  Start a hot-reloading elm-live server at https://localhost:8000"
+	echo "🔥  Start a hot-reloading elm-live server at http://localhost:8000"
 	{{node_bin}}/elm-live {{src_dir}}/Application/Main.elm --hot --port=8000 --pushstate --dir=build -- --output={{dist_dir}}/application.js --debug
 
 @download-web-module filename url:

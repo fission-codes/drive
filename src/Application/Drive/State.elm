@@ -290,20 +290,39 @@ renameItem item model =
 
 select : Item -> Manager
 select item model =
-    Common.potentiallyRenderMedia
-        { model
-            | selectedPath = Just item.path
-            , sidebarMode =
-                case Debug.log "kind" item.kind of
-                    Code ->
-                        Drive.Sidebar.EditPlaintext
+    case item.kind of
+        Code ->
+            Ports.fsReadItemUtf8 (Item.pathProperties item)
+                |> return
+                    { model
+                        | selectedPath = Just item.path
+                        , sidebarMode =
+                            Drive.Sidebar.EditPlaintext
+                                { text = "LOADING"
+                                , hasChanges = False
+                                }
+                    }
 
-                    Text ->
-                        Drive.Sidebar.EditPlaintext
+        Text ->
+            -- TODO philipp: Remove duplication
+            Ports.fsReadItemUtf8 (Item.pathProperties item)
+                |> return
+                    { model
+                        | selectedPath = Just item.path
+                        , sidebarMode =
+                            Drive.Sidebar.EditPlaintext
+                                { text = "LOADING"
+                                , hasChanges = False
+                                }
+                    }
 
-                    _ ->
+        _ ->
+            Common.potentiallyRenderMedia
+                { model
+                    | selectedPath = Just item.path
+                    , sidebarMode =
                         Drive.Sidebar.DetailsForSelection
-        }
+                }
 
 
 selectNextItem : Manager

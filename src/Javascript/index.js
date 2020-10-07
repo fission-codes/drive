@@ -100,6 +100,8 @@ wn.initialise({ permissions: PERMISSIONS })
   exe("fsMoveItem", "moveItem", { listParent: true })
   exe("fsRemoveItem", "removeItem", { listParent: true })
 
+  app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
+
   app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
   // Other things
@@ -190,6 +192,15 @@ function exe(port, method, options = {}) {
       reportFileSystemError(e)
 
     }
+  })
+}
+
+async function readItemUtf8(path) {
+  const contentUInt8Array = await fs.readItem(path)
+  const asString = contentUInt8Array.toString("utf-8")
+  app.ports.fsGotItemUtf8.send({
+    pathSegments: path.pathSegments,
+    text: asString,
   })
 }
 

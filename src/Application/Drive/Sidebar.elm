@@ -6,7 +6,13 @@ module Drive.Sidebar exposing (..)
 type Mode
     = AddOrCreate
     | DetailsForSelection
-    | EditPlaintext
+    | EditPlaintext EditorModel
+
+
+type alias EditorModel =
+    { text : String
+    , hasChanges : Bool
+    }
 
 
 
