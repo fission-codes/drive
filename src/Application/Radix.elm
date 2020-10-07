@@ -134,6 +134,10 @@ type Msg
     | ShowContextMenuWithCoordinates Coordinates (ContextMenu Msg)
     | ShowHelpfulNote String
       -----------------------------------------
+      -- Plaintext Editor
+      -----------------------------------------
+    | PlaintextEditorInput String
+      -----------------------------------------
       -- 🐚 Other
       -----------------------------------------
     | Blurred

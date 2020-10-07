@@ -299,7 +299,7 @@ select item model =
                         , sidebarMode =
                             Drive.Sidebar.EditPlaintext
                                 { text = "LOADING"
-                                , hasChanges = False
+                                , originalText = ""
                                 }
                     }
 
@@ -312,7 +312,7 @@ select item model =
                         , sidebarMode =
                             Drive.Sidebar.EditPlaintext
                                 { text = "LOADING"
-                                , hasChanges = False
+                                , originalText = ""
                                 }
                     }
 

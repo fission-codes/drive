@@ -11,7 +11,7 @@ type Mode
 
 type alias EditorModel =
     { text : String
-    , hasChanges : Bool
+    , originalText : String
     }
 
 

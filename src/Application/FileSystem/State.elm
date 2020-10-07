@@ -107,7 +107,7 @@ gotItemUtf8 { pathSegments, text } model =
             { model
                 | sidebarMode =
                     Sidebar.EditPlaintext
-                        { sidebar | text = text }
+                        { sidebar | text = text, originalText = text }
             }
 
         _ ->

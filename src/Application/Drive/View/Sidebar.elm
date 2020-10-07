@@ -95,6 +95,10 @@ view_ model =
 
 plaintextEditor : EditorModel -> Model -> Html Msg
 plaintextEditor editorModel model =
+    let
+        hasChanges =
+            editorModel.text /= editorModel.originalText
+    in
     Html.div
         [ T.flex
         , T.flex_col
@@ -119,6 +123,7 @@ plaintextEditor editorModel model =
             , T.font_mono
             , T.text_gray_100
             , T.resize_none
+            , E.onInput PlaintextEditorInput
             ]
             [ Html.text editorModel.text ]
         , Html.div
@@ -142,7 +147,7 @@ plaintextEditor editorModel model =
                 , T.right_0
                 ]
                 []
-            , if editorModel.hasChanges then
+            , if hasChanges then
                 Html.button
                     [ T.text_gray_400
                     , T.text_tiny
@@ -155,7 +160,7 @@ plaintextEditor editorModel model =
 
               else
                 nothing
-            , if editorModel.hasChanges then
+            , if hasChanges then
                 Html.button
                     [ T.antialiased
                     , T.appearance_none

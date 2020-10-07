@@ -242,6 +242,20 @@ update msg =
             Common.showHelpfulNote a
 
         -----------------------------------------
+        -- Plaintext Editor
+        -----------------------------------------
+        PlaintextEditorInput content ->
+            \model ->
+                case model.sidebarMode of
+                    Drive.Sidebar.EditPlaintext editorModel ->
+                        { model | sidebarMode = Drive.Sidebar.EditPlaintext { editorModel | text = content } }
+                            |> Return.singleton
+
+                    _ ->
+                        model
+                            |> Return.singleton
+
+        -----------------------------------------
         -- 🐚 Other
         -----------------------------------------
         Blurred ->
