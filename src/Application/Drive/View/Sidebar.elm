@@ -176,15 +176,9 @@ plaintextEditor editorModel model =
                     , T.tracking_wider
                     , T.transition_colors
                     , T.uppercase
+                    , E.onClick PlaintextEditorSave
                     ]
-                    [ if model.fileSystemStatus == FileSystem.Operation FileSystem.CreatingDirectory then
-                        Common.loadingAnimationWithAttributes
-                            [ T.text_purple_tint ]
-                            { size = S.iconSize }
-
-                      else
-                        Html.text "Save"
-                    ]
+                    [ Html.text "Save" ]
 
               else
                 nothing

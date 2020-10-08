@@ -101,6 +101,7 @@ wn.initialise({ permissions: PERMISSIONS })
   exe("fsRemoveItem", "removeItem", { listParent: true })
 
   app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
+  app.ports.fsWriteItemUtf8.subscribe(writeItemUtf8)
 
   app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
@@ -202,6 +203,10 @@ async function readItemUtf8(path) {
     pathSegments: path.pathSegments,
     text: asString,
   })
+}
+
+async function writeItemUtf8(args) {
+  fs.write(args)
 }
 
 

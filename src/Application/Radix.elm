@@ -137,6 +137,7 @@ type Msg
       -- Plaintext Editor
       -----------------------------------------
     | PlaintextEditorInput String
+    | PlaintextEditorSave
       -----------------------------------------
       -- 🐚 Other
       -----------------------------------------

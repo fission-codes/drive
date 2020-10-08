@@ -41,6 +41,11 @@ export async function add({ blobs, pathSegments }) {
   return await listDirectory({ pathSegments })
 }
 
+export async function write({ pathSegments, text }) {
+  const path = prefixedPath(pathSegments)
+  fs.add(path, text)
+}
+
 
 export async function createDirecory({ pathSegments }) {
   const path = prefixedPath(pathSegments)

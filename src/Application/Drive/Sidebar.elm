@@ -12,6 +12,7 @@ type Mode
 type alias EditorModel =
     { text : String
     , originalText : String
+    , path : { pathSegments : List String }
     }
 
 

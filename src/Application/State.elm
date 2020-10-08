@@ -255,6 +255,30 @@ update msg =
                         model
                             |> Return.singleton
 
+        PlaintextEditorSave ->
+            \model ->
+                case model.sidebarMode of
+                    Drive.Sidebar.EditPlaintext editorModel ->
+                        if editorModel.text /= editorModel.originalText then
+                            Ports.fsWriteItemUtf8
+                                { pathSegments = editorModel.path.pathSegments
+                                , text = editorModel.text
+                                }
+                                |> Return.return
+                                    { model
+                                        | sidebarMode =
+                                            Drive.Sidebar.EditPlaintext
+                                                { editorModel | originalText = editorModel.text }
+                                    }
+
+                        else
+                            model
+                                |> Return.singleton
+
+                    _ ->
+                        model
+                            |> Return.singleton
+
         -----------------------------------------
         -- 🐚 Other
         -----------------------------------------
