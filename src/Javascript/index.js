@@ -196,17 +196,19 @@ function exe(port, method, options = {}) {
   })
 }
 
+
 async function readItemUtf8(path) {
   const contentUInt8Array = await fs.readItem(path)
-  const asString = contentUInt8Array.toString("utf-8")
+  const decoder = new TextDecoder()
   app.ports.fsGotItemUtf8.send({
     pathSegments: path.pathSegments,
-    text: asString,
+    text: decoder.decode(contentUInt8Array),
   })
 }
 
-async function writeItemUtf8(args) {
-  fs.write(args)
+async function writeItemUtf8({ pathSegments, text }) {
+  const encoder = new TextEncoder()
+  fs.write({ pathSegments, text: encoder.encode(text) })
 }
 
 
