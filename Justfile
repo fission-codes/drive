@@ -9,6 +9,7 @@ node_bin				:= "./node_modules/.bin"
 src_dir					:= "./src"
 
 config					:= "default"
+workbox_config 	:= "workbox.config.cjs"
 
 
 
@@ -147,6 +148,7 @@ config					:= "default"
 	echo "⚙️  Copying Javascript"
 	cp {{src_dir}}/Javascript/* {{build_dir}}/
 	touch {{build_dir}}/nomodule.min.js
+	pnpx workbox generateSW {{workbox_config}}
 
 
 @javascript-dependencies:

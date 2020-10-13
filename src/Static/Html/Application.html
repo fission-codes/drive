@@ -69,12 +69,13 @@
 
 
   <!-- Service worker -->
-  <!-- TODO -->
-  <!-- <script>
+  <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js")
+      })
     }
-  </script> -->
+  </script>
 
 
 </body>
