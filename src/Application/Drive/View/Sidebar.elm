@@ -3,7 +3,7 @@ module Drive.View.Sidebar exposing (view)
 import Common exposing (ifThenElse)
 import Common.View as Common
 import Drive.Item exposing (Kind(..))
-import Drive.Sidebar exposing (..)
+import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import Drive.View.Details as Details
 import FileSystem
@@ -29,22 +29,37 @@ import Url.Builder
 
 view : Model -> Html Msg
 view model =
-    case model.sidebarMode of
-        DetailsForSelection ->
-            if Maybe.isJust model.selectedPath then
-                view_ model
+    case model.addOrCreate of
+        Just addOrCreateModel ->
+            viewSidebar
+                { scrollable = True
+                , expanded = addOrCreateModel.expanded
+                , body = addOrCreate addOrCreateModel model
+                }
 
-            else
-                nothing
+        Nothing ->
+            case model.sidebar of
+                Just sidebar ->
+                    viewSidebar
+                        { scrollable = False
+                        , expanded = sidebar.expanded
+                        , body =
+                            case sidebar.mode of
+                                Sidebar.Details details ->
+                                    detailsForSelection details sidebar model
 
-        _ ->
-            view_ model
+                                Sidebar.EditPlaintext editor ->
+                                    plaintextEditor editor sidebar model
+                        }
+
+                _ ->
+                    nothing
 
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
-view_ : Model -> Html Msg
-view_ model =
+viewSidebar : { scrollable : Bool, expanded : Bool, body : Html Msg } -> Html Msg
+viewSidebar { scrollable, expanded, body } =
     Html.div
         [ A.class "sidebar"
 
@@ -60,44 +75,31 @@ view_ model =
         , T.w_full
 
         --
-        , if model.expandSidebar then
+        , if expanded then
             T.md__w_full
 
           else
             T.md__w_1over2
 
         --
-        , case model.sidebarMode of
-            AddOrCreate ->
-                T.overflow_y_scroll
+        , if scrollable then
+            T.overflow_y_scroll
 
-            DetailsForSelection ->
-                T.overflow_y_hidden
-
-            EditPlaintext _ ->
-                T.overflow_y_hidden
+          else
+            T.overflow_y_hidden
 
         -- Dark mode
         ------------
         , T.dark__bg_darkness_below
         ]
-        [ case model.sidebarMode of
-            AddOrCreate ->
-                addOrCreate model
-
-            DetailsForSelection ->
-                detailsForSelection model
-
-            EditPlaintext editorModel ->
-                plaintextEditor editorModel model
-        ]
+        [ body ]
 
 
-plaintextEditor : EditorModel -> Model -> Html Msg
-plaintextEditor editorModel model =
+plaintextEditor : Sidebar.EditorModel -> Sidebar.Model -> Model -> Html Msg
+plaintextEditor editor sidebar model =
     let
         hasChanges =
-            editorModel.text /= editorModel.originalText
+            editor.text /= editor.originalText
     in
     Html.div
         [ T.flex
@@ -108,7 +110,8 @@ plaintextEditor editorModel model =
         ]
         [ Drive.sidebarControls
             { above = False
-            , expanded = model.expandSidebar
+            , canChangeSize = Common.isSingleFileView model
+            , expanded = sidebar.expanded
             }
 
         --
@@ -125,7 +128,7 @@ plaintextEditor editorModel model =
             , T.resize_none
             , E.onInput PlaintextEditorInput
             ]
-            [ Html.text editorModel.text ]
+            [ Html.text editor.text ]
         , Html.div
             [ T.flex
             , T.flex_shrink_0
@@ -190,23 +193,23 @@ plaintextEditor editorModel model =
 -- ADD / CREATE
 
 
-addOrCreate : Model -> Html Msg
-addOrCreate model =
+addOrCreate : Sidebar.AddOrCreateModel -> Model -> Html Msg
+addOrCreate addOrCreateModel model =
     Html.div
         []
         [ Drive.sidebarControls
             { above = False
             , canChangeSize = Common.isSingleFileView model
-            , expanded = model.expandSidebar
+            , expanded = addOrCreateModel.expanded
             }
 
         --
-        , addOrCreateForm model
+        , addOrCreateForm addOrCreateModel model
         ]
 
 
-addOrCreateForm : Model -> Html Msg
-addOrCreateForm model =
+addOrCreateForm : Sidebar.AddOrCreateModel -> Model -> Html Msg
+addOrCreateForm addOrCreateModel model =
     let
         title t =
             Html.div
@@ -243,6 +246,7 @@ addOrCreateForm model =
                 [ A.placeholder "Magic Box"
                 , E.onInput GotCreateDirectoryInput
                 , T.w_0
+                , A.value addOrCreateModel.input
                 ]
                 []
 
@@ -281,7 +285,7 @@ addOrCreateForm model =
 
                 --
                 , A.style "min-height" "108px"
-                , A.style "padding-top" (ifThenElse model.expandSidebar "19%" "22.5%")
+                , A.style "padding-top" (ifThenElse addOrCreateModel.expanded "19%" "22.5%")
 
                 --
                 , T.border_2
@@ -332,8 +336,8 @@ addOrCreateForm model =
 -- DETAILS
 
 
-detailsForSelection : Model -> Html Msg
-detailsForSelection model =
+detailsForSelection : { showPreviewOverlay : Bool } -> Sidebar.Model -> Model -> Html Msg
+detailsForSelection { showPreviewOverlay } sidebar model =
     Html.div
         [ T.flex
         , T.flex_col
@@ -357,8 +361,8 @@ detailsForSelection model =
                     (Result.unwrap True (.floor >> (==) 1) model.directoryList)
                     (Common.isSingleFileView model)
                     model.currentTime
-                    model.expandSidebar
-                    model.showPreviewOverlay
+                    sidebar.expanded
+                    showPreviewOverlay
                 )
             |> Maybe.withDefault
                 nothing

@@ -74,10 +74,8 @@ type alias Model =
     -----------------------------------------
     -- Sidebar
     -----------------------------------------
-    , createDirectoryInput : String
-    , expandSidebar : Bool
-    , showPreviewOverlay : Bool
-    , sidebarMode : Drive.Sidebar.Mode
+    , sidebar : Maybe Drive.Sidebar.Model
+    , addOrCreate : Maybe Drive.Sidebar.AddOrCreateModel
     }
 
 
@@ -97,7 +95,7 @@ type Msg
       -----------------------------------------
       -- Drive
       -----------------------------------------
-    | ActivateSidebarMode Drive.Sidebar.Mode
+    | ActivateSidebarAddOrCreate
     | AddFiles { blobs : List { path : String, url : String } }
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
@@ -113,7 +111,7 @@ type Msg
     | ShowPreviewOverlay
     | ShowRenameItemModal Item
     | ToggleExpandedSidebar
-    | ToggleSidebarMode Drive.Sidebar.Mode
+    | ToggleSidebarAddOrCreate
       -----------------------------------------
       -- File System
       -----------------------------------------

@@ -53,13 +53,13 @@ potentiallyRenderMedia : Manager
 potentiallyRenderMedia model =
     case
         Maybe.andThen
-            (\path ->
+            (\{ path } ->
                 model.directoryList
                     |> Result.map .items
                     |> Result.withDefault []
                     |> List.find (.path >> (==) path)
             )
-            model.selectedPath
+            model.sidebar
     of
         Just item ->
             if Drive.Item.canRenderKind item.kind then
@@ -105,6 +105,7 @@ reset route model =
                 , fileSystemStatus = FileSystem.NotNeeded
                 , showLoadingOverlay = True
                 , selectedPath = Nothing
+                , sidebar = Nothing
             }
         |> andThen
             (goToRoute route)

@@ -46,7 +46,7 @@ yourBurgers model =
 
                 --
                 , href = Nothing
-                , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
+                , msg = Just ActivateSidebarAddOrCreate
                 }
 
             --
@@ -57,7 +57,7 @@ yourBurgers model =
 
                 --
                 , href = Nothing
-                , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
+                , msg = Just ActivateSidebarAddOrCreate
                 }
             ]
         )

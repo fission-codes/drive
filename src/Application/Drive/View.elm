@@ -405,11 +405,22 @@ primary model =
             errorView model.route err
 
         ( _, Ok directoryList ) ->
+            let
+                isExpandedSidebar =
+                    (model.sidebar
+                        |> Maybe.map .expanded
+                        |> Maybe.withDefault False
+                    )
+                        || (model.addOrCreate
+                                |> Maybe.map .expanded
+                                |> Maybe.withDefault False
+                           )
+            in
             mainLayout
                 model
                 (case directoryList.items of
                     [] ->
-                        if model.expandSidebar then
+                        if isExpandedSidebar then
                             Html.nothing
 
                         else
@@ -641,11 +652,11 @@ empty model =
             Maybe.isJust model.authenticated
 
         hideContent =
-            model.sidebarMode /= Sidebar.defaultMode
+            Maybe.isJust model.addOrCreate
     in
     Html.div
         [ if isAuthenticated then
-            E.onClick (ToggleSidebarMode Sidebar.AddOrCreate)
+            E.onClick ToggleSidebarAddOrCreate
 
           else
             E.onClick Bypass
@@ -713,10 +724,20 @@ contentAvailable model directoryList =
             ]
             (let
                 hideContent =
-                    Maybe.isJust model.selectedPath
-                        || (model.sidebarMode /= Sidebar.defaultMode)
+                    Maybe.isJust model.sidebar
+                        || Maybe.isJust model.addOrCreate
+
+                isExpandedSidebar =
+                    (model.sidebar
+                        |> Maybe.map .expanded
+                        |> Maybe.withDefault False
+                    )
+                        || (model.addOrCreate
+                                |> Maybe.map .expanded
+                                |> Maybe.withDefault False
+                           )
              in
-             if model.expandSidebar then
+             if isExpandedSidebar then
                 [ T.hidden ]
 
              else if hideContent then

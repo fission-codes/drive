@@ -3,23 +3,37 @@ module Drive.Sidebar exposing (..)
 -- 🧩
 
 
+type alias Model =
+    { expanded : Bool
+    , path : String
+    , mode : Mode
+    }
+
+
 type Mode
-    = AddOrCreate
-    | DetailsForSelection
+    = Details { showPreviewOverlay : Bool }
     | EditPlaintext EditorModel
 
 
 type alias EditorModel =
     { text : String
     , originalText : String
-    , path : { pathSegments : List String }
+    }
+
+
+type alias AddOrCreateModel =
+    { expanded : Bool
+    , input : String
     }
 
 
 
--- 🏔
+-- 🌱
 
 
-defaultMode : Mode
-defaultMode =
-    DetailsForSelection
+details : Mode
+details =
+    Details { showPreviewOverlay = False }
+
+addOrCreate : AddOrCreateModel
+addOrCreate = { expanded = False, input = ""}

@@ -79,10 +79,8 @@ init flags url navKey =
 
       -- Sidebar
       ----------
-      , createDirectoryInput = ""
-      , expandSidebar = False
-      , showPreviewOverlay = False
-      , sidebarMode = Drive.Sidebar.defaultMode
+      , sidebar = Nothing
+      , addOrCreate = Nothing
       }
       -----------------------------------------
       -- Command
@@ -145,8 +143,8 @@ update msg =
         -----------------------------------------
         -- Drive
         -----------------------------------------
-        ActivateSidebarMode a ->
-            Drive.activateSidebarMode a
+        ActivateSidebarAddOrCreate ->
+            Drive.activateSidebarAddOrCreate
 
         AddFiles a ->
             Drive.addFiles a
@@ -193,8 +191,8 @@ update msg =
         ToggleExpandedSidebar ->
             Drive.toggleExpandedSidebar
 
-        ToggleSidebarMode a ->
-            Drive.toggleSidebarMode a
+        ToggleSidebarAddOrCreate ->
+            Drive.toggleSidebarAddOrCreate
 
         -----------------------------------------
         -- File System
@@ -246,36 +244,64 @@ update msg =
         -----------------------------------------
         PlaintextEditorInput content ->
             \model ->
-                case model.sidebarMode of
-                    Drive.Sidebar.EditPlaintext editorModel ->
-                        { model | sidebarMode = Drive.Sidebar.EditPlaintext { editorModel | text = content } }
-                            |> Return.singleton
+                case model.sidebar of
+                    Just sidebar ->
+                        case sidebar.mode of
+                            Drive.Sidebar.EditPlaintext editorModel ->
+                                { model
+                                    | sidebar =
+                                        Just
+                                            { sidebar
+                                                | mode =
+                                                    Drive.Sidebar.EditPlaintext
+                                                        { editorModel
+                                                            | text = content
+                                                        }
+                                            }
+                                }
+                                    |> Return.singleton
 
-                    _ ->
+                            _ ->
+                                model
+                                    |> Return.singleton
+
+                    Nothing ->
                         model
                             |> Return.singleton
 
         PlaintextEditorSave ->
             \model ->
-                case model.sidebarMode of
-                    Drive.Sidebar.EditPlaintext editorModel ->
-                        if editorModel.text /= editorModel.originalText then
-                            Ports.fsWriteItemUtf8
-                                { pathSegments = editorModel.path.pathSegments
-                                , text = editorModel.text
-                                }
-                                |> Return.return
-                                    { model
-                                        | sidebarMode =
-                                            Drive.Sidebar.EditPlaintext
-                                                { editorModel | originalText = editorModel.text }
-                                    }
+                case model.sidebar of
+                    Just sidebar ->
+                        case sidebar.mode of
+                            Drive.Sidebar.EditPlaintext editorModel ->
+                                if editorModel.text /= editorModel.originalText then
+                                    Ports.fsWriteItemUtf8
+                                        { pathSegments =
+                                            -- TODO use a library function instead
+                                            String.split "/" sidebar.path
+                                        , text = editorModel.text
+                                        }
+                                        |> Return.return
+                                            { model
+                                                | sidebar =
+                                                    Just
+                                                        { sidebar
+                                                            | mode =
+                                                                Drive.Sidebar.EditPlaintext
+                                                                    { editorModel | originalText = editorModel.text }
+                                                        }
+                                            }
 
-                        else
-                            model
-                                |> Return.singleton
+                                else
+                                    model
+                                        |> Return.singleton
 
-                    _ ->
+                            _ ->
+                                model
+                                    |> Return.singleton
+
+                    Nothing ->
                         model
                             |> Return.singleton
 

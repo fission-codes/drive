@@ -84,7 +84,15 @@ gotDirectoryList json model =
                             listResult
 
                     --
-                    , expandSidebar = Maybe.isJust selectedPath
+                    , sidebar =
+                        selectedPath
+                            |> Maybe.map
+                                (\path ->
+                                    { expanded = False -- TODO: before: Maybe.isJust selectedPath. Wat?
+                                    , path = path
+                                    , mode = Sidebar.details
+                                    }
+                                )
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
                     , selectedPath = selectedPath
@@ -102,13 +110,22 @@ gotDirectoryList json model =
 
 gotItemUtf8 : { pathSegments : List String, text : String } -> Manager
 gotItemUtf8 { pathSegments, text } model =
-    (case model.sidebarMode of
-        Sidebar.EditPlaintext sidebar ->
-            { model
-                | sidebarMode =
-                    Sidebar.EditPlaintext
-                        { sidebar | text = text, originalText = text }
-            }
+    (case model.sidebar of
+        Just sidebar ->
+            case sidebar.mode of
+                Sidebar.EditPlaintext editorModel ->
+                    { model
+                        | sidebar =
+                            Just
+                                { sidebar
+                                    | mode =
+                                        Sidebar.EditPlaintext
+                                            { editorModel | text = text, originalText = text }
+                                }
+                    }
+
+                _ ->
+                    model
 
         _ ->
             model
