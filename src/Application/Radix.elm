@@ -112,8 +112,7 @@ type Msg
     | ShowRenameItemModal Item
     | ToggleExpandedSidebar
     | ToggleSidebarAddOrCreate
-    | PlaintextEditorInput String
-    | PlaintextEditorSave
+    | SidebarMsg Drive.Sidebar.Msg
       -----------------------------------------
       -- File System
       -----------------------------------------

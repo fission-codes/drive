@@ -3,6 +3,11 @@ module Drive.Sidebar exposing (..)
 -- 🧩
 
 
+type Msg
+    = PlaintextEditorInput String
+    | PlaintextEditorSave
+
+
 type alias Model =
     { expanded : Bool
     , path : String
@@ -35,5 +40,7 @@ details : Mode
 details =
     Details { showPreviewOverlay = False }
 
+
 addOrCreate : AddOrCreateModel
-addOrCreate = { expanded = False, input = ""}
+addOrCreate =
+    { expanded = False, input = "" }

@@ -126,7 +126,7 @@ plaintextEditor editor sidebar model =
             , T.font_mono
             , T.text_gray_100
             , T.resize_none
-            , E.onInput PlaintextEditorInput
+            , E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
             ]
             [ Html.text editor.text ]
         , Html.div
@@ -180,7 +180,7 @@ plaintextEditor editor sidebar model =
                     , T.tracking_wider
                     , T.transition_colors
                     , T.uppercase
-                    , E.onClick PlaintextEditorSave
+                    , E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
                     ]
                     [ Html.text "Save" ]
 

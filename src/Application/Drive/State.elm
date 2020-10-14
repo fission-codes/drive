@@ -9,6 +9,7 @@ import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
 import Drive.Modals
 import Drive.Sidebar exposing (Mode(..))
+import Drive.State.Sidebar
 import File
 import File.Download
 import FileSystem exposing (Operation(..))
@@ -460,6 +461,16 @@ toggleSidebarAddOrCreate model =
                 { model
                     | addOrCreate = Just Drive.Sidebar.addOrCreate
                 }
+
+
+updateSidebar : Drive.Sidebar.Msg -> Manager
+updateSidebar sidebarMsg model =
+    case model.sidebar of
+        Just sidebar ->
+            Drive.State.Sidebar.update sidebarMsg sidebar model
+
+        Nothing ->
+            Return.singleton model
 
 
 
