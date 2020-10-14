@@ -194,54 +194,6 @@ update msg =
         ToggleSidebarAddOrCreate ->
             Drive.toggleSidebarAddOrCreate
 
-        -----------------------------------------
-        -- File System
-        -----------------------------------------
-        GotFsDirectoryList a ->
-            FileSystem.gotDirectoryList a
-
-        GotItemUtf8 a ->
-            FileSystem.gotItemUtf8 a
-
-        GotFsError a ->
-            FileSystem.gotError a
-
-        -----------------------------------------
-        -- 🌏 Common
-        -----------------------------------------
-        GoToRoute a ->
-            Common.goToRoute a
-
-        HideHelpfulNote ->
-            Common.hideHelpfulNote
-
-        HideModal ->
-            Common.hideModal
-
-        RemoveContextMenu ->
-            Common.removeContextMenu
-
-        RemoveHelpfulNote ->
-            Common.removeHelpfulNote
-
-        Reset a ->
-            Common.reset a
-
-        SetModalState a b ->
-            Common.setModalState a b
-
-        ShowContextMenu a b ->
-            Common.showContextMenu a b
-
-        ShowContextMenuWithCoordinates a b ->
-            Common.showContextMenuWithCoordinates a b
-
-        ShowHelpfulNote a ->
-            Common.showHelpfulNote a
-
-        -----------------------------------------
-        -- Plaintext Editor
-        -----------------------------------------
         PlaintextEditorInput content ->
             \model ->
                 case model.sidebar of
@@ -304,6 +256,51 @@ update msg =
                     Nothing ->
                         model
                             |> Return.singleton
+
+        -----------------------------------------
+        -- File System
+        -----------------------------------------
+        GotFsDirectoryList a ->
+            FileSystem.gotDirectoryList a
+
+        GotItemUtf8 a ->
+            FileSystem.gotItemUtf8 a
+
+        GotFsError a ->
+            FileSystem.gotError a
+
+        -----------------------------------------
+        -- 🌏 Common
+        -----------------------------------------
+        GoToRoute a ->
+            Common.goToRoute a
+
+        HideHelpfulNote ->
+            Common.hideHelpfulNote
+
+        HideModal ->
+            Common.hideModal
+
+        RemoveContextMenu ->
+            Common.removeContextMenu
+
+        RemoveHelpfulNote ->
+            Common.removeHelpfulNote
+
+        Reset a ->
+            Common.reset a
+
+        SetModalState a b ->
+            Common.setModalState a b
+
+        ShowContextMenu a b ->
+            Common.showContextMenu a b
+
+        ShowContextMenuWithCoordinates a b ->
+            Common.showContextMenuWithCoordinates a b
+
+        ShowHelpfulNote a ->
+            Common.showHelpfulNote a
 
         -----------------------------------------
         -- 🐚 Other

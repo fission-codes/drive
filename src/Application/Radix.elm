@@ -112,6 +112,8 @@ type Msg
     | ShowRenameItemModal Item
     | ToggleExpandedSidebar
     | ToggleSidebarAddOrCreate
+    | PlaintextEditorInput String
+    | PlaintextEditorSave
       -----------------------------------------
       -- File System
       -----------------------------------------
@@ -131,11 +133,6 @@ type Msg
     | ShowContextMenu (ContextMenu Msg) Mouse.Event
     | ShowContextMenuWithCoordinates Coordinates (ContextMenu Msg)
     | ShowHelpfulNote String
-      -----------------------------------------
-      -- Plaintext Editor
-      -----------------------------------------
-    | PlaintextEditorInput String
-    | PlaintextEditorSave
       -----------------------------------------
       -- 🐚 Other
       -----------------------------------------
