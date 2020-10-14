@@ -9,6 +9,7 @@ node_bin				:= "./node_modules/.bin"
 src_dir					:= "./src"
 
 config					:= "default"
+fission_cmd     := "fission"
 workbox_config 	:= "workbox.config.cjs"
 
 
