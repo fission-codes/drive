@@ -326,7 +326,8 @@ select item model =
             Ports.fsReadItemUtf8 (Item.pathProperties item)
                 |> return
                     { model
-                        | sidebar =
+                        | selectedPath = Just item.path
+                        , sidebar =
                             Just
                                 { path = item.path
                                 , expanded = False
@@ -343,7 +344,8 @@ select item model =
             Ports.fsReadItemUtf8 (Item.pathProperties item)
                 |> return
                     { model
-                        | sidebar =
+                        | selectedPath = Just item.path
+                        , sidebar =
                             Just
                                 { path = item.path
                                 , expanded = False
@@ -358,7 +360,8 @@ select item model =
         _ ->
             Common.potentiallyRenderMedia
                 { model
-                    | sidebar =
+                    | selectedPath = Just item.path
+                    , sidebar =
                         Just
                             { path = item.path
                             , expanded = False
