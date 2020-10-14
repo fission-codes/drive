@@ -158,6 +158,7 @@ plaintextEditor editor sidebar model =
                     , T.px_4
                     , T.py_2
                     , T.uppercase
+                    , E.onClick CloseSidebar
                     ]
                     [ Html.text "Cancel" ]
 
