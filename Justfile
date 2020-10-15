@@ -37,7 +37,7 @@ workbox_config 	:= "workbox.config.cjs"
 	mkdir -p {{build_dir}}
 
 
-@dev-build: clean css-large html apply-config elm-dev javascript-dependencies javascript meta images (_report "Build success")
+@dev-build: clean css-large html apply-config elm-dev javascript-dependencies javascript meta images service-worker (_report "Build success")
 
 
 @dev-server:
@@ -77,11 +77,11 @@ workbox_config 	:= "workbox.config.cjs"
 
 
 @production-build:
-	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify
+	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify production-service-worker
 
 
 @staging-build:
-	just clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify
+	just clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify production-service-worker
 
 
 
@@ -149,7 +149,6 @@ workbox_config 	:= "workbox.config.cjs"
 	echo "⚙️  Copying Javascript"
 	cp {{src_dir}}/Javascript/* {{build_dir}}/
 	touch {{build_dir}}/nomodule.min.js
-	pnpx workbox generateSW {{workbox_config}}
 
 
 @javascript-dependencies:
@@ -202,6 +201,20 @@ workbox_config 	:= "workbox.config.cjs"
 	cp .fission.yaml.staging .fission.yaml
 	{{fission_cmd}} up
 	rm .fission.yaml
+
+
+
+# Service worker
+# --------------
+
+@service-worker:
+	echo "⚙️  Generating service worker"
+	NODE_ENV=development pnpx workbox generateSW {{workbox_config}}
+
+
+@production-service-worker:
+	echo "⚙️  Generating service worker"
+	NODE_ENV=production pnpx workbox generateSW {{workbox_config}}
 
 
 
