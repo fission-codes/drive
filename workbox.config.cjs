@@ -6,8 +6,10 @@ module.exports = {
   inlineWorkboxRuntime: true,
   navigateFallback: "index.html",
   runtimeCaching: [
-    { urlPattern: /^https:\/\/cdnjs\./, handler: "StaleWhileRevalidate" },
-    { urlPattern: /^https:\/\/fonts\./, handler: "StaleWhileRevalidate" }
+    {
+      urlPattern: /^https:\/\/cdnjs\./,
+      handler: "StaleWhileRevalidate"
+    }
   ],
   skipWaiting: true,
   sourcemap: false,
