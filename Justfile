@@ -4,7 +4,7 @@ export NODE_OPTIONS := "--no-warnings"
 # Variables
 # ---------
 
-build_dir				:= "./build"
+dist_dir				:= "./build"
 node_bin				:= "./node_modules/.bin"
 src_dir					:= "./src"
 
@@ -23,21 +23,21 @@ workbox_config 	:= "workbox.config.cjs"
 
 @apply-config:
 	echo "🎛  Applying config \`config/{{config}}.json\`"
-	{{node_bin}}/mustache config/{{config}}.json {{build_dir}}/index.html > {{build_dir}}/index.applied.html
-	rm {{build_dir}}/index.html
-	mv {{build_dir}}/index.applied.html {{build_dir}}/index.html
+	{{node_bin}}/mustache config/{{config}}.json {{dist_dir}}/index.html > {{dist_dir}}/index.applied.html
+	rm {{dist_dir}}/index.html
+	mv {{dist_dir}}/index.applied.html {{dist_dir}}/index.html
 
-	{{node_bin}}/mustache config/{{config}}.json {{build_dir}}/reception/index.html > {{build_dir}}/reception/index.applied.html
-	rm {{build_dir}}/reception/index.html
-	mv {{build_dir}}/reception/index.applied.html {{build_dir}}/reception/index.html
+	{{node_bin}}/mustache config/{{config}}.json {{dist_dir}}/reception/index.html > {{dist_dir}}/reception/index.applied.html
+	rm {{dist_dir}}/reception/index.html
+	mv {{dist_dir}}/reception/index.applied.html {{dist_dir}}/reception/index.html
 
 
 @clean:
-	rm -rf {{build_dir}}
-	mkdir -p {{build_dir}}
+	rm -rf {{dist_dir}}
+	mkdir -p {{dist_dir}}
 
 
-@dev-build: clean css-large html apply-config elm-dev javascript-dependencies javascript meta images service-worker (_report "Build success")
+@dev-build: clean css-large html apply-config elm-dev javascript-dependencies javascript images static service-worker (_report "Build success")
 
 
 @dev-server:
@@ -77,11 +77,11 @@ workbox_config 	:= "workbox.config.cjs"
 
 
 @production-build:
-	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify production-service-worker
+	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-minify javascript-nomodule html-minify production-service-worker
 
 
 @staging-build:
-	just clean css-large html apply-config elm-production javascript-dependencies javascript meta images css-small javascript-minify javascript-nomodule html-minify production-service-worker
+	just clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-minify javascript-nomodule html-minify production-service-worker
 
 
 
@@ -93,44 +93,46 @@ workbox_config 	:= "workbox.config.cjs"
 	pnpx etc {{src_dir}}/Css/Application.css \
 	  --config tailwind.js \
 	  --elm-path {{src_dir}}/Library/Tailwind.elm \
-	  --output {{build_dir}}/application.css
+	  --output {{dist_dir}}/application.css \
+		--post-plugin-before postcss-import
 
 
 @css-small:
 	echo "⚙️  Compiling Minified CSS"
 	NODE_ENV=production pnpx etc {{src_dir}}/Css/Application.css \
 	  --config tailwind.js \
-	  --output {{build_dir}}/application.css \
+	  --output {{dist_dir}}/application.css \
+		--post-plugin-before postcss-import \
 		\
-	  --purge-content {{build_dir}}/**/*.html \
-	  --purge-content {{build_dir}}/application.js \
+	  --purge-content {{dist_dir}}/**/*.html \
+	  --purge-content {{dist_dir}}/application.js \
 		--purge-content {{src_dir}}/Javascript/loaders.js
 
 
 @elm-dev:
 	echo "⚙️  Compiling Elm"
-	elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --debug
+	elm make {{src_dir}}/Application/Main.elm --output={{dist_dir}}/application.js --debug
 
 
 @elm-production:
 	echo "⚙️  Compiling Elm (optimised)"
-	elm make {{src_dir}}/Application/Main.elm --output={{build_dir}}/application.js --optimize
+	elm make {{src_dir}}/Application/Main.elm --output={{dist_dir}}/application.js --optimize
 
 
 @html:
 	echo "⚙️  Copying HTML"
-	cp {{src_dir}}/Static/Html/Application.html {{build_dir}}/index.html
-	cp {{build_dir}}/index.html {{build_dir}}/200.html
+	cp {{src_dir}}/Static/Html/Application.html {{dist_dir}}/index.html
+	cp {{dist_dir}}/index.html {{dist_dir}}/200.html
 
-	mkdir -p {{build_dir}}/reception
-	cp {{src_dir}}/Static/Html/Reception.html {{build_dir}}/reception/index.html
+	mkdir -p {{dist_dir}}/reception
+	cp {{src_dir}}/Static/Html/Reception.html {{dist_dir}}/reception/index.html
 
 
 @html-minify:
 	echo "⚙️  Minifying HTML Files"
 	{{node_bin}}/html-minifier-terser \
-		--input-dir {{build_dir}} \
-		--output-dir {{build_dir}} \
+		--input-dir {{dist_dir}} \
+		--output-dir {{dist_dir}} \
 		--file-ext html \
 		\
 		--collapse-whitespace --remove-comments --remove-optional-tags \
@@ -141,29 +143,29 @@ workbox_config 	:= "workbox.config.cjs"
 
 @images:
 	echo "⚙️  Copying Images"
-	cp -RT node_modules/fission-kit/images/ {{build_dir}}/images/
-	cp -RT {{src_dir}}/Static/Images/ {{build_dir}}/images/
+	cp -RT node_modules/fission-kit/images/ {{dist_dir}}/images/
+	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
 @javascript:
 	echo "⚙️  Copying Javascript"
-	cp {{src_dir}}/Javascript/* {{build_dir}}/
-	touch {{build_dir}}/nomodule.min.js
+	cp {{src_dir}}/Javascript/* {{dist_dir}}/
+	touch {{dist_dir}}/nomodule.min.js
 
 
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
-	cp -RT web_modules {{build_dir}}/web_modules/
+	cp -RT web_modules {{dist_dir}}/web_modules/
 
 
 @javascript-minify:
 	echo "⚙️  Minifying Javascript Files"
 	{{node_bin}}/terser-dir \
-		{{build_dir}} \
+		{{dist_dir}} \
 		--each --extension .js \
 		--patterns "**/*.js, !**/*.min.js" \
 		--pseparator ", " \
-		--output {{build_dir}} \
+		--output {{dist_dir}} \
 		-- --compress --mangle
 
 
@@ -172,13 +174,17 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/esbuild \
 		--bundle \
 		--minify \
-		--outfile={{build_dir}}/nomodule.min.js \
-		{{build_dir}}/index.js
+		--outfile={{dist_dir}}/nomodule.min.js \
+		{{dist_dir}}/index.js
 
 
-@meta:
-	echo "⚙️  Copying Meta files"
-	cp -RT {{src_dir}}/Static/Meta/ {{build_dir}}/
+@static:
+	echo "⚙️  Copying more static files"
+	cp -RT {{src_dir}}/Static/Meta/ {{dist_dir}}/
+
+	mkdir -p {{dist_dir}}/fonts/
+	cp node_modules/fission-kit/fonts/**/*.woff2 {{dist_dir}}/fonts/
+	cp {{src_dir}}/Static/Fonts/Nunito/*.woff2 {{dist_dir}}/fonts/
 
 
 

@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+@import "fission-kit/fonts/body/fontface.css";
+@import "fission-kit/fonts/display/fontface.css";
+@import "fission-kit/fonts/mono/fontface.css";
+@import "../Static/Fonts/Nunito/fontface.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
