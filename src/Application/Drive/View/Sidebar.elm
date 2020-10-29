@@ -110,7 +110,7 @@ plaintextEditor editor sidebar model =
         ]
         [ Drive.sidebarControls
             { above = False
-            , canChangeSize = Common.isSingleFileView model
+            , canChangeSize = True
             , expanded = sidebar.expanded
             }
 
