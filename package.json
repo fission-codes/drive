@@ -8,6 +8,7 @@
   "devDependencies": {
     "elm-git-install": "^0.1.3",
     "elm-impfix": "^1.0.8",
+    "elm-live": "^4.0.1",
     "elm-tailwind-css": "^0.4.6",
     "esbuild": "^0.7.15",
     "html-minifier-terser": "^5.1.1",
