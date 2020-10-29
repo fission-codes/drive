@@ -6,6 +6,7 @@ module Drive.Sidebar exposing (..)
 type Msg
     = PlaintextEditorInput String
     | PlaintextEditorSave
+    | DetailsShowPreviewOverlay
 
 
 type alias Model =

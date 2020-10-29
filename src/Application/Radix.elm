@@ -108,7 +108,6 @@ type Msg
     | RemoveItem Item
     | RenameItem Item
     | Select Item
-    | ShowPreviewOverlay
     | ShowRenameItemModal Item
     | ToggleExpandedSidebar
     | ToggleSidebarAddOrCreate

@@ -182,9 +182,6 @@ update msg =
         Select a ->
             Drive.select a
 
-        ShowPreviewOverlay ->
-            Drive.showPreviewOverlay
-
         ShowRenameItemModal a ->
             Drive.showRenameItemModal a
 

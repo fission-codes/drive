@@ -8,52 +8,57 @@ import Return
 
 update : Sidebar.Msg -> Sidebar.Model -> Manager
 update msg sidebar model =
-    case msg of
-        Sidebar.PlaintextEditorInput content ->
-            case sidebar.mode of
-                Sidebar.EditPlaintext editorModel ->
-                    { model
-                        | sidebar =
-                            Just
-                                { sidebar
-                                    | mode =
-                                        Sidebar.EditPlaintext
-                                            { editorModel
-                                                | text = content
-                                            }
-                                }
+    case ( sidebar.mode, msg ) of
+        ( Sidebar.EditPlaintext editorModel, Sidebar.PlaintextEditorInput content ) ->
+            { model
+                | sidebar =
+                    Just
+                        { sidebar
+                            | mode =
+                                Sidebar.EditPlaintext
+                                    { editorModel
+                                        | text = content
+                                    }
+                        }
+            }
+                |> Return.singleton
+
+        ( Sidebar.EditPlaintext editorModel, Sidebar.PlaintextEditorSave ) ->
+            if editorModel.text /= editorModel.originalText then
+                Ports.fsWriteItemUtf8
+                    { pathSegments =
+                        -- TODO philipp: use a library function instead
+                        String.split "/" sidebar.path
+                    , text = editorModel.text
                     }
-                        |> Return.singleton
+                    |> Return.return
+                        { model
+                            | sidebar =
+                                Just
+                                    { sidebar
+                                        | mode =
+                                            Sidebar.EditPlaintext
+                                                { editorModel | originalText = editorModel.text }
+                                    }
+                        }
 
-                _ ->
-                    model
-                        |> Return.singleton
+            else
+                model
+                    |> Return.singleton
 
-        Sidebar.PlaintextEditorSave ->
-            case sidebar.mode of
-                Sidebar.EditPlaintext editorModel ->
-                    if editorModel.text /= editorModel.originalText then
-                        Ports.fsWriteItemUtf8
-                            { pathSegments =
-                                -- TODO philipp: use a library function instead
-                                String.split "/" sidebar.path
-                            , text = editorModel.text
-                            }
-                            |> Return.return
-                                { model
-                                    | sidebar =
-                                        Just
-                                            { sidebar
-                                                | mode =
-                                                    Sidebar.EditPlaintext
-                                                        { editorModel | originalText = editorModel.text }
-                                            }
-                                }
+        ( Sidebar.Details detailsModel, Sidebar.DetailsShowPreviewOverlay ) ->
+            { model
+                | sidebar =
+                    Just
+                        { sidebar
+                            | mode =
+                                Sidebar.Details
+                                    { detailsModel
+                                        | showPreviewOverlay = True
+                                    }
+                        }
+            }
+                |> Return.singleton
 
-                    else
-                        model
-                            |> Return.singleton
-
-                _ ->
-                    model
-                        |> Return.singleton
+        ( _, _ ) ->
+            Return.singleton model

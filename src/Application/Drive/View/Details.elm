@@ -5,6 +5,7 @@ import Common.View as Common
 import ContextMenu
 import Drive.ContextMenu
 import Drive.Item exposing (Item, Kind(..))
+import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import FeatherIcons
 import Html exposing (Html)
@@ -276,7 +277,7 @@ dataContainer item =
                 Drive.Item.Image ->
                     List.append
                         defaultStyles
-                        [ E.onClick ShowPreviewOverlay
+                        [ E.onClick (SidebarMsg Sidebar.DetailsShowPreviewOverlay)
                         , T.cursor_pointer
                         ]
 

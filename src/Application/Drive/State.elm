@@ -385,32 +385,6 @@ selectPreviousItem =
         (\l -> List.length l - 1)
 
 
-showPreviewOverlay : Manager
-showPreviewOverlay model =
-    case model.sidebar of
-        Just sidebar ->
-            case sidebar.mode of
-                Drive.Sidebar.Details details ->
-                    Return.singleton
-                        { model
-                            | sidebar =
-                                Just
-                                    { sidebar
-                                        | mode =
-                                            Drive.Sidebar.Details
-                                                { details
-                                                    | showPreviewOverlay = True
-                                                }
-                                    }
-                        }
-
-                _ ->
-                    Return.singleton model
-
-        _ ->
-            Return.singleton model
-
-
 showRenameItemModal : Item -> Manager
 showRenameItemModal item model =
     return
