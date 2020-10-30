@@ -1,7 +1,10 @@
 module Common exposing (..)
 
 import Authentication.Essentials
+import Drive.Item exposing (Item)
+import List.Extra as List
 import Radix exposing (Model)
+import Result.Extra as Result
 import Round
 import Routing
 import String.Ext as String
@@ -136,3 +139,16 @@ sizeInWords sizeInBytes =
 humanReadableFloat : Float -> String
 humanReadableFloat =
     Round.round 2 >> String.chopEnd ".00"
+
+
+lookupItem : Model -> String -> Maybe Item
+lookupItem model path =
+    model.directoryList
+        |> Result.map .items
+        |> Result.withDefault []
+        |> List.find (.path >> (==) path)
+
+
+isGroundFloor : Model -> Bool
+isGroundFloor model =
+    Result.unwrap True (.floor >> (==) 1) model.directoryList

@@ -2,15 +2,19 @@ module Drive.View.Sidebar exposing (view)
 
 import Common exposing (ifThenElse)
 import Common.View as Common
-import Drive.Item exposing (Kind(..))
+import ContextMenu
+import Drive.ContextMenu
+import Drive.Item exposing (Item, Kind(..))
 import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import Drive.View.Details as Details
+import FeatherIcons
 import FileSystem
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra as E
+import Html.Events.Extra.Mouse as M
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
 import List.Extra as List
@@ -100,6 +104,48 @@ plaintextEditor editor sidebar model =
     let
         hasChanges =
             editor.text /= editor.originalText
+
+        menu item =
+            Html.button
+                [ item
+                    |> Drive.ContextMenu.item
+                        ContextMenu.TopLeft
+                        { isGroundFloor = Common.isGroundFloor model }
+                    |> ShowContextMenu
+                    |> M.onClick
+
+                --
+                , T.appearance_none
+                , T.ml_2
+                , T.text_gray_300
+                ]
+                [ FeatherIcons.moreVertical
+                    |> FeatherIcons.withSize 18
+                    |> Common.wrapIcon [ T.pointer_events_none ]
+                ]
+
+        filename item =
+            Html.span
+                [ T.ml_3
+                , T.mr_auto
+                ]
+                [ if sidebar.expanded then
+                    Html.text item.name
+
+                  else
+                    Html.text ""
+                ]
+
+        menuAndFilename =
+            model.selectedPath
+                |> Maybe.andThen (Common.lookupItem model)
+                |> Maybe.map
+                    (\item ->
+                        [ menu item
+                        , filename item
+                        ]
+                    )
+                |> Maybe.withDefault []
     in
     Html.div
         [ T.flex
@@ -111,9 +157,11 @@ plaintextEditor editor sidebar model =
         [ Drive.sidebarControls
             { above = False
             , controls =
-                [ Drive.controlExpand { expanded = sidebar.expanded }
-                , Drive.controlClose
-                ]
+                List.append
+                    menuAndFilename
+                    [ Drive.controlExpand { expanded = sidebar.expanded }
+                    , Drive.controlClose
+                    ]
             }
 
         --
@@ -358,17 +406,11 @@ detailsForSelection { showPreviewOverlay } sidebar model =
         , T.py_6
         ]
         [ model.selectedPath
-            |> Maybe.andThen
-                (\path ->
-                    model.directoryList
-                        |> Result.map .items
-                        |> Result.withDefault []
-                        |> List.find (.path >> (==) path)
-                )
+            |> Maybe.andThen (Common.lookupItem model)
             |> Maybe.map
                 (Html.Lazy.lazy6
                     Details.view
-                    (Result.unwrap True (.floor >> (==) 1) model.directoryList)
+                    (Common.isGroundFloor model)
                     (Common.isSingleFileView model)
                     model.currentTime
                     sidebar.expanded
