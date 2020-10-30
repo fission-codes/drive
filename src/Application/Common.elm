@@ -152,3 +152,7 @@ lookupItem model path =
 isGroundFloor : Model -> Bool
 isGroundFloor model =
     Result.unwrap True (.floor >> (==) 1) model.directoryList
+
+when : Bool -> List a -> List a
+when predicate list =
+    if predicate then list else []

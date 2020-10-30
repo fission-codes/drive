@@ -127,8 +127,8 @@ alwaysBurgers =
 -- ITEM
 
 
-item : ContextMenu.Hook -> { isGroundFloor : Bool } -> Drive.Item.Item -> ContextMenu Msg
-item hook { isGroundFloor } context =
+item : ContextMenu.Hook -> { isGroundFloor : Bool, enableDownload : Bool } -> Drive.Item.Item -> ContextMenu Msg
+item hook { isGroundFloor, enableDownload } context =
     let
         isPublicPath =
             String.startsWith "public/" context.path
@@ -143,45 +143,33 @@ item hook { isGroundFloor } context =
         hook
         (case context.kind of
             Directory ->
-                [ driveLink context
-                ]
-                    |> (if isPublicPath then
-                            List.add [ copyCid context ]
-
-                        else
-                            identity
-                       )
-                    |> List.add
-                        (if isGroundFloor && context.name == "public" then
-                            []
-
-                         else
-                            [ Divider
-                            , renameItem context
-                            , removeItem context
-                            ]
-                        )
-
-            _ ->
-                [ driveLink context
-                ]
-                    |> (if isPublicPath then
-                            List.add [ contentLink context ]
-
-                        else
-                            identity
-                       )
-                    |> (if isPublicPath then
-                            List.add [ copyCid context ]
-
-                        else
-                            identity
-                       )
-                    |> List.add
+                List.concat
+                    [ [ driveLink context ]
+                    , Common.when isPublicPath
+                        [ copyCid context ]
+                    , Common.when (not (isGroundFloor && context.name == "public"))
                         [ Divider
                         , renameItem context
                         , removeItem context
                         ]
+                    ]
+
+            _ ->
+                List.concat
+                    [ Common.when enableDownload
+                        [ downloadItem context
+                        , Divider
+                        ]
+                    , [ driveLink context ]
+                    , Common.when isPublicPath
+                        [ contentLink context
+                        , copyCid context
+                        ]
+                    , [ Divider ]
+                    , [ renameItem context
+                      , removeItem context
+                      ]
+                    ]
         )
 
 
@@ -262,5 +250,20 @@ removeItem context =
         , msg =
             context
                 |> RemoveItem
+                |> Just
+        }
+
+
+downloadItem context =
+    Item
+        { icon = FeatherIcons.download
+        , label = "Download"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            context
+                |> DownloadItem
                 |> Just
         }
