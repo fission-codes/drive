@@ -120,6 +120,13 @@ plaintextEditor editor sidebar model =
                 , T.appearance_none
                 , T.ml_2
                 , T.text_gray_300
+
+                --
+                , if not sidebar.expanded then
+                    T.mr_auto
+
+                  else
+                    T.mr_0
                 ]
                 [ FeatherIcons.moreVertical
                     |> FeatherIcons.withSize 18
@@ -127,15 +134,59 @@ plaintextEditor editor sidebar model =
                 ]
 
         filename item =
-            Html.span
-                [ T.ml_3
+            Html.div
+                [ T.flex
+                , T.items_center
+                , T.ml_4
                 , T.mr_auto
-                ]
-                [ if sidebar.expanded then
-                    Html.text item.name
+                , T.text_base
 
-                  else
-                    Html.text ""
+                --
+                , T.text_purple
+
+                -- Dark mode
+                ------------
+                , T.dark__border_darkness_above
+
+                --
+                , T.dark__text_white
+                ]
+                [ -----------------------------------------
+                  -- Label
+                  -----------------------------------------
+                  Html.span
+                    [ T.flex_auto, T.truncate ]
+                    [ Html.text item.nameProperties.base
+
+                    --
+                    , case item.nameProperties.extension of
+                        "" ->
+                            nothing
+
+                        ext ->
+                            Html.span
+                                [ T.antialiased
+                                , T.bg_gray_600
+                                , S.default_transition_duration
+                                , T.font_semibold
+                                , T.inline_block
+                                , T.leading_normal
+                                , T.ml_2
+                                , T.pointer_events_none
+                                , T.px_1
+                                , T.rounded
+                                , T.text_gray_200
+                                , T.text_xs
+                                , T.transition_opacity
+                                , T.uppercase
+
+                                -- Dark mode
+                                ------------
+                                , T.dark__bg_gray_200
+                                , T.dark__text_gray_500
+                                ]
+                                [ Html.text ext ]
+                    ]
                 ]
 
         menuAndFilename =
@@ -143,9 +194,11 @@ plaintextEditor editor sidebar model =
                 |> Maybe.andThen (Common.lookupItem model)
                 |> Maybe.map
                     (\item ->
-                        [ menu item
-                        , filename item
-                        ]
+                        List.concat
+                            [ [ menu item ]
+                            , Common.when sidebar.expanded
+                                [ filename item ]
+                            ]
                     )
                 |> Maybe.withDefault []
     in

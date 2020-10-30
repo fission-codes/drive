@@ -844,9 +844,6 @@ list model directoryList =
 listItem : Bool -> Maybe String -> Item -> Html Msg
 listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path } as item) =
     let
-        { base } =
-            nameProperties
-
         selected =
             selectedPath == Just path
 
