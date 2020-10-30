@@ -110,8 +110,10 @@ plaintextEditor editor sidebar model =
         ]
         [ Drive.sidebarControls
             { above = False
-            , canChangeSize = True
-            , expanded = sidebar.expanded
+            , controls =
+                [ Drive.controlExpand { expanded = sidebar.expanded }
+                , Drive.controlClose
+                ]
             }
 
         --
@@ -200,8 +202,15 @@ addOrCreate addOrCreateModel model =
         []
         [ Drive.sidebarControls
             { above = False
-            , canChangeSize = Common.isSingleFileView model
-            , expanded = addOrCreateModel.expanded
+            , controls =
+                List.append
+                    (if Common.isSingleFileView model then
+                        [ Drive.controlExpand { expanded = addOrCreateModel.expanded } ]
+
+                     else
+                        []
+                    )
+                    [ Drive.controlClose ]
             }
 
         --

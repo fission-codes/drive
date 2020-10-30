@@ -118,8 +118,15 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
         --
         , Drive.sidebarControls
             { above = True
-            , expanded = expandSidebar
-            , canChangeSize = not isSingleFileView
+            , controls =
+                List.append
+                    (if isSingleFileView then
+                        []
+
+                     else
+                        [ Drive.controlExpand { expanded = expandSidebar } ]
+                    )
+                    [ Drive.controlClose ]
             }
         ]
 

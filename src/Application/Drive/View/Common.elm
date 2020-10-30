@@ -18,8 +18,8 @@ import Url.Builder
 -- SIDEBAR
 
 
-sidebarControls : { above : Bool, canChangeSize : Bool, expanded : Bool } -> Html Msg
-sidebarControls { above, canChangeSize, expanded } =
+sidebarControls : { above : Bool, controls : List (Html Msg) } -> Html Msg
+sidebarControls { above, controls } =
     let
         additionalAttributes =
             if above then
@@ -56,7 +56,7 @@ sidebarControls { above, canChangeSize, expanded } =
             ]
             additionalAttributes
         )
-        [ Html.div
+        (Html.div
             [ T.absolute
             , T.border_b
             , T.border_gray_300
@@ -66,69 +66,68 @@ sidebarControls { above, canChangeSize, expanded } =
             , T.right_0
             ]
             []
+            :: controls
+        )
 
-        -- Expand
-        ---------
+
+controlExpand : { expanded : Bool } -> Html Msg
+controlExpand { expanded } =
+    Html.div
+        [ E.onClick ToggleExpandedSidebar
+
+        --
+        , T.cursor_pointer
+        , T.hidden
+        , T.items_center
+        , T.px_2
+        , T.py_3
+
+        --
+        , T.md__flex
+        ]
+        [ (if expanded then
+            FeatherIcons.minimize2
+
+           else
+            FeatherIcons.maximize2
+          )
+            |> FeatherIcons.withSize 14
+            |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
+            |> List.singleton
+            |> Html.span [ T.flex_shrink_0, T.w_6 ]
+
+        --
         , Html.div
-            [ E.onClick ToggleExpandedSidebar
-
-            --
-            , T.cursor_pointer
-            , T.hidden
-            , T.items_center
-            , T.px_2
-            , T.py_3
-
-            --
-            , if canChangeSize then
-                T.md__flex
+            [ T.ml_1 ]
+            [ if expanded then
+                Html.text "Minimize"
 
               else
-                T.md__hidden
+                Html.text "Maximize"
             ]
-            [ (if expanded then
-                FeatherIcons.minimize2
+        ]
 
-               else
-                FeatherIcons.maximize2
-              )
-                |> FeatherIcons.withSize 14
-                |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
-                |> List.singleton
-                |> Html.span [ T.flex_shrink_0, T.w_6 ]
 
-            --
-            , Html.div
-                [ T.ml_1 ]
-                [ if expanded then
-                    Html.text "Minimize"
+controlClose : Html Msg
+controlClose =
+    Html.div
+        [ E.onClick CloseSidebar
 
-                  else
-                    Html.text "Maximize"
-                ]
-            ]
+        --
+        , T.cursor_pointer
+        , T.flex
+        , T.items_center
+        , T.px_2
+        , T.py_3
+        ]
+        [ FeatherIcons.x
+            |> FeatherIcons.withSize 18
+            |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
+            |> List.singleton
+            |> Html.span [ T.flex_shrink_0, T.w_6 ]
 
-        -- Close
-        --------
+        --
         , Html.div
-            [ E.onClick CloseSidebar
-
-            --
-            , T.cursor_pointer
-            , T.flex
-            , T.items_center
-            , T.px_2
-            , T.py_3
-            ]
-            [ FeatherIcons.x
-                |> FeatherIcons.withSize 18
-                |> FeatherIcons.toHtml [ A.style "margin" "0 auto" ]
-                |> List.singleton
-                |> Html.span [ T.flex_shrink_0, T.w_6 ]
-
-            --
-            , Html.div
-                [ T.ml_1 ]
-                [ Html.text "Close" ]
-            ]
+            [ T.ml_1 ]
+            [ Html.text "Close" ]
         ]
