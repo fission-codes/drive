@@ -43,7 +43,8 @@ export async function add({ blobs, pathSegments }) {
 
 export async function write({ pathSegments, text }) {
   const path = prefixedPath(pathSegments)
-  fs.add(path, text)
+  await fs.add(path, text)
+  await fs.publish()
 }
 
 
