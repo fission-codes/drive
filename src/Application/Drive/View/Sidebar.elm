@@ -206,7 +206,6 @@ plaintextEditor editor sidebar model =
         , T.flex_col
         , T.items_stretch
         , T.h_full
-        , T.bg_gray_700
         ]
         [ Drive.sidebarControls
             { above = False
@@ -219,17 +218,22 @@ plaintextEditor editor sidebar model =
 
         --
         , Html.textarea
-            [ T.w_full
+            [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
+
+            --
+            , T.w_full
             , T.h_full
             , T.bg_transparent
-            , T.bg_gray_900
             , T.flex_grow
             , T.px_8
             , T.pt_8
             , T.font_mono
             , T.text_gray_100
             , T.resize_none
-            , E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
+
+            -- Dark mode
+            ------------
+            , T.dark__text_gray_500
             ]
             [ Html.text editor.text ]
         , Html.div
