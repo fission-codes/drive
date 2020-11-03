@@ -9,21 +9,23 @@ import Return
 update : Sidebar.Msg -> Sidebar.Model -> Manager
 update msg sidebar model =
     case ( sidebar.mode, msg ) of
-        ( Sidebar.EditPlaintext editorModel, Sidebar.PlaintextEditorInput content ) ->
+        ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorInput content ) ->
             { model
                 | sidebar =
                     Just
                         { sidebar
                             | mode =
                                 Sidebar.EditPlaintext
-                                    { editorModel
-                                        | text = content
-                                    }
+                                    (Just
+                                        { editorModel
+                                            | text = content
+                                        }
+                                    )
                         }
             }
                 |> Return.singleton
 
-        ( Sidebar.EditPlaintext editorModel, Sidebar.PlaintextEditorSave ) ->
+        ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorSave ) ->
             if editorModel.text /= editorModel.originalText then
                 Ports.fsWriteItemUtf8
                     { pathSegments =
@@ -38,7 +40,11 @@ update msg sidebar model =
                                     { sidebar
                                         | mode =
                                             Sidebar.EditPlaintext
-                                                { editorModel | originalText = editorModel.text }
+                                                (Just
+                                                    { editorModel
+                                                        | originalText = editorModel.text
+                                                    }
+                                                )
                                     }
                         }
 

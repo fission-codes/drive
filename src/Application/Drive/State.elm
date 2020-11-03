@@ -332,10 +332,7 @@ select item model =
                             Just
                                 { path = item.path
                                 , mode =
-                                    Drive.Sidebar.EditPlaintext
-                                        { text = "LOADING"
-                                        , originalText = "LOADING"
-                                        }
+                                    Drive.Sidebar.EditPlaintext Nothing
                                 }
                     }
 
@@ -349,10 +346,7 @@ select item model =
                             Just
                                 { path = item.path
                                 , mode =
-                                    Drive.Sidebar.EditPlaintext
-                                        { text = "LOADING"
-                                        , originalText = "LOADING"
-                                        }
+                                    Drive.Sidebar.EditPlaintext Nothing
                                 }
                     }
 

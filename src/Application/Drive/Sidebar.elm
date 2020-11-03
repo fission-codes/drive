@@ -17,7 +17,8 @@ type alias Model =
 
 type Mode
     = Details { showPreviewOverlay : Bool }
-    | EditPlaintext EditorModel
+      -- Nothing means Loading
+    | EditPlaintext (Maybe EditorModel)
 
 
 type alias EditorModel =

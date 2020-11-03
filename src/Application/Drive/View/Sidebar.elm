@@ -99,12 +99,80 @@ viewSidebar { scrollable, expanded, body } =
         [ body ]
 
 
-plaintextEditor : Sidebar.EditorModel -> Sidebar.Model -> Model -> Html Msg
+plaintextEditor : Maybe Sidebar.EditorModel -> Sidebar.Model -> Model -> Html Msg
 plaintextEditor editor sidebar model =
-    let
-        hasChanges =
-            editor.text /= editor.originalText
+    Html.div
+        [ T.flex
+        , T.flex_col
+        , T.h_full
+        , T.items_stretch
+        ]
+        [ Drive.sidebarControls
+            { above = False
+            , controls = editorHeaderItems model
+            }
 
+        --
+        , Html.textarea
+            [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
+
+            --
+            , T.bg_transparent
+            , T.flex_grow
+            , T.font_mono
+            , T.px_8
+            , T.pt_8
+            , T.resize_none
+            , T.text_gray_100
+
+            --
+            , T.h_full
+            , T.w_full
+
+            -- Dark mode
+            ------------
+            , T.dark__text_gray_500
+            ]
+            [ Html.text
+                (editor
+                    |> Maybe.map .text
+                    |> Maybe.withDefault "LOADING"
+                )
+            ]
+        , Html.div
+            [ T.flex
+            , T.flex_shrink_0
+            , T.h_12
+            , T.items_center
+            , T.justify_end
+            , T.mt_px
+            , T.p_2
+            , T.relative
+            , T.space_x_2
+            ]
+            (List.append
+                [ Html.div
+                    [ T.absolute
+                    , T.border_t
+                    , T.border_gray_300
+                    , T.left_0
+                    , T.opacity_10
+                    , T.right_0
+                    , T.top_0
+                    ]
+                    []
+                ]
+                (editor
+                    |> Maybe.map editorFooterItems
+                    |> Maybe.withDefault []
+                )
+            )
+        ]
+
+
+editorHeaderItems : Model -> List (Html Msg)
+editorHeaderItems model =
+    let
         dotsIcon =
             FeatherIcons.moreVertical
                 |> FeatherIcons.withSize 18
@@ -197,102 +265,55 @@ plaintextEditor editor sidebar model =
                     )
                 |> Maybe.withDefault nothing
     in
-    Html.div
-        [ T.flex
-        , T.flex_col
-        , T.h_full
-        , T.items_stretch
-        ]
-        [ Drive.sidebarControls
-            { above = False
-            , controls =
-                [ menuAndFilename
-                , Drive.controlExpand { expanded = model.sidebarExpanded }
-                , Drive.controlClose
-                ]
-            }
+    [ menuAndFilename
+    , Drive.controlExpand { expanded = model.sidebarExpanded }
+    , Drive.controlClose
+    ]
 
-        --
-        , Html.textarea
-            [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
 
-            --
-            , T.bg_transparent
-            , T.flex_grow
-            , T.font_mono
-            , T.px_8
-            , T.pt_8
-            , T.resize_none
-            , T.text_gray_100
-
-            --
-            , T.h_full
-            , T.w_full
-
-            -- Dark mode
-            ------------
-            , T.dark__text_gray_500
+editorFooterItems : Sidebar.EditorModel -> List (Html Msg)
+editorFooterItems editor =
+    let
+        hasChanges =
+            editor.text /= editor.originalText
+    in
+    [ if hasChanges then
+        Html.button
+            [ T.px_4
+            , T.py_2
+            , T.text_gray_400
+            , T.text_tiny
+            , T.tracking_wide
+            , T.uppercase
+            , E.onClick CloseSidebar
             ]
-            [ Html.text editor.text ]
-        , Html.div
-            [ T.flex
-            , T.flex_shrink_0
-            , T.h_12
-            , T.items_center
-            , T.justify_end
-            , T.mt_px
-            , T.p_2
+            [ Html.text "Cancel" ]
+
+      else
+        nothing
+    , if hasChanges then
+        Html.button
+            [ T.antialiased
+            , T.appearance_none
+            , T.bg_purple_shade
+            , T.font_semibold
+            , T.leading_normal
+            , T.px_4
+            , T.py_2
             , T.relative
-            , T.space_x_2
+            , T.rounded
+            , T.text_tiny
+            , T.text_white
+            , T.tracking_wider
+            , T.transition_colors
+            , T.uppercase
+            , E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
             ]
-            [ Html.div
-                [ T.absolute
-                , T.border_t
-                , T.border_gray_300
-                , T.left_0
-                , T.opacity_10
-                , T.right_0
-                , T.top_0
-                ]
-                []
-            , if hasChanges then
-                Html.button
-                    [ T.px_4
-                    , T.py_2
-                    , T.text_gray_400
-                    , T.text_tiny
-                    , T.tracking_wide
-                    , T.uppercase
-                    , E.onClick CloseSidebar
-                    ]
-                    [ Html.text "Cancel" ]
+            [ Html.text "Save" ]
 
-              else
-                nothing
-            , if hasChanges then
-                Html.button
-                    [ T.antialiased
-                    , T.appearance_none
-                    , T.bg_purple_shade
-                    , T.font_semibold
-                    , T.leading_normal
-                    , T.px_4
-                    , T.py_2
-                    , T.relative
-                    , T.rounded
-                    , T.text_tiny
-                    , T.text_white
-                    , T.tracking_wider
-                    , T.transition_colors
-                    , T.uppercase
-                    , E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
-                    ]
-                    [ Html.text "Save" ]
-
-              else
-                nothing
-            ]
-        ]
+      else
+        nothing
+    ]
 
 
 

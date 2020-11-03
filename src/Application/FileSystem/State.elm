@@ -112,14 +112,18 @@ gotItemUtf8 { pathSegments, text } model =
     (case model.sidebar of
         Just sidebar ->
             case sidebar.mode of
-                Sidebar.EditPlaintext editorModel ->
+                Sidebar.EditPlaintext _ ->
                     { model
                         | sidebar =
                             Just
                                 { sidebar
                                     | mode =
                                         Sidebar.EditPlaintext
-                                            { editorModel | text = text, originalText = text }
+                                            (Just
+                                                { text = text
+                                                , originalText = text
+                                                }
+                                            )
                                 }
                     }
 
