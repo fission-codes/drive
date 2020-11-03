@@ -105,37 +105,21 @@ plaintextEditor editor sidebar model =
         hasChanges =
             editor.text /= editor.originalText
 
-        menu item =
-            Html.button
-                [ item
-                    |> Drive.ContextMenu.item
-                        ContextMenu.TopLeft
-                        { isGroundFloor = Common.isGroundFloor model }
-                    |> ShowContextMenu
-                    |> M.onClick
-
-                --
-                , T.appearance_none
-                , T.ml_2
-                , T.text_gray_300
-
-                --
-                , if not sidebar.expanded then
-                    T.mr_auto
-
-                  else
-                    T.mr_0
-                ]
-                [ FeatherIcons.moreVertical
-                    |> FeatherIcons.withSize 18
-                    |> Common.wrapIcon [ T.pointer_events_none ]
-                ]
+        dotsIcon =
+            FeatherIcons.moreVertical
+                |> FeatherIcons.withSize 18
+                |> Common.wrapIcon
+                    [ T.pointer_events_none
+                    , T.mx_2
+                    , T.my_1
+                    , T.text_gray_300
+                    ]
 
         filename item =
             Html.div
                 [ T.flex
                 , T.items_center
-                , T.ml_4
+                , T.ml_2
                 , T.mr_auto
                 , T.text_base
 
@@ -193,12 +177,29 @@ plaintextEditor editor sidebar model =
                 |> Maybe.map
                     (\item ->
                         List.concat
-                            [ [ menu item ]
+                            [ [ dotsIcon ]
                             , Common.when sidebar.expanded
                                 [ filename item ]
                             ]
+                            |> Html.button
+                                [ item
+                                    |> Drive.ContextMenu.item
+                                        ContextMenu.TopLeft
+                                        { isGroundFloor = Common.isGroundFloor model }
+                                    |> ShowContextMenu
+                                    |> M.onClick
+
+                                --
+                                , T.flex
+                                , T.flex_row
+                                , T.flex_shrink_0
+                                , T.items_center
+                                , T.appearance_none
+                                , T.cursor_pointer
+                                , T.mr_auto
+                                ]
                     )
-                |> Maybe.withDefault []
+                |> Maybe.withDefault nothing
     in
     Html.div
         [ T.flex
@@ -210,11 +211,10 @@ plaintextEditor editor sidebar model =
         [ Drive.sidebarControls
             { above = False
             , controls =
-                List.append
-                    menuAndFilename
-                    [ Drive.controlExpand { expanded = sidebar.expanded }
-                    , Drive.controlClose
-                    ]
+                [ menuAndFilename
+                , Drive.controlExpand { expanded = sidebar.expanded }
+                , Drive.controlClose
+                ]
             }
 
         --
