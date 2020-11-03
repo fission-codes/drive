@@ -110,9 +110,7 @@ plaintextEditor editor sidebar model =
                 [ item
                     |> Drive.ContextMenu.item
                         ContextMenu.TopLeft
-                        { isGroundFloor = Common.isGroundFloor model
-                        , enableDownload = True
-                        }
+                        { isGroundFloor = Common.isGroundFloor model }
                     |> ShowContextMenu
                     |> M.onClick
 

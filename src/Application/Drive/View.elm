@@ -867,9 +867,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
         , item
             |> ContextMenu.item
                 ContextMenu.TopCenterWithoutOffset
-                { isGroundFloor = isGroundFloor
-                , enableDownload = False
-                }
+                { isGroundFloor = isGroundFloor }
             |> ShowContextMenu
             |> M.onContextMenu
 
@@ -882,9 +880,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
                         item
                             |> ContextMenu.item
                                 ContextMenu.TopCenterWithoutOffset
-                                { isGroundFloor = isGroundFloor
-                                , enableDownload = False
-                                }
+                                { isGroundFloor = isGroundFloor }
                             |> ShowContextMenuWithCoordinates { x = x, y = y }
 
                     --

@@ -234,9 +234,7 @@ overlayContents isGroundFloor currentTime item =
             [ item
                 |> Drive.ContextMenu.item
                     ContextMenu.BottomCenter
-                    { isGroundFloor = isGroundFloor
-                    , enableDownload = False
-                    }
+                    { isGroundFloor = isGroundFloor }
                 |> ShowContextMenu
                 |> M.onClick
 

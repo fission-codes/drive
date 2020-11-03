@@ -127,8 +127,8 @@ alwaysBurgers =
 -- ITEM
 
 
-item : ContextMenu.Hook -> { isGroundFloor : Bool, enableDownload : Bool } -> Drive.Item.Item -> ContextMenu Msg
-item hook { isGroundFloor, enableDownload } context =
+item : ContextMenu.Hook -> { isGroundFloor : Bool } -> Drive.Item.Item -> ContextMenu Msg
+item hook { isGroundFloor } context =
     let
         isPublicPath =
             String.startsWith "public/" context.path
@@ -156,11 +156,10 @@ item hook { isGroundFloor, enableDownload } context =
 
             _ ->
                 List.concat
-                    [ Common.when enableDownload
-                        [ downloadItem context
-                        , Divider
-                        ]
-                    , [ driveLink context ]
+                    [ [ downloadItem context
+                      , Divider
+                      , driveLink context
+                      ]
                     , Common.when isPublicPath
                         [ contentLink context
                         , copyCid context
