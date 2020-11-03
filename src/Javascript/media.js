@@ -15,6 +15,34 @@ import * as ipfs from "./ipfs.js"
 
 let stream
 
+customElements.define('fission-drive-media',
+  class extends HTMLElement {
+    constructor() {
+      console.log("created a custom element")
+      super()
+    }
+
+    connectedCallback() {
+      this.render()
+    }
+
+    attributeChangedCallback() {
+      this.render()
+    }
+
+    static get observedAttributes() {
+      return ["name", "path", "useFS"]
+    }
+
+    render() {
+      const name = this.getAttribute("name")
+      const path = this.getAttribute("path")
+      const useFS = this.getAttribute("useFS")
+      renderIn({ container: this, name, path, useFS })
+    }
+  }
+);
+
 
 export function render({ id, name, path, useFS }) {
   const containerId = id
@@ -23,6 +51,11 @@ export function render({ id, name, path, useFS }) {
   const container = document.getElementById(containerId)
   if (!container) return
 
+  renderIn({ container, name, path, useFS })
+}
+
+
+function renderIn({ container, name, path, useFS }) {
   container.childNodes.forEach(c => {
     container.removeChild(c)
   })

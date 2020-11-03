@@ -512,13 +512,23 @@ detailsForSelection { showPreviewOverlay } sidebar model =
         [ model.selectedPath
             |> Maybe.andThen (Common.lookupItem model)
             |> Maybe.map
-                (Html.Lazy.lazy6
-                    Details.view
-                    (Common.isGroundFloor model)
-                    (Common.isSingleFileView model)
-                    model.currentTime
-                    model.sidebarExpanded
-                    showPreviewOverlay
+                (\item ->
+                    case item.kind of
+                        Video ->
+                            Details.view_
+                                model
+                                item
+                                { showPreviewOverlay = showPreviewOverlay }
+
+                        _ ->
+                            Html.Lazy.lazy6
+                                Details.view
+                                (Common.isGroundFloor model)
+                                (Common.isSingleFileView model)
+                                model.currentTime
+                                model.sidebarExpanded
+                                showPreviewOverlay
+                                item
                 )
             |> Maybe.withDefault
                 nothing

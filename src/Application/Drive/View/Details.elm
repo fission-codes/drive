@@ -1,4 +1,4 @@
-module Drive.View.Details exposing (view)
+module Drive.View.Details exposing (view, view_)
 
 import Common
 import Common.View as Common
@@ -37,6 +37,48 @@ view isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay
         , dataContainer item
         , extra item
         ]
+
+
+view_ : Model -> Item -> { showPreviewOverlay : Bool } -> Html Msg
+view_ model item { showPreviewOverlay } =
+    Html.div
+        []
+        [ overlay
+            (Common.isGroundFloor model)
+            (Common.isSingleFileView model)
+            model.currentTime
+            model.sidebarExpanded
+            showPreviewOverlay
+            item
+        , fissionDriveMedia
+            { name = item.name
+            , path = item.path
+            , useFS = Routing.isAuthenticatedTree model.authenticated model.route
+            }
+            []
+            []
+        ]
+
+
+fissionDriveMedia : { name : String, path : String, useFS : Bool } -> List (Html.Attribute msg) -> List (Html msg) -> Html msg
+fissionDriveMedia { name, path, useFS } attributes children =
+    let
+        stringFromBool b =
+            if b then
+                "true"
+
+            else
+                "false"
+    in
+    Html.node "fission-drive-media"
+        (List.append
+            [ A.attribute "name" name
+            , A.attribute "path" path
+            , A.attribute "useFS" (stringFromBool useFS)
+            ]
+            attributes
+        )
+        children
 
 
 
@@ -119,14 +161,11 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
         , Drive.sidebarControls
             { above = True
             , controls =
-                List.append
-                    (if isSingleFileView then
-                        []
-
-                     else
+                List.concat
+                    [ Common.when (not isSingleFileView)
                         [ Drive.controlExpand { expanded = expandSidebar } ]
-                    )
-                    [ Drive.controlClose ]
+                    , [ Drive.controlClose ]
+                    ]
             }
         ]
 
