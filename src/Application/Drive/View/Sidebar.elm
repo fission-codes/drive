@@ -109,9 +109,9 @@ plaintextEditor editor sidebar model =
             FeatherIcons.moreVertical
                 |> FeatherIcons.withSize 18
                 |> Common.wrapIcon
-                    [ T.pointer_events_none
-                    , T.mx_2
+                    [ T.mx_2
                     , T.my_1
+                    , T.pointer_events_none
                     , T.text_gray_300
                     ]
 
@@ -122,15 +122,11 @@ plaintextEditor editor sidebar model =
                 , T.ml_2
                 , T.mr_auto
                 , T.text_base
-
-                --
                 , T.text_purple
 
                 -- Dark mode
                 ------------
                 , T.dark__border_darkness_above
-
-                --
                 , T.dark__text_white
                 ]
                 [ -----------------------------------------
@@ -190,12 +186,12 @@ plaintextEditor editor sidebar model =
                                     |> M.onClick
 
                                 --
+                                , T.appearance_none
+                                , T.cursor_pointer
                                 , T.flex
                                 , T.flex_row
                                 , T.flex_shrink_0
                                 , T.items_center
-                                , T.appearance_none
-                                , T.cursor_pointer
                                 , T.mr_auto
                                 ]
                     )
@@ -204,8 +200,8 @@ plaintextEditor editor sidebar model =
     Html.div
         [ T.flex
         , T.flex_col
-        , T.items_stretch
         , T.h_full
+        , T.items_stretch
         ]
         [ Drive.sidebarControls
             { above = False
@@ -221,15 +217,17 @@ plaintextEditor editor sidebar model =
             [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
 
             --
-            , T.w_full
-            , T.h_full
             , T.bg_transparent
             , T.flex_grow
+            , T.font_mono
             , T.px_8
             , T.pt_8
-            , T.font_mono
-            , T.text_gray_100
             , T.resize_none
+            , T.text_gray_100
+
+            --
+            , T.h_full
+            , T.w_full
 
             -- Dark mode
             ------------
@@ -239,13 +237,13 @@ plaintextEditor editor sidebar model =
         , Html.div
             [ T.flex
             , T.flex_shrink_0
-            , T.space_x_2
+            , T.h_12
             , T.items_center
             , T.justify_end
             , T.mt_px
             , T.p_2
             , T.relative
-            , T.h_12
+            , T.space_x_2
             ]
             [ Html.div
                 [ T.absolute
@@ -253,17 +251,17 @@ plaintextEditor editor sidebar model =
                 , T.border_gray_300
                 , T.left_0
                 , T.opacity_10
-                , T.top_0
                 , T.right_0
+                , T.top_0
                 ]
                 []
             , if hasChanges then
                 Html.button
-                    [ T.text_gray_400
+                    [ T.px_4
+                    , T.py_2
+                    , T.text_gray_400
                     , T.text_tiny
                     , T.tracking_wide
-                    , T.px_4
-                    , T.py_2
                     , T.uppercase
                     , E.onClick CloseSidebar
                     ]
@@ -276,13 +274,13 @@ plaintextEditor editor sidebar model =
                     [ T.antialiased
                     , T.appearance_none
                     , T.bg_purple_shade
-                    , T.text_tiny
                     , T.font_semibold
                     , T.leading_normal
                     , T.px_4
                     , T.py_2
                     , T.relative
                     , T.rounded
+                    , T.text_tiny
                     , T.text_white
                     , T.tracking_wider
                     , T.transition_colors
