@@ -331,7 +331,6 @@ select item model =
                         , sidebar =
                             Just
                                 { path = item.path
-                                , expanded = False
                                 , mode =
                                     Drive.Sidebar.EditPlaintext
                                         { text = "LOADING"
@@ -349,7 +348,6 @@ select item model =
                         , sidebar =
                             Just
                                 { path = item.path
-                                , expanded = False
                                 , mode =
                                     Drive.Sidebar.EditPlaintext
                                         { text = "LOADING"
@@ -365,7 +363,6 @@ select item model =
                     , sidebar =
                         Just
                             { path = item.path
-                            , expanded = False
                             , mode = Drive.Sidebar.details
                             }
                 }
@@ -394,31 +391,10 @@ showRenameItemModal item model =
 
 toggleExpandedSidebar : Manager
 toggleExpandedSidebar model =
-    case model.addOrCreate of
-        Just addOrCreate ->
-            Return.singleton
-                { model
-                    | addOrCreate =
-                        Just
-                            { addOrCreate
-                                | expanded = not addOrCreate.expanded
-                            }
-                }
-
-        Nothing ->
-            case model.sidebar of
-                Just sidebar ->
-                    Return.singleton
-                        { model
-                            | sidebar =
-                                Just
-                                    { sidebar
-                                        | expanded = not sidebar.expanded
-                                    }
-                        }
-
-                _ ->
-                    Return.singleton model
+    Return.singleton
+        { model
+            | sidebarExpanded = not model.sidebarExpanded
+        }
 
 
 toggleSidebarAddOrCreate : Manager

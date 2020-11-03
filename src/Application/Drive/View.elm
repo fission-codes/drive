@@ -405,22 +405,11 @@ primary model =
             errorView model.route err
 
         ( _, Ok directoryList ) ->
-            let
-                isExpandedSidebar =
-                    (model.sidebar
-                        |> Maybe.map .expanded
-                        |> Maybe.withDefault False
-                    )
-                        || (model.addOrCreate
-                                |> Maybe.map .expanded
-                                |> Maybe.withDefault False
-                           )
-            in
             mainLayout
                 model
                 (case directoryList.items of
                     [] ->
-                        if isExpandedSidebar then
+                        if model.sidebarExpanded && sidebarOpen model then
                             Html.nothing
 
                         else
@@ -722,25 +711,10 @@ contentAvailable model directoryList =
             , T.flex_auto
             , T.w_1over2
             ]
-            (let
-                hideContent =
-                    Maybe.isJust model.sidebar
-                        || Maybe.isJust model.addOrCreate
-
-                isExpandedSidebar =
-                    (model.sidebar
-                        |> Maybe.map .expanded
-                        |> Maybe.withDefault False
-                    )
-                        || (model.addOrCreate
-                                |> Maybe.map .expanded
-                                |> Maybe.withDefault False
-                           )
-             in
-             if isExpandedSidebar then
+            (if model.sidebarExpanded && sidebarOpen model then
                 [ T.hidden ]
 
-             else if hideContent then
+             else if sidebarOpen model then
                 [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
 
              else
@@ -1011,3 +985,9 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
           else
             nothing
         ]
+
+
+sidebarOpen : Model -> Bool
+sidebarOpen model =
+    Maybe.isJust model.sidebar
+        || Maybe.isJust model.addOrCreate

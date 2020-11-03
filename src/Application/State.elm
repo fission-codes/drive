@@ -79,6 +79,7 @@ init flags url navKey =
 
       -- Sidebar
       ----------
+      , sidebarExpanded = False
       , sidebar = Nothing
       , addOrCreate = Nothing
       }

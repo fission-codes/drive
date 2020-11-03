@@ -10,8 +10,7 @@ type Msg
 
 
 type alias Model =
-    { expanded : Bool
-    , path : String
+    { path : String
     , mode : Mode
     }
 
@@ -28,8 +27,7 @@ type alias EditorModel =
 
 
 type alias AddOrCreateModel =
-    { expanded : Bool
-    , input : String
+    { input : String
     }
 
 
@@ -44,4 +42,4 @@ details =
 
 addOrCreate : AddOrCreateModel
 addOrCreate =
-    { expanded = False, input = "" }
+    { input = "" }

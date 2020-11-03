@@ -37,7 +37,7 @@ view model =
         Just addOrCreateModel ->
             viewSidebar
                 { scrollable = True
-                , expanded = addOrCreateModel.expanded
+                , expanded = model.sidebarExpanded
                 , body = addOrCreate addOrCreateModel model
                 }
 
@@ -46,7 +46,7 @@ view model =
                 Just sidebar ->
                     viewSidebar
                         { scrollable = False
-                        , expanded = sidebar.expanded
+                        , expanded = model.sidebarExpanded
                         , body =
                             case sidebar.mode of
                                 Sidebar.Details details ->
@@ -178,7 +178,7 @@ plaintextEditor editor sidebar model =
                     (\item ->
                         List.concat
                             [ [ dotsIcon ]
-                            , Common.when sidebar.expanded
+                            , Common.when model.sidebarExpanded
                                 [ filename item ]
                             ]
                             |> Html.button
@@ -212,7 +212,7 @@ plaintextEditor editor sidebar model =
             { above = False
             , controls =
                 [ menuAndFilename
-                , Drive.controlExpand { expanded = sidebar.expanded }
+                , Drive.controlExpand { expanded = model.sidebarExpanded }
                 , Drive.controlClose
                 ]
             }
@@ -306,7 +306,7 @@ addOrCreate addOrCreateModel model =
             , controls =
                 List.append
                     (if Common.isSingleFileView model then
-                        [ Drive.controlExpand { expanded = addOrCreateModel.expanded } ]
+                        [ Drive.controlExpand { expanded = model.sidebarExpanded } ]
 
                      else
                         []
@@ -396,7 +396,7 @@ addOrCreateForm addOrCreateModel model =
 
                 --
                 , A.style "min-height" "108px"
-                , A.style "padding-top" (ifThenElse addOrCreateModel.expanded "19%" "22.5%")
+                , A.style "padding-top" (ifThenElse model.sidebarExpanded "19%" "22.5%")
 
                 --
                 , T.border_2
@@ -466,7 +466,7 @@ detailsForSelection { showPreviewOverlay } sidebar model =
                     (Common.isGroundFloor model)
                     (Common.isSingleFileView model)
                     model.currentTime
-                    sidebar.expanded
+                    model.sidebarExpanded
                     showPreviewOverlay
                 )
             |> Maybe.withDefault

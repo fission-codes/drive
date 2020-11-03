@@ -88,8 +88,7 @@ gotDirectoryList json model =
                         selectedPath
                             |> Maybe.map
                                 (\path ->
-                                    { expanded = False -- TODO: before: Maybe.isJust selectedPath. Wat?
-                                    , path = path
+                                    { path = path
                                     , mode = Sidebar.details
                                     }
                                 )
