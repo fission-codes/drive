@@ -100,7 +100,7 @@ viewSidebar { scrollable, expanded, body } =
 
 
 plaintextEditor : Maybe Sidebar.EditorModel -> Sidebar.Model -> Model -> Html Msg
-plaintextEditor editor sidebar model =
+plaintextEditor maybeEditor sidebar model =
     Html.div
         [ T.flex
         , T.flex_col
@@ -113,32 +113,53 @@ plaintextEditor editor sidebar model =
             }
 
         --
-        , Html.textarea
-            [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
+        , case maybeEditor of
+            Just editor ->
+                Html.textarea
+                    [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
 
-            --
-            , T.bg_transparent
-            , T.flex_grow
-            , T.font_mono
-            , T.px_8
-            , T.pt_8
-            , T.resize_none
-            , T.text_gray_100
+                    --
+                    , T.bg_transparent
+                    , T.flex_grow
+                    , T.font_mono
+                    , T.px_8
+                    , T.pt_8
+                    , T.resize_none
+                    , T.text_gray_100
 
-            --
-            , T.h_full
-            , T.w_full
+                    --
+                    , T.h_full
+                    , T.w_full
 
-            -- Dark mode
-            ------------
-            , T.dark__text_gray_500
-            ]
-            [ Html.text
-                (editor
-                    |> Maybe.map .text
-                    |> Maybe.withDefault "LOADING"
-                )
-            ]
+                    -- Dark mode
+                    ------------
+                    , T.dark__text_gray_500
+                    ]
+                    [ Html.text editor.text ]
+
+            Nothing ->
+                Html.div
+                    [ T.flex_grow
+
+                    --
+                    , T.h_full
+                    , T.w_full
+                    ]
+                    [ Html.div
+                        [ T.absolute
+                        , T.left_1over2
+                        , T.top_1over2
+                        , T.transform
+                        , T.neg_translate_x_1over2
+                        , T.neg_translate_y_1over2
+                        ]
+                        [ Html.img
+                            [ A.src "images/loader-gray.svg"
+                            , T.animate_spin
+                            ]
+                            []
+                        ]
+                    ]
         , Html.div
             [ T.flex
             , T.flex_shrink_0
@@ -162,7 +183,7 @@ plaintextEditor editor sidebar model =
                     ]
                     []
                 ]
-                (editor
+                (maybeEditor
                     |> Maybe.map editorFooterItems
                     |> Maybe.withDefault []
                 )
