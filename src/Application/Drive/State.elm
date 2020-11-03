@@ -322,44 +322,29 @@ renameItem item model =
 
 select : Item -> Manager
 select item model =
-    case item.kind of
-        Code ->
-            Ports.fsReadItemUtf8 (Item.pathProperties item)
-                |> return
-                    { model
-                        | selectedPath = Just item.path
-                        , sidebar =
-                            Just
-                                { path = item.path
-                                , mode =
-                                    Drive.Sidebar.EditPlaintext Nothing
-                                }
-                    }
-
-        Text ->
-            -- TODO philipp: Remove duplication
-            Ports.fsReadItemUtf8 (Item.pathProperties item)
-                |> return
-                    { model
-                        | selectedPath = Just item.path
-                        , sidebar =
-                            Just
-                                { path = item.path
-                                , mode =
-                                    Drive.Sidebar.EditPlaintext Nothing
-                                }
-                    }
-
-        _ ->
-            Common.potentiallyRenderMedia
+    if item.kind == Code || item.kind == Text then
+        Ports.fsReadItemUtf8 (Item.pathProperties item)
+            |> return
                 { model
                     | selectedPath = Just item.path
                     , sidebar =
                         Just
                             { path = item.path
-                            , mode = Drive.Sidebar.details
+                            , mode =
+                                Drive.Sidebar.EditPlaintext Nothing
                             }
                 }
+
+    else
+        Common.potentiallyRenderMedia
+            { model
+                | selectedPath = Just item.path
+                , sidebar =
+                    Just
+                        { path = item.path
+                        , mode = Drive.Sidebar.details
+                        }
+            }
 
 
 selectNextItem : Manager

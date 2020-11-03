@@ -1,5 +1,6 @@
 module Drive.State.Sidebar exposing (..)
 
+import Drive.Item as Item
 import Drive.Sidebar as Sidebar
 import Ports
 import Radix exposing (..)
@@ -28,9 +29,7 @@ update msg sidebar model =
         ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorSave ) ->
             if editorModel.text /= editorModel.originalText then
                 Ports.fsWriteItemUtf8
-                    { pathSegments =
-                        -- TODO philipp: use a library function instead
-                        String.split "/" sidebar.path
+                    { pathSegments = Item.pathSegments sidebar.path
                     , text = editorModel.text
                     }
                     |> Return.return
