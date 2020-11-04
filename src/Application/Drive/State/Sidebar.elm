@@ -11,19 +11,12 @@ update : Sidebar.Msg -> Sidebar.Model -> Manager
 update msg sidebar model =
     case ( sidebar.mode, msg ) of
         ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorInput content ) ->
-            { model
-                | sidebar =
-                    Just
-                        { sidebar
-                            | mode =
-                                Sidebar.EditPlaintext
-                                    (Just
-                                        { editorModel
-                                            | text = content
-                                        }
-                                    )
-                        }
-            }
+            { editorModel | text = content }
+                |> Just
+                |> Sidebar.EditPlaintext
+                |> (\newMode -> { sidebar | mode = newMode })
+                |> Just
+                |> (\newSidebar -> { model | sidebar = newSidebar })
                 |> Return.singleton
 
         ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorSave ) ->
@@ -33,36 +26,24 @@ update msg sidebar model =
                     , text = editorModel.text
                     }
                     |> Return.return
-                        { model
-                            | sidebar =
-                                Just
-                                    { sidebar
-                                        | mode =
-                                            Sidebar.EditPlaintext
-                                                (Just
-                                                    { editorModel
-                                                        | originalText = editorModel.text
-                                                    }
-                                                )
-                                    }
-                        }
+                        ({ editorModel | originalText = editorModel.text }
+                            |> Just
+                            |> Sidebar.EditPlaintext
+                            |> (\newMode -> { sidebar | mode = newMode })
+                            |> Just
+                            |> (\newSidebar -> { model | sidebar = newSidebar })
+                        )
 
             else
                 model
                     |> Return.singleton
 
         ( Sidebar.Details detailsModel, Sidebar.DetailsShowPreviewOverlay ) ->
-            { model
-                | sidebar =
-                    Just
-                        { sidebar
-                            | mode =
-                                Sidebar.Details
-                                    { detailsModel
-                                        | showPreviewOverlay = True
-                                    }
-                        }
-            }
+            { detailsModel | showPreviewOverlay = True }
+                |> Sidebar.Details
+                |> (\newMode -> { sidebar | mode = newMode })
+                |> Just
+                |> (\newSidebar -> { model | sidebar = newSidebar })
                 |> Return.singleton
 
         ( _, _ ) ->

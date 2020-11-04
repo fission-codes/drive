@@ -113,19 +113,14 @@ gotItemUtf8 { pathSegments, text } model =
         Just sidebar ->
             case sidebar.mode of
                 Sidebar.EditPlaintext _ ->
-                    { model
-                        | sidebar =
-                            Just
-                                { sidebar
-                                    | mode =
-                                        Sidebar.EditPlaintext
-                                            (Just
-                                                { text = text
-                                                , originalText = text
-                                                }
-                                            )
-                                }
+                    { text = text
+                    , originalText = text
                     }
+                        |> Just
+                        |> Sidebar.EditPlaintext
+                        |> (\mode -> { sidebar | mode = mode })
+                        |> Just
+                        |> (\newSidebar -> { model | sidebar = newSidebar })
 
                 _ ->
                     model
