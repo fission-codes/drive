@@ -201,17 +201,17 @@ workbox_config 	:= "workbox.config.cjs"
 @deploy-production:
 	echo "🛳  Deploying to production"
 	just production-build
-	cp .fission.yaml.production .fission.yaml
+	cp fission.yaml.production fission.yaml
 	{{fission_cmd}} up
-	rm .fission.yaml
+	rm fission.yaml
 
 
 @deploy-staging:
 	echo "🛳  Deploying to staging"
-	just staging-build
-	cp .fission.yaml.staging .fission.yaml
+	# just staging-build
+	cp fission.yaml.staging fission.yaml
 	{{fission_cmd}} up
-	rm .fission.yaml
+	rm fission.yaml
 
 
 

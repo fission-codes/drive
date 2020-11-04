@@ -1,9 +1,8 @@
-.deploy
-.fission.yaml
-.fission.yaml.*
-.vscode/
-build
-elm-stuff
-node_modules
-src/Library/Tailwind.elm
-web_modules
+/.vscode/
+/build
+/elm-stuff
+/node_modules
+/src/Library/Tailwind.elm
+/web_modules
+
+/fission.yaml
