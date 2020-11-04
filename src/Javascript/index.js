@@ -89,7 +89,6 @@ wn.initialise({ permissions: PERMISSIONS })
   app.ports.redirectToLobby.subscribe(() => {
     wn.redirectToLobby(permissions, location.origin + location.pathname)
   })
-  app.ports.renderMedia.subscribe(renderMedia)
   app.ports.showNotification.subscribe(showNotification)
 
   // Ports (FS)
@@ -147,13 +146,6 @@ function copyToClipboard(text) {
 
 function deauthenticate() {
   wn.leave()
-}
-
-
-function renderMedia(a) {
-  // Wait for DOM to render
-  // TODO: Needs improvement, should use MutationObserver instead of port.
-  setTimeout(_ => media.render(a), 250)
 }
 
 

@@ -44,17 +44,6 @@ customElements.define('fission-drive-media',
 );
 
 
-export function render({ id, name, path, useFS }) {
-  const containerId = id
-
-  // Get container node
-  const container = document.getElementById(containerId)
-  if (!container) return
-
-  renderIn({ container, name, path, useFS })
-}
-
-
 function renderIn({ container, name, path, useFS }) {
   container.childNodes.forEach(c => {
     container.removeChild(c)

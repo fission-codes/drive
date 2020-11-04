@@ -55,34 +55,30 @@ closeSidebar : Manager
 closeSidebar model =
     case model.addOrCreate of
         Just addOrCreate ->
-            Common.potentiallyRenderMedia
-                { model | addOrCreate = Nothing }
+            { model | addOrCreate = Nothing }
+                |> Return.singleton
 
         Nothing ->
-            case model.sidebar of
-                Just sidebar ->
-                    (case sidebar.mode of
-                        Drive.Sidebar.Details _ ->
-                            if Common.isSingleFileView model then
-                                goUpOneLevel
+            { model
+                | sidebar = Nothing
+                , selectedPath = Nothing
+            }
+                |> (case model.sidebar of
+                        Just sidebar ->
+                            case sidebar.mode of
+                                Drive.Sidebar.Details _ ->
+                                    if Common.isSingleFileView model then
+                                        goUpOneLevel
 
-                            else
-                                Return.singleton
+                                    else
+                                        Return.singleton
 
-                        _ ->
+                                _ ->
+                                    Return.singleton
+
+                        Nothing ->
                             Return.singleton
-                    )
-                        { model
-                            | sidebar = Nothing
-                            , selectedPath = Nothing
-                        }
-
-                Nothing ->
-                    Return.singleton
-                        { model
-                            | sidebar = Nothing
-                            , selectedPath = Nothing
-                        }
+                   )
 
 
 copyPublicUrl : { item : Item, presentable : Bool } -> Manager
@@ -336,7 +332,7 @@ select item model =
                 }
 
     else
-        Common.potentiallyRenderMedia
+        Return.singleton
             { model
                 | selectedPath = Just item.path
                 , sidebar =
@@ -378,18 +374,16 @@ toggleExpandedSidebar model =
 
 toggleSidebarAddOrCreate : Manager
 toggleSidebarAddOrCreate model =
-    case model.addOrCreate of
-        Just _ ->
-            Common.potentiallyRenderMedia
-                { model
-                    | addOrCreate = Nothing
-                }
+    Return.singleton
+        { model
+            | addOrCreate =
+                case model.addOrCreate of
+                    Just _ ->
+                        Nothing
 
-        _ ->
-            Return.singleton
-                { model
-                    | addOrCreate = Just Drive.Sidebar.addOrCreate
-                }
+                    _ ->
+                        Just Drive.Sidebar.addOrCreate
+        }
 
 
 updateSidebar : Drive.Sidebar.Msg -> Manager

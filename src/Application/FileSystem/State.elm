@@ -98,7 +98,7 @@ gotDirectoryList json model =
                     , showLoadingOverlay = False
                 }
            )
-        |> Common.potentiallyRenderMedia
+        |> Return.singleton
         |> Return.andThen Debouncing.cancelLoading
         |> Return.command
             (Task.attempt

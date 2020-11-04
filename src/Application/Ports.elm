@@ -17,9 +17,6 @@ port deauthenticate : () -> Cmd msg
 port redirectToLobby : () -> Cmd msg
 
 
-port renderMedia : { id : String, name : String, path : String, useFS : Bool } -> Cmd msg
-
-
 port showNotification : String -> Cmd msg
 
 

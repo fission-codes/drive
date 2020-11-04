@@ -49,35 +49,6 @@ hideModal model =
     Return.singleton { model | modal = Nothing }
 
 
-potentiallyRenderMedia : Manager
-potentiallyRenderMedia model =
-    case
-        Maybe.andThen
-            (\{ path } ->
-                model.directoryList
-                    |> Result.map .items
-                    |> Result.withDefault []
-                    |> List.find (.path >> (==) path)
-            )
-            model.sidebar
-    of
-        Just item ->
-            if Drive.Item.canRenderKind item.kind then
-                { id = item.id
-                , name = item.name
-                , path = item.path
-                , useFS = Routing.isAuthenticatedTree model.authenticated model.route
-                }
-                    |> Ports.renderMedia
-                    |> return model
-
-            else
-                Return.singleton model
-
-        Nothing ->
-            Return.singleton model
-
-
 removeContextMenu : Manager
 removeContextMenu model =
     Return.singleton { model | contextMenu = Nothing }
