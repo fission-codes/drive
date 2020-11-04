@@ -79,6 +79,10 @@ export default {
         dark: { raw: '(prefers-color-scheme: dark)' }
       },
 
+      boxShadow: {
+        "inner-outline": "inset 0 0 0 2px rgba(100, 70, 250, .2)",
+      },
+
     },
 
   },
