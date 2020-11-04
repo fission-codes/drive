@@ -134,6 +134,7 @@ plaintextEditor maybeEditor sidebar model =
                     -- Focus Styles
                     ---------------
                     , T.appearance_none
+                    , T.outline_none
                     , T.focus__shadow_inner_outline
 
                     -- Dark mode
