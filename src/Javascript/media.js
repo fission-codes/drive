@@ -37,7 +37,7 @@ customElements.define('fission-drive-media',
     render() {
       const name = this.getAttribute("name")
       const path = this.getAttribute("path")
-      const useFS = this.getAttribute("useFS")
+      const useFS = this.getAttribute("useFS") === "true" ? true : false
       renderIn({ container: this, name, path, useFS })
     }
   }
