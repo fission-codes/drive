@@ -201,11 +201,11 @@ update msg =
         GotFsDirectoryList a ->
             FileSystem.gotDirectoryList a
 
-        GotItemUtf8 a ->
-            FileSystem.gotItemUtf8 a
-
         GotFsError a ->
             FileSystem.gotError a
+
+        GotFsItemUtf8 a ->
+            FileSystem.gotItemUtf8 a
 
         -----------------------------------------
         -- 🌏 Common
@@ -285,7 +285,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Ports.fsGotDirectoryList GotFsDirectoryList
-        , Ports.fsGotItemUtf8 GotItemUtf8
+        , Ports.fsGotItemUtf8 GotFsItemUtf8
         , Ports.fsGotError GotFsError
 
         -- Keep track of which keyboard keys are pressed
