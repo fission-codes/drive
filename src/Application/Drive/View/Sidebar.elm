@@ -256,34 +256,35 @@ editorHeaderItems model =
                     ]
                 ]
 
+        menuAndFilenameButton item =
+            Html.button
+                [ item
+                    |> Drive.ContextMenu.item
+                        ContextMenu.TopLeft
+                        { isGroundFloor = Common.isGroundFloor model }
+                    |> ShowContextMenu
+                    |> M.onClick
+
+                --
+                , T.appearance_none
+                , T.cursor_pointer
+                , T.flex
+                , T.flex_row
+                , T.flex_shrink_0
+                , T.items_center
+                , T.mr_auto
+                ]
+                (List.concat
+                    [ [ dotsIcon ]
+                    , Common.when model.sidebarExpanded
+                        [ filename item ]
+                    ]
+                )
+
         menuAndFilename =
             model.selectedPath
                 |> Maybe.andThen (Common.lookupItem model)
-                |> Maybe.map
-                    (\item ->
-                        List.concat
-                            [ [ dotsIcon ]
-                            , Common.when model.sidebarExpanded
-                                [ filename item ]
-                            ]
-                            |> Html.button
-                                [ item
-                                    |> Drive.ContextMenu.item
-                                        ContextMenu.TopLeft
-                                        { isGroundFloor = Common.isGroundFloor model }
-                                    |> ShowContextMenu
-                                    |> M.onClick
-
-                                --
-                                , T.appearance_none
-                                , T.cursor_pointer
-                                , T.flex
-                                , T.flex_row
-                                , T.flex_shrink_0
-                                , T.items_center
-                                , T.mr_auto
-                                ]
-                    )
+                |> Maybe.map menuAndFilenameButton
                 |> Maybe.withDefault nothing
     in
     [ menuAndFilename
