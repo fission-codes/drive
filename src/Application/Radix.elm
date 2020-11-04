@@ -74,10 +74,9 @@ type alias Model =
     -----------------------------------------
     -- Sidebar
     -----------------------------------------
-    , createDirectoryInput : String
-    , expandSidebar : Bool
-    , showPreviewOverlay : Bool
-    , sidebarMode : Drive.Sidebar.Mode
+    , sidebarExpanded : Bool
+    , sidebar : Maybe Drive.Sidebar.Model
+    , addOrCreate : Maybe Drive.Sidebar.AddOrCreateModel
     }
 
 
@@ -97,7 +96,7 @@ type Msg
       -----------------------------------------
       -- Drive
       -----------------------------------------
-    | ActivateSidebarMode Drive.Sidebar.Mode
+    | ActivateSidebarAddOrCreate
     | AddFiles { blobs : List { path : String, url : String } }
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
@@ -110,15 +109,16 @@ type Msg
     | RemoveItem Item
     | RenameItem Item
     | Select Item
-    | ShowPreviewOverlay
     | ShowRenameItemModal Item
     | ToggleExpandedSidebar
-    | ToggleSidebarMode Drive.Sidebar.Mode
+    | ToggleSidebarAddOrCreate
+    | SidebarMsg Drive.Sidebar.Msg
       -----------------------------------------
       -- File System
       -----------------------------------------
     | GotFsDirectoryList Json.Value
     | GotFsError String
+    | GotFsItemUtf8 { pathSegments : List String, text : String }
       -----------------------------------------
       -- 🌏 Common
       -----------------------------------------

@@ -409,7 +409,7 @@ primary model =
                 model
                 (case directoryList.items of
                     [] ->
-                        if model.expandSidebar then
+                        if model.sidebarExpanded && sidebarOpen model then
                             Html.nothing
 
                         else
@@ -641,11 +641,11 @@ empty model =
             Maybe.isJust model.authenticated
 
         hideContent =
-            model.sidebarMode /= Sidebar.defaultMode
+            Maybe.isJust model.addOrCreate
     in
     Html.div
         [ if isAuthenticated then
-            E.onClick (ToggleSidebarMode Sidebar.AddOrCreate)
+            E.onClick ToggleSidebarAddOrCreate
 
           else
             E.onClick Bypass
@@ -711,15 +711,10 @@ contentAvailable model directoryList =
             , T.flex_auto
             , T.w_1over2
             ]
-            (let
-                hideContent =
-                    Maybe.isJust model.selectedPath
-                        || (model.sidebarMode /= Sidebar.defaultMode)
-             in
-             if model.expandSidebar then
+            (if model.sidebarExpanded && sidebarOpen model then
                 [ T.hidden ]
 
-             else if hideContent then
+             else if sidebarOpen model then
                 [ T.hidden, T.md__block, T.pr_12, T.lg__pr_24 ]
 
              else
@@ -823,9 +818,6 @@ list model directoryList =
 listItem : Bool -> Maybe String -> Item -> Html Msg
 listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path } as item) =
     let
-        { base } =
-            nameProperties
-
         selected =
             selectedPath == Just path
 
@@ -993,3 +985,9 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
           else
             nothing
         ]
+
+
+sidebarOpen : Model -> Bool
+sidebarOpen model =
+    Maybe.isJust model.sidebar
+        || Maybe.isJust model.addOrCreate

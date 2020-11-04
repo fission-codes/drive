@@ -54,6 +54,12 @@ port fsRemoveItem : { pathSegments : List String } -> Cmd msg
 port fsMoveItem : { currentPathSegments : List String, pathSegments : List String } -> Cmd msg
 
 
+port fsReadItemUtf8 : { pathSegments : List String } -> Cmd msg
+
+
+port fsWriteItemUtf8 : { pathSegments : List String, text : String } -> Cmd msg
+
+
 
 -- 📰  ░░  FILE SYSTEM
 
@@ -62,3 +68,6 @@ port fsGotDirectoryList : (Json.Value -> msg) -> Sub msg
 
 
 port fsGotError : (String -> msg) -> Sub msg
+
+
+port fsGotItemUtf8 : ({ pathSegments : List String, text : String } -> msg) -> Sub msg

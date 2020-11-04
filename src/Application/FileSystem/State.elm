@@ -5,6 +5,7 @@ import Common
 import Common.State as Common
 import Debouncing
 import Drive.Item
+import Drive.Sidebar as Sidebar
 import FileSystem
 import Json.Decode as Json
 import List.Extra as List
@@ -83,7 +84,14 @@ gotDirectoryList json model =
                             listResult
 
                     --
-                    , expandSidebar = Maybe.isJust selectedPath
+                    , sidebar =
+                        selectedPath
+                            |> Maybe.map
+                                (\path ->
+                                    { path = path
+                                    , mode = Sidebar.details
+                                    }
+                                )
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
                     , selectedPath = selectedPath
@@ -97,6 +105,30 @@ gotDirectoryList json model =
                 (always Bypass)
                 (Dom.setViewport 0 0)
             )
+
+
+gotItemUtf8 : { pathSegments : List String, text : String } -> Manager
+gotItemUtf8 { pathSegments, text } model =
+    (case model.sidebar of
+        Just sidebar ->
+            case sidebar.mode of
+                Sidebar.EditPlaintext _ ->
+                    { text = text
+                    , originalText = text
+                    }
+                        |> Just
+                        |> Sidebar.EditPlaintext
+                        |> (\mode -> { sidebar | mode = mode })
+                        |> Just
+                        |> (\newSidebar -> { model | sidebar = newSidebar })
+
+                _ ->
+                    model
+
+        _ ->
+            model
+    )
+        |> Return.singleton
 
 
 gotError : String -> Manager

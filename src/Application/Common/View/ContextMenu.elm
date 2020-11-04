@@ -8,8 +8,8 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html
-import Tailwind as T
 import Radix exposing (Msg(..))
+import Tailwind as T
 
 
 
@@ -53,6 +53,9 @@ view contextMenu =
             TopRight ->
                 T.neg_translate_x_full
 
+            TopLeft ->
+                T.translate_x_0
+
         -- Y
         , case hook of
             BottomCenter ->
@@ -62,6 +65,9 @@ view contextMenu =
                 T.translate_y_0
 
             TopRight ->
+                T.translate_y_0
+
+            TopLeft ->
                 T.translate_y_0
 
         -- Dark mode

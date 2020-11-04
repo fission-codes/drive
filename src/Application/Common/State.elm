@@ -53,13 +53,13 @@ potentiallyRenderMedia : Manager
 potentiallyRenderMedia model =
     case
         Maybe.andThen
-            (\path ->
+            (\{ path } ->
                 model.directoryList
                     |> Result.map .items
                     |> Result.withDefault []
                     |> List.find (.path >> (==) path)
             )
-            model.selectedPath
+            model.sidebar
     of
         Just item ->
             if Drive.Item.canRenderKind item.kind then
@@ -105,6 +105,7 @@ reset route model =
                 , fileSystemStatus = FileSystem.NotNeeded
                 , showLoadingOverlay = True
                 , selectedPath = Nothing
+                , sidebar = Nothing
             }
         |> andThen
             (goToRoute route)
@@ -137,6 +138,9 @@ showContextMenu menu event model =
                 TopRight ->
                     Tuple.first event.offsetPos - 22
 
+                TopLeft ->
+                    Tuple.first event.offsetPos
+
         yOffset =
             case ContextMenu.hook menu of
                 BottomCenter ->
@@ -146,6 +150,9 @@ showContextMenu menu event model =
                     -15
 
                 TopRight ->
+                    Tuple.second event.offsetPos - 40
+
+                TopLeft ->
                     Tuple.second event.offsetPos - 40
 
         menuWithPosition =

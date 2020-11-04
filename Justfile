@@ -20,6 +20,8 @@ workbox_config 	:= "workbox.config.cjs"
 @default: dev-build
 	just dev-server & just watch
 
+@hot:
+	just hot-server & just watch-hot
 
 @apply-config:
 	echo "🎛  Applying config \`config/{{config}}.json\`"
@@ -44,6 +46,9 @@ workbox_config 	:= "workbox.config.cjs"
 	echo "🤵  Start a web server at http://localhost:8000"
 	devd --quiet build --port=8000 --all
 
+@hot-server:
+	echo "🔥  Start a hot-reloading elm-live server at http://localhost:8000"
+	{{node_bin}}/elm-live {{src_dir}}/Application/Main.elm --hot --port=8000 --pushstate --dir=build -- --output={{dist_dir}}/application.js --debug
 
 @download-web-module filename url:
 	curl --silent --show-error --fail -o web_modules/{{filename}} {{url}}
@@ -232,6 +237,15 @@ workbox_config 	:= "workbox.config.cjs"
 	just watch-css-src & \
 	just watch-css-sys & \
 	just watch-elm & \
+	just watch-html & \
+	just watch-images & \
+	just watch-js
+
+
+@watch-hot:
+	echo "👀  Watching for changes"
+	just watch-css-src & \
+	just watch-css-sys & \
 	just watch-html & \
 	just watch-images & \
 	just watch-js

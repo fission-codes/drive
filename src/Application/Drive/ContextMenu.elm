@@ -46,7 +46,7 @@ yourBurgers model =
 
                 --
                 , href = Nothing
-                , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
+                , msg = Just ActivateSidebarAddOrCreate
                 }
 
             --
@@ -57,7 +57,7 @@ yourBurgers model =
 
                 --
                 , href = Nothing
-                , msg = Just (ActivateSidebarMode Sidebar.AddOrCreate)
+                , msg = Just ActivateSidebarAddOrCreate
                 }
             ]
         )
@@ -143,45 +143,32 @@ item hook { isGroundFloor } context =
         hook
         (case context.kind of
             Directory ->
-                [ driveLink context
-                ]
-                    |> (if isPublicPath then
-                            List.add [ copyCid context ]
-
-                        else
-                            identity
-                       )
-                    |> List.add
-                        (if isGroundFloor && context.name == "public" then
-                            []
-
-                         else
-                            [ Divider
-                            , renameItem context
-                            , removeItem context
-                            ]
-                        )
-
-            _ ->
-                [ driveLink context
-                ]
-                    |> (if isPublicPath then
-                            List.add [ contentLink context ]
-
-                        else
-                            identity
-                       )
-                    |> (if isPublicPath then
-                            List.add [ copyCid context ]
-
-                        else
-                            identity
-                       )
-                    |> List.add
+                List.concat
+                    [ [ driveLink context ]
+                    , Common.when isPublicPath
+                        [ copyCid context ]
+                    , Common.when (not (isGroundFloor && context.name == "public"))
                         [ Divider
                         , renameItem context
                         , removeItem context
                         ]
+                    ]
+
+            _ ->
+                List.concat
+                    [ [ downloadItem context
+                      , Divider
+                      , driveLink context
+                      ]
+                    , Common.when isPublicPath
+                        [ contentLink context
+                        , copyCid context
+                        ]
+                    , [ Divider ]
+                    , [ renameItem context
+                      , removeItem context
+                      ]
+                    ]
         )
 
 
@@ -262,5 +249,20 @@ removeItem context =
         , msg =
             context
                 |> RemoveItem
+                |> Just
+        }
+
+
+downloadItem context =
+    Item
+        { icon = FeatherIcons.download
+        , label = "Download"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            context
+                |> DownloadItem
                 |> Just
         }

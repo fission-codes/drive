@@ -181,7 +181,12 @@ nameProperties name =
 
 pathProperties : Item -> { pathSegments : List String }
 pathProperties item =
-    { pathSegments = String.split "/" item.path }
+    { pathSegments = pathSegments item.path }
+
+
+pathSegments : String -> List String
+pathSegments path =
+    String.split "/" path
 
 
 publicUrl : String -> Item -> String

@@ -9,6 +9,7 @@ import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
 import Drive.Modals
 import Drive.Sidebar exposing (Mode(..))
+import Drive.State.Sidebar
 import File
 import File.Download
 import FileSystem exposing (Operation(..))
@@ -30,9 +31,9 @@ import Url
 -- 📣
 
 
-activateSidebarMode : Drive.Sidebar.Mode -> Manager
-activateSidebarMode mode model =
-    Return.singleton { model | sidebarMode = mode }
+activateSidebarAddOrCreate : Manager
+activateSidebarAddOrCreate model =
+    Return.singleton { model | addOrCreate = Just Drive.Sidebar.addOrCreate }
 
 
 addFiles : { blobs : List { path : String, url : String } } -> Manager
@@ -52,26 +53,36 @@ addFiles { blobs } model =
 
 closeSidebar : Manager
 closeSidebar model =
-    case model.sidebarMode of
-        DetailsForSelection ->
-            (if Common.isSingleFileView model then
-                goUpOneLevel
-
-             else
-                Return.singleton
-            )
-                { model
-                    | expandSidebar = False
-                    , selectedPath = Nothing
-                    , showPreviewOverlay = False
-                }
-
-        _ ->
+    case model.addOrCreate of
+        Just addOrCreate ->
             Common.potentiallyRenderMedia
-                { model
-                    | expandSidebar = False
-                    , sidebarMode = Drive.Sidebar.defaultMode
-                }
+                { model | addOrCreate = Nothing }
+
+        Nothing ->
+            case model.sidebar of
+                Just sidebar ->
+                    (case sidebar.mode of
+                        Drive.Sidebar.Details _ ->
+                            if Common.isSingleFileView model then
+                                goUpOneLevel
+
+                            else
+                                Return.singleton
+
+                        _ ->
+                            Return.singleton
+                    )
+                        { model
+                            | sidebar = Nothing
+                            , selectedPath = Nothing
+                        }
+
+                Nothing ->
+                    Return.singleton
+                        { model
+                            | sidebar = Nothing
+                            , selectedPath = Nothing
+                        }
 
 
 copyPublicUrl : { item : Item, presentable : Bool } -> Manager
@@ -104,16 +115,30 @@ copyToClipboard { clip, notification } model =
 
 createDirectory : Manager
 createDirectory model =
-    case String.trim model.createDirectoryInput of
-        "" ->
+    case sidebarCreateDirectoryInput model of
+        Nothing ->
             Return.singleton model
 
-        directoryName ->
+        Just directoryName ->
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
                 |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
                 |> return { model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
+
+
+sidebarCreateDirectoryInput : Model -> Maybe String
+sidebarCreateDirectoryInput model =
+    model.addOrCreate
+        |> Maybe.andThen
+            (\{ input } ->
+                case String.trim input of
+                    "" ->
+                        Nothing
+
+                    directoryName ->
+                        Just directoryName
+            )
 
 
 digDeeper : { directoryName : String } -> Manager
@@ -158,7 +183,6 @@ digDeeper { directoryName } model =
         |> Return.return
             { model
                 | directoryList = updatedDirectoryList
-                , sidebarMode = Drive.Sidebar.defaultMode
             }
 
 
@@ -194,7 +218,15 @@ downloadItem item model =
 
 gotCreateDirectoryInput : String -> Manager
 gotCreateDirectoryInput input model =
-    Return.singleton { model | createDirectoryInput = input }
+    case model.addOrCreate of
+        Just addOrCreate ->
+            Return.singleton
+                { model
+                    | addOrCreate = Just { addOrCreate | input = input }
+                }
+
+        Nothing ->
+            Return.singleton model
 
 
 goUp : { floor : Int } -> Manager
@@ -290,11 +322,29 @@ renameItem item model =
 
 select : Item -> Manager
 select item model =
-    Common.potentiallyRenderMedia
-        { model
-            | selectedPath = Just item.path
-            , sidebarMode = Drive.Sidebar.DetailsForSelection
-        }
+    if item.kind == Code || item.kind == Text then
+        Ports.fsReadItemUtf8 (Item.pathProperties item)
+            |> return
+                { model
+                    | selectedPath = Just item.path
+                    , sidebar =
+                        Just
+                            { path = item.path
+                            , mode =
+                                Drive.Sidebar.EditPlaintext Nothing
+                            }
+                }
+
+    else
+        Common.potentiallyRenderMedia
+            { model
+                | selectedPath = Just item.path
+                , sidebar =
+                    Just
+                        { path = item.path
+                        , mode = Drive.Sidebar.details
+                        }
+            }
 
 
 selectNextItem : Manager
@@ -311,11 +361,6 @@ selectPreviousItem =
         (\l -> List.length l - 1)
 
 
-showPreviewOverlay : Manager
-showPreviewOverlay model =
-    Return.singleton { model | showPreviewOverlay = True }
-
-
 showRenameItemModal : Item -> Manager
 showRenameItemModal item model =
     return
@@ -325,24 +370,36 @@ showRenameItemModal item model =
 
 toggleExpandedSidebar : Manager
 toggleExpandedSidebar model =
-    Common.potentiallyRenderMedia { model | expandSidebar = not model.expandSidebar }
+    Return.singleton
+        { model
+            | sidebarExpanded = not model.sidebarExpanded
+        }
 
 
-toggleSidebarMode : Drive.Sidebar.Mode -> Manager
-toggleSidebarMode mode model =
-    if model.sidebarMode == Drive.Sidebar.defaultMode then
-        Return.singleton
-            { model
-                | expandSidebar = False
-                , sidebarMode = mode
-            }
+toggleSidebarAddOrCreate : Manager
+toggleSidebarAddOrCreate model =
+    case model.addOrCreate of
+        Just _ ->
+            Common.potentiallyRenderMedia
+                { model
+                    | addOrCreate = Nothing
+                }
 
-    else
-        Common.potentiallyRenderMedia
-            { model
-                | expandSidebar = False
-                , sidebarMode = Drive.Sidebar.defaultMode
-            }
+        _ ->
+            Return.singleton
+                { model
+                    | addOrCreate = Just Drive.Sidebar.addOrCreate
+                }
+
+
+updateSidebar : Drive.Sidebar.Msg -> Manager
+updateSidebar sidebarMsg model =
+    case model.sidebar of
+        Just sidebar ->
+            Drive.State.Sidebar.update sidebarMsg sidebar model
+
+        Nothing ->
+            Return.singleton model
 
 
 

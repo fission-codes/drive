@@ -121,6 +121,7 @@ right model =
         )
 
 
+treeActions : Model -> List (Html Msg)
 treeActions model =
     let
         isAuthenticatedTree =
@@ -158,13 +159,18 @@ treeActions model =
 -- ACTIONS
 
 
+addCreateAction : Model -> Html Msg
 addCreateAction model =
+    let
+        isInAddOrCreateMode =
+            Maybe.isJust model.addOrCreate
+    in
     action
         Button
-        [ E.onClick (ToggleSidebarMode Drive.Sidebar.AddOrCreate)
+        [ E.onClick ToggleSidebarAddOrCreate
 
         --
-        , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
+        , if isInAddOrCreateMode then
             T.text_purple
 
           else
@@ -172,7 +178,7 @@ addCreateAction model =
 
         -- Dark mode
         ------------
-        , if model.sidebarMode == Drive.Sidebar.AddOrCreate then
+        , if isInAddOrCreateMode then
             T.dark__text_white
 
           else

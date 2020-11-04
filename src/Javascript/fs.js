@@ -41,6 +41,12 @@ export async function add({ blobs, pathSegments }) {
   return await listDirectory({ pathSegments })
 }
 
+export async function write({ pathSegments, text }) {
+  const path = prefixedPath(pathSegments)
+  await fs.add(path, text)
+  await fs.publish()
+}
+
 
 export async function createDirecory({ pathSegments }) {
   const path = prefixedPath(pathSegments)
@@ -205,6 +211,12 @@ export async function moveItem({ currentPathSegments, pathSegments }) {
 
   await fs.mv(currentPath, newPath)
   await fs.publish()
+}
+
+
+export async function readItem({ pathSegments }) {
+  const path = prefixedPath(pathSegments);
+  return await fs.read(path);
 }
 
 

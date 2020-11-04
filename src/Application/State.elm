@@ -79,10 +79,9 @@ init flags url navKey =
 
       -- Sidebar
       ----------
-      , createDirectoryInput = ""
-      , expandSidebar = False
-      , showPreviewOverlay = False
-      , sidebarMode = Drive.Sidebar.defaultMode
+      , sidebarExpanded = False
+      , sidebar = Nothing
+      , addOrCreate = Nothing
       }
       -----------------------------------------
       -- Command
@@ -145,8 +144,8 @@ update msg =
         -----------------------------------------
         -- Drive
         -----------------------------------------
-        ActivateSidebarMode a ->
-            Drive.activateSidebarMode a
+        ActivateSidebarAddOrCreate ->
+            Drive.activateSidebarAddOrCreate
 
         AddFiles a ->
             Drive.addFiles a
@@ -184,17 +183,17 @@ update msg =
         Select a ->
             Drive.select a
 
-        ShowPreviewOverlay ->
-            Drive.showPreviewOverlay
-
         ShowRenameItemModal a ->
             Drive.showRenameItemModal a
 
         ToggleExpandedSidebar ->
             Drive.toggleExpandedSidebar
 
-        ToggleSidebarMode a ->
-            Drive.toggleSidebarMode a
+        ToggleSidebarAddOrCreate ->
+            Drive.toggleSidebarAddOrCreate
+
+        SidebarMsg sidebarMsg ->
+            Drive.updateSidebar sidebarMsg
 
         -----------------------------------------
         -- File System
@@ -204,6 +203,9 @@ update msg =
 
         GotFsError a ->
             FileSystem.gotError a
+
+        GotFsItemUtf8 a ->
+            FileSystem.gotItemUtf8 a
 
         -----------------------------------------
         -- 🌏 Common
@@ -283,6 +285,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Ports.fsGotDirectoryList GotFsDirectoryList
+        , Ports.fsGotItemUtf8 GotFsItemUtf8
         , Ports.fsGotError GotFsError
 
         -- Keep track of which keyboard keys are pressed
