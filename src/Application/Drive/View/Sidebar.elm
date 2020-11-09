@@ -300,51 +300,43 @@ editorFooterItems editor =
         hasChanges =
             editor.text /= editor.originalText
     in
-    [ if hasChanges then
-        Html.button
-            [ E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
-            , T.antialiased
-            , T.appearance_none
-            , T.bg_purple_shade
-            , T.font_semibold
-            , T.leading_normal
-            , T.outline_none
-            , T.px_4
-            , T.py_2
-            , T.relative
-            , T.rounded
-            , T.text_tiny
-            , T.text_white
-            , T.tracking_wider
-            , T.transition_colors
-            , T.uppercase
+    [ Html.button
+        [ E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
+        , T.antialiased
+        , T.appearance_none
+        , T.bg_purple_shade
+        , T.font_semibold
+        , T.leading_normal
+        , T.outline_none
+        , T.px_4
+        , T.py_2
+        , T.relative
+        , T.rounded
+        , T.text_tiny
+        , T.text_white
+        , T.tracking_wider
+        , T.transition_colors
+        , T.uppercase
 
-            --
-            , T.focus__shadow_outline
-            ]
-            [ Html.text "Save" ]
+        --
+        , T.focus__shadow_outline
+        ]
+        [ Html.text "Save" ]
+    , Html.button
+        [ E.onClick CloseSidebar
+        , T.outline_none
+        , T.px_4
+        , T.py_2
+        , T.rounded
+        , T.text_gray_400
+        , T.text_tiny
+        , T.tracking_wide
+        , T.uppercase
 
-      else
-        nothing
-    , if hasChanges then
-        Html.button
-            [ E.onClick CloseSidebar
-            , T.outline_none
-            , T.px_4
-            , T.py_2
-            , T.rounded
-            , T.text_gray_400
-            , T.text_tiny
-            , T.tracking_wide
-            , T.uppercase
-
-            --
-            , T.focus__shadow_outline
-            ]
-            [ Html.text "Cancel" ]
-
-      else
-        nothing
+        --
+        , T.focus__shadow_outline
+        ]
+        [ Html.text "Cancel" ]
     ]
 
 
