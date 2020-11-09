@@ -85,12 +85,15 @@ gotDirectoryList json model =
 
                     --
                     , sidebar =
-                        selectedPath
-                            |> Maybe.map
-                                (\path ->
-                                    { path = path
-                                    , mode = Sidebar.details
-                                    }
+                        sidebar
+                            |> Maybe.orElse
+                                (selectedPath
+                                    |> Maybe.map
+                                        (\path ->
+                                            { path = path
+                                            , mode = Sidebar.details
+                                            }
+                                        )
                                 )
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
