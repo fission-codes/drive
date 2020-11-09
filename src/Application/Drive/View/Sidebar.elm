@@ -163,11 +163,10 @@ plaintextEditor maybeEditor sidebar model =
                     ]
         , Html.div
             [ T.flex
-            , T.flex_row_reverse
             , T.flex_shrink_0
             , T.h_12
             , T.items_center
-            , T.justify_start
+            , T.justify_end
             , T.mt_px
             , T.p_2
             , T.relative
@@ -186,7 +185,7 @@ plaintextEditor maybeEditor sidebar model =
                     []
                 ]
                 (maybeEditor
-                    |> Maybe.map (editorFooterItems >> List.reverse)
+                    |> Maybe.map editorFooterItems
                     |> Maybe.withDefault []
                 )
             )
