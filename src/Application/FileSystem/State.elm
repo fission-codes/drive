@@ -22,6 +22,8 @@ import Task
 -- 🐚
 
 
+{-| TODO This function is doing a lot. Can we break it up somehow?
+-}
 gotDirectoryList : Json.Value -> Manager
 gotDirectoryList json model =
     let
@@ -87,9 +89,21 @@ gotDirectoryList json model =
                                                 sidebarModel.path
                                                     |> String.split "/"
 
-                                            editDirectory =
+                                            editDirectoryWithPrivate =
                                                 editPath
                                                     |> List.take (List.length editPath - 1)
+
+                                            editDirectory =
+                                                case editDirectoryWithPrivate of
+                                                    first :: rest ->
+                                                        if first == "private" then
+                                                            rest
+
+                                                        else
+                                                            first :: rest
+
+                                                    other ->
+                                                        other
                                         in
                                         if pathSegments == editDirectory then
                                             { editorModel
