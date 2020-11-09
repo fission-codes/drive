@@ -81,6 +81,7 @@ export default {
 
       boxShadow: {
         "inner-outline": "inset 0 0 0 2px rgba(100, 70, 250, .2)",
+        "outline": "0 0 0 2px rgba(100, 70, 250, 0.4)",
       },
 
     },

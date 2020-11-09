@@ -302,11 +302,13 @@ editorFooterItems editor =
     in
     [ if hasChanges then
         Html.button
-            [ T.antialiased
+            [ E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
+            , T.antialiased
             , T.appearance_none
             , T.bg_purple_shade
             , T.font_semibold
             , T.leading_normal
+            , T.outline_none
             , T.px_4
             , T.py_2
             , T.relative
@@ -316,7 +318,9 @@ editorFooterItems editor =
             , T.tracking_wider
             , T.transition_colors
             , T.uppercase
-            , E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
+
+            --
+            , T.focus__shadow_outline
             ]
             [ Html.text "Save" ]
 
@@ -324,13 +328,18 @@ editorFooterItems editor =
         nothing
     , if hasChanges then
         Html.button
-            [ T.px_4
+            [ E.onClick CloseSidebar
+            , T.outline_none
+            , T.px_4
             , T.py_2
+            , T.rounded
             , T.text_gray_400
             , T.text_tiny
             , T.tracking_wide
             , T.uppercase
-            , E.onClick CloseSidebar
+
+            --
+            , T.focus__shadow_outline
             ]
             [ Html.text "Cancel" ]
 
