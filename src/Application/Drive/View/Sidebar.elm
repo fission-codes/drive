@@ -17,6 +17,7 @@ import Html.Events.Extra as E
 import Html.Events.Extra.Mouse as M
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
+import Json.Decode as D
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Radix exposing (..)
@@ -117,6 +118,7 @@ plaintextEditor maybeEditor sidebar model =
             Just editor ->
                 Html.textarea
                     [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
+                    , onCtrlS (SidebarMsg Sidebar.PlaintextEditorSave)
 
                     --
                     , T.bg_transparent
@@ -554,3 +556,34 @@ detailsForSelection { showPreviewOverlay } sidebar model =
             |> Maybe.withDefault
                 nothing
         ]
+
+
+
+-- UTILITIES
+
+
+onCtrlS : msg -> Html.Attribute msg
+onCtrlS message =
+    let
+        ensureEquals value decoder =
+            decoder
+                |> D.andThen
+                    (\val ->
+                        if val == value then
+                            D.succeed ()
+
+                        else
+                            D.fail "Unexpecated value"
+                    )
+    in
+    E.custom "keydown"
+        (D.map2
+            (\_ _ ->
+                { message = message
+                , stopPropagation = True
+                , preventDefault = True
+                }
+            )
+            (D.field "key" D.string |> ensureEquals "s")
+            (D.field "ctrlKey" D.bool |> ensureEquals True)
+        )
