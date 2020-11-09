@@ -318,6 +318,9 @@ editorFooterItems editor =
         , T.appearance_none
         , T.bg_purple_shade
         , T.font_semibold
+        , T.flex
+        , T.flex_row
+        , T.items_center
         , T.leading_normal
         , T.outline_none
         , T.px_4
@@ -338,7 +341,17 @@ editorFooterItems editor =
         , T.dark__disabled__bg_gray_200
         , T.disabled__text_gray_400
         ]
-        [ Html.text "Save" ]
+        [ Common.loadingAnimationWithAttributes
+            [ T.mr_2
+            , if editor.isSaving then
+                T.inline
+
+              else
+                T.hidden
+            ]
+            { size = S.iconSize }
+        , Html.text "Save"
+        ]
     , Html.button
         [ E.onClick CloseSidebar
         , T.outline_none

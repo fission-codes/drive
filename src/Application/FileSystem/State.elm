@@ -76,6 +76,26 @@ gotDirectoryList json model =
 
                             _ ->
                                 Nothing
+
+                    sidebar =
+                        case model.sidebar of
+                            Just sidebarModel ->
+                                case sidebarModel.mode of
+                                    Sidebar.EditPlaintext (Just editorModel) ->
+                                        { editorModel
+                                            | isSaving = False
+                                            , originalText = editorModel.text
+                                        }
+                                            |> Just
+                                            |> Sidebar.EditPlaintext
+                                            |> (\newMode -> { sidebarModel | mode = newMode })
+                                            |> Just
+
+                                    _ ->
+                                        model.sidebar
+
+                            _ ->
+                                model.sidebar
                 in
                 { model
                     | directoryList =
@@ -118,6 +138,7 @@ gotItemUtf8 { pathSegments, text } model =
                 Sidebar.EditPlaintext _ ->
                     { text = text
                     , originalText = text
+                    , isSaving = False
                     }
                         |> Just
                         |> Sidebar.EditPlaintext
