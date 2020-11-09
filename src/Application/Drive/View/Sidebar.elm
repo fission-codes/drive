@@ -166,9 +166,9 @@ plaintextEditor maybeEditor sidebar model =
             , T.flex_shrink_0
             , T.h_12
             , T.items_center
-            , T.justify_end
+            , T.justify_start
             , T.mt_px
-            , T.p_2
+            , T.py_2
             , T.relative
             , T.space_x_2
             ]
@@ -302,20 +302,6 @@ editorFooterItems editor =
     in
     [ if hasChanges then
         Html.button
-            [ T.px_4
-            , T.py_2
-            , T.text_gray_400
-            , T.text_tiny
-            , T.tracking_wide
-            , T.uppercase
-            , E.onClick CloseSidebar
-            ]
-            [ Html.text "Cancel" ]
-
-      else
-        nothing
-    , if hasChanges then
-        Html.button
             [ T.antialiased
             , T.appearance_none
             , T.bg_purple_shade
@@ -333,6 +319,20 @@ editorFooterItems editor =
             , E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
             ]
             [ Html.text "Save" ]
+
+      else
+        nothing
+    , if hasChanges then
+        Html.button
+            [ T.px_4
+            , T.py_2
+            , T.text_gray_400
+            , T.text_tiny
+            , T.tracking_wide
+            , T.uppercase
+            , E.onClick CloseSidebar
+            ]
+            [ Html.text "Cancel" ]
 
       else
         nothing
