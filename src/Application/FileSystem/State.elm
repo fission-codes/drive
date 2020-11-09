@@ -82,20 +82,33 @@ gotDirectoryList json model =
                             Just sidebarModel ->
                                 case sidebarModel.mode of
                                     Sidebar.EditPlaintext (Just editorModel) ->
-                                        { editorModel
-                                            | isSaving = False
-                                            , originalText = editorModel.text
-                                        }
-                                            |> Just
-                                            |> Sidebar.EditPlaintext
-                                            |> (\newMode -> { sidebarModel | mode = newMode })
-                                            |> Just
+                                        let
+                                            editPath =
+                                                sidebarModel.path
+                                                    |> String.split "/"
+
+                                            editDirectory =
+                                                editPath
+                                                    |> List.take (List.length editPath - 1)
+                                        in
+                                        if pathSegments == editDirectory then
+                                            { editorModel
+                                                | isSaving = False
+                                                , originalText = editorModel.text
+                                            }
+                                                |> Just
+                                                |> Sidebar.EditPlaintext
+                                                |> (\newMode -> { sidebarModel | mode = newMode })
+                                                |> Just
+
+                                        else
+                                            Nothing
 
                                     _ ->
-                                        model.sidebar
+                                        Nothing
 
                             _ ->
-                                model.sidebar
+                                Nothing
                 in
                 { model
                     | directoryList =
