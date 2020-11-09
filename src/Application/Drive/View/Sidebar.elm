@@ -297,11 +297,23 @@ editorHeaderItems model =
 editorFooterItems : Sidebar.EditorModel -> List (Html Msg)
 editorFooterItems editor =
     let
-        hasChanges =
-            editor.text /= editor.originalText
+        { isDisabled, title } =
+            if editor.text /= editor.originalText then
+                { isDisabled = False
+                , title = "Save changes"
+                }
+
+            else
+                { isDisabled = True
+                , title = "Changes are saved"
+                }
     in
     [ Html.button
         [ E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
+        , A.title title
+        , A.disabled isDisabled
+
+        --
         , T.antialiased
         , T.appearance_none
         , T.bg_purple_shade
@@ -320,6 +332,11 @@ editorFooterItems editor =
 
         --
         , T.focus__shadow_outline
+
+        --
+        , T.disabled__bg_gray_600
+        , T.dark__disabled__bg_gray_200
+        , T.disabled__text_gray_400
         ]
         [ Html.text "Save" ]
     , Html.button
