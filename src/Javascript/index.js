@@ -99,10 +99,9 @@ wn.initialise({ permissions: PERMISSIONS })
   exe("fsListPublicDirectory", "listPublicDirectory")
   exe("fsMoveItem", "moveItem", { listParent: true })
   exe("fsRemoveItem", "removeItem", { listParent: true })
+  exe("fsWriteItemUtf8", "write", { listParent: true })
 
   app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
-  app.ports.fsWriteItemUtf8.subscribe(writeItemUtf8)
-
   app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
   // Other things
@@ -204,11 +203,6 @@ async function readItemUtf8(path) {
     pathSegments: path.pathSegments,
     text: decoder.decode(contentUInt8Array),
   })
-}
-
-async function writeItemUtf8({ pathSegments, text }) {
-  const encoder = new TextEncoder()
-  fs.write({ pathSegments, text: encoder.encode(text) })
 }
 
 

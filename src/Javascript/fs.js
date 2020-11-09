@@ -41,10 +41,13 @@ export async function add({ blobs, pathSegments }) {
   return await listDirectory({ pathSegments })
 }
 
+const encoder = new TextEncoder()
+
 export async function write({ pathSegments, text }) {
   const path = prefixedPath(pathSegments)
-  await fs.add(path, text)
+  await fs.add(path, encoder.encode(text))
   await fs.publish()
+  return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
 }
 
 
