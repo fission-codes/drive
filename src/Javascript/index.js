@@ -99,7 +99,7 @@ wn.initialise({ permissions: PERMISSIONS })
   exe("fsListPublicDirectory", "listPublicDirectory")
   exe("fsMoveItem", "moveItem", { listParent: true })
   exe("fsRemoveItem", "removeItem", { listParent: true })
-  exe("fsWriteItemUtf8", "write", { listParent: true })
+  exe("fsWriteItemUtf8", "writeItemUtf8", { listParent: true })
 
   app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
   app.ports.fsDownloadItem.subscribe(fs.downloadItem)

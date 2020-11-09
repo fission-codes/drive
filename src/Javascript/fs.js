@@ -43,7 +43,7 @@ export async function add({ blobs, pathSegments }) {
 
 const encoder = new TextEncoder()
 
-export async function write({ pathSegments, text }) {
+export async function writeItemUtf8({ pathSegments, text }) {
   const path = prefixedPath(pathSegments)
   await fs.add(path, encoder.encode(text))
   await fs.publish()
