@@ -414,6 +414,54 @@ addOrCreateForm addOrCreateModel model =
                 , T.dark__text_gray_400
                 ]
                 [ Html.text t ]
+
+        addButton icon content =
+            Html.button
+                [ T.appearance_none
+                , T.bg_purple
+                , T.px_4
+                , T.mt_5
+                , T.mr_5
+                , T.my_auto
+                , T.h_10
+                , T.rounded
+                , T.text_gray_900
+                , T.text_sm
+                , T.font_display
+                , T.flex
+                , T.flex_row
+                , T.items_center
+                ]
+                ((icon
+                    |> FeatherIcons.withSize 16
+                    |> Common.wrapIcon [ T.mr_2 ]
+                 )
+                    :: content
+                )
+
+        extension ext =
+            Html.span
+                [ T.antialiased
+                , T.bg_gray_600
+                , S.default_transition_duration
+                , T.font_semibold
+                , T.inline_block
+                , T.leading_normal
+                , T.ml_2
+                , T.pointer_events_none
+                , T.px_1
+                , T.rounded
+                , T.text_gray_200
+                , T.text_xs
+                , T.transition_opacity
+                , T.uppercase
+
+                -- Dark mode
+                ------------
+                , T.dark__bg_gray_200
+                , T.dark__text_gray_500
+                ]
+                [ Html.text ext ]
     in
     Html.div
         [ T.px_8
@@ -422,38 +470,32 @@ addOrCreateForm addOrCreateModel model =
         [ -----------------------------------------
           -- Create
           -----------------------------------------
-          title "Create directory"
-
-        --
-        , Html.form
-            [ E.onSubmit CreateDirectory
-
-            --
-            , T.flex
-            , T.max_w_md
+          title "Create a file or folder"
+        , S.textField
+            [ A.placeholder "Magic Box"
+            , E.onInput GotCreateDirectoryInput
+            , T.w_full
+            , A.value addOrCreateModel.input
             ]
-            [ S.textField
-                [ A.placeholder "Magic Box"
-                , E.onInput GotCreateDirectoryInput
-                , T.w_0
-                , A.value addOrCreateModel.input
+            []
+        , Html.div
+            [ T.flex
+            , T.flex_row
+            , T.flex_wrap
+            ]
+            [ addButton FeatherIcons.folderPlus
+                [ Html.text "New Folder" ]
+            , addButton FeatherIcons.filePlus
+                [ Html.text "New"
+                , extension "TXT"
                 ]
-                []
-
-            --
-            , S.button
-                [ T.bg_purple
-                , T.ml_3
-                , T.px_6
-                , T.text_tiny
+            , addButton FeatherIcons.filePlus
+                [ Html.text "New"
+                , extension "HTML"
                 ]
-                [ if model.fileSystemStatus == FileSystem.Operation FileSystem.CreatingDirectory then
-                    Common.loadingAnimationWithAttributes
-                        [ T.text_purple_tint ]
-                        { size = S.iconSize }
-
-                  else
-                    Html.text "Create"
+            , addButton FeatherIcons.filePlus
+                [ Html.text "New"
+                , extension "MD"
                 ]
             ]
 
