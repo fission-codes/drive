@@ -935,6 +935,8 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
                 ext ->
                     Drive.extension
                         [ T.opacity_0
+                        , T.transition_opacity
+                        , S.default_transition_duration
 
                         -- Group
                         --------

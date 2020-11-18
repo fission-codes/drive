@@ -143,7 +143,6 @@ extension attributes ext =
         (List.append attributes
             [ T.antialiased
             , T.bg_gray_600
-            , S.default_transition_duration
             , T.font_semibold
             , T.inline_block
             , T.leading_normal
@@ -153,7 +152,6 @@ extension attributes ext =
             , T.rounded
             , T.text_gray_200
             , T.text_xs
-            , T.transition_opacity
             , T.uppercase
 
             -- Dark mode
