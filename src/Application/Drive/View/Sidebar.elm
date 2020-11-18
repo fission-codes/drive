@@ -394,23 +394,25 @@ addOrCreateForm addOrCreateModel model =
                 ]
                 [ Html.text t ]
 
-        addButton icon content =
+        addButton icon attributes content =
             Html.button
-                [ T.appearance_none
-                , T.bg_purple
-                , T.px_4
-                , T.mt_5
-                , T.mr_5
-                , T.my_auto
-                , T.h_10
-                , T.rounded
-                , T.text_gray_900
-                , T.text_sm
-                , T.font_display
-                , T.flex
-                , T.flex_row
-                , T.items_center
-                ]
+                (List.append attributes
+                    [ T.appearance_none
+                    , T.bg_purple
+                    , T.px_4
+                    , T.mt_5
+                    , T.mr_5
+                    , T.my_auto
+                    , T.h_10
+                    , T.rounded
+                    , T.text_gray_900
+                    , T.text_sm
+                    , T.font_display
+                    , T.flex
+                    , T.flex_row
+                    , T.items_center
+                    ]
+                )
                 ((icon
                     |> FeatherIcons.withSize 16
                     |> Common.wrapIcon [ T.mr_2 ]
@@ -428,7 +430,7 @@ addOrCreateForm addOrCreateModel model =
           title "Create a file or folder"
         , S.textField
             [ A.placeholder "Magic Box"
-            , E.onInput GotCreateDirectoryInput
+            , E.onInput GotAddOrCreateInput
             , T.w_full
             , A.value addOrCreateModel.input
             ]
@@ -439,16 +441,20 @@ addOrCreateForm addOrCreateModel model =
             , T.flex_wrap
             ]
             [ addButton FeatherIcons.folderPlus
+                [ E.onClick (CreateFileOrFolder Nothing) ]
                 [ Html.text "New Folder" ]
             , addButton FeatherIcons.filePlus
+                [ E.onClick (CreateFileOrFolder (Just { extension = "txt" })) ]
                 [ Html.text "New"
                 , Drive.extension [] "TXT"
                 ]
             , addButton FeatherIcons.filePlus
+                [ E.onClick (CreateFileOrFolder (Just { extension = "html" })) ]
                 [ Html.text "New"
                 , Drive.extension [] "HTML"
                 ]
             , addButton FeatherIcons.filePlus
+                [ E.onClick (CreateFileOrFolder (Just { extension = "md" })) ]
                 [ Html.text "New"
                 , Drive.extension [] "MD"
                 ]

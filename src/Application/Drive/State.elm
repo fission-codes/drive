@@ -109,22 +109,29 @@ copyToClipboard { clip, notification } model =
         |> Return.command (Ports.showNotification notification)
 
 
-createDirectory : Manager
-createDirectory model =
-    case sidebarCreateDirectoryInput model of
-        Nothing ->
+createFileOrFolder : Maybe { extension : String } -> Manager
+createFileOrFolder option model =
+    case ( option, sidebarAddOrCreateInput model ) of
+        ( _, Nothing ) ->
             Return.singleton model
 
-        Just directoryName ->
+        ( Nothing, Just directoryName ) ->
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
                 |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
                 |> return { model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
 
+        ( Just { extension }, Just fileName ) ->
+            model.route
+                |> Routing.treePathSegments
+                |> List.add [ fileName ++ "." ++ extension ]
+                |> (\p -> Ports.fsWriteItemUtf8 { pathSegments = p, text = "" })
+                |> return model
 
-sidebarCreateDirectoryInput : Model -> Maybe String
-sidebarCreateDirectoryInput model =
+
+sidebarAddOrCreateInput : Model -> Maybe String
+sidebarAddOrCreateInput model =
     model.addOrCreate
         |> Maybe.andThen
             (\{ input } ->
@@ -212,8 +219,8 @@ downloadItem item model =
         |> return model
 
 
-gotCreateDirectoryInput : String -> Manager
-gotCreateDirectoryInput input model =
+gotAddCreateInput : String -> Manager
+gotAddCreateInput input model =
     case model.addOrCreate of
         Just addOrCreate ->
             Return.singleton
