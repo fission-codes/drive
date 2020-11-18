@@ -131,3 +131,35 @@ controlClose =
             [ T.ml_1 ]
             [ Html.text "Close" ]
         ]
+
+
+
+-- DRIVE ITEMS
+
+
+extension : List (Html.Attribute msg) -> String -> Html msg
+extension attributes ext =
+    Html.span
+        (List.append attributes
+            [ T.antialiased
+            , T.bg_gray_600
+            , S.default_transition_duration
+            , T.font_semibold
+            , T.inline_block
+            , T.leading_normal
+            , T.ml_2
+            , T.pointer_events_none
+            , T.px_1
+            , T.rounded
+            , T.text_gray_200
+            , T.text_xs
+            , T.transition_opacity
+            , T.uppercase
+
+            -- Dark mode
+            ------------
+            , T.dark__bg_gray_200
+            , T.dark__text_gray_500
+            ]
+        )
+        [ Html.text ext ]

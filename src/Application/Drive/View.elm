@@ -7,6 +7,7 @@ import ContextMenu
 import Drive.ContextMenu as ContextMenu
 import Drive.Item exposing (Item, Kind(..))
 import Drive.Sidebar as Sidebar
+import Drive.View.Common as Drive
 import Drive.View.Sidebar as Sidebar
 import FeatherIcons
 import FileSystem
@@ -932,34 +933,15 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
                     nothing
 
                 ext ->
-                    Html.span
-                        [ T.antialiased
-                        , T.bg_gray_600
-                        , S.default_transition_duration
-                        , T.font_semibold
-                        , T.inline_block
-                        , T.leading_normal
-                        , T.ml_2
-                        , T.opacity_0
-                        , T.pointer_events_none
-                        , T.px_1
-                        , T.rounded
-                        , T.text_gray_200
-                        , T.text_xs
-                        , T.transition_opacity
-                        , T.uppercase
-
-                        -- Dark mode
-                        ------------
-                        , T.dark__bg_gray_200
-                        , T.dark__text_gray_500
+                    Drive.extension
+                        [ T.opacity_0
 
                         -- Group
                         --------
                         , T.group_hover__opacity_100
                         , T.group_hover__pointer_events_auto
                         ]
-                        [ Html.text ext ]
+                        ext
             ]
 
         -----------------------------------------

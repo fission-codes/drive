@@ -234,28 +234,7 @@ editorHeaderItems model =
                             nothing
 
                         ext ->
-                            Html.span
-                                [ T.antialiased
-                                , T.bg_gray_600
-                                , S.default_transition_duration
-                                , T.font_semibold
-                                , T.inline_block
-                                , T.leading_normal
-                                , T.ml_2
-                                , T.pointer_events_none
-                                , T.px_1
-                                , T.rounded
-                                , T.text_gray_200
-                                , T.text_xs
-                                , T.transition_opacity
-                                , T.uppercase
-
-                                -- Dark mode
-                                ------------
-                                , T.dark__bg_gray_200
-                                , T.dark__text_gray_500
-                                ]
-                                [ Html.text ext ]
+                            Drive.extension [] ext
                     ]
                 ]
 
@@ -438,30 +417,6 @@ addOrCreateForm addOrCreateModel model =
                  )
                     :: content
                 )
-
-        extension ext =
-            Html.span
-                [ T.antialiased
-                , T.bg_gray_600
-                , S.default_transition_duration
-                , T.font_semibold
-                , T.inline_block
-                , T.leading_normal
-                , T.ml_2
-                , T.pointer_events_none
-                , T.px_1
-                , T.rounded
-                , T.text_gray_200
-                , T.text_xs
-                , T.transition_opacity
-                , T.uppercase
-
-                -- Dark mode
-                ------------
-                , T.dark__bg_gray_200
-                , T.dark__text_gray_500
-                ]
-                [ Html.text ext ]
     in
     Html.div
         [ T.px_8
@@ -487,15 +442,15 @@ addOrCreateForm addOrCreateModel model =
                 [ Html.text "New Folder" ]
             , addButton FeatherIcons.filePlus
                 [ Html.text "New"
-                , extension "TXT"
+                , Drive.extension [] "TXT"
                 ]
             , addButton FeatherIcons.filePlus
                 [ Html.text "New"
-                , extension "HTML"
+                , Drive.extension [] "HTML"
                 ]
             , addButton FeatherIcons.filePlus
                 [ Html.text "New"
-                , extension "MD"
+                , Drive.extension [] "MD"
                 ]
             ]
 
