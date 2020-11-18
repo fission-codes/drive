@@ -88,7 +88,7 @@ viewSidebar { scrollable, expanded, body } =
 
         --
         , if scrollable then
-            T.overflow_y_scroll
+            T.overflow_y_auto
 
           else
             T.overflow_y_hidden
