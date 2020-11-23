@@ -79,10 +79,8 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/elm-git-install
 
 	# SDK
-	# cp node_modules/webnative/index.es5.js web_modules/webnative.js
-	# cp node_modules/webnative/index.umd.js web_modules/webnative.umd.js
-	cp ../webnative/dist/index.es5.js web_modules/webnative.js
-	cp ../webnative/dist/index.umd.js web_modules/webnative.umd.js
+	cp node_modules/webnative/index.es5.js web_modules/webnative.js
+	cp node_modules/webnative/index.umd.js web_modules/webnative.umd.js
 
 
 @production-build:
