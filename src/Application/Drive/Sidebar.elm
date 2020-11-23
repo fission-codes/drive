@@ -24,6 +24,7 @@ type Mode
 type alias EditorModel =
     { text : String
     , originalText : String
+    , isSaving : Bool
     }
 
 

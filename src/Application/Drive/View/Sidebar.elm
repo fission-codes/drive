@@ -17,6 +17,7 @@ import Html.Events.Extra as E
 import Html.Events.Extra.Mouse as M
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
+import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Radix exposing (..)
@@ -117,6 +118,7 @@ plaintextEditor maybeEditor sidebar model =
             Just editor ->
                 Html.textarea
                     [ E.onInput (SidebarMsg << Sidebar.PlaintextEditorInput)
+                    , onCtrlS (SidebarMsg Sidebar.PlaintextEditorSave)
 
                     --
                     , T.bg_transparent
@@ -166,9 +168,9 @@ plaintextEditor maybeEditor sidebar model =
             , T.flex_shrink_0
             , T.h_12
             , T.items_center
-            , T.justify_end
+            , T.justify_start
             , T.mt_px
-            , T.p_2
+            , T.py_2
             , T.relative
             , T.space_x_2
             ]
@@ -297,45 +299,76 @@ editorHeaderItems model =
 editorFooterItems : Sidebar.EditorModel -> List (Html Msg)
 editorFooterItems editor =
     let
-        hasChanges =
-            editor.text /= editor.originalText
+        { isDisabled, title } =
+            if editor.text /= editor.originalText then
+                { isDisabled = False
+                , title = "Save changes"
+                }
+
+            else
+                { isDisabled = True
+                , title = "Changes are saved"
+                }
     in
-    [ if hasChanges then
-        Html.button
-            [ T.px_4
-            , T.py_2
-            , T.text_gray_400
-            , T.text_tiny
-            , T.tracking_wide
-            , T.uppercase
-            , E.onClick CloseSidebar
-            ]
-            [ Html.text "Cancel" ]
+    [ Html.button
+        [ E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
+        , A.title title
+        , A.disabled isDisabled
 
-      else
-        nothing
-    , if hasChanges then
-        Html.button
-            [ T.antialiased
-            , T.appearance_none
-            , T.bg_purple_shade
-            , T.font_semibold
-            , T.leading_normal
-            , T.px_4
-            , T.py_2
-            , T.relative
-            , T.rounded
-            , T.text_tiny
-            , T.text_white
-            , T.tracking_wider
-            , T.transition_colors
-            , T.uppercase
-            , E.onClick (SidebarMsg Sidebar.PlaintextEditorSave)
-            ]
-            [ Html.text "Save" ]
+        --
+        , T.antialiased
+        , T.appearance_none
+        , T.bg_purple_shade
+        , T.font_semibold
+        , T.flex
+        , T.flex_row
+        , T.items_center
+        , T.leading_normal
+        , T.outline_none
+        , T.px_4
+        , T.py_2
+        , T.relative
+        , T.rounded
+        , T.text_tiny
+        , T.text_white
+        , T.tracking_wider
+        , T.transition_colors
+        , T.uppercase
 
-      else
-        nothing
+        --
+        , T.focus__shadow_outline
+
+        --
+        , T.disabled__bg_gray_600
+        , T.dark__disabled__bg_gray_200
+        , T.disabled__text_gray_400
+        ]
+        [ Common.loadingAnimationWithAttributes
+            [ T.mr_2
+            , if editor.isSaving then
+                T.inline
+
+              else
+                T.hidden
+            ]
+            { size = 18 }
+        , Html.text "Save"
+        ]
+    , Html.button
+        [ E.onClick CloseSidebar
+        , T.outline_none
+        , T.px_4
+        , T.py_2
+        , T.rounded
+        , T.text_gray_400
+        , T.text_tiny
+        , T.tracking_wide
+        , T.uppercase
+
+        --
+        , T.focus__shadow_outline
+        ]
+        [ Html.text "Cancel" ]
     ]
 
 
@@ -519,3 +552,34 @@ detailsForSelection { showPreviewOverlay } sidebar model =
             |> Maybe.withDefault
                 nothing
         ]
+
+
+
+-- UTILITIES
+
+
+onCtrlS : msg -> Html.Attribute msg
+onCtrlS message =
+    let
+        ensureEquals value decoder =
+            decoder
+                |> Decode.andThen
+                    (\val ->
+                        if val == value then
+                            Decode.succeed ()
+
+                        else
+                            Decode.fail "Unexpecated value"
+                    )
+    in
+    E.custom "keydown"
+        (Decode.map2
+            (\_ _ ->
+                { message = message
+                , stopPropagation = True
+                , preventDefault = True
+                }
+            )
+            (Decode.field "key" Decode.string |> ensureEquals "s")
+            (Decode.field "ctrlKey" Decode.bool |> ensureEquals True)
+        )

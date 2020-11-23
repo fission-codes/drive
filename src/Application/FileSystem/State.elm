@@ -22,6 +22,8 @@ import Task
 -- 🐚
 
 
+{-| TODO This function is doing a lot. Can we break it up somehow?
+-}
 gotDirectoryList : Json.Value -> Manager
 gotDirectoryList json model =
     let
@@ -76,6 +78,51 @@ gotDirectoryList json model =
 
                             _ ->
                                 Nothing
+
+                    sidebar =
+                        case model.sidebar of
+                            Just sidebarModel ->
+                                case sidebarModel.mode of
+                                    Sidebar.EditPlaintext (Just editorModel) ->
+                                        let
+                                            editPath =
+                                                sidebarModel.path
+                                                    |> String.split "/"
+
+                                            editDirectoryWithPrivate =
+                                                editPath
+                                                    |> List.take (List.length editPath - 1)
+
+                                            editDirectory =
+                                                case editDirectoryWithPrivate of
+                                                    first :: rest ->
+                                                        if first == "private" then
+                                                            rest
+
+                                                        else
+                                                            first :: rest
+
+                                                    other ->
+                                                        other
+                                        in
+                                        if pathSegments == editDirectory then
+                                            { editorModel
+                                                | isSaving = False
+                                                , originalText = editorModel.text
+                                            }
+                                                |> Just
+                                                |> Sidebar.EditPlaintext
+                                                |> (\newMode -> { sidebarModel | mode = newMode })
+                                                |> Just
+
+                                        else
+                                            Nothing
+
+                                    _ ->
+                                        Nothing
+
+                            _ ->
+                                Nothing
                 in
                 { model
                     | directoryList =
@@ -85,12 +132,15 @@ gotDirectoryList json model =
 
                     --
                     , sidebar =
-                        selectedPath
-                            |> Maybe.map
-                                (\path ->
-                                    { path = path
-                                    , mode = Sidebar.details
-                                    }
+                        sidebar
+                            |> Maybe.orElse
+                                (selectedPath
+                                    |> Maybe.map
+                                        (\path ->
+                                            { path = path
+                                            , mode = Sidebar.details
+                                            }
+                                        )
                                 )
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
@@ -115,6 +165,7 @@ gotItemUtf8 { pathSegments, text } model =
                 Sidebar.EditPlaintext _ ->
                     { text = text
                     , originalText = text
+                    , isSaving = False
                     }
                         |> Just
                         |> Sidebar.EditPlaintext

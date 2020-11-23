@@ -21,6 +21,7 @@ type Kind
     | Image
     | Text
     | Video
+    | RichText
       --
     | Other
 
@@ -63,7 +64,11 @@ imageFileExtensions =
 
 
 textFileExtensions =
-    [ "doc", "json", "pdf", "txt", "toml", "yaml" ]
+    [ "json", "txt", "toml", "yaml" ]
+
+
+richtextFileExtensions =
+    [ "doc", "pdf" ]
 
 
 videoFileExtensions =
@@ -95,6 +100,9 @@ canRenderKind kind =
 
         Video ->
             True
+
+        RichText ->
+            False
 
         --
         Other ->
@@ -131,6 +139,9 @@ fromFileSystem { cid, name, path, posixTime, size, typ } =
 
                     else if List.member nameProps.extension textFileExtensions then
                         Text
+
+                    else if List.member nameProps.extension richtextFileExtensions then
+                        RichText
 
                     else if List.member nameProps.extension videoFileExtensions then
                         Video
@@ -255,6 +266,9 @@ kindIcon kind =
         Video ->
             FeatherIcons.video
 
+        RichText ->
+            FeatherIcons.fileText
+
         --
         Other ->
             FeatherIcons.file
@@ -281,6 +295,9 @@ kindName kind =
 
         Video ->
             "Video"
+
+        RichText ->
+            "Rich Text"
 
         --
         Other ->

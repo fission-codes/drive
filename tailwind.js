@@ -80,7 +80,8 @@ export default {
       },
 
       boxShadow: {
-        "inner-outline": "inset 0 0 0 2px rgba(100, 70, 250, .2)",
+        "inner-outline": "inset 0 0 0 2px rgba(100, 70, 250, .2)", // purple 20%
+        "outline": "0 0 0 2px rgba(100, 70, 250, 0.4)", // purple 40%
       },
 
     },
@@ -94,12 +95,13 @@ export default {
 
   variants: {
 
-    backgroundColor: [ "group-hover", "responsive" ],
+    backgroundColor: [ "group-hover", "disabled", "responsive" ],
     borderColor: [ "first", "focus", "group-hover", "hover", "last", "responsive" ],
     borderWidth: [ "first", "last" ],
     margin: [ "first", "last", "responsive" ],
     opacity: [ "group-hover", "responsive" ],
     pointerEvents: [ "group-hover" ],
+    textColor: [ "disabled", "responsive" ],
 
   },
 

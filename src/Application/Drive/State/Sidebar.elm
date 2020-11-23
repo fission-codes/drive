@@ -11,7 +11,10 @@ update : Sidebar.Msg -> Sidebar.Model -> Manager
 update msg sidebar model =
     case ( sidebar.mode, msg ) of
         ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorInput content ) ->
-            { editorModel | text = content }
+            { editorModel
+                | text = content
+                , isSaving = False
+            }
                 |> Just
                 |> Sidebar.EditPlaintext
                 |> (\newMode -> { sidebar | mode = newMode })
@@ -26,7 +29,10 @@ update msg sidebar model =
                     , text = editorModel.text
                     }
                     |> Return.return
-                        ({ editorModel | originalText = editorModel.text }
+                        ({ editorModel
+                            | originalText = editorModel.text
+                            , isSaving = True
+                         }
                             |> Just
                             |> Sidebar.EditPlaintext
                             |> (\newMode -> { sidebar | mode = newMode })
