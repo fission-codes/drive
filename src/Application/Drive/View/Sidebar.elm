@@ -345,17 +345,13 @@ editorFooterItems editor =
         ]
         [ Common.loadingAnimationWithAttributes
             [ T.mr_2
-            , T.flex
-            , T.items_center
-            , T.justify_center
-            , T.h_0
             , if editor.isSaving then
                 T.inline
 
               else
                 T.hidden
             ]
-            { size = S.iconSize }
+            { size = 18 }
         , Html.text "Save"
         ]
     , Html.button
