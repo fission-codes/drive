@@ -29,12 +29,14 @@ import Url.Builder
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
-view : Bool -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
-view isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item =
+view : Bool -> Bool -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
+view useFS isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item =
     Html.div
-        []
+        [ T.flex
+        , T.flex_col
+        ]
         [ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item
-        , dataContainer item
+        , dataContainer useFS item
         , extra item
         ]
 
@@ -119,14 +121,11 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
         , Drive.sidebarControls
             { above = True
             , controls =
-                List.append
-                    (if isSingleFileView then
-                        []
-
-                     else
+                List.concat
+                    [ Common.when (not isSingleFileView)
                         [ Drive.controlExpand { expanded = expandSidebar } ]
-                    )
-                    [ Drive.controlClose ]
+                    , [ Drive.controlClose ]
+                    ]
             }
         ]
 
@@ -255,8 +254,8 @@ overlayContents isGroundFloor currentTime item =
 -- DATA
 
 
-dataContainer : Item -> Html Msg
-dataContainer item =
+dataContainer : Bool -> Item -> Html Msg
+dataContainer useFS item =
     let
         defaultStyles =
             [ T.absolute
@@ -268,10 +267,13 @@ dataContainer item =
             , T.z_10
             ]
     in
-    Html.div
+    fissionDriveMedia
+        { name = item.name
+        , path = item.path
+        , useFS = useFS
+        }
         (List.append
-            [ A.id item.id
-            , A.class "drive-item__preview"
+            [ A.class "drive-item__preview"
             ]
             (case item.kind of
                 Drive.Item.Audio ->
@@ -292,13 +294,7 @@ dataContainer item =
                     defaultStyles
             )
         )
-        [ case item.kind of
-            Drive.Item.Image ->
-                Html.nothing
-
-            _ ->
-                Common.loadingAnimation { size = S.iconSize }
-        ]
+        []
 
 
 
@@ -326,3 +322,28 @@ extra item =
             _ ->
                 Html.nothing
         ]
+
+
+
+-- Custom Element (see media.js)
+
+
+fissionDriveMedia : { name : String, path : String, useFS : Bool } -> List (Html.Attribute msg) -> List (Html msg) -> Html msg
+fissionDriveMedia { name, path, useFS } attributes children =
+    let
+        stringFromBool b =
+            if b then
+                "true"
+
+            else
+                "false"
+    in
+    Html.node "fission-drive-media"
+        (List.append
+            [ A.attribute "name" name
+            , A.attribute "path" path
+            , A.attribute "useFS" (stringFromBool useFS)
+            ]
+            attributes
+        )
+        children

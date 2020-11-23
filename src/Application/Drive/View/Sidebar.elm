@@ -151,7 +151,7 @@ plaintextEditor maybeEditor sidebar model =
                     , T.h_full
                     , T.w_full
                     ]
-                    [ Html.div
+                    [ Common.loadingAnimationWithAttributes
                         [ T.absolute
                         , T.left_1over2
                         , T.top_1over2
@@ -159,12 +159,7 @@ plaintextEditor maybeEditor sidebar model =
                         , T.neg_translate_x_1over2
                         , T.neg_translate_y_1over2
                         ]
-                        [ Html.img
-                            [ A.src "images/loader-gray.svg"
-                            , T.animate_spin
-                            ]
-                            []
-                        ]
+                        { size = 24 }
                     ]
         , Html.div
             [ T.flex
@@ -512,8 +507,9 @@ detailsForSelection { showPreviewOverlay } sidebar model =
         [ model.selectedPath
             |> Maybe.andThen (Common.lookupItem model)
             |> Maybe.map
-                (Html.Lazy.lazy6
+                (Html.Lazy.lazy7
                     Details.view
+                    (Routing.isAuthenticatedTree model.authenticated model.route)
                     (Common.isGroundFloor model)
                     (Common.isSingleFileView model)
                     model.currentTime

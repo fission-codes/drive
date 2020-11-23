@@ -73,7 +73,7 @@ screenSizeChanged width height model =
             , width = width
             }
     in
-    Common.potentiallyRenderMedia
+    Return.singleton
         { model
             | contextMenu = Nothing
             , viewportSize = viewportSize
