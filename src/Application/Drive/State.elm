@@ -33,7 +33,11 @@ import Url
 
 activateSidebarAddOrCreate : Manager
 activateSidebarAddOrCreate model =
-    Return.singleton { model | addOrCreate = Just Drive.Sidebar.addOrCreate }
+    Return.singleton
+        { model
+            | addOrCreate = Just Drive.Sidebar.addOrCreate
+            , sidebarExpanded = False
+        }
 
 
 addFiles : { blobs : List { path : String, url : String } } -> Manager
@@ -390,6 +394,7 @@ toggleSidebarAddOrCreate model =
 
                     _ ->
                         Just Drive.Sidebar.addOrCreate
+            , sidebarExpanded = False
         }
 
 
