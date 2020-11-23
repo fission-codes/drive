@@ -46,9 +46,6 @@ workbox_config 	:= "workbox.config.cjs"
 	echo "🤵  Start a web server at http://localhost:8000"
 	devd --quiet build --port=8000 --all
 
-@hot-server:
-	echo "🔥  Start a hot-reloading elm-live server at http://localhost:8000"
-	{{node_bin}}/elm-live {{src_dir}}/Application/Main.elm --hot --port=8000 --pushstate --dir=build -- --output={{dist_dir}}/application.js --debug
 
 @download-web-module filename url:
 	curl --silent --show-error --fail -o web_modules/{{filename}} {{url}}
@@ -59,6 +56,11 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/elm-impfix "{{src_dir}}/**/*.elm" --replace
 	echo "🧹  Running elm-format"
 	elm-format {{src_dir}} --yes
+
+
+@hot-server:
+	echo "🔥  Start a hot-reloading elm-live server at http://localhost:8000"
+	{{node_bin}}/elm-live {{src_dir}}/Application/Main.elm --hot --port=8000 --pushstate --dir=build -- --output={{dist_dir}}/application.js --debug
 
 
 @install-deps: (_report "Installing required dependencies")

@@ -575,16 +575,15 @@ mainLayout model leftSide =
 errorView : Routing.Route -> String -> Html Msg
 errorView route err =
     Html.div
-        [ T.flex_auto
+        [ T.break_words
+        , T.flex
+        , T.flex_auto
         , T.flex_col
         , T.items_center
         , T.justify_center
         , T.leading_snug
         , T.text_center
         , T.text_gray_300
-
-        --
-        , T.md__flex
 
         -- Dark mode
         ------------

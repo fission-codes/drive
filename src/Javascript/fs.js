@@ -117,26 +117,37 @@ export async function listDirectory({ pathSegments }) {
 
   // Adjust list
   const isListingPublic = path.startsWith("public/") || path === "public"
+  const cleanedPath = path.replace(/^public\/?/, "").replace(/\/$/, "")
+  const prettyIpfsPath = prefix => {
+    return "/ipfs/"
+      + rootCid
+      + "/" + prefix + "/"
+      + cleanedPath
+      + (cleanedPath.length ? "/" : "")
+  }
 
   let results = await Promise.all(
-    rawList.map(async l => ({
-      ...l,
+    rawList.map(async l => {
+      let cid
 
-      cid: isListingPublic
-        ? (await ipfs.files.stat(
-            "/ipfs/"
-              + rootCid
-              + "/pretty/"
-              + path.replace(/^public\/?/, "").replace(/\/$/, "")
-              + "/"
-              + l.name
-          )).cid.toString()
-        : l.cid || l.pointer,
+      if (isListingPublic) {
+        cid = await ipfs.files.stat(prettyIpfsPath("p") + l.name)
+        cid = cid.cid.toString()
 
-      path: `${path}/${l.name}`,
-      size: l.size || 0,
-      type: l.isFile ? "file" : "dir"
-    }))
+      } else {
+        cid = l.cid || l.pointer
+
+      }
+
+      return {
+        ...l,
+
+        cid: cid,
+        path: `${path}/${l.name}`,
+        size: l.size || 0,
+        type: l.isFile ? "file" : "dir"
+      }
+    })
   )
 
   // Add a fictional "public" directory when listing the "root"
