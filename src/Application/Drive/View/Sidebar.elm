@@ -17,7 +17,7 @@ import Html.Events.Extra as E
 import Html.Events.Extra.Mouse as M
 import Html.Extra as Html exposing (nothing)
 import Html.Lazy
-import Json.Decode as D
+import Json.Decode as Decode
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Radix exposing (..)
@@ -567,23 +567,23 @@ onCtrlS message =
     let
         ensureEquals value decoder =
             decoder
-                |> D.andThen
+                |> Decode.andThen
                     (\val ->
                         if val == value then
-                            D.succeed ()
+                            Decode.succeed ()
 
                         else
-                            D.fail "Unexpecated value"
+                            Decode.fail "Unexpecated value"
                     )
     in
     E.custom "keydown"
-        (D.map2
+        (Decode.map2
             (\_ _ ->
                 { message = message
                 , stopPropagation = True
                 , preventDefault = True
                 }
             )
-            (D.field "key" D.string |> ensureEquals "s")
-            (D.field "ctrlKey" D.bool |> ensureEquals True)
+            (Decode.field "key" Decode.string |> ensureEquals "s")
+            (Decode.field "ctrlKey" Decode.bool |> ensureEquals True)
         )
