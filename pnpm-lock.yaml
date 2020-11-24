@@ -1,11 +1,11 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/768a1384450d0be543152f75d02ffe3dfe90bd4e
-  webnative: 0.20.0-alpha-12
+  webnative: 0.20.2
 devDependencies:
   elm-git-install: 0.1.3
   elm-impfix: 1.0.8
   elm-live: 4.0.2
-  elm-tailwind-css: 1.0.1
+  elm-tailwind-css: 1.0.1_tailwindcss@1.9.6
   esbuild: 0.8.13
   html-minifier-terser: 5.1.1
   mustache: 4.0.1
@@ -2146,7 +2146,7 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-4I3UvJxF6MubC14VsgtV11B0zBxaaKtdKKsWquoaa5a3UHBIGW83qgTnt/NxOj4omOLfupaftmDaE4yRMTgTcw==
-  /elm-tailwind-css/1.0.1:
+  /elm-tailwind-css/1.0.1_tailwindcss@1.9.6:
     dependencies:
       '@fullhuman/postcss-purgecss': 3.0.0
       autoprefixer: 9.8.6
@@ -2155,6 +2155,7 @@ packages:
       meow: 8.0.0
       postcss: 8.1.9
       postcss-csso: 5.0.0_postcss@8.1.9
+      tailwindcss: 1.9.6
     dev: true
     hasBin: true
     peerDependencies:
@@ -5579,7 +5580,7 @@ packages:
     dev: true
     resolution:
       integrity: sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=
-  /webnative/0.20.0-alpha-12:
+  /webnative/0.20.2:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -5594,7 +5595,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-1dfVx07+PlNQb3fwgRsptZXHi5zxWPWN9KiN6X/CsyKpuQlrXqdhSw5LoKBzaVgtiexFfDnCHNsF8HdZiukupQ==
+      integrity: sha512-tDvSRb0EbKmu/CZL1NkbmGB1Bmsrzx8399tRsDn4Mo1a6eFVc4CKXoQL6VRW1EywPGmfU5kyr3kZLgwQRxDWVA==
   /which/1.3.1:
     dependencies:
       isexe: 2.0.0
@@ -5844,6 +5845,6 @@ specifiers:
   postcss-import: ^13.0.0
   tailwindcss: ^1.9.6
   terser-dir: ^1.0.7
-  webnative: 0.20.0-alpha-12
+  webnative: 0.20.2
   workbox-cli: ^5.1.4
   workbox-strategies: ^5.1.4
