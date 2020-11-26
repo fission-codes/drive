@@ -153,7 +153,7 @@ plaintextEditor maybeEditor sidebar model =
                     , T.h_full
                     , T.w_full
                     ]
-                    [ Common.loadingAnimationWithAttributes
+                    [ Html.span
                         [ T.absolute
                         , T.left_1over2
                         , T.top_1over2
@@ -161,7 +161,10 @@ plaintextEditor maybeEditor sidebar model =
                         , T.neg_translate_x_1over2
                         , T.neg_translate_y_1over2
                         ]
-                        { size = 24 }
+                        [ Common.loadingAnimationWithAttributes
+                            [ T.text_gray_400 ]
+                            { size = 24 }
+                        ]
                     ]
         , Html.div
             [ T.flex
