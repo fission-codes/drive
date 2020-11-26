@@ -101,10 +101,10 @@ type Msg
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
     | CopyToClipboard { clip : String, notification : String }
+    | CreateFileOrFolder (Maybe { extension : String })
     | DigDeeper { directoryName : String }
     | DownloadItem Item
     | GotAddOrCreateInput String
-    | CreateFileOrFolder (Maybe { extension : String })
     | GoUp { floor : Int }
     | RemoveItem Item
     | RenameItem Item

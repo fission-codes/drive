@@ -134,20 +134,6 @@ createFileOrFolder option model =
                 |> return model
 
 
-sidebarAddOrCreateInput : Model -> Maybe String
-sidebarAddOrCreateInput model =
-    model.addOrCreate
-        |> Maybe.andThen
-            (\{ input } ->
-                case String.trim input of
-                    "" ->
-                        Nothing
-
-                    directoryName ->
-                        Just directoryName
-            )
-
-
 digDeeper : { directoryName : String } -> Manager
 digDeeper { directoryName } model =
     let
@@ -373,6 +359,20 @@ showRenameItemModal item model =
     return
         { model | modal = Just (Drive.Modals.renameItem item) }
         (Task.attempt (\_ -> Bypass) <| Dom.focus "modal__rename-item__input")
+
+
+sidebarAddOrCreateInput : Model -> Maybe String
+sidebarAddOrCreateInput model =
+    model.addOrCreate
+        |> Maybe.andThen
+            (\{ input } ->
+                case String.trim input of
+                    "" ->
+                        Nothing
+
+                    directoryName ->
+                        Just directoryName
+            )
 
 
 toggleExpandedSidebar : Manager
