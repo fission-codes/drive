@@ -414,6 +414,13 @@ addOrCreateForm addOrCreateModel model =
                     , T.flex
                     , T.flex_row
                     , T.items_center
+
+                    -- Focus Styles
+                    ---------------
+                    , T.appearance_none
+                    , T.outline_none
+                    , T.focus__shadow_outline
+                    , T.active__bg_purple_shade
                     ]
                 )
                 ((icon
