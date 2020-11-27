@@ -22,6 +22,7 @@ import Result.Extra as Result
 import Return exposing (andThen, return)
 import Return.Extra as Return
 import Routing
+import Set
 import Task
 import Toasty
 import Url
@@ -116,22 +117,66 @@ copyToClipboard { clip, notification } model =
 createFileOrFolder : Maybe { extension : String } -> Manager
 createFileOrFolder option model =
     case ( option, sidebarAddOrCreateInput model ) of
-        ( _, Nothing ) ->
-            Return.singleton model
-
         ( Nothing, Just directoryName ) ->
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
                 |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
-                |> return { model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
+                |> return
+                    ({ model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
+                        |> sidebarAddOrCreateClearInput
+                    )
 
-        ( Just { extension }, Just fileName ) ->
-            model.route
-                |> Routing.treePathSegments
-                |> List.add [ fileName ++ "." ++ extension ]
-                |> (\p -> Ports.fsWriteItemUtf8 { pathSegments = p, text = "" })
-                |> return model
+        ( Just { extension }, maybeFileName ) ->
+            let
+                ensureUniqueFileName m fileName =
+                    m.directoryList
+                        |> Result.toMaybe
+                        |> Maybe.map
+                            (.items
+                                >> List.map .name
+                                >> Set.fromList
+                                >> ensureUnique fileName Nothing
+                            )
+
+                makeName prefix maybeSuffixNum =
+                    case maybeSuffixNum of
+                        Just suffixNum ->
+                            prefix ++ " " ++ String.fromInt suffixNum ++ "." ++ extension
+
+                        Nothing ->
+                            prefix ++ "." ++ extension
+
+                ensureUnique prefix maybeSuffix blacklisted =
+                    let
+                        name =
+                            makeName prefix maybeSuffix
+                    in
+                    if Set.member name blacklisted then
+                        maybeSuffix
+                            |> Maybe.map ((+) 1)
+                            |> Maybe.withDefault 2
+                            |> Just
+                            |> (\suff -> ensureUnique prefix suff blacklisted)
+
+                    else
+                        name
+            in
+            maybeFileName
+                |> Maybe.withDefault "Untitled"
+                |> ensureUniqueFileName model
+                |> Maybe.map
+                    (\fileName ->
+                        model.route
+                            |> Routing.treePathSegments
+                            |> List.add [ fileName ]
+                            |> (\p -> Ports.fsWriteItemUtf8 { pathSegments = p, text = "" })
+                            |> return (sidebarAddOrCreateClearInput model)
+                    )
+                |> Maybe.withDefault (Return.singleton model)
+
+        ( Nothing, _ ) ->
+            Return.singleton model
 
 
 digDeeper : { directoryName : String } -> Manager
@@ -373,6 +418,15 @@ sidebarAddOrCreateInput model =
                     directoryName ->
                         Just directoryName
             )
+
+
+sidebarAddOrCreateClearInput : Model -> Model
+sidebarAddOrCreateClearInput model =
+    { model
+        | addOrCreate =
+            model.addOrCreate
+                |> Maybe.map (\addOrCreate -> { addOrCreate | input = "" })
+    }
 
 
 toggleExpandedSidebar : Manager
