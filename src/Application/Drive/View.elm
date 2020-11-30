@@ -19,6 +19,7 @@ import Html.Events.Extra.Mouse as M
 import Html.Events.Extra.Touch as T
 import Html.Extra as Html exposing (nothing)
 import Json.Decode as Decode
+import Keyboard
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Radix exposing (..)
@@ -741,7 +742,9 @@ list model directoryList =
             directoryList.floor == 1
     in
     Html.div
-        [ T.text_lg ]
+        [ T.text_lg
+        , T.select_none
+        ]
         [ Html.div
             [ T.antialiased
             , T.font_semibold
@@ -760,7 +763,7 @@ list model directoryList =
         -- Tree
         -----------------------------------------
         , directoryList.items
-            |> List.map (listItem isGroundFloor model.selectedPaths)
+            |> List.map (listItem isGroundFloor model.selectedPaths model.pressedKeys)
             |> Html.div []
 
         -----------------------------------------
@@ -820,8 +823,8 @@ list model directoryList =
         ]
 
 
-listItem : Bool -> List String -> Item -> Html Msg
-listItem isGroundFloor selectedPaths ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Bool -> List String -> List Keyboard.Key -> Item -> Html Msg
+listItem isGroundFloor selectedPaths pressedKeys ({ kind, loading, name, nameProperties, path } as item) =
     let
         selected =
             List.member path selectedPaths
@@ -830,16 +833,22 @@ listItem isGroundFloor selectedPaths ({ kind, loading, name, nameProperties, pat
             isGroundFloor && name == "public"
     in
     Html.div
-        [ case kind of
-            Directory ->
-                { directoryName = name }
-                    |> DigDeeper
-                    |> E.onTap
+        [ E.onTap <|
+            case kind of
+                Directory ->
+                    if List.member Keyboard.Shift pressedKeys then
+                        if List.isEmpty pressedKeys then
+                            Select item
 
-            _ ->
-                item
-                    |> Select
-                    |> E.onTap
+                        else
+                            -- TODO: Select multiple
+                            Select item
+
+                    else
+                        DigDeeper { directoryName = name }
+
+                _ ->
+                    Select item
 
         -- Show context menu on right click,
         -- or when holding, without moving, the item on touch devices.
