@@ -131,7 +131,13 @@ export async function listDirectory({ pathSegments }) {
       let cid
 
       if (isListingPublic) {
-        cid = await ipfs.files.stat(prettyIpfsPath("p") + l.name)
+
+        try {
+          cid = await ipfs.files.stat(prettyIpfsPath("p") + l.name)
+        } catch (e) {
+          cid = await ipfs.files.stat(prettyIpfsPath("pretty") + l.name)
+        }
+
         cid = cid.cid.toString()
 
       } else {
