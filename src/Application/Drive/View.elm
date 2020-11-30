@@ -760,7 +760,7 @@ list model directoryList =
         -- Tree
         -----------------------------------------
         , directoryList.items
-            |> List.map (listItem isGroundFloor model.selectedPath)
+            |> List.map (listItem isGroundFloor model.selectedPaths)
             |> Html.div []
 
         -----------------------------------------
@@ -820,11 +820,11 @@ list model directoryList =
         ]
 
 
-listItem : Bool -> Maybe String -> Item -> Html Msg
-listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Bool -> List String -> Item -> Html Msg
+listItem isGroundFloor selectedPaths ({ kind, loading, name, nameProperties, path } as item) =
     let
         selected =
-            selectedPath == Just path
+            List.member path selectedPaths
 
         isPublicRootDir =
             isGroundFloor && name == "public"

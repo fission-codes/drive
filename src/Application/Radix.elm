@@ -59,7 +59,7 @@ type alias Model =
     , pressedKeys : List Keyboard.Key
     , route : Route
     , viewportSize : { height : Int, width : Int }
-    , selectedPath : Maybe String
+    , selectedPaths : List String
     , showLoadingOverlay : Bool
     , toasties : Toasty.Stack (Notification Msg)
     , url : Url

@@ -171,8 +171,9 @@ urlChanged url old =
                 FileSystem.AdditionalListing
 
         --
+        , pressedKeys = []
         , route = route
-        , selectedPath = Nothing
+        , selectedPaths = []
         , url = url
     }
         |> (\new ->

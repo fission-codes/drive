@@ -75,7 +75,7 @@ reset route model =
                 , directoryList = Ok { floor = 1, items = [] }
                 , fileSystemStatus = FileSystem.NotNeeded
                 , showLoadingOverlay = True
-                , selectedPath = Nothing
+                , selectedPaths = []
                 , sidebar = Nothing
             }
         |> andThen

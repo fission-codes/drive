@@ -60,7 +60,7 @@ closeSidebar : Manager
 closeSidebar model =
     { model
         | sidebar = Nothing
-        , selectedPath = Nothing
+        , selectedPaths = []
     }
         |> (case model.sidebar of
                 Just (Drive.Sidebar.Details _) ->
@@ -215,8 +215,8 @@ digDeeper { directoryName } model =
 
 digDeeperUsingSelection : Manager
 digDeeperUsingSelection model =
-    case ( model.directoryList, model.selectedPath ) of
-        ( Ok { items }, Just path ) ->
+    case ( model.directoryList, model.selectedPaths ) of
+        ( Ok { items }, [ path ] ) ->
             items
                 |> List.find
                     (.path >> (==) path)
@@ -273,7 +273,7 @@ goUp { floor } model =
             |> Routing.adjustUrl model.url
             |> Url.toString
             |> Navigation.pushUrl model.navKey
-            |> Return.return { model | selectedPath = Nothing }
+            |> Return.return { model | selectedPaths = [] }
             |> Return.command
                 ({ on = True }
                     |> ToggleLoadingOverlay
@@ -356,7 +356,7 @@ select item model =
         Ports.fsReadItemUtf8 (Item.pathProperties item)
             |> return
                 { model
-                    | selectedPath = Just item.path
+                    | selectedPaths = [ item.path ]
                     , sidebar =
                         { path = item.path
                         , editor = Nothing
@@ -368,7 +368,7 @@ select item model =
     else
         Return.singleton
             { model
-                | selectedPath = Just item.path
+                | selectedPaths = [ item.path ]
                 , sidebar =
                     item.path
                         |> Drive.Sidebar.details
@@ -377,17 +377,21 @@ select item model =
 
 
 selectNextItem : Manager
-selectNextItem =
+selectNextItem model =
     makeItemSelector
         (\i -> i + 1)
         (\_ -> 0)
+        (List.last model.selectedPaths)
+        model
 
 
 selectPreviousItem : Manager
-selectPreviousItem =
+selectPreviousItem model =
     makeItemSelector
         (\i -> i - 1)
         (\l -> List.length l - 1)
+        (List.head model.selectedPaths)
+        model
 
 
 showRenameItemModal : Item -> Manager
@@ -465,9 +469,9 @@ updateSidebar sidebarMsg model =
 -- ㊙️
 
 
-makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Manager
-makeItemSelector indexModifier fallbackIndexFn model =
-    case ( model.directoryList, model.selectedPath ) of
+makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Maybe String -> Manager
+makeItemSelector indexModifier fallbackIndexFn maybeSelectedPath model =
+    case ( model.directoryList, maybeSelectedPath ) of
         ( Ok { items }, Just selectedPath ) ->
             items
                 |> List.findIndex (.path >> (==) selectedPath)

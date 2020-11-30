@@ -266,7 +266,8 @@ editorHeaderItems model =
                 )
 
         menuAndFilename =
-            model.selectedPath
+            model.selectedPaths
+                |> List.head
                 |> Maybe.andThen (Common.lookupItem model)
                 |> Maybe.map menuAndFilenameButton
                 |> Maybe.withDefault nothing
@@ -549,7 +550,9 @@ detailsForSelection { showPreviewOverlay } model =
         , T.px_4
         , T.py_6
         ]
-        [ model.selectedPath
+        -- TODO: Support multi select
+        [ model.selectedPaths
+            |> List.head
             |> Maybe.andThen (Common.lookupItem model)
             |> Maybe.map
                 (Html.Lazy.lazy7

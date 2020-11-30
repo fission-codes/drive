@@ -22,7 +22,7 @@ import Task
 -- 🐚
 
 
-{-| TODO This function is doing a lot. Can we break it up somehow?
+{-| TODO: This function is doing a lot. Can we break it up somehow?
 -}
 gotDirectoryList : Json.Value -> Manager
 gotDirectoryList json model =
@@ -67,61 +67,54 @@ gotDirectoryList json model =
                     lastRouteSegment =
                         List.last (Routing.treePathSegments model.route)
 
-                    selectedPath =
+                    selectedPaths =
                         case listResult of
                             Ok [ singleItem ] ->
                                 if Just singleItem.name == lastRouteSegment then
-                                    Just singleItem.path
+                                    [ singleItem.path ]
 
                                 else
-                                    Nothing
+                                    []
 
                             _ ->
-                                Nothing
+                                []
 
                     sidebar =
                         case model.sidebar of
-                            Just sidebarModel ->
-                                case sidebarModel of
-                                    Sidebar.EditPlaintext editPlaintext ->
-                                        case editPlaintext.editor of
-                                            Just editorModel ->
-                                                let
-                                                    editPath =
-                                                        editPlaintext.path
-                                                            |> String.split "/"
+                            Just (Sidebar.EditPlaintext editPlaintext) ->
+                                case editPlaintext.editor of
+                                    Just editorModel ->
+                                        let
+                                            editPath =
+                                                String.split "/" editPlaintext.path
 
-                                                    editDirectoryWithPrivate =
-                                                        editPath
-                                                            |> List.take (List.length editPath - 1)
+                                            editDirectoryWithPrivate =
+                                                List.take (List.length editPath - 1) editPath
 
-                                                    editDirectory =
-                                                        case editDirectoryWithPrivate of
-                                                            first :: rest ->
-                                                                if first == "private" then
-                                                                    rest
+                                            editDirectory =
+                                                case editDirectoryWithPrivate of
+                                                    first :: rest ->
+                                                        if first == "private" then
+                                                            rest
 
-                                                                else
-                                                                    first :: rest
+                                                        else
+                                                            first :: rest
 
-                                                            other ->
-                                                                other
-                                                in
-                                                if pathSegments == editDirectory then
-                                                    { editorModel
-                                                        | isSaving = False
-                                                        , originalText = editorModel.text
-                                                    }
-                                                        |> Just
-                                                        |> (\newEditor -> { editPlaintext | editor = newEditor })
-                                                        |> Sidebar.EditPlaintext
-                                                        |> Just
+                                                    other ->
+                                                        other
+                                        in
+                                        if pathSegments == editDirectory then
+                                            { editorModel
+                                                | isSaving = False
+                                                , originalText = editorModel.text
+                                            }
+                                                |> Just
+                                                |> (\newEditor -> { editPlaintext | editor = newEditor })
+                                                |> Sidebar.EditPlaintext
+                                                |> Just
 
-                                                else
-                                                    Nothing
-
-                                            _ ->
-                                                Nothing
+                                        else
+                                            Nothing
 
                                     _ ->
                                         Nothing
@@ -137,14 +130,13 @@ gotDirectoryList json model =
 
                     --
                     , sidebar =
-                        sidebar
-                            |> Maybe.orElse
-                                (selectedPath
-                                    |> Maybe.map Sidebar.details
-                                )
+                        selectedPaths
+                            |> List.head
+                            |> Maybe.map Sidebar.details
+                            |> Maybe.or sidebar
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
-                    , selectedPath = selectedPath
+                    , selectedPaths = selectedPaths
                     , showLoadingOverlay = False
                 }
            )
