@@ -267,14 +267,19 @@ dataContainer useFS item =
             , T.z_10
             ]
     in
-    fissionDriveMedia
-        { name = item.name
-        , path = item.path
-        , useFS = useFS
-        }
+    (case item.kind of
+        Directory ->
+            Html.div
+
+        _ ->
+            fissionDriveMedia
+                { name = item.name
+                , path = item.path
+                , useFS = useFS
+                }
+    )
         (List.append
-            [ A.class "drive-item__preview"
-            ]
+            [ A.class "drive-item__preview" ]
             (case item.kind of
                 Drive.Item.Audio ->
                     [ T.mt_8
