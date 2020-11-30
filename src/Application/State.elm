@@ -257,6 +257,9 @@ update msg =
         LinkClicked a ->
             Other.linkClicked a
 
+        LostWindowFocus ->
+            Other.lostWindowFocus
+
         RedirectToLobby ->
             Other.redirectToLobby
 
@@ -286,6 +289,7 @@ subscriptions model =
         [ Ports.fsGotDirectoryList GotFsDirectoryList
         , Ports.fsGotItemUtf8 GotFsItemUtf8
         , Ports.fsGotError GotFsError
+        , Ports.lostWindowFocus (always LostWindowFocus)
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

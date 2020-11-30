@@ -139,6 +139,7 @@ type Msg
     | HideWelcomeMessage
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
+    | LostWindowFocus
     | RedirectToLobby
     | ScreenSizeChanged Int Int
     | SetCurrentTime Time.Posix

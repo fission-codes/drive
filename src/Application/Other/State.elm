@@ -65,6 +65,11 @@ keyboardInteraction msg unmodified =
            )
 
 
+lostWindowFocus : Manager
+lostWindowFocus model =
+    Return.singleton { model | pressedKeys = [] }
+
+
 screenSizeChanged : Int -> Int -> Manager
 screenSizeChanged width height model =
     let
