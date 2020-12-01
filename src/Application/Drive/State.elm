@@ -36,7 +36,7 @@ activateSidebarAddOrCreate : Manager
 activateSidebarAddOrCreate model =
     Return.singleton
         { model
-            | addOrCreate = Just Drive.Sidebar.addOrCreate
+            | sidebar = Just (Drive.Sidebar.AddOrCreate Drive.Sidebar.addOrCreate)
             , sidebarExpanded = False
         }
 
@@ -58,32 +58,21 @@ addFiles { blobs } model =
 
 closeSidebar : Manager
 closeSidebar model =
-    case model.addOrCreate of
-        Just addOrCreate ->
-            { model | addOrCreate = Nothing }
-                |> Return.singleton
+    { model
+        | sidebar = Nothing
+        , selectedPath = Nothing
+    }
+        |> (case model.sidebar of
+                Just (Drive.Sidebar.Details _) ->
+                    if Common.isSingleFileView model then
+                        goUpOneLevel
 
-        Nothing ->
-            { model
-                | sidebar = Nothing
-                , selectedPath = Nothing
-            }
-                |> (case model.sidebar of
-                        Just sidebar ->
-                            case sidebar of
-                                Drive.Sidebar.Details _ ->
-                                    if Common.isSingleFileView model then
-                                        goUpOneLevel
+                    else
+                        Return.singleton
 
-                                    else
-                                        Return.singleton
-
-                                _ ->
-                                    Return.singleton
-
-                        Nothing ->
-                            Return.singleton
-                   )
+                _ ->
+                    Return.singleton
+           )
 
 
 copyPublicUrl : { item : Item, presentable : Bool } -> Manager
@@ -256,14 +245,17 @@ downloadItem item model =
 
 gotAddCreateInput : String -> Manager
 gotAddCreateInput input model =
-    case model.addOrCreate of
-        Just addOrCreate ->
+    case model.sidebar of
+        Just (Drive.Sidebar.AddOrCreate addOrCreate) ->
             Return.singleton
                 { model
-                    | addOrCreate = Just { addOrCreate | input = input }
+                    | sidebar =
+                        { addOrCreate | input = input }
+                            |> Drive.Sidebar.AddOrCreate
+                            |> Just
                 }
 
-        Nothing ->
+        _ ->
             Return.singleton model
 
 
@@ -407,25 +399,30 @@ showRenameItemModal item model =
 
 sidebarAddOrCreateInput : Model -> Maybe String
 sidebarAddOrCreateInput model =
-    model.addOrCreate
-        |> Maybe.andThen
-            (\{ input } ->
-                case String.trim input of
-                    "" ->
-                        Nothing
+    case model.sidebar of
+        Just (Drive.Sidebar.AddOrCreate { input }) ->
+            case String.trim input of
+                "" ->
+                    Nothing
 
-                    directoryName ->
-                        Just directoryName
-            )
+                directoryName ->
+                    Just directoryName
+
+        _ ->
+            Nothing
 
 
 sidebarAddOrCreateClearInput : Model -> Model
 sidebarAddOrCreateClearInput model =
-    { model
-        | addOrCreate =
-            model.addOrCreate
-                |> Maybe.map (\addOrCreate -> { addOrCreate | input = "" })
-    }
+    case model.sidebar of
+        Just (Drive.Sidebar.AddOrCreate addOrCreate) ->
+            { addOrCreate | input = "" }
+                |> Drive.Sidebar.AddOrCreate
+                |> Just
+                |> (\newSidebar -> { model | sidebar = newSidebar })
+
+        _ ->
+            model
 
 
 toggleExpandedSidebar : Manager
@@ -438,17 +435,20 @@ toggleExpandedSidebar model =
 
 toggleSidebarAddOrCreate : Manager
 toggleSidebarAddOrCreate model =
-    Return.singleton
-        { model
-            | addOrCreate =
-                case model.addOrCreate of
-                    Just _ ->
-                        Nothing
+    (case model.sidebar of
+        Just (Drive.Sidebar.AddOrCreate _) ->
+            Nothing
 
-                    _ ->
-                        Just Drive.Sidebar.addOrCreate
-            , sidebarExpanded = False
-        }
+        _ ->
+            Just (Drive.Sidebar.AddOrCreate Drive.Sidebar.addOrCreate)
+    )
+        |> (\newSidebar ->
+                { model
+                    | sidebar = newSidebar
+                    , sidebarExpanded = False
+                }
+           )
+        |> Return.singleton
 
 
 updateSidebar : Drive.Sidebar.Msg -> Manager

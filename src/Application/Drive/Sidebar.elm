@@ -20,6 +20,7 @@ type Model
         -- Nothing means Loading
         , editor : Maybe EditorModel
         }
+    | AddOrCreate AddOrCreateModel
 
 
 type alias EditorModel =

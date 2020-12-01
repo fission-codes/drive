@@ -641,7 +641,12 @@ empty model =
             Maybe.isJust model.authenticated
 
         hideContent =
-            Maybe.isJust model.addOrCreate
+            case model.sidebar of
+                Just (Sidebar.AddOrCreate _) ->
+                    True
+
+                _ ->
+                    False
     in
     Html.div
         [ if isAuthenticated then
@@ -973,4 +978,3 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
 sidebarOpen : Model -> Bool
 sidebarOpen model =
     Maybe.isJust model.sidebar
-        || Maybe.isJust model.addOrCreate

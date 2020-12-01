@@ -163,7 +163,12 @@ addCreateAction : Model -> Html Msg
 addCreateAction model =
     let
         isInAddOrCreateMode =
-            Maybe.isJust model.addOrCreate
+            case model.sidebar of
+                Just (Drive.Sidebar.AddOrCreate _) ->
+                    True
+                
+                _ ->
+                    False
     in
     action
         Button
