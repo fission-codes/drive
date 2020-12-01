@@ -76,7 +76,6 @@ type alias Model =
     -----------------------------------------
     , sidebarExpanded : Bool
     , sidebar : Maybe Drive.Sidebar.Model
-    , addOrCreate : Maybe Drive.Sidebar.AddOrCreateModel
     }
 
 

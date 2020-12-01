@@ -81,7 +81,6 @@ init flags url navKey =
       ----------
       , sidebarExpanded = False
       , sidebar = Nothing
-      , addOrCreate = Nothing
       }
       -----------------------------------------
       -- Command

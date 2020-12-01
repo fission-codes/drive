@@ -34,31 +34,30 @@ import Url.Builder
 
 view : Model -> Html Msg
 view model =
-    case model.addOrCreate of
-        Just addOrCreateModel ->
+    case model.sidebar of
+        Just (Sidebar.AddOrCreate addOrCreateModel) ->
             viewSidebar
                 { scrollable = True
                 , expanded = model.sidebarExpanded
                 , body = addOrCreate addOrCreateModel model
                 }
 
+        Just (Sidebar.Details details) ->
+            viewSidebar
+                { scrollable = False
+                , expanded = model.sidebarExpanded
+                , body = detailsForSelection details model
+                }
+
+        Just (Sidebar.EditPlaintext { editor }) ->
+            viewSidebar
+                { scrollable = False
+                , expanded = model.sidebarExpanded
+                , body = plaintextEditor editor model
+                }
+
         Nothing ->
-            case model.sidebar of
-                Just sidebar ->
-                    viewSidebar
-                        { scrollable = False
-                        , expanded = model.sidebarExpanded
-                        , body =
-                            case sidebar.mode of
-                                Sidebar.Details details ->
-                                    detailsForSelection details sidebar model
-
-                                Sidebar.EditPlaintext editor ->
-                                    plaintextEditor editor sidebar model
-                        }
-
-                _ ->
-                    nothing
+            nothing
 
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
@@ -100,8 +99,8 @@ viewSidebar { scrollable, expanded, body } =
         [ body ]
 
 
-plaintextEditor : Maybe Sidebar.EditorModel -> Sidebar.Model -> Model -> Html Msg
-plaintextEditor maybeEditor sidebar model =
+plaintextEditor : Maybe Sidebar.EditorModel -> Model -> Html Msg
+plaintextEditor maybeEditor model =
     Html.div
         [ T.flex
         , T.flex_col
@@ -539,8 +538,8 @@ addOrCreateForm addOrCreateModel model =
 -- DETAILS
 
 
-detailsForSelection : { showPreviewOverlay : Bool } -> Sidebar.Model -> Model -> Html Msg
-detailsForSelection { showPreviewOverlay } sidebar model =
+detailsForSelection : { path : String, showPreviewOverlay : Bool } -> Model -> Html Msg
+detailsForSelection { showPreviewOverlay } model =
     Html.div
         [ T.flex
         , T.flex_col

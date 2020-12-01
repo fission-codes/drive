@@ -9,45 +9,54 @@ import Return
 
 update : Sidebar.Msg -> Sidebar.Model -> Manager
 update msg sidebar model =
-    case ( sidebar.mode, msg ) of
-        ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorInput content ) ->
-            { editorModel
-                | text = content
-                , isSaving = False
-            }
-                |> Just
-                |> Sidebar.EditPlaintext
-                |> (\newMode -> { sidebar | mode = newMode })
-                |> Just
-                |> (\newSidebar -> { model | sidebar = newSidebar })
-                |> Return.singleton
-
-        ( Sidebar.EditPlaintext (Just editorModel), Sidebar.PlaintextEditorSave ) ->
-            if editorModel.text /= editorModel.originalText then
-                Ports.fsWriteItemUtf8
-                    { pathSegments = Item.pathSegments sidebar.path
-                    , text = editorModel.text
+    case ( sidebar, msg ) of
+        ( Sidebar.EditPlaintext editPlaintext, Sidebar.PlaintextEditorInput content ) ->
+            case editPlaintext.editor of
+                Just editorModel ->
+                    { editorModel
+                        | text = content
+                        , isSaving = False
                     }
-                    |> Return.return
-                        ({ editorModel
-                            | originalText = editorModel.text
-                            , isSaving = True
-                         }
-                            |> Just
-                            |> Sidebar.EditPlaintext
-                            |> (\newMode -> { sidebar | mode = newMode })
-                            |> Just
-                            |> (\newSidebar -> { model | sidebar = newSidebar })
-                        )
+                        |> Just
+                        |> (\newEditor -> { editPlaintext | editor = newEditor })
+                        |> Sidebar.EditPlaintext
+                        |> Just
+                        |> (\newSidebar -> { model | sidebar = newSidebar })
+                        |> Return.singleton
 
-            else
-                model
-                    |> Return.singleton
+                _ ->
+                    Return.singleton model
+
+        ( Sidebar.EditPlaintext editPlaintext, Sidebar.PlaintextEditorSave ) ->
+            case editPlaintext.editor of
+                Just editorModel ->
+                    if editorModel.text /= editorModel.originalText then
+                        Ports.fsWriteItemUtf8
+                            { pathSegments = Item.pathSegments editPlaintext.path
+                            , text = editorModel.text
+                            }
+                            |> Return.return
+                                ({ editorModel
+                                    | originalText = editorModel.text
+                                    , isSaving = True
+                                 }
+                                    |> Just
+                                    |> (\newEditor -> { editPlaintext | editor = newEditor })
+                                    |> Sidebar.EditPlaintext
+                                    |> Just
+                                    |> (\newSidebar -> { model | sidebar = newSidebar })
+                                )
+
+                    else
+                        model
+                            |> Return.singleton
+
+                _ ->
+                    Return.singleton model
 
         ( Sidebar.Details detailsModel, Sidebar.DetailsShowPreviewOverlay ) ->
             { detailsModel | showPreviewOverlay = True }
                 |> Sidebar.Details
-                |> (\newMode -> { sidebar | mode = newMode })
                 |> Just
                 |> (\newSidebar -> { model | sidebar = newSidebar })
                 |> Return.singleton
