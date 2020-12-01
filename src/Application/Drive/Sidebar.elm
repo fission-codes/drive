@@ -9,16 +9,17 @@ type Msg
     | DetailsShowPreviewOverlay
 
 
-type alias Model =
-    { path : String
-    , mode : Mode
-    }
+type Model
+    = Details
+        { path : String
+        , showPreviewOverlay : Bool
+        }
+    | EditPlaintext
+        { path : String
 
-
-type Mode
-    = Details { showPreviewOverlay : Bool }
-      -- Nothing means Loading
-    | EditPlaintext (Maybe EditorModel)
+        -- Nothing means Loading
+        , editor : Maybe EditorModel
+        }
 
 
 type alias EditorModel =
@@ -37,9 +38,9 @@ type alias AddOrCreateModel =
 -- 🌱
 
 
-details : Mode
-details =
-    Details { showPreviewOverlay = False }
+details : String -> Model
+details path =
+    Details { path = path, showPreviewOverlay = False }
 
 
 addOrCreate : AddOrCreateModel

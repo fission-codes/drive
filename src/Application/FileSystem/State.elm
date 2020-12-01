@@ -82,41 +82,46 @@ gotDirectoryList json model =
                     sidebar =
                         case model.sidebar of
                             Just sidebarModel ->
-                                case sidebarModel.mode of
-                                    Sidebar.EditPlaintext (Just editorModel) ->
-                                        let
-                                            editPath =
-                                                sidebarModel.path
-                                                    |> String.split "/"
+                                case sidebarModel of
+                                    Sidebar.EditPlaintext editPlaintext ->
+                                        case editPlaintext.editor of
+                                            Just editorModel ->
+                                                let
+                                                    editPath =
+                                                        editPlaintext.path
+                                                            |> String.split "/"
 
-                                            editDirectoryWithPrivate =
-                                                editPath
-                                                    |> List.take (List.length editPath - 1)
+                                                    editDirectoryWithPrivate =
+                                                        editPath
+                                                            |> List.take (List.length editPath - 1)
 
-                                            editDirectory =
-                                                case editDirectoryWithPrivate of
-                                                    first :: rest ->
-                                                        if first == "private" then
-                                                            rest
+                                                    editDirectory =
+                                                        case editDirectoryWithPrivate of
+                                                            first :: rest ->
+                                                                if first == "private" then
+                                                                    rest
 
-                                                        else
-                                                            first :: rest
+                                                                else
+                                                                    first :: rest
 
-                                                    other ->
-                                                        other
-                                        in
-                                        if pathSegments == editDirectory then
-                                            { editorModel
-                                                | isSaving = False
-                                                , originalText = editorModel.text
-                                            }
-                                                |> Just
-                                                |> Sidebar.EditPlaintext
-                                                |> (\newMode -> { sidebarModel | mode = newMode })
-                                                |> Just
+                                                            other ->
+                                                                other
+                                                in
+                                                if pathSegments == editDirectory then
+                                                    { editorModel
+                                                        | isSaving = False
+                                                        , originalText = editorModel.text
+                                                    }
+                                                        |> Just
+                                                        |> (\newEditor -> { editPlaintext | editor = newEditor })
+                                                        |> Sidebar.EditPlaintext
+                                                        |> Just
 
-                                        else
-                                            Nothing
+                                                else
+                                                    Nothing
+
+                                            _ ->
+                                                Nothing
 
                                     _ ->
                                         Nothing
@@ -135,12 +140,7 @@ gotDirectoryList json model =
                         sidebar
                             |> Maybe.orElse
                                 (selectedPath
-                                    |> Maybe.map
-                                        (\path ->
-                                            { path = path
-                                            , mode = Sidebar.details
-                                            }
-                                        )
+                                    |> Maybe.map Sidebar.details
                                 )
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
@@ -161,15 +161,15 @@ gotItemUtf8 : { pathSegments : List String, text : String } -> Manager
 gotItemUtf8 { pathSegments, text } model =
     (case model.sidebar of
         Just sidebar ->
-            case sidebar.mode of
-                Sidebar.EditPlaintext _ ->
+            case sidebar of
+                Sidebar.EditPlaintext editPlaintext ->
                     { text = text
                     , originalText = text
                     , isSaving = False
                     }
                         |> Just
+                        |> (\newEditor -> { editPlaintext | editor = newEditor })
                         |> Sidebar.EditPlaintext
-                        |> (\mode -> { sidebar | mode = mode })
                         |> Just
                         |> (\newSidebar -> { model | sidebar = newSidebar })
 

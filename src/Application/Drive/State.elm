@@ -8,7 +8,7 @@ import Debouncing
 import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
 import Drive.Modals
-import Drive.Sidebar exposing (Mode(..))
+import Drive.Sidebar
 import Drive.State.Sidebar
 import File
 import File.Download
@@ -70,7 +70,7 @@ closeSidebar model =
             }
                 |> (case model.sidebar of
                         Just sidebar ->
-                            case sidebar.mode of
+                            case sidebar of
                                 Drive.Sidebar.Details _ ->
                                     if Common.isSingleFileView model then
                                         goUpOneLevel
@@ -366,11 +366,11 @@ select item model =
                 { model
                     | selectedPath = Just item.path
                     , sidebar =
-                        Just
-                            { path = item.path
-                            , mode =
-                                Drive.Sidebar.EditPlaintext Nothing
-                            }
+                        { path = item.path
+                        , editor = Nothing
+                        }
+                            |> Drive.Sidebar.EditPlaintext
+                            |> Just
                 }
 
     else
@@ -378,10 +378,9 @@ select item model =
             { model
                 | selectedPath = Just item.path
                 , sidebar =
-                    Just
-                        { path = item.path
-                        , mode = Drive.Sidebar.details
-                        }
+                    item.path
+                        |> Drive.Sidebar.details
+                        |> Just
             }
 
 
