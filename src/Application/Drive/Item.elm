@@ -64,7 +64,7 @@ imageFileExtensions =
 
 
 textFileExtensions =
-    [ "json", "txt", "toml", "yaml" ]
+    [ "json", "txt", "toml", "yaml", "md" ]
 
 
 richtextFileExtensions =

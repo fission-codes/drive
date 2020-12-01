@@ -88,7 +88,7 @@ viewSidebar { scrollable, expanded, body } =
 
         --
         , if scrollable then
-            T.overflow_y_scroll
+            T.overflow_y_auto
 
           else
             T.overflow_y_hidden
@@ -153,7 +153,7 @@ plaintextEditor maybeEditor sidebar model =
                     , T.h_full
                     , T.w_full
                     ]
-                    [ Common.loadingAnimationWithAttributes
+                    [ Html.span
                         [ T.absolute
                         , T.left_1over2
                         , T.top_1over2
@@ -161,7 +161,10 @@ plaintextEditor maybeEditor sidebar model =
                         , T.neg_translate_x_1over2
                         , T.neg_translate_y_1over2
                         ]
-                        { size = 24 }
+                        [ Common.loadingAnimationWithAttributes
+                            [ T.text_gray_400 ]
+                            { size = 24 }
+                        ]
                     ]
         , Html.div
             [ T.flex
@@ -234,28 +237,7 @@ editorHeaderItems model =
                             nothing
 
                         ext ->
-                            Html.span
-                                [ T.antialiased
-                                , T.bg_gray_600
-                                , S.default_transition_duration
-                                , T.font_semibold
-                                , T.inline_block
-                                , T.leading_normal
-                                , T.ml_2
-                                , T.pointer_events_none
-                                , T.px_1
-                                , T.rounded
-                                , T.text_gray_200
-                                , T.text_xs
-                                , T.transition_opacity
-                                , T.uppercase
-
-                                -- Dark mode
-                                ------------
-                                , T.dark__bg_gray_200
-                                , T.dark__text_gray_500
-                                ]
-                                [ Html.text ext ]
+                            Drive.extension [] ext
                     ]
                 ]
 
@@ -414,6 +396,39 @@ addOrCreateForm addOrCreateModel model =
                 , T.dark__text_gray_400
                 ]
                 [ Html.text t ]
+
+        addButton icon attributes content =
+            Html.button
+                (List.append attributes
+                    [ T.appearance_none
+                    , T.bg_purple
+                    , T.px_4
+                    , T.mt_5
+                    , T.mr_5
+                    , T.my_auto
+                    , T.h_10
+                    , T.rounded
+                    , T.text_gray_900
+                    , T.text_sm
+                    , T.font_display
+                    , T.flex
+                    , T.flex_row
+                    , T.items_center
+
+                    -- Focus Styles
+                    ---------------
+                    , T.appearance_none
+                    , T.outline_none
+                    , T.focus__shadow_outline
+                    , T.active__bg_purple_shade
+                    ]
+                )
+                ((icon
+                    |> FeatherIcons.withSize 16
+                    |> Common.wrapIcon [ T.mr_2 ]
+                 )
+                    :: content
+                )
     in
     Html.div
         [ T.px_8
@@ -422,38 +437,36 @@ addOrCreateForm addOrCreateModel model =
         [ -----------------------------------------
           -- Create
           -----------------------------------------
-          title "Create directory"
-
-        --
-        , Html.form
-            [ E.onSubmit CreateDirectory
-
-            --
-            , T.flex
-            , T.max_w_md
+          title "Create a file or folder"
+        , S.textField
+            [ A.placeholder "Magic Box"
+            , E.onInput GotAddOrCreateInput
+            , T.w_full
+            , A.value addOrCreateModel.input
             ]
-            [ S.textField
-                [ A.placeholder "Magic Box"
-                , E.onInput GotCreateDirectoryInput
-                , T.w_0
-                , A.value addOrCreateModel.input
+            []
+        , Html.div
+            [ T.flex
+            , T.flex_row
+            , T.flex_wrap
+            ]
+            [ addButton FeatherIcons.folderPlus
+                [ E.onClick (CreateFileOrFolder Nothing) ]
+                [ Html.text "New Folder" ]
+            , addButton FeatherIcons.filePlus
+                [ E.onClick (CreateFileOrFolder (Just { extension = "txt" })) ]
+                [ Html.text "New"
+                , Drive.extension [] "TXT"
                 ]
-                []
-
-            --
-            , S.button
-                [ T.bg_purple
-                , T.ml_3
-                , T.px_6
-                , T.text_tiny
+            , addButton FeatherIcons.filePlus
+                [ E.onClick (CreateFileOrFolder (Just { extension = "html" })) ]
+                [ Html.text "New"
+                , Drive.extension [] "HTML"
                 ]
-                [ if model.fileSystemStatus == FileSystem.Operation FileSystem.CreatingDirectory then
-                    Common.loadingAnimationWithAttributes
-                        [ T.text_purple_tint ]
-                        { size = S.iconSize }
-
-                  else
-                    Html.text "Create"
+            , addButton FeatherIcons.filePlus
+                [ E.onClick (CreateFileOrFolder (Just { extension = "md" })) ]
+                [ Html.text "New"
+                , Drive.extension [] "MD"
                 ]
             ]
 

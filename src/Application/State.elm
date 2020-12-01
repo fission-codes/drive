@@ -159,17 +159,17 @@ update msg =
         CopyToClipboard a ->
             Drive.copyToClipboard a
 
-        CreateDirectory ->
-            Drive.createDirectory
-
         DigDeeper a ->
             Drive.digDeeper a
 
         DownloadItem a ->
             Drive.downloadItem a
 
-        GotCreateDirectoryInput a ->
-            Drive.gotCreateDirectoryInput a
+        GotAddOrCreateInput a ->
+            Drive.gotAddCreateInput a
+
+        CreateFileOrFolder a ->
+            Drive.createFileOrFolder a
 
         GoUp a ->
             Drive.goUp a

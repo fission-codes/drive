@@ -22,6 +22,7 @@ import Result.Extra as Result
 import Return exposing (andThen, return)
 import Return.Extra as Return
 import Routing
+import Set
 import Task
 import Toasty
 import Url
@@ -33,7 +34,11 @@ import Url
 
 activateSidebarAddOrCreate : Manager
 activateSidebarAddOrCreate model =
-    Return.singleton { model | addOrCreate = Just Drive.Sidebar.addOrCreate }
+    Return.singleton
+        { model
+            | addOrCreate = Just Drive.Sidebar.addOrCreate
+            , sidebarExpanded = False
+        }
 
 
 addFiles : { blobs : List { path : String, url : String } } -> Manager
@@ -109,32 +114,69 @@ copyToClipboard { clip, notification } model =
         |> Return.command (Ports.showNotification notification)
 
 
-createDirectory : Manager
-createDirectory model =
-    case sidebarCreateDirectoryInput model of
-        Nothing ->
-            Return.singleton model
-
-        Just directoryName ->
+createFileOrFolder : Maybe { extension : String } -> Manager
+createFileOrFolder option model =
+    case ( option, sidebarAddOrCreateInput model ) of
+        ( Nothing, Just directoryName ) ->
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
                 |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
-                |> return { model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
+                |> return
+                    ({ model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
+                        |> sidebarAddOrCreateClearInput
+                    )
 
+        ( Just { extension }, maybeFileName ) ->
+            let
+                ensureUniqueFileName m fileName =
+                    m.directoryList
+                        |> Result.toMaybe
+                        |> Maybe.map
+                            (.items
+                                >> List.map .name
+                                >> Set.fromList
+                                >> ensureUnique fileName Nothing
+                            )
 
-sidebarCreateDirectoryInput : Model -> Maybe String
-sidebarCreateDirectoryInput model =
-    model.addOrCreate
-        |> Maybe.andThen
-            (\{ input } ->
-                case String.trim input of
-                    "" ->
-                        Nothing
+                makeName prefix maybeSuffixNum =
+                    case maybeSuffixNum of
+                        Just suffixNum ->
+                            prefix ++ " " ++ String.fromInt suffixNum ++ "." ++ extension
 
-                    directoryName ->
-                        Just directoryName
-            )
+                        Nothing ->
+                            prefix ++ "." ++ extension
+
+                ensureUnique prefix maybeSuffix blacklisted =
+                    let
+                        name =
+                            makeName prefix maybeSuffix
+                    in
+                    if Set.member name blacklisted then
+                        maybeSuffix
+                            |> Maybe.map ((+) 1)
+                            |> Maybe.withDefault 2
+                            |> Just
+                            |> (\suff -> ensureUnique prefix suff blacklisted)
+
+                    else
+                        name
+            in
+            maybeFileName
+                |> Maybe.withDefault "Untitled"
+                |> ensureUniqueFileName model
+                |> Maybe.map
+                    (\fileName ->
+                        model.route
+                            |> Routing.treePathSegments
+                            |> List.add [ fileName ]
+                            |> (\p -> Ports.fsWriteItemUtf8 { pathSegments = p, text = "" })
+                            |> return (sidebarAddOrCreateClearInput model)
+                    )
+                |> Maybe.withDefault (Return.singleton model)
+
+        ( Nothing, _ ) ->
+            Return.singleton model
 
 
 digDeeper : { directoryName : String } -> Manager
@@ -212,8 +254,8 @@ downloadItem item model =
         |> return model
 
 
-gotCreateDirectoryInput : String -> Manager
-gotCreateDirectoryInput input model =
+gotAddCreateInput : String -> Manager
+gotAddCreateInput input model =
     case model.addOrCreate of
         Just addOrCreate ->
             Return.singleton
@@ -364,6 +406,29 @@ showRenameItemModal item model =
         (Task.attempt (\_ -> Bypass) <| Dom.focus "modal__rename-item__input")
 
 
+sidebarAddOrCreateInput : Model -> Maybe String
+sidebarAddOrCreateInput model =
+    model.addOrCreate
+        |> Maybe.andThen
+            (\{ input } ->
+                case String.trim input of
+                    "" ->
+                        Nothing
+
+                    directoryName ->
+                        Just directoryName
+            )
+
+
+sidebarAddOrCreateClearInput : Model -> Model
+sidebarAddOrCreateClearInput model =
+    { model
+        | addOrCreate =
+            model.addOrCreate
+                |> Maybe.map (\addOrCreate -> { addOrCreate | input = "" })
+    }
+
+
 toggleExpandedSidebar : Manager
 toggleExpandedSidebar model =
     Return.singleton
@@ -383,6 +448,7 @@ toggleSidebarAddOrCreate model =
 
                     _ ->
                         Just Drive.Sidebar.addOrCreate
+            , sidebarExpanded = False
         }
 
 
