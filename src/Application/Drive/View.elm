@@ -426,10 +426,7 @@ primary model =
 mainLayout : Model -> Html Msg -> Html Msg
 mainLayout model leftSide =
     Html.div
-        [ E.onTap ClearSelection
-
-        --
-        , T.flex
+        [ T.flex
         , T.flex_col
         , T.flex_auto
         , T.relative
@@ -716,6 +713,7 @@ contentAvailable model directoryList =
     Html.div
         (List.append
             [ A.id "drive-items"
+            , E.onTap ClearSelection
 
             --
             , T.flex_auto
@@ -731,8 +729,7 @@ contentAvailable model directoryList =
                 [ T.pr_12, T.lg__pr_24 ]
             )
         )
-        [ list model directoryList
-        ]
+        [ list model directoryList ]
 
 
 
