@@ -34,12 +34,16 @@ default =
 
 
 selectionItems : Inventory -> List Item
-selectionItems { items, selection } =
+selectionItems { floor, items, selection } =
     List.foldr
         (\{ index } acc ->
             case List.getAt index items of
                 Just item ->
-                    item :: acc
+                    if floor == 1 && item.name == "public" then
+                        acc
+
+                    else
+                        item :: acc
 
                 Nothing ->
                     acc

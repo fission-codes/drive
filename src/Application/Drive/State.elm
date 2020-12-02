@@ -2,7 +2,7 @@ module Drive.State exposing (..)
 
 import Browser.Dom as Dom
 import Browser.Navigation as Navigation
-import Common
+import Common exposing (ifThenElse)
 import Common.State as Common
 import Debouncing
 import Dict
@@ -338,13 +338,36 @@ removeItem item model =
     item
         |> Item.pathProperties
         |> Ports.fsRemoveItem
-        |> return { model | fileSystemStatus = FileSystem.Operation Deleting }
+        |> return
+            { model
+                | fileSystemStatus = FileSystem.Operation Deleting
+                , sidebar =
+                    case model.sidebar of
+                        Just (Drive.Sidebar.Details { path }) ->
+                            ifThenElse (path == item.path) Nothing model.sidebar
+
+                        Just (Drive.Sidebar.EditPlaintext { path }) ->
+                            ifThenElse (path == item.path) Nothing model.sidebar
+
+                        a ->
+                            a
+            }
         -- Notification
         |> Toasty.addConditionalToast
             (\m -> m.fileSystemStatus == FileSystem.Operation Deleting)
             Notifications.config
             ToastyMsg
             (Notifications.loadingIndication <| "Removing “" ++ item.name ++ "”")
+
+
+removeSelectedItems : Manager
+removeSelectedItems model =
+    model.directoryList
+        |> Result.map Drive.Item.Inventory.selectionItems
+        |> Result.withDefault []
+        |> List.foldl
+            (\item -> Return.andThen <| removeItem item)
+            (Return.singleton model)
 
 
 renameItem : Item -> Manager

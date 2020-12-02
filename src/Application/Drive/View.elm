@@ -426,7 +426,7 @@ primary model =
 mainLayout : Model -> Html Msg -> Html Msg
 mainLayout model leftSide =
     Html.div
-        [ E.onClick ClearSelection
+        [ E.onTap ClearSelection
 
         --
         , T.flex
@@ -830,11 +830,24 @@ list model directoryList =
 listItem : Bool -> Selection -> List Keyboard.Key -> Int -> Item -> Html Msg
 listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, nameProperties, path } as item) =
     let
-        selected =
+        isSelected =
             List.any (.index >> (==) idx) selection
 
         isPublicRootDir =
             isGroundFloor && name == "public"
+
+        hasSelectedMoreThanOne =
+            List.length selection > 1
+
+        contextMenu =
+            if isSelected && hasSelectedMoreThanOne then
+                ContextMenu.selection ContextMenu.TopCenterWithoutOffset
+
+            else
+                ContextMenu.item
+                    ContextMenu.TopCenterWithoutOffset
+                    { isGroundFloor = isGroundFloor }
+                    item
     in
     Html.div
         [ E.onTap <|
@@ -851,10 +864,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
 
         -- Show context menu on right click,
         -- or when holding, without moving, the item on touch devices.
-        , item
-            |> ContextMenu.item
-                ContextMenu.TopCenterWithoutOffset
-                { isGroundFloor = isGroundFloor }
+        , contextMenu
             |> ShowContextMenu
             |> M.onContextMenu
 
@@ -863,14 +873,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
             "longtap"
             (Decode.map2
                 (\x y ->
-                    { message =
-                        item
-                            |> ContextMenu.item
-                                ContextMenu.TopCenterWithoutOffset
-                                { isGroundFloor = isGroundFloor }
-                            |> ShowContextMenuWithCoordinates { x = x, y = y }
-
-                    --
+                    { message = ShowContextMenuWithCoordinates { x = x, y = y } contextMenu
                     , stopPropagation = True
                     , preventDefault = False
                     }
@@ -896,7 +899,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
             T.border_b
 
         --
-        , if selected then
+        , if isSelected then
             T.text_purple
 
           else
@@ -907,7 +910,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
         , T.dark__border_darkness_above
 
         --
-        , if selected then
+        , if isSelected then
             T.dark__text_white
 
           else
@@ -973,7 +976,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
             nothing
 
         --
-        , if selected then
+        , if isSelected then
             FeatherIcons.arrowRight
                 |> FeatherIcons.withSize S.iconSize
                 |> Common.wrapIcon [ T.ml_2, T.opacity_50 ]

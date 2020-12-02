@@ -182,6 +182,9 @@ update msg =
         RemoveItem a ->
             Drive.removeItem a
 
+        RemoveSelectedItems ->
+            Drive.removeSelectedItems
+
         RenameItem a ->
             Drive.renameItem a
 

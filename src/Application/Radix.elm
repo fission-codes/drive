@@ -108,6 +108,7 @@ type Msg
     | GoUp { floor : Int }
     | RangeSelect Int Item
     | RemoveItem Item
+    | RemoveSelectedItems
     | RenameItem Item
     | Select Int Item
     | ShowRenameItemModal Item
