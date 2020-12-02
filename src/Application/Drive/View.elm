@@ -713,7 +713,6 @@ contentAvailable model directoryList =
     Html.div
         (List.append
             [ A.id "drive-items"
-            , E.onTap ClearSelection
 
             --
             , T.flex_auto
@@ -847,17 +846,14 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
                     item
     in
     Html.div
-        [ E.onTap <|
-            case kind of
-                Directory ->
-                    if List.member Keyboard.Shift pressedKeys then
-                        RangeSelect idx item
+        [ if List.member Keyboard.Shift pressedKeys then
+            E.onTap (RangeSelect idx item)
 
-                    else
-                        DigDeeper { directoryName = name }
+          else if kind == Directory then
+            E.onTap (DigDeeper { directoryName = name })
 
-                _ ->
-                    Select idx item
+          else
+            E.onTap (Select idx item)
 
         -- Show context menu on right click,
         -- or when holding, without moving, the item on touch devices.

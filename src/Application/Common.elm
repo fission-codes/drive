@@ -114,7 +114,6 @@ ifThenElse condition x y =
 
 isSingleFileView : Model -> Bool
 isSingleFileView model =
-    -- TODO: Confirm this is correct
     model.directoryList
         |> Result.toMaybe
         |> Maybe.andThen (.items >> List.head)

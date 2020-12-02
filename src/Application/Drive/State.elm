@@ -315,19 +315,23 @@ rangeSelect targetIndex item model =
 
                             else
                                 List.range targetIndex startIndex
+
+                        sidebar =
+                            if List.length range > 1 then
+                                Just (Drive.Sidebar.details item.path)
+
+                            else
+                                model.sidebar
                     in
                     range
                         |> List.map (\i -> { index = i, isFirst = i == startIndex })
                         |> (\s -> { directoryList | selection = s })
-                        |> (\d -> { model | directoryList = Ok d })
+                        |> (\d -> { model | directoryList = Ok d, sidebar = sidebar })
                         |> Return.singleton
 
                 Nothing ->
                     -- New selection
-                    [ { index = targetIndex, isFirst = True } ]
-                        |> (\s -> { directoryList | selection = s })
-                        |> (\d -> { model | directoryList = Ok d })
-                        |> Return.singleton
+                    select targetIndex item model
 
         Err _ ->
             Return.singleton model
