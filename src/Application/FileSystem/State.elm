@@ -67,11 +67,11 @@ gotDirectoryList json model =
                     lastRouteSegment =
                         List.last (Routing.treePathSegments model.route)
 
-                    selectedPaths =
+                    selection =
                         case listResult of
                             Ok [ singleItem ] ->
                                 if Just singleItem.name == lastRouteSegment then
-                                    [ singleItem.path ]
+                                    [ { index = 0, isFirst = True } ]
 
                                 else
                                     []
@@ -125,18 +125,21 @@ gotDirectoryList json model =
                 { model
                     | directoryList =
                         Result.map
-                            (\items -> { floor = floor, items = items })
+                            (\items -> { floor = floor, items = items, selection = selection })
                             listResult
 
                     --
                     , sidebar =
-                        selectedPaths
-                            |> List.head
-                            |> Maybe.map Sidebar.details
+                        listResult
+                            |> Result.toMaybe
+                            |> Maybe.map2
+                                (\{ index } list -> ( index, list ))
+                                (List.head selection)
+                            |> Maybe.andThen (\( a, b ) -> List.getAt a b)
+                            |> Maybe.map (.path >> Sidebar.details)
                             |> Maybe.or sidebar
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
-                    , selectedPaths = selectedPaths
                     , showLoadingOverlay = False
                 }
            )

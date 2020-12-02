@@ -114,7 +114,12 @@ ifThenElse condition x y =
 
 isSingleFileView : Model -> Bool
 isSingleFileView model =
-    model.selectedPaths == [ Routing.treePath model.route ]
+    -- TODO: Confirm this is correct
+    model.directoryList
+        |> Result.toMaybe
+        |> Maybe.andThen (.items >> List.head)
+        |> Maybe.map .path
+        |> (==) (Just <| Routing.treePath model.route)
 
 
 sizeInWords : Int -> String

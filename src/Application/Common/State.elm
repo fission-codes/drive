@@ -6,6 +6,7 @@ import Coordinates exposing (Coordinates)
 import Debouncing
 import Dict
 import Drive.Item
+import Drive.Item.Inventory
 import FileSystem
 import Html.Events.Extra.Mouse as Mouse
 import List.Extra as List
@@ -72,10 +73,9 @@ reset route model =
         |> return
             { model
                 | authenticated = Nothing
-                , directoryList = Ok { floor = 1, items = [] }
+                , directoryList = Ok Drive.Item.Inventory.default
                 , fileSystemStatus = FileSystem.NotNeeded
                 , showLoadingOverlay = True
-                , selectedPaths = []
                 , sidebar = Nothing
             }
         |> andThen

@@ -173,9 +173,9 @@ urlChanged url old =
         --
         , pressedKeys = []
         , route = route
-        , selectedPaths = []
         , url = url
     }
+        |> Drive.clearDirectoryListSelection
         |> (\new ->
                 if stillLoading || not isTreeRoute then
                     Return.singleton new

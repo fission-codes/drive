@@ -6,6 +6,7 @@ import Common.View.Footer as Footer
 import ContextMenu
 import Drive.ContextMenu as ContextMenu
 import Drive.Item exposing (Item, Kind(..))
+import Drive.Item.Inventory exposing (Inventory, Selection)
 import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import Drive.View.Sidebar as Sidebar
@@ -425,7 +426,10 @@ primary model =
 mainLayout : Model -> Html Msg -> Html Msg
 mainLayout model leftSide =
     Html.div
-        [ T.flex
+        [ E.onClick ClearSelection
+
+        --
+        , T.flex
         , T.flex_col
         , T.flex_auto
         , T.relative
@@ -707,7 +711,7 @@ empty model =
         ]
 
 
-contentAvailable : Model -> { floor : Int, items : List Item } -> Html Msg
+contentAvailable : Model -> Inventory -> Html Msg
 contentAvailable model directoryList =
     Html.div
         (List.append
@@ -735,7 +739,7 @@ contentAvailable model directoryList =
 -- MAIN  /  LIST
 
 
-list : Model -> { floor : Int, items : List Item } -> Html Msg
+list : Model -> Inventory -> Html Msg
 list model directoryList =
     let
         isGroundFloor =
@@ -763,7 +767,7 @@ list model directoryList =
         -- Tree
         -----------------------------------------
         , directoryList.items
-            |> List.map (listItem isGroundFloor model.selectedPaths model.pressedKeys)
+            |> List.indexedMap (listItem isGroundFloor directoryList.selection model.pressedKeys)
             |> Html.div []
 
         -----------------------------------------
@@ -823,11 +827,11 @@ list model directoryList =
         ]
 
 
-listItem : Bool -> List String -> List Keyboard.Key -> Item -> Html Msg
-listItem isGroundFloor selectedPaths pressedKeys ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Bool -> Selection -> List Keyboard.Key -> Int -> Item -> Html Msg
+listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, nameProperties, path } as item) =
     let
         selected =
-            List.member path selectedPaths
+            List.any (.index >> (==) idx) selection
 
         isPublicRootDir =
             isGroundFloor && name == "public"
@@ -837,18 +841,13 @@ listItem isGroundFloor selectedPaths pressedKeys ({ kind, loading, name, namePro
             case kind of
                 Directory ->
                     if List.member Keyboard.Shift pressedKeys then
-                        if List.isEmpty pressedKeys then
-                            Select item
-
-                        else
-                            -- TODO: Select multiple
-                            Select item
+                        RangeSelect idx item
 
                     else
                         DigDeeper { directoryName = name }
 
                 _ ->
-                    Select item
+                    Select idx item
 
         -- Show context menu on right click,
         -- or when holding, without moving, the item on touch devices.

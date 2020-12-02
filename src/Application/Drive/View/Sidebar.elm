@@ -5,6 +5,7 @@ import Common.View as Common
 import ContextMenu
 import Drive.ContextMenu
 import Drive.Item exposing (Item, Kind(..))
+import Drive.Item.Inventory
 import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import Drive.View.Details as Details
@@ -266,9 +267,9 @@ editorHeaderItems model =
                 )
 
         menuAndFilename =
-            model.selectedPaths
+            model.directoryList
+                |> Result.unwrap [] Drive.Item.Inventory.selectionItems
                 |> List.head
-                |> Maybe.andThen (Common.lookupItem model)
                 |> Maybe.map menuAndFilenameButton
                 |> Maybe.withDefault nothing
     in
@@ -551,9 +552,10 @@ detailsForSelection { showPreviewOverlay } model =
         , T.py_6
         ]
         -- TODO: Support multi select
-        [ model.selectedPaths
-            |> List.head
-            |> Maybe.andThen (Common.lookupItem model)
+        [ model.directoryList
+            |> Result.toMaybe
+            |> Maybe.map Drive.Item.Inventory.selectionItems
+            |> Maybe.andThen List.head
             |> Maybe.map
                 (Html.Lazy.lazy7
                     Details.view
