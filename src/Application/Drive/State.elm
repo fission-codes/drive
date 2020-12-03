@@ -7,7 +7,7 @@ import Common.State as Common
 import Debouncing
 import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
-import Drive.Item.Inventory
+import Drive.Item.Inventory as Inventory exposing (Inventory)
 import Drive.Modals
 import Drive.Sidebar
 import Drive.State.Sidebar
@@ -60,7 +60,7 @@ addFiles { blobs } model =
 clearSelection : Manager
 clearSelection model =
     model.directoryList
-        |> Result.map Drive.Item.Inventory.clearSelection
+        |> Result.map Inventory.clearSelection
         |> assignNewDirectoryList model
         |> Return.singleton
 
@@ -298,6 +298,47 @@ goUpOneLevel model =
         |> (\x -> goUp { floor = x } model)
 
 
+individualSelect : Int -> Item -> Manager
+individualSelect idx item model =
+    case model.directoryList of
+        Ok ({ selection } as directoryList) ->
+            let
+                selectedIndexes =
+                    List.map .index selection
+
+                newSelection =
+                    if List.member idx selectedIndexes then
+                        List.filter (.index >> (/=) idx) selection
+
+                    else
+                        selection
+                            |> (::) { index = idx, isFirst = False }
+                            |> List.sortBy .index
+
+                newInventory =
+                    { directoryList | selection = newSelection }
+
+                sidebar =
+                    if List.length newSelection > 1 then
+                        newInventory
+                            |> Inventory.selectionItems
+                            |> List.map .path
+                            |> Drive.Sidebar.details
+                            |> Just
+
+                    else
+                        model.sidebar
+            in
+            Return.singleton
+                { model
+                    | directoryList = Ok newInventory
+                    , sidebar = sidebar
+                }
+
+        Err _ ->
+            Return.singleton model
+
+
 rangeSelect : Int -> Item -> Manager
 rangeSelect targetIndex item model =
     case model.directoryList of
@@ -316,18 +357,27 @@ rangeSelect targetIndex item model =
                             else
                                 List.range targetIndex startIndex
 
+                        newInventory =
+                            range
+                                |> List.map (\i -> { index = i, isFirst = i == startIndex })
+                                |> (\s -> { directoryList | selection = s })
+
                         sidebar =
                             if List.length range > 1 then
-                                Just (Drive.Sidebar.details item.path)
+                                newInventory
+                                    |> Inventory.selectionItems
+                                    |> List.map .path
+                                    |> Drive.Sidebar.details
+                                    |> Just
 
                             else
                                 model.sidebar
                     in
-                    range
-                        |> List.map (\i -> { index = i, isFirst = i == startIndex })
-                        |> (\s -> { directoryList | selection = s })
-                        |> (\d -> { model | directoryList = Ok d, sidebar = sidebar })
-                        |> Return.singleton
+                    Return.singleton
+                        { model
+                            | directoryList = Ok newInventory
+                            , sidebar = sidebar
+                        }
 
                 Nothing ->
                     -- New selection
@@ -347,8 +397,8 @@ removeItem item model =
                 | fileSystemStatus = FileSystem.Operation Deleting
                 , sidebar =
                     case model.sidebar of
-                        Just (Drive.Sidebar.Details { path }) ->
-                            ifThenElse (path == item.path) Nothing model.sidebar
+                        Just (Drive.Sidebar.Details { paths }) ->
+                            ifThenElse (List.member item.path paths) Nothing model.sidebar
 
                         Just (Drive.Sidebar.EditPlaintext { path }) ->
                             ifThenElse (path == item.path) Nothing model.sidebar
@@ -367,7 +417,7 @@ removeItem item model =
 removeSelectedItems : Manager
 removeSelectedItems model =
     model.directoryList
-        |> Result.map Drive.Item.Inventory.selectionItems
+        |> Result.map Inventory.selectionItems
         |> Result.withDefault []
         |> List.foldl
             (\item -> Return.andThen <| removeItem item)
@@ -445,7 +495,7 @@ select idx item model =
             { model
                 | directoryList = directoryListWithSelection
                 , sidebar =
-                    item.path
+                    [ item.path ]
                         |> Drive.Sidebar.details
                         |> Just
             }
@@ -556,7 +606,7 @@ updateSidebar sidebarMsg model =
 -- ㊙️
 
 
-assignNewDirectoryList : Model -> Result String Drive.Item.Inventory.Inventory -> Model
+assignNewDirectoryList : Model -> Result String Inventory -> Model
 assignNewDirectoryList model directoryList =
     { model | directoryList = directoryList }
 
@@ -564,7 +614,7 @@ assignNewDirectoryList model directoryList =
 clearDirectoryListSelection : Model -> Model
 clearDirectoryListSelection model =
     model.directoryList
-        |> Result.map Drive.Item.Inventory.clearSelection
+        |> Result.map Inventory.clearSelection
         |> assignNewDirectoryList model
 
 

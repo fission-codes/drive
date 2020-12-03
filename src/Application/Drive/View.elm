@@ -713,6 +713,7 @@ contentAvailable model directoryList =
     Html.div
         (List.append
             [ A.id "drive-items"
+            , E.onTap ClearSelection
 
             --
             , T.flex_auto
@@ -848,6 +849,9 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
     Html.div
         [ if List.member Keyboard.Shift pressedKeys then
             E.onTap (RangeSelect idx item)
+
+          else if List.member Keyboard.Meta pressedKeys then
+            E.onTap (IndividualSelect idx item)
 
           else if kind == Directory then
             E.onTap (DigDeeper { directoryName = name })

@@ -176,6 +176,9 @@ update msg =
         GoUp a ->
             Drive.goUp a
 
+        IndividualSelect a b ->
+            Drive.individualSelect a b
+
         RangeSelect a b ->
             Drive.rangeSelect a b
 

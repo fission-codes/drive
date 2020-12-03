@@ -11,7 +11,7 @@ type Msg
 
 type Model
     = Details
-        { path : String
+        { paths : List String
         , showPreviewOverlay : Bool
         }
     | EditPlaintext
@@ -39,9 +39,9 @@ type alias AddOrCreateModel =
 -- 🌱
 
 
-details : String -> Model
-details path =
-    Details { path = path, showPreviewOverlay = False }
+details : List String -> Model
+details paths =
+    Details { paths = paths, showPreviewOverlay = False }
 
 
 addOrCreate : AddOrCreateModel

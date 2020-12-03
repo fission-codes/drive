@@ -540,7 +540,7 @@ addOrCreateForm addOrCreateModel model =
 -- DETAILS
 
 
-detailsForSelection : { path : String, showPreviewOverlay : Bool } -> Model -> Html Msg
+detailsForSelection : { paths : List String, showPreviewOverlay : Bool } -> Model -> Html Msg
 detailsForSelection { showPreviewOverlay } model =
     Html.div
         [ T.flex

@@ -106,6 +106,7 @@ type Msg
     | DownloadItem Item
     | GotAddOrCreateInput String
     | GoUp { floor : Int }
+    | IndividualSelect Int Item
     | RangeSelect Int Item
     | RemoveItem Item
     | RemoveSelectedItems

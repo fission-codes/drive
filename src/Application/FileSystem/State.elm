@@ -129,15 +129,7 @@ gotDirectoryList json model =
                             listResult
 
                     --
-                    , sidebar =
-                        listResult
-                            |> Result.toMaybe
-                            |> Maybe.map2
-                                (\{ index } list -> ( index, list ))
-                                (List.head selection)
-                            |> Maybe.andThen (\( a, b ) -> List.getAt a b)
-                            |> Maybe.map (.path >> Sidebar.details)
-                            |> Maybe.or sidebar
+                    , sidebar = Nothing -- TODO: Fix needed?
                     , fileSystemCid = maybeRootCid
                     , fileSystemStatus = FileSystem.Ready
                     , showLoadingOverlay = False
