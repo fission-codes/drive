@@ -317,9 +317,49 @@ individualSelect idx item model =
 
                 newInventory =
                     { directoryList | selection = newSelection }
+            in
+            if List.length newSelection > 1 then
+                Return.singleton
+                    { model
+                        | directoryList = Ok newInventory
+                        , sidebar =
+                            newInventory
+                                |> Inventory.selectionItems
+                                |> List.map .path
+                                |> Drive.Sidebar.details
+                                |> Just
+                    }
+
+            else
+                select idx item model
+
+        Err _ ->
+            Return.singleton model
+
+
+rangeSelect : Int -> Item -> Manager
+rangeSelect targetIndex item model =
+    case Result.map (\a -> ( a, a.selection )) model.directoryList of
+        Ok ( { selection } as directoryList, { index } :: _ ) ->
+            -- Adjust existing selection
+            let
+                startIndex =
+                    index
+
+                range =
+                    if startIndex <= targetIndex then
+                        List.range startIndex targetIndex
+
+                    else
+                        List.range targetIndex startIndex
+
+                newInventory =
+                    range
+                        |> List.map (\i -> { index = i, isFirst = i == startIndex })
+                        |> (\s -> { directoryList | selection = s })
 
                 sidebar =
-                    if List.length newSelection > 1 then
+                    if List.length range > 1 then
                         newInventory
                             |> Inventory.selectionItems
                             |> List.map .path
@@ -335,56 +375,9 @@ individualSelect idx item model =
                     , sidebar = sidebar
                 }
 
-        Err _ ->
-            Return.singleton model
-
-
-rangeSelect : Int -> Item -> Manager
-rangeSelect targetIndex item model =
-    case model.directoryList of
-        Ok ({ selection } as directoryList) ->
-            case List.find .isFirst selection of
-                Just { index } ->
-                    -- Adjust existing selection
-                    let
-                        startIndex =
-                            index
-
-                        range =
-                            if startIndex <= targetIndex then
-                                List.range startIndex targetIndex
-
-                            else
-                                List.range targetIndex startIndex
-
-                        newInventory =
-                            range
-                                |> List.map (\i -> { index = i, isFirst = i == startIndex })
-                                |> (\s -> { directoryList | selection = s })
-
-                        sidebar =
-                            if List.length range > 1 then
-                                newInventory
-                                    |> Inventory.selectionItems
-                                    |> List.map .path
-                                    |> Drive.Sidebar.details
-                                    |> Just
-
-                            else
-                                model.sidebar
-                    in
-                    Return.singleton
-                        { model
-                            | directoryList = Ok newInventory
-                            , sidebar = sidebar
-                        }
-
-                Nothing ->
-                    -- New selection
-                    select targetIndex item model
-
-        Err _ ->
-            Return.singleton model
+        _ ->
+            -- New selection
+            select targetIndex item model
 
 
 removeItem : Item -> Manager
@@ -439,22 +432,23 @@ renameItem item model =
                         _ ->
                             Item.nameProperties newName
 
+                newDirectoryListItems =
+                    model.directoryList
+                        |> Result.map .items
+                        |> Result.withDefault []
+                        |> List.map
+                            (\i ->
+                                if i.id == item.id then
+                                    { i | name = newName, nameProperties = newNameProps }
+
+                                else
+                                    i
+                            )
+
                 newDirectoryList =
-                    case model.directoryList of
-                        Ok a ->
-                            a.items
-                                |> List.map
-                                    (\i ->
-                                        if i.id == item.id then
-                                            { i | name = newName, nameProperties = newNameProps }
-
-                                        else
-                                            i
-                                    )
-                                |> (\items -> Ok { a | items = items })
-
-                        Err e ->
-                            Err e
+                    Result.map
+                        (\a -> { a | items = newDirectoryListItems })
+                        model.directoryList
             in
             { currentPathSegments = String.split "/" item.path
             , pathSegments = Routing.treePathSegments model.route ++ [ newName ]
@@ -470,35 +464,36 @@ renameItem item model =
 select : Int -> Item -> Manager
 select idx item model =
     let
-        directoryListWithSelection =
-            Result.map
-                (\d -> { d | selection = [ { index = idx, isFirst = True } ] })
-                model.directoryList
+        showEditor =
+            item.kind == Code || item.kind == Text
     in
-    if item.kind == Code || item.kind == Text then
-        item
-            |> Item.pathProperties
-            |> Ports.fsReadItemUtf8
-            |> return
-                { model
-                    | directoryList = directoryListWithSelection
-                    , sidebar =
-                        { path = item.path
-                        , editor = Nothing
-                        }
-                            |> Drive.Sidebar.EditPlaintext
-                            |> Just
-                }
+    return
+        { model
+            | directoryList =
+                Result.map
+                    (\d -> { d | selection = [ { index = idx, isFirst = True } ] })
+                    model.directoryList
+            , sidebar =
+                if showEditor then
+                    { path = item.path
+                    , editor = Nothing
+                    }
+                        |> Drive.Sidebar.EditPlaintext
+                        |> Just
 
-    else
-        Return.singleton
-            { model
-                | directoryList = directoryListWithSelection
-                , sidebar =
+                else
                     [ item.path ]
                         |> Drive.Sidebar.details
                         |> Just
-            }
+        }
+        (if showEditor then
+            item
+                |> Item.pathProperties
+                |> Ports.fsReadItemUtf8
+
+         else
+            Cmd.none
+        )
 
 
 selectNextItem : Manager
