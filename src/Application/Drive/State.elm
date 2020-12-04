@@ -61,7 +61,7 @@ clearSelection : Manager
 clearSelection model =
     model.directoryList
         |> Result.map Inventory.clearSelection
-        |> assignNewDirectoryList model
+        |> assignNewDirectoryList { model | sidebar = Nothing }
         |> Return.singleton
 
 
