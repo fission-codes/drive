@@ -420,8 +420,14 @@ removeSelectedItems model =
 renameItem : Item -> Manager
 renameItem item model =
     case Maybe.andThen (.state >> Dict.get "name") model.modal of
-        Just newName ->
+        Just rawNewName ->
             let
+                newName =
+                    rawNewName
+                        |> String.replace "../" ""
+                        |> String.replace "./" ""
+                        |> String.replace "/" "-"
+
                 newNameProps =
                     case item.kind of
                         Directory ->

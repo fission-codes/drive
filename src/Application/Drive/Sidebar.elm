@@ -4,13 +4,14 @@ module Drive.Sidebar exposing (..)
 
 
 type Msg
-    = PlaintextEditorInput String
+    = DetailsShowPreviewOverlay
+    | PlaintextEditorInput String
     | PlaintextEditorSave
-    | DetailsShowPreviewOverlay
 
 
 type Model
-    = Details
+    = AddOrCreate AddOrCreateModel
+    | Details
         { paths : List String
         , showPreviewOverlay : Bool
         }
@@ -20,7 +21,6 @@ type Model
         -- Nothing means Loading
         , editor : Maybe EditorModel
         }
-    | AddOrCreate AddOrCreateModel
 
 
 type alias EditorModel =

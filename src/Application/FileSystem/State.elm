@@ -5,6 +5,7 @@ import Common
 import Common.State as Common
 import Debouncing
 import Drive.Item
+import Drive.Item.Inventory as Inventory
 import Drive.Sidebar as Sidebar
 import FileSystem
 import Json.Decode as Json
@@ -22,8 +23,6 @@ import Task
 -- 🐚
 
 
-{-| TODO: This function is doing a lot. Can we break it up somehow?
--}
 gotDirectoryList : Json.Value -> Manager
 gotDirectoryList json model =
     let
@@ -34,110 +33,65 @@ gotDirectoryList json model =
                 |> Result.withDefault
                     []
 
-        encodedDirList =
-            json
-                |> Json.decodeValue
-                    (Json.field "results" Json.value)
-                |> Result.withDefault
-                    json
-
-        maybeRootCid =
-            json
-                |> Json.decodeValue (Json.field "rootCid" Json.string)
-                |> Result.toMaybe
-                |> Maybe.orElse model.fileSystemCid
+        floor =
+            List.length pathSegments + 1
     in
-    encodedDirList
+    if pathSegments == Routing.treePathSegments model.route then
+        gotDirectoryList_ pathSegments floor json model
+
+    else
+        Return.singleton model
+
+
+gotDirectoryList_ : List String -> Int -> Json.Value -> Manager
+gotDirectoryList_ pathSegments floor json model =
+    json
+        |> Json.decodeValue
+            (Json.field "results" Json.value)
+        |> Result.withDefault
+            json
         |> Json.decodeValue (Json.list FileSystem.itemDecoder)
         |> Result.map (List.map Drive.Item.fromFileSystem)
         |> Result.mapError Json.errorToString
         |> (\result ->
                 let
-                    floor =
-                        List.length pathSegments + 1
-
-                    listResult =
-                        Result.map
-                            ({ isGroundFloor = floor == 1 }
-                                |> Drive.Item.sortingFunction
-                                |> List.sortWith
-                            )
-                            result
-
-                    lastRouteSegment =
-                        List.last (Routing.treePathSegments model.route)
-
-                    selection =
-                        case listResult of
-                            Ok [ singleItem ] ->
-                                if Just singleItem.name == lastRouteSegment then
-                                    [ { index = 0, isFirst = True } ]
-
-                                else
-                                    []
-
-                            _ ->
-                                []
-
-                    sidebar =
-                        case model.sidebar of
-                            Just (Sidebar.EditPlaintext editPlaintext) ->
-                                case editPlaintext.editor of
-                                    Just editorModel ->
-                                        let
-                                            editPath =
-                                                String.split "/" editPlaintext.path
-
-                                            editDirectoryWithPrivate =
-                                                List.take (List.length editPath - 1) editPath
-
-                                            editDirectory =
-                                                case editDirectoryWithPrivate of
-                                                    first :: rest ->
-                                                        if first == "private" then
-                                                            rest
-
-                                                        else
-                                                            first :: rest
-
-                                                    other ->
-                                                        other
-                                        in
-                                        if pathSegments == editDirectory then
-                                            { editorModel
-                                                | isSaving = False
-                                                , originalText = editorModel.text
-                                            }
-                                                |> Just
-                                                |> (\newEditor -> { editPlaintext | editor = newEditor })
-                                                |> Sidebar.EditPlaintext
-                                                |> Just
-
-                                        else
-                                            Nothing
-
-                                    _ ->
-                                        Nothing
-
-                            _ ->
-                                Nothing
+                    maybeRootCid =
+                        json
+                            |> Json.decodeValue (Json.field "rootCid" Json.string)
+                            |> Result.toMaybe
+                            |> Maybe.orElse model.fileSystemCid
                 in
-                { model
-                    | directoryList =
-                        Result.map
-                            (\items -> { floor = floor, items = items, selection = selection })
-                            listResult
-
-                    --
-                    , sidebar = Nothing -- TODO: Fix needed?
-                    , fileSystemCid = maybeRootCid
-                    , fileSystemStatus = FileSystem.Ready
-                    , showLoadingOverlay = False
-                }
+                result
+                    |> Result.map
+                        ({ isGroundFloor = floor == 1 }
+                            |> Drive.Item.sortingFunction
+                            |> List.sortWith
+                        )
+                    |> Result.map
+                        (\items ->
+                            { floor = floor
+                            , items = items
+                            , selection = []
+                            }
+                        )
+                    |> Result.map
+                        (model.route
+                            |> Routing.treePathSegments
+                            |> Inventory.autoSelectOnSingleFileView
+                        )
+                    |> (\directoryList ->
+                            { model
+                                | directoryList = directoryList
+                                , fileSystemCid = maybeRootCid
+                                , fileSystemStatus = FileSystem.Ready
+                                , showLoadingOverlay = False
+                            }
+                       )
            )
         |> Return.singleton
         |> Return.andThen Debouncing.cancelLoading
         |> Return.command
+            -- Scroll back up
             (Task.attempt
                 (always Bypass)
                 (Dom.setViewport 0 0)

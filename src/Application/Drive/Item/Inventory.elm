@@ -20,7 +20,7 @@ type alias Selection =
 
 
 
--- ⚗️
+-- 🛠
 
 
 clearSelection : Inventory -> Inventory
@@ -31,6 +31,23 @@ clearSelection inventory =
 default : Inventory
 default =
     { floor = 1, items = [], selection = [] }
+
+
+autoSelectOnSingleFileView : List String -> Inventory -> Inventory
+autoSelectOnSingleFileView pathSegments ({ items } as inventory) =
+    { inventory
+        | selection =
+            case items of
+                [ item ] ->
+                    if Just item.name == List.last pathSegments then
+                        [ { index = 0, isFirst = True } ]
+
+                    else
+                        []
+
+                _ ->
+                    []
+    }
 
 
 selectionItems : Inventory -> List Item
