@@ -551,11 +551,10 @@ detailsForSelection { showPreviewOverlay } model =
         , T.px_4
         , T.py_6
         ]
-        -- TODO: Support multi select
         [ model.directoryList
             |> Result.toMaybe
-            |> Maybe.map Drive.Item.Inventory.selectionItems
-            |> Maybe.andThen List.head
+            |> Maybe.map
+                Drive.Item.Inventory.selectionItems
             |> Maybe.map
                 (Html.Lazy.lazy7
                     Details.view

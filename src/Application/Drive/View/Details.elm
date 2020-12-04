@@ -29,15 +29,15 @@ import Url.Builder
 
 {-| NOTE: This is positioned using `position: sticky` and using fixed px values. Kind of a hack, and should be done in a better way, but I haven't found one.
 -}
-view : Bool -> Bool -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
-view useFS isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item =
+view : Bool -> Bool -> Bool -> Time.Posix -> Bool -> Bool -> List Item -> Html Msg
+view useFS isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay items =
     Html.div
         [ T.flex
         , T.flex_col
         ]
-        [ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item
-        , dataContainer useFS item
-        , extra item
+        [ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay items
+        , dataContainer useFS items
+        , extra items
         ]
 
 
@@ -45,8 +45,8 @@ view useFS isGroundFloor isSingleFileView currentTime expandSidebar showPreviewO
 -- OVERLAY
 
 
-overlay : Bool -> Bool -> Time.Posix -> Bool -> Bool -> Item -> Html Msg
-overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay item =
+overlay : Bool -> Bool -> Time.Posix -> Bool -> Bool -> List Item -> Html Msg
+overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOverlay items =
     let
         defaultAttributes =
             [ T.absolute
@@ -65,14 +65,14 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
             ]
     in
     Html.div
-        (case item.kind of
-            Drive.Item.Audio ->
+        (case List.map .kind items of
+            [ Drive.Item.Audio ] ->
                 []
 
-            Drive.Item.Video ->
+            [ Drive.Item.Video ] ->
                 [ T.hidden ]
 
-            Drive.Item.Image ->
+            [ Drive.Item.Image ] ->
                 List.append
                     defaultAttributes
                     (if showPreviewOverlay then
@@ -94,7 +94,7 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
             , T.relative
             , T.z_10
             ]
-            (overlayContents isGroundFloor currentTime item)
+            (overlayContents isGroundFloor currentTime items)
 
         --
         , Html.div
@@ -104,8 +104,8 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
             , T.z_0
 
             --
-            , case item.kind of
-                Drive.Item.Image ->
+            , case List.map .kind items of
+                [ Drive.Item.Image ] ->
                     T.opacity_80
 
                 _ ->
@@ -130,17 +130,35 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
         ]
 
 
-overlayContents : Bool -> Time.Posix -> Item -> List (Html Msg)
-overlayContents isGroundFloor currentTime item =
+overlayContents : Bool -> Time.Posix -> List Item -> List (Html Msg)
+overlayContents isGroundFloor currentTime items =
     let
+        ( itemNames, itemKinds ) =
+            List.foldr
+                (\item ( n, k ) ->
+                    ( item.name :: n
+                    , item.kind :: k
+                    )
+                )
+                ( [], [] )
+                items
+
         isPublicRootDir =
-            isGroundFloor && item.name == "public"
+            isGroundFloor && itemNames == [ "public" ]
     in
-    [ (if isPublicRootDir then
+    [ -----------------------------------------
+      -- Icon
+      -----------------------------------------
+      (if isPublicRootDir then
         FeatherIcons.globe
 
        else
-        Drive.Item.kindIcon item.kind
+        case items of
+            [ item ] ->
+                Drive.Item.kindIcon item.kind
+
+            _ ->
+                FeatherIcons.copy
       )
         |> FeatherIcons.withSize 128
         |> FeatherIcons.withStrokeWidth 0.5
@@ -150,7 +168,9 @@ overlayContents isGroundFloor currentTime item =
             , T.items_center
             ]
 
-    --
+    -----------------------------------------
+    -- Title
+    -----------------------------------------
     , Html.div
         [ T.font_semibold
         , T.mt_1
@@ -162,90 +182,139 @@ overlayContents isGroundFloor currentTime item =
             Html.text "Public"
 
           else
-            Html.text item.name
+            case items of
+                [ item ] ->
+                    Html.text item.name
+
+                _ ->
+                    [ String.fromInt (List.length items)
+                    , "items"
+                    ]
+                        |> String.join " "
+                        |> Html.text
         ]
 
-    --
+    -----------------------------------------
+    -- Subtitle
+    -----------------------------------------
     , Html.div
         [ T.mt_px
         , T.text_center
         , T.text_gray_300
         , T.text_sm
         ]
-        [ case ( item.posixTime, item.size ) of
-            ( Just time, _ ) ->
-                Html.text (Time.Distance.inWords currentTime time)
+        [ case items of
+            [ item ] ->
+                case ( item.posixTime, item.size ) of
+                    ( Just time, _ ) ->
+                        Html.text (Time.Distance.inWords currentTime time)
 
-            ( Nothing, 0 ) ->
-                -- TODO: Show amount of items the directory has
-                Html.text (Drive.Item.kindName item.kind)
+                    ( Nothing, 0 ) ->
+                        -- TODO: Show amount of items the directory has
+                        Html.text (Drive.Item.kindName item.kind)
 
-            ( Nothing, size ) ->
-                Html.text (Common.sizeInWords size)
+                    ( Nothing, size ) ->
+                        Html.text (Common.sizeInWords size)
+
+            _ ->
+                Html.text ""
         ]
 
-    --
+    -----------------------------------------
+    -- Actions
+    -----------------------------------------
     , Html.div
         [ T.flex
         , T.items_center
         , T.justify_center
         , T.mt_5
         ]
-        [ Html.span
-            [ case item.kind of
-                Directory ->
-                    { item = item
-                    , presentable = True
-                    }
-                        |> CopyPublicUrl
-                        |> E.onClick
+        (case items of
+            [ item ] ->
+                overlaySingleItemActions isGroundFloor item
 
-                _ ->
-                    E.onClick (DownloadItem item)
+            _ ->
+                overlayMultipleItemActions items
+        )
+    ]
 
-            --
-            , T.antialiased
-            , T.bg_purple
-            , T.cursor_pointer
-            , T.font_semibold
-            , T.inline_block
-            , T.px_2
-            , T.py_1
-            , T.rounded
-            , T.text_gray_900
-            , T.text_sm
-            , T.tracking_wider
-            , T.uppercase
-            ]
-            [ Html.span
-                [ T.block, T.pt_px ]
-                [ case item.kind of
-                    Directory ->
-                        Html.text "Copy Link"
 
-                    _ ->
-                        Html.text "Download"
-                ]
-            ]
+overlaySingleItemActions : Bool -> Item -> List (Html Msg)
+overlaySingleItemActions isGroundFloor item =
+    [ Html.span
+        [ case item.kind of
+            Directory ->
+                { item = item
+                , presentable = True
+                }
+                    |> CopyPublicUrl
+                    |> E.onClick
+
+            _ ->
+                E.onClick (DownloadItem item)
 
         --
-        , Html.button
-            [ item
-                |> Drive.ContextMenu.item
-                    ContextMenu.BottomCenter
-                    { isGroundFloor = isGroundFloor }
-                |> ShowContextMenu
-                |> M.onClick
+        , T.antialiased
+        , T.bg_purple
+        , T.cursor_pointer
+        , T.font_semibold
+        , T.inline_block
+        , T.px_2
+        , T.py_1
+        , T.rounded
+        , T.text_gray_900
+        , T.text_sm
+        , T.tracking_wider
+        , T.uppercase
+        ]
+        [ Html.span
+            [ T.block, T.pt_px ]
+            [ case item.kind of
+                Directory ->
+                    Html.text "Copy Link"
 
-            --
-            , T.appearance_none
-            , T.ml_3
-            , T.text_purple
+                _ ->
+                    Html.text "Download"
             ]
-            [ FeatherIcons.moreVertical
-                |> FeatherIcons.withSize 18
-                |> Common.wrapIcon [ T.pointer_events_none ]
-            ]
+        ]
+
+    --
+    , Html.button
+        [ item
+            |> Drive.ContextMenu.item
+                ContextMenu.BottomCenter
+                { isGroundFloor = isGroundFloor }
+            |> ShowContextMenu
+            |> M.onClick
+
+        --
+        , T.appearance_none
+        , T.ml_3
+        , T.text_purple
+        ]
+        [ FeatherIcons.moreVertical
+            |> FeatherIcons.withSize 18
+            |> Common.wrapIcon [ T.pointer_events_none ]
+        ]
+    ]
+
+
+overlayMultipleItemActions : List Item -> List (Html Msg)
+overlayMultipleItemActions items =
+    [ Html.button
+        [ ContextMenu.BottomCenter
+            |> Drive.ContextMenu.selection
+            |> ShowContextMenu
+            |> M.onClick
+
+        --
+        , T.appearance_none
+        , T.ml_3
+        , T.text_purple
+        ]
+        [ FeatherIcons.moreVertical
+            |> FeatherIcons.withSize 18
+            |> Common.wrapIcon [ T.pointer_events_none ]
         ]
     ]
 
@@ -254,8 +323,8 @@ overlayContents isGroundFloor currentTime item =
 -- DATA
 
 
-dataContainer : Bool -> Item -> Html Msg
-dataContainer useFS item =
+dataContainer : Bool -> List Item -> Html Msg
+dataContainer useFS items =
     let
         defaultStyles =
             [ T.absolute
@@ -266,29 +335,35 @@ dataContainer useFS item =
             , T.text_center
             , T.z_10
             ]
+
+        kinds =
+            List.map .kind items
     in
-    (case item.kind of
-        Directory ->
+    (case ( kinds, items ) of
+        ( [ Directory ], _ ) ->
             Html.div
 
-        _ ->
+        ( _, [ item ] ) ->
             fissionDriveMedia
                 { name = item.name
                 , path = item.path
                 , useFS = useFS
                 }
+
+        _ ->
+            Html.div
     )
         (List.append
             [ A.class "drive-item__preview" ]
-            (case item.kind of
-                Drive.Item.Audio ->
+            (case kinds of
+                [ Drive.Item.Audio ] ->
                     [ T.mt_8
                     , T.relative
                     , T.text_center
                     , T.z_10
                     ]
 
-                Drive.Item.Image ->
+                [ Drive.Item.Image ] ->
                     List.append
                         defaultStyles
                         [ E.onClick (SidebarMsg Sidebar.DetailsShowPreviewOverlay)
@@ -306,12 +381,12 @@ dataContainer useFS item =
 -- OTHER BITS
 
 
-extra : Item -> Html Msg
+extra : List Item -> Html Msg
 extra item =
     Html.div
         []
-        [ case item.kind of
-            Drive.Item.Image ->
+        [ case List.map .kind item of
+            [ Drive.Item.Image ] ->
                 Html.div
                     [ T.absolute
                     , T.left_1over2
