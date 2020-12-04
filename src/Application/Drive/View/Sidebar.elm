@@ -137,7 +137,6 @@ plaintextEditor maybeEditor model =
                     ---------------
                     , T.appearance_none
                     , T.outline_none
-                    , T.focus__shadow_inner_outline
 
                     -- Dark mode
                     ------------
@@ -167,32 +166,18 @@ plaintextEditor maybeEditor model =
                         ]
                     ]
         , Html.div
-            [ T.flex
+            [ T.border_t
+            , T.border_gray_300
+            , T.border_opacity_10
+            , T.flex
             , T.flex_shrink_0
-            , T.h_12
-            , T.items_center
-            , T.justify_start
-            , T.mt_px
-            , T.py_2
+            , T.p_3
             , T.relative
             , T.space_x_2
             ]
-            (List.append
-                [ Html.div
-                    [ T.absolute
-                    , T.border_t
-                    , T.border_gray_300
-                    , T.left_0
-                    , T.opacity_10
-                    , T.right_0
-                    , T.top_0
-                    ]
-                    []
-                ]
-                (maybeEditor
-                    |> Maybe.map editorFooterItems
-                    |> Maybe.withDefault []
-                )
+            (maybeEditor
+                |> Maybe.map editorFooterItems
+                |> Maybe.withDefault []
             )
         ]
 
@@ -301,7 +286,8 @@ editorFooterItems editor =
         --
         , T.antialiased
         , T.appearance_none
-        , T.bg_purple_shade
+        , T.bg_purple
+        , S.default_transition_duration
         , T.font_semibold
         , T.flex
         , T.flex_row
@@ -319,12 +305,13 @@ editorFooterItems editor =
         , T.uppercase
 
         --
+        , T.disabled__bg_white
+        , T.disabled__text_gray_400
         , T.focus__shadow_outline
 
-        --
-        , T.disabled__bg_gray_600
-        , T.dark__disabled__bg_gray_200
-        , T.disabled__text_gray_400
+        -- Dark mode
+        ------------
+        , T.dark__disabled__bg_darkness
         ]
         [ Common.loadingAnimationWithAttributes
             [ T.mr_2
