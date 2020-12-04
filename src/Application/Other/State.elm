@@ -65,6 +65,11 @@ keyboardInteraction msg unmodified =
            )
 
 
+lostWindowFocus : Manager
+lostWindowFocus model =
+    Return.singleton { model | pressedKeys = [] }
+
+
 screenSizeChanged : Int -> Int -> Manager
 screenSizeChanged width height model =
     let
@@ -166,10 +171,11 @@ urlChanged url old =
                 FileSystem.AdditionalListing
 
         --
+        , pressedKeys = []
         , route = route
-        , selectedPath = Nothing
         , url = url
     }
+        |> Drive.clearDirectoryListSelection
         |> (\new ->
                 if stillLoading || not isTreeRoute then
                     Return.singleton new

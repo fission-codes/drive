@@ -5,6 +5,7 @@ import Common.View as Common
 import ContextMenu
 import Drive.ContextMenu
 import Drive.Item exposing (Item, Kind(..))
+import Drive.Item.Inventory
 import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import Drive.View.Details as Details
@@ -266,8 +267,9 @@ editorHeaderItems model =
                 )
 
         menuAndFilename =
-            model.selectedPath
-                |> Maybe.andThen (Common.lookupItem model)
+            model.directoryList
+                |> Result.unwrap [] Drive.Item.Inventory.selectionItems
+                |> List.head
                 |> Maybe.map menuAndFilenameButton
                 |> Maybe.withDefault nothing
     in
@@ -538,7 +540,7 @@ addOrCreateForm addOrCreateModel model =
 -- DETAILS
 
 
-detailsForSelection : { path : String, showPreviewOverlay : Bool } -> Model -> Html Msg
+detailsForSelection : { paths : List String, showPreviewOverlay : Bool } -> Model -> Html Msg
 detailsForSelection { showPreviewOverlay } model =
     Html.div
         [ T.flex
@@ -549,8 +551,10 @@ detailsForSelection { showPreviewOverlay } model =
         , T.px_4
         , T.py_6
         ]
-        [ model.selectedPath
-            |> Maybe.andThen (Common.lookupItem model)
+        [ model.directoryList
+            |> Result.toMaybe
+            |> Maybe.map
+                Drive.Item.Inventory.selectionItems
             |> Maybe.map
                 (Html.Lazy.lazy7
                     Details.view

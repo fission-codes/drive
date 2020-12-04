@@ -86,10 +86,11 @@ wn.initialise({ permissions: PERMISSIONS })
   // Ports
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.deauthenticate.subscribe(deauthenticate)
+  app.ports.showNotification.subscribe(showNotification)
+
   app.ports.redirectToLobby.subscribe(() => {
     wn.redirectToLobby(permissions, location.origin + location.pathname)
   })
-  app.ports.showNotification.subscribe(showNotification)
 
   // Ports (FS)
   exe("fsAddContent", "add")
@@ -159,6 +160,14 @@ function showNotification(text) {
 
   }
 }
+
+
+// Blur
+// ----
+
+window.addEventListener("blur", event => {
+  if (app && event.target === window) app.ports.lostWindowFocus.send(null)
+})
 
 
 // FS

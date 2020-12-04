@@ -167,7 +167,7 @@ export async function listDirectory({ pathSegments }) {
       {
         name: "public",
         cid: publicCid,
-        path: `${publicCid}/public}`,
+        path: `${publicCid}/public`,
         size: 0,
         type: "dir"
       },

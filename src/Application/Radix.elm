@@ -10,6 +10,7 @@ import ContextMenu exposing (ContextMenu)
 import Coordinates exposing (Coordinates)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Drive.Item exposing (Item)
+import Drive.Item.Inventory as Item
 import Drive.Sidebar
 import FileSystem
 import Html.Events.Extra.Mouse as Mouse
@@ -47,7 +48,7 @@ type alias Flags =
 type alias Model =
     { authenticated : Maybe Authentication.Essentials
     , currentTime : Time.Posix
-    , directoryList : Result String { floor : Int, items : List Item }
+    , directoryList : Result String Item.Inventory
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
     , helpfulNote : Maybe { faded : Bool, note : String }
@@ -59,7 +60,6 @@ type alias Model =
     , pressedKeys : List Keyboard.Key
     , route : Route
     , viewportSize : { height : Int, width : Int }
-    , selectedPath : Maybe String
     , showLoadingOverlay : Bool
     , toasties : Toasty.Stack (Notification Msg)
     , url : Url
@@ -97,6 +97,7 @@ type Msg
       -----------------------------------------
     | ActivateSidebarAddOrCreate
     | AddFiles { blobs : List { path : String, url : String } }
+    | ClearSelection
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
     | CopyToClipboard { clip : String, notification : String }
@@ -105,9 +106,12 @@ type Msg
     | DownloadItem Item
     | GotAddOrCreateInput String
     | GoUp { floor : Int }
+    | IndividualSelect Int Item
+    | RangeSelect Int Item
     | RemoveItem Item
+    | RemoveSelectedItems
     | RenameItem Item
-    | Select Item
+    | Select Int Item
     | ShowRenameItemModal Item
     | ToggleExpandedSidebar
     | ToggleSidebarAddOrCreate
@@ -139,6 +143,7 @@ type Msg
     | HideWelcomeMessage
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
+    | LostWindowFocus
     | RedirectToLobby
     | ScreenSizeChanged Int Int
     | SetCurrentTime Time.Posix

@@ -58,6 +58,13 @@ port fsWriteItemUtf8 : { pathSegments : List String, text : String } -> Cmd msg
 
 
 
+-- 📰
+
+
+port lostWindowFocus : (() -> msg) -> Sub msg
+
+
+
 -- 📰  ░░  FILE SYSTEM
 
 

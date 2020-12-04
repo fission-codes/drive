@@ -114,7 +114,11 @@ ifThenElse condition x y =
 
 isSingleFileView : Model -> Bool
 isSingleFileView model =
-    model.selectedPath == Just (Routing.treePath model.route)
+    model.directoryList
+        |> Result.toMaybe
+        |> Maybe.andThen (.items >> List.head)
+        |> Maybe.map .path
+        |> (==) (Just <| Routing.treePath model.route)
 
 
 sizeInWords : Int -> String
@@ -153,6 +157,11 @@ isGroundFloor : Model -> Bool
 isGroundFloor model =
     Result.unwrap True (.floor >> (==) 1) model.directoryList
 
+
 when : Bool -> List a -> List a
 when predicate list =
-    if predicate then list else []
+    if predicate then
+        list
+
+    else
+        []

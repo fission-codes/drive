@@ -1,4 +1,4 @@
-module Drive.ContextMenu exposing (hamburger, item)
+module Drive.ContextMenu exposing (hamburger, item, selection)
 
 import Authentication.Essentials as Authentication
 import Common
@@ -266,3 +266,23 @@ downloadItem context =
                 |> DownloadItem
                 |> Just
         }
+
+
+
+-- SELECTION
+
+
+selection : ContextMenu.Hook -> ContextMenu Msg
+selection hook =
+    ContextMenu.build
+        hook
+        [ Item
+            { icon = FeatherIcons.trash2
+            , label = "Remove all"
+            , active = False
+
+            --
+            , href = Nothing
+            , msg = Just RemoveSelectedItems
+            }
+        ]

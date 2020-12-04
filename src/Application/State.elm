@@ -7,6 +7,7 @@ import Common exposing (ifThenElse)
 import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
+import Drive.Item.Inventory
 import Drive.Sidebar
 import Drive.State as Drive
 import FileSystem
@@ -55,7 +56,7 @@ init flags url navKey =
       { authenticated = flags.authenticated
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
-      , directoryList = Ok { floor = 1, items = [] }
+      , directoryList = Ok Drive.Item.Inventory.default
       , dragndropMode = False
       , fileSystemCid = Nothing
       , fileSystemStatus = fileSystemStatus
@@ -66,7 +67,6 @@ init flags url navKey =
       , route = route
       , pressedKeys = []
       , viewportSize = flags.viewportSize
-      , selectedPath = Nothing
       , showLoadingOverlay = False
       , toasties = Toasty.initialState
       , url = url
@@ -149,6 +149,9 @@ update msg =
         AddFiles a ->
             Drive.addFiles a
 
+        ClearSelection ->
+            Drive.clearSelection
+
         CloseSidebar ->
             Drive.closeSidebar
 
@@ -173,14 +176,23 @@ update msg =
         GoUp a ->
             Drive.goUp a
 
+        IndividualSelect a b ->
+            Drive.individualSelect a b
+
+        RangeSelect a b ->
+            Drive.rangeSelect a b
+
         RemoveItem a ->
             Drive.removeItem a
+
+        RemoveSelectedItems ->
+            Drive.removeSelectedItems
 
         RenameItem a ->
             Drive.renameItem a
 
-        Select a ->
-            Drive.select a
+        Select a b ->
+            Drive.select a b
 
         ShowRenameItemModal a ->
             Drive.showRenameItemModal a
@@ -257,6 +269,9 @@ update msg =
         LinkClicked a ->
             Other.linkClicked a
 
+        LostWindowFocus ->
+            Other.lostWindowFocus
+
         RedirectToLobby ->
             Other.redirectToLobby
 
@@ -286,6 +301,7 @@ subscriptions model =
         [ Ports.fsGotDirectoryList GotFsDirectoryList
         , Ports.fsGotItemUtf8 GotFsItemUtf8
         , Ports.fsGotError GotFsError
+        , Ports.lostWindowFocus (always LostWindowFocus)
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

@@ -2,11 +2,12 @@ module Drive.State exposing (..)
 
 import Browser.Dom as Dom
 import Browser.Navigation as Navigation
-import Common
+import Common exposing (ifThenElse)
 import Common.State as Common
 import Debouncing
 import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
+import Drive.Item.Inventory as Inventory exposing (Inventory)
 import Drive.Modals
 import Drive.Sidebar
 import Drive.State.Sidebar
@@ -56,12 +57,18 @@ addFiles { blobs } model =
             (Notifications.loadingIndication "Uploading files")
 
 
+clearSelection : Manager
+clearSelection model =
+    model.directoryList
+        |> Result.map Inventory.clearSelection
+        |> assignNewDirectoryList { model | sidebar = Nothing }
+        |> Return.singleton
+
+
 closeSidebar : Manager
 closeSidebar model =
-    { model
-        | sidebar = Nothing
-        , selectedPath = Nothing
-    }
+    { model | sidebar = Nothing }
+        |> clearDirectoryListSelection
         |> (case model.sidebar of
                 Just (Drive.Sidebar.Details _) ->
                     if Common.isSingleFileView model then
@@ -207,19 +214,17 @@ digDeeper { directoryName } model =
         |> Routing.adjustUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
-        |> Return.return
-            { model
-                | directoryList = updatedDirectoryList
-            }
+        |> Return.return { model | directoryList = updatedDirectoryList }
 
 
 digDeeperUsingSelection : Manager
 digDeeperUsingSelection model =
-    case ( model.directoryList, model.selectedPath ) of
-        ( Ok { items }, Just path ) ->
-            items
-                |> List.find
-                    (.path >> (==) path)
+    case model.directoryList of
+        Ok { items, selection } ->
+            selection
+                |> List.head
+                |> Maybe.andThen
+                    (\{ index } -> List.getAt index items)
                 |> Maybe.map
                     (\item ->
                         if item.kind == Item.Directory then
@@ -231,7 +236,7 @@ digDeeperUsingSelection model =
                 |> Maybe.withDefault
                     (Return.singleton model)
 
-        _ ->
+        Err _ ->
             Return.singleton model
 
 
@@ -273,7 +278,7 @@ goUp { floor } model =
             |> Routing.adjustUrl model.url
             |> Url.toString
             |> Navigation.pushUrl model.navKey
-            |> Return.return { model | selectedPath = Nothing }
+            |> Return.return (clearDirectoryListSelection model)
             |> Return.command
                 ({ on = True }
                     |> ToggleLoadingOverlay
@@ -293,18 +298,123 @@ goUpOneLevel model =
         |> (\x -> goUp { floor = x } model)
 
 
+individualSelect : Int -> Item -> Manager
+individualSelect idx item model =
+    case model.directoryList of
+        Ok ({ selection } as directoryList) ->
+            let
+                selectedIndexes =
+                    List.map .index selection
+
+                newSelection =
+                    if List.member idx selectedIndexes then
+                        List.filter (.index >> (/=) idx) selection
+
+                    else
+                        selection
+                            |> (::) { index = idx, isFirst = False }
+                            |> List.sortBy .index
+
+                newInventory =
+                    { directoryList | selection = newSelection }
+            in
+            if List.length newSelection > 1 then
+                Return.singleton
+                    { model
+                        | directoryList = Ok newInventory
+                        , sidebar =
+                            newInventory
+                                |> Inventory.selectionItems
+                                |> List.map .path
+                                |> Drive.Sidebar.details
+                                |> Just
+                    }
+
+            else
+                select idx item model
+
+        Err _ ->
+            Return.singleton model
+
+
+rangeSelect : Int -> Item -> Manager
+rangeSelect targetIndex item model =
+    case Result.map (\a -> ( a, a.selection )) model.directoryList of
+        Ok ( { selection } as directoryList, { index } :: _ ) ->
+            -- Adjust existing selection
+            let
+                startIndex =
+                    index
+
+                range =
+                    if startIndex <= targetIndex then
+                        List.range startIndex targetIndex
+
+                    else
+                        List.range targetIndex startIndex
+
+                newInventory =
+                    range
+                        |> List.map (\i -> { index = i, isFirst = i == startIndex })
+                        |> (\s -> { directoryList | selection = s })
+
+                sidebar =
+                    if List.length range > 1 then
+                        newInventory
+                            |> Inventory.selectionItems
+                            |> List.map .path
+                            |> Drive.Sidebar.details
+                            |> Just
+
+                    else
+                        model.sidebar
+            in
+            Return.singleton
+                { model
+                    | directoryList = Ok newInventory
+                    , sidebar = sidebar
+                }
+
+        _ ->
+            -- New selection
+            select targetIndex item model
+
+
 removeItem : Item -> Manager
 removeItem item model =
     item
         |> Item.pathProperties
         |> Ports.fsRemoveItem
-        |> return { model | fileSystemStatus = FileSystem.Operation Deleting }
+        |> return
+            { model
+                | fileSystemStatus = FileSystem.Operation Deleting
+                , sidebar =
+                    case model.sidebar of
+                        Just (Drive.Sidebar.Details { paths }) ->
+                            ifThenElse (List.member item.path paths) Nothing model.sidebar
+
+                        Just (Drive.Sidebar.EditPlaintext { path }) ->
+                            ifThenElse (path == item.path) Nothing model.sidebar
+
+                        a ->
+                            a
+            }
         -- Notification
         |> Toasty.addConditionalToast
             (\m -> m.fileSystemStatus == FileSystem.Operation Deleting)
             Notifications.config
             ToastyMsg
             (Notifications.loadingIndication <| "Removing “" ++ item.name ++ "”")
+
+
+removeSelectedItems : Manager
+removeSelectedItems model =
+    model.directoryList
+        |> Result.map Inventory.selectionItems
+        |> Result.withDefault []
+        |> List.foldl
+            (\item -> Return.andThen <| removeItem item)
+            (Return.singleton model)
 
 
 renameItem : Item -> Manager
@@ -322,22 +432,23 @@ renameItem item model =
                         _ ->
                             Item.nameProperties newName
 
+                newDirectoryListItems =
+                    model.directoryList
+                        |> Result.map .items
+                        |> Result.withDefault []
+                        |> List.map
+                            (\i ->
+                                if i.id == item.id then
+                                    { i | name = newName, nameProperties = newNameProps }
+
+                                else
+                                    i
+                            )
+
                 newDirectoryList =
-                    case model.directoryList of
-                        Ok a ->
-                            a.items
-                                |> List.map
-                                    (\i ->
-                                        if i.id == item.id then
-                                            { i | name = newName, nameProperties = newNameProps }
-
-                                        else
-                                            i
-                                    )
-                                |> (\items -> Ok { a | items = items })
-
-                        Err e ->
-                            Err e
+                    Result.map
+                        (\a -> { a | items = newDirectoryListItems })
+                        model.directoryList
             in
             { currentPathSegments = String.split "/" item.path
             , pathSegments = Routing.treePathSegments model.route ++ [ newName ]
@@ -350,44 +461,69 @@ renameItem item model =
             Common.hideModal model
 
 
-select : Item -> Manager
-select item model =
-    if item.kind == Code || item.kind == Text then
-        Ports.fsReadItemUtf8 (Item.pathProperties item)
-            |> return
-                { model
-                    | selectedPath = Just item.path
-                    , sidebar =
-                        { path = item.path
-                        , editor = Nothing
-                        }
-                            |> Drive.Sidebar.EditPlaintext
-                            |> Just
-                }
+select : Int -> Item -> Manager
+select idx item model =
+    let
+        showEditor =
+            item.kind == Code || item.kind == Text
+    in
+    return
+        { model
+            | directoryList =
+                Result.map
+                    (\d -> { d | selection = [ { index = idx, isFirst = True } ] })
+                    model.directoryList
+            , sidebar =
+                if showEditor then
+                    { path = item.path
+                    , editor = Nothing
+                    }
+                        |> Drive.Sidebar.EditPlaintext
+                        |> Just
 
-    else
-        Return.singleton
-            { model
-                | selectedPath = Just item.path
-                , sidebar =
-                    item.path
+                else
+                    [ item.path ]
                         |> Drive.Sidebar.details
                         |> Just
-            }
+        }
+        (if showEditor then
+            item
+                |> Item.pathProperties
+                |> Ports.fsReadItemUtf8
+
+         else
+            Cmd.none
+        )
 
 
 selectNextItem : Manager
-selectNextItem =
+selectNextItem model =
     makeItemSelector
         (\i -> i + 1)
         (\_ -> 0)
+        (case model.directoryList of
+            Ok { selection } ->
+                List.last selection
+
+            Err _ ->
+                Nothing
+        )
+        model
 
 
 selectPreviousItem : Manager
-selectPreviousItem =
+selectPreviousItem model =
     makeItemSelector
         (\i -> i - 1)
         (\l -> List.length l - 1)
+        (case model.directoryList of
+            Ok { selection } ->
+                List.head selection
+
+            Err _ ->
+                Nothing
+        )
+        model
 
 
 showRenameItemModal : Item -> Manager
@@ -465,21 +601,39 @@ updateSidebar sidebarMsg model =
 -- ㊙️
 
 
-makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Manager
-makeItemSelector indexModifier fallbackIndexFn model =
-    case ( model.directoryList, model.selectedPath ) of
-        ( Ok { items }, Just selectedPath ) ->
+assignNewDirectoryList : Model -> Result String Inventory -> Model
+assignNewDirectoryList model directoryList =
+    { model | directoryList = directoryList }
+
+
+clearDirectoryListSelection : Model -> Model
+clearDirectoryListSelection model =
+    model.directoryList
+        |> Result.map Inventory.clearSelection
+        |> assignNewDirectoryList model
+
+
+makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Maybe { index : Int, isFirst : Bool } -> Manager
+makeItemSelector indexModifier fallbackIndexFn maybeSelected model =
+    case ( model.directoryList, maybeSelected ) of
+        ( Ok { items }, Just { index } ) ->
+            let
+                idx =
+                    indexModifier index
+            in
             items
-                |> List.findIndex (.path >> (==) selectedPath)
-                |> Maybe.map indexModifier
-                |> Maybe.andThen (\idx -> List.getAt idx items)
-                |> Maybe.map (\item -> select item model)
+                |> List.getAt idx
+                |> Maybe.map (\item -> select idx item model)
                 |> Maybe.withDefault (Return.singleton model)
 
         ( Ok { items }, Nothing ) ->
+            let
+                idx =
+                    fallbackIndexFn items
+            in
             items
-                |> List.getAt (fallbackIndexFn items)
-                |> Maybe.map (\item -> select item model)
+                |> List.getAt idx
+                |> Maybe.map (\item -> select idx item model)
                 |> Maybe.withDefault (Return.singleton model)
 
         _ ->

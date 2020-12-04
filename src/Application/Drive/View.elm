@@ -6,6 +6,7 @@ import Common.View.Footer as Footer
 import ContextMenu
 import Drive.ContextMenu as ContextMenu
 import Drive.Item exposing (Item, Kind(..))
+import Drive.Item.Inventory exposing (Inventory, Selection)
 import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import Drive.View.Sidebar as Sidebar
@@ -19,6 +20,7 @@ import Html.Events.Extra.Mouse as M
 import Html.Events.Extra.Touch as T
 import Html.Extra as Html exposing (nothing)
 import Json.Decode as Decode
+import Keyboard
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Radix exposing (..)
@@ -706,11 +708,12 @@ empty model =
         ]
 
 
-contentAvailable : Model -> { floor : Int, items : List Item } -> Html Msg
+contentAvailable : Model -> Inventory -> Html Msg
 contentAvailable model directoryList =
     Html.div
         (List.append
             [ A.id "drive-items"
+            , E.onTap ClearSelection
 
             --
             , T.flex_auto
@@ -726,22 +729,23 @@ contentAvailable model directoryList =
                 [ T.pr_12, T.lg__pr_24 ]
             )
         )
-        [ list model directoryList
-        ]
+        [ list model directoryList ]
 
 
 
 -- MAIN  /  LIST
 
 
-list : Model -> { floor : Int, items : List Item } -> Html Msg
+list : Model -> Inventory -> Html Msg
 list model directoryList =
     let
         isGroundFloor =
             directoryList.floor == 1
     in
     Html.div
-        [ T.text_lg ]
+        [ T.text_lg
+        , T.select_none
+        ]
         [ Html.div
             [ T.antialiased
             , T.font_semibold
@@ -760,7 +764,7 @@ list model directoryList =
         -- Tree
         -----------------------------------------
         , directoryList.items
-            |> List.map (listItem isGroundFloor model.selectedPath)
+            |> List.indexedMap (listItem isGroundFloor directoryList.selection model.pressedKeys)
             |> Html.div []
 
         -----------------------------------------
@@ -820,33 +824,44 @@ list model directoryList =
         ]
 
 
-listItem : Bool -> Maybe String -> Item -> Html Msg
-listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Bool -> Selection -> List Keyboard.Key -> Int -> Item -> Html Msg
+listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, nameProperties, path } as item) =
     let
-        selected =
-            selectedPath == Just path
+        isSelected =
+            List.any (.index >> (==) idx) selection
 
         isPublicRootDir =
             isGroundFloor && name == "public"
+
+        hasSelectedMoreThanOne =
+            List.length selection > 1
+
+        contextMenu =
+            if isSelected && hasSelectedMoreThanOne then
+                ContextMenu.selection ContextMenu.TopCenterWithoutOffset
+
+            else
+                ContextMenu.item
+                    ContextMenu.TopCenterWithoutOffset
+                    { isGroundFloor = isGroundFloor }
+                    item
     in
     Html.div
-        [ case kind of
-            Directory ->
-                { directoryName = name }
-                    |> DigDeeper
-                    |> E.onTap
+        [ if List.member Keyboard.Shift pressedKeys then
+            E.onTap (RangeSelect idx item)
 
-            _ ->
-                item
-                    |> Select
-                    |> E.onTap
+          else if List.member Keyboard.Meta pressedKeys then
+            E.onTap (IndividualSelect idx item)
+
+          else if kind == Directory then
+            E.onTap (DigDeeper { directoryName = name })
+
+          else
+            E.onTap (Select idx item)
 
         -- Show context menu on right click,
         -- or when holding, without moving, the item on touch devices.
-        , item
-            |> ContextMenu.item
-                ContextMenu.TopCenterWithoutOffset
-                { isGroundFloor = isGroundFloor }
+        , contextMenu
             |> ShowContextMenu
             |> M.onContextMenu
 
@@ -855,14 +870,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
             "longtap"
             (Decode.map2
                 (\x y ->
-                    { message =
-                        item
-                            |> ContextMenu.item
-                                ContextMenu.TopCenterWithoutOffset
-                                { isGroundFloor = isGroundFloor }
-                            |> ShowContextMenuWithCoordinates { x = x, y = y }
-
-                    --
+                    { message = ShowContextMenuWithCoordinates { x = x, y = y } contextMenu
                     , stopPropagation = True
                     , preventDefault = False
                     }
@@ -888,7 +896,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
             T.border_b
 
         --
-        , if selected then
+        , if isSelected then
             T.text_purple
 
           else
@@ -899,7 +907,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
         , T.dark__border_darkness_above
 
         --
-        , if selected then
+        , if isSelected then
             T.dark__text_white
 
           else
@@ -965,7 +973,7 @@ listItem isGroundFloor selectedPath ({ kind, loading, name, nameProperties, path
             nothing
 
         --
-        , if selected then
+        , if isSelected then
             FeatherIcons.arrowRight
                 |> FeatherIcons.withSize S.iconSize
                 |> Common.wrapIcon [ T.ml_2, T.opacity_50 ]

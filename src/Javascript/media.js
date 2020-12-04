@@ -15,10 +15,10 @@ import * as ipfs from "./ipfs.js"
 
 let stream
 
-customElements.define('fission-drive-media',
+
+customElements.define("fission-drive-media",
   class extends HTMLElement {
     constructor() {
-      console.log("created a custom element")
       super()
     }
 
@@ -37,7 +37,7 @@ customElements.define('fission-drive-media',
     render() {
       const name = this.getAttribute("name")
       const path = this.getAttribute("path")
-      const useFS = this.getAttribute("useFS") === "true" ? true : false
+      const useFS = this.getAttribute("useFS") === "true"
       renderIn({ container: this, name, path, useFS })
     }
   }
