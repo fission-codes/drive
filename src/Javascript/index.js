@@ -34,7 +34,7 @@ wn.setup.endpoints({
   user: DATA_ROOT_DOMAIN
 })
 
-wn.setup.ipfs(setup.ipfs)
+
 wn.setup.debug({ enabled: true })
 
 
@@ -59,7 +59,33 @@ const PERMISSIONS = {
 // 🚀
 
 
-let app
+const app = Elm.Main.init({
+  flags: {
+    currentTime: Date.now(),
+    usersDomain: DATA_ROOT_DOMAIN,
+    viewportSize: { height: window.innerHeight, width: window.innerWidth }
+  }
+})
+
+
+app.ports.copyToClipboard.subscribe(copyToClipboard)
+app.ports.deauthenticate.subscribe(deauthenticate)
+app.ports.showNotification.subscribe(showNotification)
+
+app.ports.redirectToLobby.subscribe(() => {
+  wn.redirectToLobby(PERMISSIONS, location.origin + location.pathname)
+})
+
+exe("fsAddContent", "add")
+exe("fsCreateDirectory", "createDirecory", { listParent: true })
+exe("fsListDirectory", "listDirectory")
+exe("fsListPublicDirectory", "listPublicDirectory")
+exe("fsMoveItem", "moveItem", { listParent: true })
+exe("fsRemoveItem", "removeItem", { listParent: true })
+exe("fsWriteItemUtf8", "writeItemUtf8", { listParent: true })
+
+app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
+app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
 
 wn.initialise({ permissions: PERMISSIONS })
@@ -72,37 +98,10 @@ wn.initialise({ permissions: PERMISSIONS })
 
   window.fs = state.fs
 
-  // Initialize app
-  app = Elm.Main.init({
-    node: document.getElementById("elm"),
-    flags: {
-      authenticated: authenticated ? { newUser, throughLobby, username } : null,
-      currentTime: Date.now(),
-      usersDomain: DATA_ROOT_DOMAIN,
-      viewportSize: { height: window.innerHeight, width: window.innerWidth }
-    }
-  })
-
-  // Ports
-  app.ports.copyToClipboard.subscribe(copyToClipboard)
-  app.ports.deauthenticate.subscribe(deauthenticate)
-  app.ports.showNotification.subscribe(showNotification)
-
-  app.ports.redirectToLobby.subscribe(() => {
-    wn.redirectToLobby(permissions, location.origin + location.pathname)
-  })
-
-  // Ports (FS)
-  exe("fsAddContent", "add")
-  exe("fsCreateDirectory", "createDirecory", { listParent: true })
-  exe("fsListDirectory", "listDirectory")
-  exe("fsListPublicDirectory", "listPublicDirectory")
-  exe("fsMoveItem", "moveItem", { listParent: true })
-  exe("fsRemoveItem", "removeItem", { listParent: true })
-  exe("fsWriteItemUtf8", "writeItemUtf8", { listParent: true })
-
-  app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
-  app.ports.fsDownloadItem.subscribe(fs.downloadItem)
+  // Initialise app, pt. deux
+  app.ports.initialise.send(
+    authenticated ? { newUser, throughLobby, username } : null
+  )
 
   // Other things
   analytics.setupOnFissionCodes()

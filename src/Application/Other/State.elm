@@ -1,5 +1,6 @@
 module Other.State exposing (..)
 
+import Authentication.Essentials as Authentication
 import Browser
 import Browser.Navigation as Navigation
 import Common
@@ -27,6 +28,69 @@ hideWelcomeMessage model =
         |> Maybe.map (\a -> { a | newUser = False })
         |> (\a -> { model | authenticated = a })
         |> Return.singleton
+
+
+initialise : Maybe Authentication.Essentials -> Manager
+initialise maybeEssentials model =
+    let
+        route =
+            Routing.routeFromUrl maybeEssentials model.url
+
+        maybeTreeRoot =
+            Routing.treeRoot route
+
+        fileSystemStatus =
+            if Maybe.isJust maybeTreeRoot then
+                FileSystem.InitialListing
+
+            else
+                FileSystem.NotNeeded
+
+        needsRedirect =
+            (Routing.isAuthenticatedTree maybeEssentials route == False)
+                && (List.head (Routing.treePathSegments route) == Just "public")
+    in
+    return
+        -----------------------------------------
+        -- Model
+        -----------------------------------------
+        { model
+            | authenticated = maybeEssentials
+            , fileSystemStatus = fileSystemStatus
+            , route = route
+            , showLoadingOverlay = False
+        }
+        -----------------------------------------
+        -- Command
+        -----------------------------------------
+        (if needsRedirect then
+            route
+                |> Routing.treePathSegments
+                |> List.drop 1
+                |> Routing.replaceTreePathSegments route
+                |> Routing.adjustUrl model.url
+                |> Url.toString
+                |> Navigation.pushUrl model.navKey
+
+         else if Routing.isAuthenticatedTree maybeEssentials route then
+            -- List entire file system for the authenticated user
+            Ports.fsListDirectory
+                { pathSegments = Routing.treePathSegments route }
+
+         else if Maybe.isJust maybeTreeRoot then
+            -- List a public filesystem
+            Ports.fsListPublicDirectory
+                { pathSegments =
+                    Routing.treePathSegments route
+                , root =
+                    Common.filesDomainFromTreeRoot
+                        { usersDomain = model.usersDomain }
+                        maybeTreeRoot
+                }
+
+         else
+            Cmd.none
+        )
 
 
 keyboardInteraction : Keyboard.Msg -> Manager

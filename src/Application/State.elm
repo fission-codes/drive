@@ -32,42 +32,24 @@ import Url exposing (Url)
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
-    let
-        route =
-            Routing.routeFromUrl flags.authenticated url
-
-        maybeTreeRoot =
-            Routing.treeRoot route
-
-        fileSystemStatus =
-            if Maybe.isJust maybeTreeRoot then
-                FileSystem.InitialListing
-
-            else
-                FileSystem.NotNeeded
-
-        needsRedirect =
-            (Routing.isAuthenticatedTree flags.authenticated route == False)
-                && (List.head (Routing.treePathSegments route) == Just "public")
-    in
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { authenticated = flags.authenticated
+      { authenticated = Nothing
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
       , directoryList = Ok Drive.Item.Inventory.default
       , dragndropMode = False
       , fileSystemCid = Nothing
-      , fileSystemStatus = fileSystemStatus
+      , fileSystemStatus = FileSystem.Ready
       , helpfulNote = Nothing
       , isFocused = False
       , modal = Nothing
       , navKey = navKey
-      , route = route
+      , route = Routing.Undecided
       , pressedKeys = []
       , viewportSize = flags.viewportSize
-      , showLoadingOverlay = False
+      , showLoadingOverlay = True
       , toasties = Toasty.initialState
       , url = url
       , usersDomain = flags.usersDomain
@@ -85,39 +67,7 @@ init flags url navKey =
       -----------------------------------------
       -- Command
       -----------------------------------------
-    , Cmd.batch
-        [ Task.perform SetCurrentTime Time.now
-
-        -- FileSystem
-        -------------
-        , if needsRedirect then
-            route
-                |> Routing.treePathSegments
-                |> List.drop 1
-                |> Routing.replaceTreePathSegments route
-                |> Routing.adjustUrl url
-                |> Url.toString
-                |> Navigation.pushUrl navKey
-
-          else if Routing.isAuthenticatedTree flags.authenticated route then
-            -- List entire file system for the authenticated user
-            Ports.fsListDirectory
-                { pathSegments = Routing.treePathSegments route }
-
-          else if Maybe.isJust maybeTreeRoot then
-            -- List a public filesystem
-            Ports.fsListPublicDirectory
-                { pathSegments =
-                    Routing.treePathSegments route
-                , root =
-                    Common.filesDomainFromTreeRoot
-                        { usersDomain = flags.usersDomain }
-                        maybeTreeRoot
-                }
-
-          else
-            Cmd.none
-        ]
+    , Task.perform SetCurrentTime Time.now
     )
 
 
@@ -263,6 +213,9 @@ update msg =
         HideWelcomeMessage ->
             Other.hideWelcomeMessage
 
+        Initialise a ->
+            Other.initialise a
+
         KeyboardInteraction a ->
             Other.keyboardInteraction a
 
@@ -301,6 +254,7 @@ subscriptions model =
         [ Ports.fsGotDirectoryList GotFsDirectoryList
         , Ports.fsGotItemUtf8 GotFsItemUtf8
         , Ports.fsGotError GotFsError
+        , Ports.initialise Initialise
         , Ports.lostWindowFocus (always LostWindowFocus)
 
         -- Keep track of which keyboard keys are pressed

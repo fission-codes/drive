@@ -32,8 +32,7 @@ import Url exposing (Url)
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { authenticated : Maybe Authentication.Essentials
-    , currentTime : Int
+    { currentTime : Int
     , usersDomain : String
     , viewportSize : { height : Int, width : Int }
     }
@@ -141,6 +140,7 @@ type Msg
     | Blurred
     | Focused
     | HideWelcomeMessage
+    | Initialise (Maybe Authentication.Essentials)
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | LostWindowFocus

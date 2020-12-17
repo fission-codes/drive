@@ -322,9 +322,6 @@ nameIconForBasename basename =
         "Audio" ->
             Just FeatherIcons.music
 
-        "Music" ->
-            Just FeatherIcons.music
-
         --
         "Docs" ->
             Just FeatherIcons.fileText
