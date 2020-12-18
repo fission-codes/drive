@@ -144,7 +144,7 @@ function copyToClipboard(text) {
 
 
 function deauthenticate() {
-  wn.leave()
+  wn.leave({})
 }
 
 
