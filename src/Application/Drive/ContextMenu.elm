@@ -146,7 +146,9 @@ item hook { isGroundFloor } context =
                 List.concat
                     [ [ driveLink context ]
                     , Common.when isPublicPath
-                        [ copyCid context ]
+                        [ contentLink context
+                        , copyCid context
+                        ]
                     , Common.when (not (isGroundFloor && context.name == "public"))
                         [ Divider
                         , renameItem context
@@ -174,8 +176,20 @@ item hook { isGroundFloor } context =
 
 contentLink context =
     Item
-        { icon = FeatherIcons.file
-        , label = "Link to file"
+        { icon =
+            case context.kind of
+                Directory ->
+                    FeatherIcons.folder
+
+                _ ->
+                    FeatherIcons.file
+        , label =
+            case context.kind of
+                Directory ->
+                    "Link to directory"
+
+                _ ->
+                    "Link to file"
         , active = False
 
         --
