@@ -19,7 +19,7 @@ import Url
 
     Examples:
     - https://drive.fission.codes/#/icidasset/directory/goes/here
-    - https://ipfs.runfission.com/ipfs/CID/path/to/file
+    - https://ipfs.runfission.com/ipfs/CID/p/path/to/file
 
 -}
 base : { presentable : Bool } -> Model -> String
@@ -32,12 +32,11 @@ base { presentable } model =
         |> Routing.treePathSegments
         |> (\segments ->
                 case ( presentable, segments ) of
-                    ( False, first :: rest ) ->
-                        if first == "public" then
-                            "pretty" :: rest
+                    ( False, "public" :: rest ) ->
+                        "p" :: rest
 
-                        else
-                            "pretty" :: first :: rest
+                    ( False, rest ) ->
+                        "p" :: rest
 
                     _ ->
                         segments

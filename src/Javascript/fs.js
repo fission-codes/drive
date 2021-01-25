@@ -52,7 +52,7 @@ export async function createDirecory({ pathSegments }) {
 
 export async function downloadItem({ pathSegments }) {
   const [ isIpfsPath, path ] =
-    pathSegments[1] === "pretty"
+    pathSegments[1] === "p"
       ? [ true, pathSegments.join("/") ]
       : [ false, prefixedPath(pathSegments) ]
 
@@ -284,7 +284,7 @@ export function prefixedPath(pathSegments) {
 
 
 export function prettyPath(rootCid, pathSegments) {
-  return `${rootCid}/pretty/${pathSegments.join("/")}`
+  return `${rootCid}/p/${pathSegments.join("/")}`
 }
 
 

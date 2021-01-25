@@ -136,7 +136,7 @@ item hook { isGroundFloor } context =
                         |> String.split "/"
                         |> List.drop 1
                         |> List.head
-                        |> (==) (Just "pretty")
+                        |> (==) (Just "p")
                    )
     in
     ContextMenu.build
