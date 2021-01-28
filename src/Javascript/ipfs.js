@@ -22,9 +22,7 @@ export function setInstance(i) {
 
 
 export function stream(address, opts) {
-  return ipfs.catReadableStream
-    ? ipfs.catReadableStream(address, opts)
-    : ipfs.files.catReadableStream
-      ? ipfs.files.catReadableStream(address, opts)
-      : itToStream.readable(ipfs.cat(address, opts))
+  console.log(address)
+  const a = ipfs.cat(address, opts)
+  return itToStream.readable(a)
 }

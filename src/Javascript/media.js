@@ -23,22 +23,20 @@ customElements.define("fission-drive-media",
     }
 
     connectedCallback() {
-      this.render()
+      clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => this.render(), 500)
     }
 
-    attributeChangedCallback() {
-      this.render()
-    }
-
-    static get observedAttributes() {
-      return ["name", "path", "useFS"]
+    disconnectedCallback() {
+      clearTimeout(this.timeoutId)
     }
 
     render() {
       const name = this.getAttribute("name")
       const path = this.getAttribute("path")
       const useFS = this.getAttribute("useFS") === "true"
-      renderIn({ container: this, name, path, useFS })
+
+      if (path) renderIn({ container: this, name, path, useFS })
     }
   }
 );
@@ -88,6 +86,10 @@ function renderIn({ container, name, path, useFS }) {
 
     // For some weird reason Chrome has a rendering issue here
     forceRedraw(container)
+    setTimeout(() => forceRedraw(container), 50)
+    setTimeout(() => forceRedraw(container), 100)
+    setTimeout(() => forceRedraw(container), 200)
+    setTimeout(() => forceRedraw(container), 400)
   })
 }
 
