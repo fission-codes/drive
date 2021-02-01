@@ -22,6 +22,10 @@ customElements.define("fission-drive-media",
       super()
     }
 
+    static get observedAttributes() {
+      return [ "name", "path", "useFS" ]
+    }
+
     connectedCallback() {
       clearTimeout(this.timeoutId)
       this.timeoutId = setTimeout(() => this.render(), 500)
@@ -29,6 +33,11 @@ customElements.define("fission-drive-media",
 
     disconnectedCallback() {
       clearTimeout(this.timeoutId)
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (oldValue === null) return
+      if (oldValue !== newValue) this.render()
     }
 
     render() {
