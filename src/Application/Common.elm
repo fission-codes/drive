@@ -1,5 +1,6 @@
 module Common exposing (..)
 
+import Authentication.Essentials
 import Drive.Item exposing (Item)
 import List.Extra as List
 import Radix exposing (Model)

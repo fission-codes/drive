@@ -2,7 +2,7 @@ module Drive.Modals exposing (..)
 
 import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
-import Html
+import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Modal exposing (Modal)

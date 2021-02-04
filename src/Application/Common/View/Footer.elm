@@ -1,5 +1,6 @@
 module Common.View.Footer exposing (view)
 
+import Authentication.Essentials as Authentication
 import Common
 import Common.View as Common
 import Drive.Sidebar
@@ -8,6 +9,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
+import Maybe.Extra as Maybe
 import Radix exposing (..)
 import Routing
 import Styling as S
@@ -164,7 +166,7 @@ addCreateAction model =
             case model.sidebar of
                 Just (Drive.Sidebar.AddOrCreate _) ->
                     True
-
+                
                 _ ->
                     False
     in

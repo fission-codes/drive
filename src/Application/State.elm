@@ -1,16 +1,19 @@
 module State exposing (init, subscriptions, update)
 
+import Authentication.Essentials as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
-import Common
+import Common exposing (ifThenElse)
 import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
 import Drive.Item.Inventory
+import Drive.Sidebar
 import Drive.State as Drive
 import FileSystem
 import FileSystem.State as FileSystem
 import Keyboard
+import Maybe.Extra as Maybe
 import Notifications
 import Other.State as Other
 import Ports
