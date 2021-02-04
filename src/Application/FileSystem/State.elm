@@ -1,8 +1,6 @@
 module FileSystem.State exposing (..)
 
 import Browser.Dom as Dom
-import Common
-import Common.State as Common
 import Debouncing
 import Drive.Item
 import Drive.Item.Inventory as Inventory
@@ -11,9 +9,8 @@ import FileSystem
 import Json.Decode as Json
 import List.Extra as List
 import Maybe.Extra as Maybe
-import Ports
 import Radix exposing (..)
-import Return exposing (return)
+import Return
 import Return.Extra as Return
 import Routing
 import Task

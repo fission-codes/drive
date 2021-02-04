@@ -11,8 +11,6 @@ import Drive.Item.Inventory as Inventory exposing (Inventory)
 import Drive.Modals
 import Drive.Sidebar
 import Drive.State.Sidebar
-import File
-import File.Download
 import FileSystem exposing (Operation(..))
 import FileSystem.Actions
 import List.Ext as List

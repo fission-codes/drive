@@ -2,7 +2,6 @@ port module Ports exposing (..)
 
 import Authentication.Essentials as Authentication
 import Json.Decode as Json
-import Radix
 import Webnative
 
 
