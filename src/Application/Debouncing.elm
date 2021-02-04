@@ -1,8 +1,8 @@
 module Debouncing exposing (..)
 
 import Debouncer.Messages as Debouncer exposing (Debouncer, Milliseconds, fromSeconds)
-import Return
 import Radix exposing (..)
+import Return
 
 
 

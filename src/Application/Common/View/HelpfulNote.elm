@@ -3,9 +3,9 @@ module Common.View.HelpfulNote exposing (view)
 import Html exposing (Html)
 import Html.Events as E
 import Html.Extra as Html
+import Radix exposing (Msg(..))
 import Styling as S
 import Tailwind as T
-import Radix exposing (Msg(..))
 
 
 

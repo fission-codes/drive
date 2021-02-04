@@ -4,13 +4,12 @@ import Common exposing (ifThenElse)
 import Common.View as Common
 import ContextMenu
 import Drive.ContextMenu
-import Drive.Item exposing (Item, Kind(..))
+import Drive.Item exposing (Kind(..))
 import Drive.Item.Inventory
 import Drive.Sidebar as Sidebar
 import Drive.View.Common as Drive
 import Drive.View.Details as Details
 import FeatherIcons
-import FileSystem
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
