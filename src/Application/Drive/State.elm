@@ -14,6 +14,7 @@ import Drive.State.Sidebar
 import File
 import File.Download
 import FileSystem exposing (Operation(..))
+import FileSystem.Actions
 import List.Ext as List
 import List.Extra as List
 import Notifications
@@ -27,6 +28,8 @@ import Set
 import Task
 import Toasty
 import Url
+import Webnative
+import Wnfs
 
 
 
@@ -262,6 +265,16 @@ gotAddCreateInput input model =
 
         _ ->
             Return.singleton model
+
+
+gotWebnativeResponse : Webnative.Response -> Manager
+gotWebnativeResponse response =
+    case FileSystem.Actions.decodeResponse response of
+        Webnative.Wnfs (SidebarTag tag) artifact ->
+            updateSidebarTag tag artifact
+
+        _ ->
+            Return.singleton
 
 
 goUp : { floor : Int } -> Manager
@@ -598,6 +611,16 @@ updateSidebar sidebarMsg model =
     case model.sidebar of
         Just sidebar ->
             Drive.State.Sidebar.update sidebarMsg sidebar model
+
+        Nothing ->
+            Return.singleton model
+
+
+updateSidebarTag : Drive.Sidebar.Tag -> Wnfs.Artifact -> Manager
+updateSidebarTag sidebarTag artifact model =
+    case model.sidebar of
+        Just sidebar ->
+            Drive.State.Sidebar.updateTag sidebarTag artifact sidebar model
 
         Nothing ->
             Return.singleton model

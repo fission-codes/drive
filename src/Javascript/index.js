@@ -11,21 +11,16 @@
 
 import "./web_modules/tocca.js"
 import * as wn from "./web_modules/webnative.js"
+import"./web_modules/webnative-elm.js"
 
 import "./custom.js"
 
 import * as analytics from "./analytics.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
-import * as media from "./media.js"
-import { throttle } from "./common.js"
-import { setup } from "./sdk.js"
 
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
-
-
-self.wn = wn
 
 
 wn.setup.endpoints({
@@ -102,6 +97,9 @@ wn.initialise({ permissions: PERMISSIONS })
   app.ports.initialise.send(
     authenticated ? { newUser, throughLobby, username } : null
   )
+
+  console.log(webnativeElm)
+  webnativeElm.setup(app, () => state.fs);
 
   // Other things
   analytics.setupOnFissionCodes()

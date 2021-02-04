@@ -23,6 +23,7 @@ import Routing exposing (Route)
 import Time
 import Toasty
 import Url exposing (Url)
+import Webnative
 
 
 
@@ -122,6 +123,10 @@ type Msg
     | GotFsError String
     | GotFsItemUtf8 { pathSegments : List String, text : String }
       -----------------------------------------
+      -- Webnative-Elm
+      -----------------------------------------
+    | GotWebnativeResponse Webnative.Response
+      -----------------------------------------
       -- 🌏 Common
       -----------------------------------------
     | GoToRoute Route
@@ -160,3 +165,10 @@ type alias Organizer model =
 
 type alias Manager =
     Organizer Model
+
+
+{-| Type for communicating responses from webnative back
+to the Elm side.
+-}
+type Tag
+    = SidebarTag Drive.Sidebar.Tag

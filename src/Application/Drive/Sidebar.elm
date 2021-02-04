@@ -9,6 +9,10 @@ type Msg
     | PlaintextEditorSave
 
 
+type Tag
+    = SavedFile { path : String }
+
+
 type Model
     = AddOrCreate AddOrCreateModel
     | Details

@@ -3,6 +3,7 @@ port module Ports exposing (..)
 import Authentication.Essentials as Authentication
 import Json.Decode as Json
 import Radix
+import Webnative
 
 
 
@@ -79,3 +80,13 @@ port fsGotError : (String -> msg) -> Sub msg
 
 
 port fsGotItemUtf8 : ({ pathSegments : List String, text : String } -> msg) -> Sub msg
+
+
+
+-- Webnative-Elm
+
+
+port webnativeRequest : Webnative.Request -> Cmd msg
+
+
+port webnativeResponse : (Webnative.Response -> msg) -> Sub msg

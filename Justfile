@@ -81,6 +81,7 @@ workbox_config 	:= "workbox.config.cjs"
 	# SDK
 	cp node_modules/webnative/index.es5.js web_modules/webnative.js
 	cp node_modules/webnative/index.umd.js web_modules/webnative.umd.js
+	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
 @production-build:

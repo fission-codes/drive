@@ -169,6 +169,12 @@ update msg =
             FileSystem.gotItemUtf8 a
 
         -----------------------------------------
+        -- Webnative-Elm
+        -----------------------------------------
+        GotWebnativeResponse a ->
+            Drive.gotWebnativeResponse a
+
+        -----------------------------------------
         -- 🌏 Common
         -----------------------------------------
         GoToRoute a ->
@@ -265,4 +271,7 @@ subscriptions model =
 
         -- Check every 30 seconds what the current time is
         , Time.every (30 * 1000) SetCurrentTime
+
+        -- Setup webnative
+        , Ports.webnativeResponse GotWebnativeResponse
         ]
