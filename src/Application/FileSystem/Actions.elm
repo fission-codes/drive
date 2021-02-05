@@ -1,7 +1,6 @@
 module FileSystem.Actions exposing (..)
 
 import Codec exposing (Codec)
-import Drive.Item as Item
 import Drive.Sidebar
 import Json.Decode
 import Ports
@@ -14,8 +13,8 @@ import Wnfs
 -- App Info
 
 
-base : Wnfs.Base
-base =
+appData : Wnfs.Base
+appData =
     Wnfs.AppData appPermissions
 
 
@@ -48,8 +47,12 @@ decodeResponse =
 
 writeUtf8 : { path : List String, tag : Tag, content : String } -> Cmd Msg
 writeUtf8 { path, tag, content } =
-    Wnfs.writeUtf8 base
-        { path = path
+    let
+        resolved =
+            splitPath path
+    in
+    Wnfs.writeUtf8 resolved.base
+        { path = resolved.path
         , tag = tagToString tag
         }
         content
@@ -58,8 +61,12 @@ writeUtf8 { path, tag, content } =
 
 readUtf8 : { path : List String, tag : Tag } -> Cmd Msg
 readUtf8 { path, tag } =
-    Wnfs.readUtf8 base
-        { path = path
+    let
+        resolved =
+            splitPath path
+    in
+    Wnfs.readUtf8 resolved.base
+        { path = resolved.path
         , tag = tagToString tag
         }
         |> Ports.webnativeRequest
@@ -118,3 +125,20 @@ tagFromString : String -> Result String Tag
 tagFromString string =
     Codec.decodeString codecTag string
         |> Result.mapError Json.Decode.errorToString
+
+
+
+-- Utilities
+
+
+splitPath : List String -> { base : Wnfs.Base, path : List String }
+splitPath path =
+    case path of
+        "public" :: rest ->
+            { base = Wnfs.Public, path = rest }
+
+        "private" :: rest ->
+            { base = Wnfs.Private, path = rest }
+
+        _ ->
+            { base = appData, path = path }
