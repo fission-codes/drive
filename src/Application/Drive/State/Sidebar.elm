@@ -93,3 +93,28 @@ updateTag tag artifact sidebarModel model =
 
         ( _, Sidebar.SavedFile _, _ ) ->
             Return.singleton model
+
+        ( Sidebar.EditPlaintext editPlaintext, Sidebar.LoadedFile { path }, Wnfs.Utf8Content text ) ->
+            if path /= editPlaintext.path then
+                Return.singleton model
+
+            else
+                { text = text
+                , originalText = text
+                , isSaving = False
+                }
+                    |> Just
+                    |> (\newEditor -> { editPlaintext | editor = newEditor })
+                    |> Sidebar.EditPlaintext
+                    |> Just
+                    |> (\newSidebar -> { model | sidebar = newSidebar })
+                    |> Return.singleton
+
+        ( Sidebar.EditPlaintext _, Sidebar.LoadedFile _, _ ) ->
+            Return.singleton model
+
+        ( Sidebar.Details _, _, _ ) ->
+            Return.singleton model
+
+        ( Sidebar.AddOrCreate _, _, _ ) ->
+            Return.singleton model

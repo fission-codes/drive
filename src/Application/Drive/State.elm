@@ -288,10 +288,10 @@ gotWebnativeResponse response =
                     Return.singleton
 
         -- TODO Error handling
-        Webnative.WnfsError _ ->
+        Webnative.WnfsError err ->
             Return.singleton
 
-        Webnative.WebnativeError _ ->
+        Webnative.WebnativeError err ->
             Return.singleton
 
 
@@ -524,9 +524,14 @@ select idx item model =
                         |> Just
         }
         (if showEditor then
-            item
-                |> Item.pathProperties
-                |> Ports.fsReadItemUtf8
+            let
+                path =
+                    .pathSegments (Item.pathProperties item)
+            in
+            FileSystem.Actions.readUtf8
+                { path = path
+                , tag = SidebarTag (Drive.Sidebar.LoadedFile { path = String.join "/" path })
+                }
 
          else
             Cmd.none

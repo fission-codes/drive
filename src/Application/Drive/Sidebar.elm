@@ -11,6 +11,7 @@ type Msg
 
 type Tag
     = SavedFile { path : String }
+    | LoadedFile { path : String }
 
 
 type Model

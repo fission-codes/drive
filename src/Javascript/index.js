@@ -78,7 +78,6 @@ exe("fsListPublicDirectory", "listPublicDirectory")
 exe("fsMoveItem", "moveItem", { listParent: true })
 exe("fsRemoveItem", "removeItem", { listParent: true })
 
-app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
 app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
 
@@ -188,16 +187,6 @@ function exe(port, method, options = {}) {
       reportFileSystemError(e)
 
     }
-  })
-}
-
-
-async function readItemUtf8(path) {
-  const contentUInt8Array = await fs.readItem(path)
-  const decoder = new TextDecoder()
-  app.ports.fsGotItemUtf8.send({
-    pathSegments: path.pathSegments,
-    text: decoder.decode(contentUInt8Array),
   })
 }
 

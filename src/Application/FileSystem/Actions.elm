@@ -56,6 +56,15 @@ writeUtf8 { path, tag, content } =
         |> Ports.webnativeRequest
 
 
+readUtf8 : { path : List String, tag : Tag } -> Cmd Msg
+readUtf8 { path, tag } =
+    Wnfs.readUtf8 base
+        { path = path
+        , tag = tagToString tag
+        }
+        |> Ports.webnativeRequest
+
+
 
 -- Codecs
 
@@ -74,13 +83,22 @@ codecTag =
         |> Codec.variant1 "SidebarTag"
             SidebarTag
             (Codec.custom
-                (\cSavedFile value ->
+                (\cSavedFile cLoadedFile value ->
                     case value of
                         Drive.Sidebar.SavedFile a ->
                             cSavedFile a
+
+                        Drive.Sidebar.LoadedFile a ->
+                            cLoadedFile a
                 )
                 |> Codec.variant1 "SavedFile"
                     Drive.Sidebar.SavedFile
+                    (Codec.object (\path -> { path = path })
+                        |> Codec.field "path" .path Codec.string
+                        |> Codec.buildObject
+                    )
+                |> Codec.variant1 "LoadedFile"
+                    Drive.Sidebar.LoadedFile
                     (Codec.object (\path -> { path = path })
                         |> Codec.field "path" .path Codec.string
                         |> Codec.buildObject
