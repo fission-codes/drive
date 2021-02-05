@@ -55,9 +55,6 @@ port fsMoveItem : { currentPathSegments : List String, pathSegments : List Strin
 port fsReadItemUtf8 : { pathSegments : List String } -> Cmd msg
 
 
-port fsWriteItemUtf8 : { pathSegments : List String, text : String } -> Cmd msg
-
-
 
 -- 📰
 

@@ -77,7 +77,6 @@ exe("fsListDirectory", "listDirectory")
 exe("fsListPublicDirectory", "listPublicDirectory")
 exe("fsMoveItem", "moveItem", { listParent: true })
 exe("fsRemoveItem", "removeItem", { listParent: true })
-exe("fsWriteItemUtf8", "writeItemUtf8", { listParent: true })
 
 app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
 app.ports.fsDownloadItem.subscribe(fs.downloadItem)
@@ -98,7 +97,6 @@ wn.initialise({ permissions: PERMISSIONS })
     authenticated ? { newUser, throughLobby, username } : null
   )
 
-  console.log(webnativeElm)
   webnativeElm.setup(app, () => state.fs);
 
   // Other things

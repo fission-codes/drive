@@ -167,7 +167,13 @@ createFileOrFolder option model =
                         model.route
                             |> Routing.treePathSegments
                             |> List.add [ fileName ]
-                            |> (\p -> Ports.fsWriteItemUtf8 { pathSegments = p, text = "" })
+                            |> (\p ->
+                                    FileSystem.Actions.writeUtf8
+                                        { path = p
+                                        , tag = CreatedEmptyFile
+                                        , content = ""
+                                        }
+                               )
                             |> return (sidebarAddOrCreateClearInput model)
                     )
                 |> Maybe.withDefault (Return.singleton model)
@@ -268,10 +274,24 @@ gotAddCreateInput input model =
 gotWebnativeResponse : Webnative.Response -> Manager
 gotWebnativeResponse response =
     case FileSystem.Actions.decodeResponse response of
-        Webnative.Wnfs (SidebarTag tag) artifact ->
-            updateSidebarTag tag artifact
+        -- We don't initialize webnative
+        Webnative.Webnative _ ->
+            Return.singleton
 
-        _ ->
+        Webnative.Wnfs tag artifact ->
+            case tag of
+                SidebarTag sidebarTag ->
+                    updateSidebarTag sidebarTag artifact
+
+                CreatedEmptyFile ->
+                    -- TODO add loading indicator to button
+                    Return.singleton
+
+        -- TODO Error handling
+        Webnative.WnfsError _ ->
+            Return.singleton
+
+        Webnative.WebnativeError _ ->
             Return.singleton
 
 

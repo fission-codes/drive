@@ -46,10 +46,10 @@ decodeResponse =
     Webnative.decodeResponse tagFromString
 
 
-writeUtf8 : { path : String, tag : Tag, content : String } -> Cmd Msg
+writeUtf8 : { path : List String, tag : Tag, content : String } -> Cmd Msg
 writeUtf8 { path, tag, content } =
     Wnfs.writeUtf8 base
-        { path = Item.pathSegments path
+        { path = path
         , tag = tagToString tag
         }
         content
@@ -63,10 +63,13 @@ writeUtf8 { path, tag, content } =
 codecTag : Codec Tag
 codecTag =
     Codec.custom
-        (\cSidebarTag value ->
+        (\cSidebarTag cCreatedEmptyFile value ->
             case value of
                 SidebarTag a ->
                     cSidebarTag a
+
+                CreatedEmptyFile ->
+                    cCreatedEmptyFile
         )
         |> Codec.variant1 "SidebarTag"
             SidebarTag
@@ -84,6 +87,7 @@ codecTag =
                     )
                 |> Codec.buildCustom
             )
+        |> Codec.variant0 "CreatedEmptyFile" CreatedEmptyFile
         |> Codec.buildCustom
 
 

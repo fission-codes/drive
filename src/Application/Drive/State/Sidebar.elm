@@ -1,5 +1,6 @@
 module Drive.State.Sidebar exposing (..)
 
+import Drive.Item as Item
 import Drive.Sidebar as Sidebar
 import FileSystem.Actions
 import Radix exposing (..)
@@ -32,7 +33,7 @@ update msg sidebar model =
                 Just editorModel ->
                     if editorModel.text /= editorModel.originalText then
                         FileSystem.Actions.writeUtf8
-                            { path = editPlaintext.path
+                            { path = Item.pathSegments editPlaintext.path
                             , tag = SidebarTag (Sidebar.SavedFile { path = editPlaintext.path })
                             , content = editorModel.text
                             }
