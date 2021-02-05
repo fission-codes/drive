@@ -121,7 +121,6 @@ type Msg
       -----------------------------------------
     | GotFsDirectoryList Json.Value
     | GotFsError String
-    | GotFsItemUtf8 { pathSegments : List String, text : String }
       -----------------------------------------
       -- Webnative-Elm
       -----------------------------------------

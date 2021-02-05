@@ -95,31 +95,6 @@ gotDirectoryList_ pathSegments floor json model =
             )
 
 
-gotItemUtf8 : { pathSegments : List String, text : String } -> Manager
-gotItemUtf8 { pathSegments, text } model =
-    (case model.sidebar of
-        Just sidebar ->
-            case sidebar of
-                Sidebar.EditPlaintext editPlaintext ->
-                    { text = text
-                    , originalText = text
-                    , isSaving = False
-                    }
-                        |> Just
-                        |> (\newEditor -> { editPlaintext | editor = newEditor })
-                        |> Sidebar.EditPlaintext
-                        |> Just
-                        |> (\newSidebar -> { model | sidebar = newSidebar })
-
-                _ ->
-                    model
-
-        _ ->
-            model
-    )
-        |> Return.singleton
-
-
 gotError : String -> Manager
 gotError error model =
     Return.singleton

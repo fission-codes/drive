@@ -72,9 +72,6 @@ port fsGotDirectoryList : (Json.Value -> msg) -> Sub msg
 port fsGotError : (String -> msg) -> Sub msg
 
 
-port fsGotItemUtf8 : ({ pathSegments : List String, text : String } -> msg) -> Sub msg
-
-
 
 -- Webnative-Elm
 

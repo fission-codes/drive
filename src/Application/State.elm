@@ -162,9 +162,6 @@ update msg =
         GotFsError a ->
             FileSystem.gotError a
 
-        GotFsItemUtf8 a ->
-            FileSystem.gotItemUtf8 a
-
         -----------------------------------------
         -- Webnative-Elm
         -----------------------------------------
@@ -255,7 +252,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Ports.fsGotDirectoryList GotFsDirectoryList
-        , Ports.fsGotItemUtf8 GotFsItemUtf8
         , Ports.fsGotError GotFsError
         , Ports.initialise Initialise
         , Ports.lostWindowFocus (always LostWindowFocus)
