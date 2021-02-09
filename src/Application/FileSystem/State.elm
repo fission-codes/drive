@@ -4,7 +4,6 @@ import Browser.Dom as Dom
 import Debouncing
 import Drive.Item
 import Drive.Item.Inventory as Inventory
-import Drive.Sidebar as Sidebar
 import FileSystem
 import Json.Decode as Json
 import List.Extra as List
