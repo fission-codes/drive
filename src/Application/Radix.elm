@@ -171,4 +171,4 @@ to the Elm side.
 -}
 type Tag
     = SidebarTag Drive.Sidebar.Tag
-    | CreatedEmptyFile
+    | CreatedEmptyFile { path : List String }

@@ -84,8 +84,8 @@ codecTag =
                 SidebarTag a ->
                     cSidebarTag a
 
-                CreatedEmptyFile ->
-                    cCreatedEmptyFile
+                CreatedEmptyFile a ->
+                    cCreatedEmptyFile a
         )
         |> Codec.variant1 "SidebarTag"
             SidebarTag
@@ -98,22 +98,19 @@ codecTag =
                         Drive.Sidebar.LoadedFile a ->
                             cLoadedFile a
                 )
-                |> Codec.variant1 "SavedFile"
-                    Drive.Sidebar.SavedFile
-                    (Codec.object (\path -> { path = path })
-                        |> Codec.field "path" .path Codec.string
-                        |> Codec.buildObject
-                    )
-                |> Codec.variant1 "LoadedFile"
-                    Drive.Sidebar.LoadedFile
-                    (Codec.object (\path -> { path = path })
-                        |> Codec.field "path" .path Codec.string
-                        |> Codec.buildObject
-                    )
+                |> Codec.variant1 "SavedFile" Drive.Sidebar.SavedFile (codecPathRecord Codec.string)
+                |> Codec.variant1 "LoadedFile" Drive.Sidebar.LoadedFile (codecPathRecord Codec.string)
                 |> Codec.buildCustom
             )
-        |> Codec.variant0 "CreatedEmptyFile" CreatedEmptyFile
+        |> Codec.variant1 "CreatedEmptyFile" CreatedEmptyFile (codecPathRecord (Codec.list Codec.string))
         |> Codec.buildCustom
+
+
+codecPathRecord : Codec a -> Codec { path : a }
+codecPathRecord codecPath =
+    Codec.object (\path -> { path = path })
+        |> Codec.field "path" .path codecPath
+        |> Codec.buildObject
 
 
 tagToString : Tag -> String

@@ -170,7 +170,7 @@ createFileOrFolder option model =
                             |> (\p ->
                                     FileSystem.Actions.writeUtf8
                                         { path = p
-                                        , tag = CreatedEmptyFile
+                                        , tag = CreatedEmptyFile { path = p }
                                         , content = ""
                                         }
                                )
@@ -283,9 +283,11 @@ gotWebnativeResponse response =
                 SidebarTag sidebarTag ->
                     updateSidebarTag sidebarTag artifact
 
-                CreatedEmptyFile ->
-                    -- TODO add loading indicator to button
-                    Return.singleton
+                CreatedEmptyFile { path } ->
+                    -- TODO add loading indicator to button and stop the loading animation here
+                    \model ->
+                        Return.return model
+                            (Ports.fsListDirectory { pathSegments = List.take (List.length path - 1) path })
 
         -- TODO Error handling
         Webnative.WnfsError err ->
