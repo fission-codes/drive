@@ -272,39 +272,36 @@ gotAddCreateInput input model =
 
 
 gotWebnativeResponse : Webnative.Response -> Manager
-gotWebnativeResponse response =
+gotWebnativeResponse response model =
     case FileSystem.Actions.decodeResponse response of
         -- We don't initialize webnative
         Webnative.Webnative _ ->
-            Return.singleton
+            Return.singleton model
 
         Webnative.Wnfs tag artifact ->
             case tag of
                 SidebarTag sidebarTag ->
-                    updateSidebarTag sidebarTag artifact
+                    updateSidebarTag sidebarTag artifact model
 
                 CreatedEmptyFile { path } ->
                     -- TODO add loading indicator to button and stop the loading animation here
-                    \model ->
-                        FileSystem.Actions.publish { tag = UpdatedFileSystem }
-                            |> Return.return model
+                    FileSystem.Actions.publish { tag = UpdatedFileSystem }
+                        |> Return.return model
 
                 CreatedDirectory ->
-                    \model ->
-                        FileSystem.Actions.publish { tag = UpdatedFileSystem }
-                            |> Return.return model
+                    FileSystem.Actions.publish { tag = UpdatedFileSystem }
+                        |> Return.return model
 
                 UpdatedFileSystem ->
-                    \model ->
-                        Ports.fsListDirectory { pathSegments = Routing.treePathSegments model.route }
-                            |> Return.return model
+                    Ports.fsListDirectory { pathSegments = Routing.treePathSegments model.route }
+                        |> Return.return model
 
         -- TODO Error handling
         Webnative.WnfsError err ->
-            Return.singleton
+            Return.singleton model
 
         Webnative.WebnativeError err ->
-            Return.singleton
+            Return.singleton model
 
 
 goUp : { floor : Int } -> Manager
