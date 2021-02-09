@@ -42,14 +42,6 @@ export async function add({ blobs, pathSegments }) {
 }
 
 
-export async function createDirecory({ pathSegments }) {
-  const path = prefixedPath(pathSegments)
-  await fs.mkdir(path)
-  await fs.publish()
-  return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
-}
-
-
 export async function downloadItem({ pathSegments }) {
   const [ isIpfsPath, path ] =
     pathSegments[1] === "p"

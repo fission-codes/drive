@@ -32,9 +32,6 @@ port fsAddContent :
     -> Cmd msg
 
 
-port fsCreateDirectory : { pathSegments : List String } -> Cmd msg
-
-
 port fsDownloadItem : { pathSegments : List String } -> Cmd msg
 
 

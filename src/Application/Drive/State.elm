@@ -118,7 +118,7 @@ createFileOrFolder option model =
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
-                |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
+                |> (\p -> FileSystem.Actions.createDirectory { path = p, tag = CreatedDirectory })
                 |> return
                     ({ model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
                         |> sidebarAddOrCreateClearInput
@@ -285,6 +285,11 @@ gotWebnativeResponse response =
 
                 CreatedEmptyFile { path } ->
                     -- TODO add loading indicator to button and stop the loading animation here
+                    \model ->
+                        FileSystem.Actions.publish { tag = UpdatedFileSystem }
+                            |> Return.return model
+
+                CreatedDirectory ->
                     \model ->
                         FileSystem.Actions.publish { tag = UpdatedFileSystem }
                             |> Return.return model

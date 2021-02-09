@@ -72,7 +72,6 @@ app.ports.redirectToLobby.subscribe(() => {
 })
 
 exe("fsAddContent", "add")
-exe("fsCreateDirectory", "createDirecory", { listParent: true })
 exe("fsListDirectory", "listDirectory")
 exe("fsListPublicDirectory", "listPublicDirectory")
 exe("fsMoveItem", "moveItem", { listParent: true })

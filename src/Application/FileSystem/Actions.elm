@@ -40,9 +40,17 @@ permissions =
 -- Actions
 
 
-decodeResponse : Webnative.Response -> Webnative.DecodedResponse Tag
-decodeResponse =
-    Webnative.decodeResponse tagFromString
+createDirectory : { path : List String, tag : Tag } -> Cmd Msg
+createDirectory { path, tag } =
+    let
+        resolved =
+            splitPath path
+    in
+    Wnfs.mkdir resolved.base
+        { path = resolved.path
+        , tag = tagToString tag
+        }
+        |> Ports.webnativeRequest
 
 
 publish : { tag : Tag } -> Cmd Msg
@@ -86,13 +94,16 @@ readUtf8 { path, tag } =
 codecTag : Codec Tag
 codecTag =
     Codec.custom
-        (\cSidebarTag cCreatedEmptyFile cUpdatedFileSystem value ->
+        (\cSidebarTag cCreatedEmptyFile cCreatedDirectory cUpdatedFileSystem value ->
             case value of
                 SidebarTag a ->
                     cSidebarTag a
 
                 CreatedEmptyFile a ->
                     cCreatedEmptyFile a
+
+                CreatedDirectory ->
+                    cCreatedDirectory
 
                 UpdatedFileSystem ->
                     cUpdatedFileSystem
@@ -113,6 +124,7 @@ codecTag =
                 |> Codec.buildCustom
             )
         |> Codec.variant1 "CreatedEmptyFile" CreatedEmptyFile (codecPathRecord (Codec.list Codec.string))
+        |> Codec.variant0 "CreatedDirectory" CreatedDirectory
         |> Codec.variant0 "UpdatedFileSystem" UpdatedFileSystem
         |> Codec.buildCustom
 
@@ -122,6 +134,11 @@ codecPathRecord codecPath =
     Codec.object (\path -> { path = path })
         |> Codec.field "path" .path codecPath
         |> Codec.buildObject
+
+
+decodeResponse : Webnative.Response -> Webnative.DecodedResponse Tag
+decodeResponse =
+    Webnative.decodeResponse tagFromString
 
 
 tagToString : Tag -> String
