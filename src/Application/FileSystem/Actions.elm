@@ -86,13 +86,16 @@ readUtf8 { path, tag } =
 codecTag : Codec Tag
 codecTag =
     Codec.custom
-        (\cSidebarTag cCreatedEmptyFile value ->
+        (\cSidebarTag cCreatedEmptyFile cUpdatedFileSystem value ->
             case value of
                 SidebarTag a ->
                     cSidebarTag a
 
                 CreatedEmptyFile a ->
                     cCreatedEmptyFile a
+
+                UpdatedFileSystem ->
+                    cUpdatedFileSystem
         )
         |> Codec.variant1 "SidebarTag"
             SidebarTag
@@ -110,6 +113,7 @@ codecTag =
                 |> Codec.buildCustom
             )
         |> Codec.variant1 "CreatedEmptyFile" CreatedEmptyFile (codecPathRecord (Codec.list Codec.string))
+        |> Codec.variant0 "UpdatedFileSystem" UpdatedFileSystem
         |> Codec.buildCustom
 
 

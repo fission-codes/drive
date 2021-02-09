@@ -172,4 +172,4 @@ to the Elm side.
 type Tag
     = SidebarTag Drive.Sidebar.Tag
     | CreatedEmptyFile { path : List String }
-    | UpdatedFilesystem
+    | UpdatedFileSystem

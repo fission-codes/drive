@@ -91,10 +91,10 @@ updateTag tag artifact sidebarModel model =
                     Nothing ->
                         Return.singleton model
             )
-                |> Return.command (FileSystem.Actions.publish { tag = UpdatedFilesystem })
+                |> Return.command (FileSystem.Actions.publish { tag = UpdatedFileSystem })
 
         ( _, Sidebar.SavedFile _, _ ) ->
-            FileSystem.Actions.publish { tag = UpdatedFilesystem }
+            FileSystem.Actions.publish { tag = UpdatedFileSystem }
                 |> Return.return model
 
         ( Sidebar.EditPlaintext editPlaintext, Sidebar.LoadedFile { path }, Wnfs.Utf8Content text ) ->
