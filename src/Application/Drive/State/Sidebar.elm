@@ -33,7 +33,7 @@ update msg sidebar model =
                 Just editorModel ->
                     if editorModel.text /= editorModel.originalText then
                         FileSystem.Actions.writeUtf8
-                            { path = editPlaintext.path
+                            { path = Item.pathSegments editPlaintext.path
                             , tag = SidebarTag (Sidebar.SavedFile { path = editPlaintext.path })
                             , content = editorModel.text
                             }

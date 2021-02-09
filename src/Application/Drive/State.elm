@@ -356,7 +356,7 @@ individualSelect idx item model =
                         , sidebar =
                             newInventory
                                 |> Inventory.selectionItems
-                                |> List.map (Item.pathProperties >> .pathSegments)
+                                |> List.map .path
                                 |> Drive.Sidebar.details
                                 |> Just
                     }
@@ -393,7 +393,7 @@ rangeSelect targetIndex item model =
                     if List.length range > 1 then
                         newInventory
                             |> Inventory.selectionItems
-                            |> List.map (Item.pathProperties >> .pathSegments)
+                            |> List.map .path
                             |> Drive.Sidebar.details
                             |> Just
 
@@ -420,16 +420,12 @@ removeItem item model =
             { model
                 | fileSystemStatus = FileSystem.Operation Deleting
                 , sidebar =
-                    let
-                        itemPath =
-                            (Item.pathProperties item).pathSegments
-                    in
                     case model.sidebar of
                         Just (Drive.Sidebar.Details { paths }) ->
-                            ifThenElse (List.member itemPath paths) Nothing model.sidebar
+                            ifThenElse (List.member item.path paths) Nothing model.sidebar
 
                         Just (Drive.Sidebar.EditPlaintext { path }) ->
-                            ifThenElse (path == itemPath) Nothing model.sidebar
+                            ifThenElse (path == item.path) Nothing model.sidebar
 
                         a ->
                             a
@@ -516,14 +512,14 @@ select idx item model =
                     model.directoryList
             , sidebar =
                 if showEditor then
-                    { path = (Item.pathProperties item).pathSegments
+                    { path = item.path
                     , editor = Nothing
                     }
                         |> Drive.Sidebar.EditPlaintext
                         |> Just
 
                 else
-                    [ (Item.pathProperties item).pathSegments ]
+                    [ item.path ]
                         |> Drive.Sidebar.details
                         |> Just
         }
@@ -534,7 +530,7 @@ select idx item model =
             in
             FileSystem.Actions.readUtf8
                 { path = path
-                , tag = SidebarTag (Drive.Sidebar.LoadedFile { path = path })
+                , tag = SidebarTag (Drive.Sidebar.LoadedFile { path = String.join "/" path })
                 }
 
          else

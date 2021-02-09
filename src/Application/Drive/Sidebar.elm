@@ -10,18 +10,18 @@ type Msg
 
 
 type Tag
-    = SavedFile { path : List String }
-    | LoadedFile { path : List String }
+    = SavedFile { path : String }
+    | LoadedFile { path : String }
 
 
 type Model
     = AddOrCreate AddOrCreateModel
     | Details
-        { paths : List (List String)
+        { paths : List String
         , showPreviewOverlay : Bool
         }
     | EditPlaintext
-        { path : List String
+        { path : String
 
         -- Nothing means Loading
         , editor : Maybe EditorModel
@@ -44,7 +44,7 @@ type alias AddOrCreateModel =
 -- 🌱
 
 
-details : List (List String) -> Model
+details : List String -> Model
 details paths =
     Details { paths = paths, showPreviewOverlay = False }
 

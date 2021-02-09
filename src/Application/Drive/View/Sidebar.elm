@@ -46,7 +46,7 @@ view model =
             viewSidebar
                 { scrollable = False
                 , expanded = model.sidebarExpanded
-                , body = detailsForSelection { showPreviewOverlay = details.showPreviewOverlay } model
+                , body = detailsForSelection details model
                 }
 
         Just (Sidebar.EditPlaintext { editor }) ->
@@ -526,7 +526,7 @@ addOrCreateForm addOrCreateModel model =
 -- DETAILS
 
 
-detailsForSelection : { showPreviewOverlay : Bool } -> Model -> Html Msg
+detailsForSelection : { paths : List String, showPreviewOverlay : Bool } -> Model -> Html Msg
 detailsForSelection { showPreviewOverlay } model =
     Html.div
         [ T.flex
