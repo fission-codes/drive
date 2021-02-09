@@ -45,6 +45,13 @@ decodeResponse =
     Webnative.decodeResponse tagFromString
 
 
+publish : { tag : Tag } -> Cmd Msg
+publish { tag } =
+    Wnfs.publish
+        { tag = tagToString tag }
+        |> Ports.webnativeRequest
+
+
 writeUtf8 : { path : List String, tag : Tag, content : String } -> Cmd Msg
 writeUtf8 { path, tag, content } =
     let

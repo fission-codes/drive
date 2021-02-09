@@ -71,10 +71,10 @@ updateTag : Sidebar.Tag -> Wnfs.Artifact -> Sidebar.Model -> Manager
 updateTag tag artifact sidebarModel model =
     case ( sidebarModel, tag, artifact ) of
         ( Sidebar.EditPlaintext editPlaintext, Sidebar.SavedFile { path }, _ ) ->
-            if path /= editPlaintext.path then
+            (if path /= editPlaintext.path then
                 Return.singleton model
 
-            else
+             else
                 case editPlaintext.editor of
                     Just editorModel ->
                         { editorModel
@@ -90,9 +90,12 @@ updateTag tag artifact sidebarModel model =
 
                     Nothing ->
                         Return.singleton model
+            )
+                |> Return.command (FileSystem.Actions.publish { tag = UpdatedFilesystem })
 
         ( _, Sidebar.SavedFile _, _ ) ->
-            Return.singleton model
+            FileSystem.Actions.publish { tag = UpdatedFilesystem }
+                |> Return.return model
 
         ( Sidebar.EditPlaintext editPlaintext, Sidebar.LoadedFile { path }, Wnfs.Utf8Content text ) ->
             if path /= editPlaintext.path then

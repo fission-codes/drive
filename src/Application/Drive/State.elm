@@ -286,8 +286,13 @@ gotWebnativeResponse response =
                 CreatedEmptyFile { path } ->
                     -- TODO add loading indicator to button and stop the loading animation here
                     \model ->
-                        Return.return model
-                            (Ports.fsListDirectory { pathSegments = List.take (List.length path - 1) path })
+                        FileSystem.Actions.publish { tag = UpdatedFilesystem }
+                            |> Return.return model
+
+                UpdatedFilesystem ->
+                    \model ->
+                        Ports.fsListDirectory { pathSegments = Routing.treePathSegments model.route }
+                            |> Return.return model
 
         -- TODO Error handling
         Webnative.WnfsError err ->
