@@ -101,13 +101,13 @@ codecTag =
                 |> Codec.variant1 "SavedFile"
                     Drive.Sidebar.SavedFile
                     (Codec.object (\path -> { path = path })
-                        |> Codec.field "path" .path Codec.string
+                        |> Codec.field "path" .path (Codec.list Codec.string)
                         |> Codec.buildObject
                     )
                 |> Codec.variant1 "LoadedFile"
                     Drive.Sidebar.LoadedFile
                     (Codec.object (\path -> { path = path })
-                        |> Codec.field "path" .path Codec.string
+                        |> Codec.field "path" .path (Codec.list Codec.string)
                         |> Codec.buildObject
                     )
                 |> Codec.buildCustom
