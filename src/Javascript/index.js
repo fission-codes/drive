@@ -23,6 +23,9 @@ import * as ipfs from "./ipfs.js"
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
 
+self.wn = wn
+
+
 wn.setup.endpoints({
   api: API_ENDPOINT,
   lobby: LOBBY,
