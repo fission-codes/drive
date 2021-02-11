@@ -2,7 +2,7 @@ port module Ports exposing (..)
 
 import Authentication.Essentials as Authentication
 import Json.Decode as Json
-import Radix
+import Webnative
 
 
 
@@ -32,9 +32,6 @@ port fsAddContent :
     -> Cmd msg
 
 
-port fsCreateDirectory : { pathSegments : List String } -> Cmd msg
-
-
 port fsDownloadItem : { pathSegments : List String } -> Cmd msg
 
 
@@ -50,12 +47,6 @@ port fsRemoveItem : { pathSegments : List String } -> Cmd msg
 {-| `pathSegments` refers to the new path.
 -}
 port fsMoveItem : { currentPathSegments : List String, pathSegments : List String } -> Cmd msg
-
-
-port fsReadItemUtf8 : { pathSegments : List String } -> Cmd msg
-
-
-port fsWriteItemUtf8 : { pathSegments : List String, text : String } -> Cmd msg
 
 
 
@@ -78,4 +69,11 @@ port fsGotDirectoryList : (Json.Value -> msg) -> Sub msg
 port fsGotError : (String -> msg) -> Sub msg
 
 
-port fsGotItemUtf8 : ({ pathSegments : List String, text : String } -> msg) -> Sub msg
+
+-- Webnative-Elm
+
+
+port webnativeRequest : Webnative.Request -> Cmd msg
+
+
+port webnativeResponse : (Webnative.Response -> msg) -> Sub msg

@@ -1,19 +1,15 @@
 module FileSystem.State exposing (..)
 
 import Browser.Dom as Dom
-import Common
-import Common.State as Common
 import Debouncing
 import Drive.Item
 import Drive.Item.Inventory as Inventory
-import Drive.Sidebar as Sidebar
 import FileSystem
 import Json.Decode as Json
 import List.Extra as List
 import Maybe.Extra as Maybe
-import Ports
 import Radix exposing (..)
-import Return exposing (return)
+import Return
 import Return.Extra as Return
 import Routing
 import Task
@@ -96,31 +92,6 @@ gotDirectoryList_ pathSegments floor json model =
                 (always Bypass)
                 (Dom.setViewport 0 0)
             )
-
-
-gotItemUtf8 : { pathSegments : List String, text : String } -> Manager
-gotItemUtf8 { pathSegments, text } model =
-    (case model.sidebar of
-        Just sidebar ->
-            case sidebar of
-                Sidebar.EditPlaintext editPlaintext ->
-                    { text = text
-                    , originalText = text
-                    , isSaving = False
-                    }
-                        |> Just
-                        |> (\newEditor -> { editPlaintext | editor = newEditor })
-                        |> Sidebar.EditPlaintext
-                        |> Just
-                        |> (\newSidebar -> { model | sidebar = newSidebar })
-
-                _ ->
-                    model
-
-        _ ->
-            model
-    )
-        |> Return.singleton
 
 
 gotError : String -> Manager

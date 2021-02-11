@@ -1,0 +1,6 @@
+{
+    "checks": {
+        "UnusedPatternVariable": false
+    },
+    "exclude": [ "src/Library/Tailwind.elm" ]
+}

@@ -1,19 +1,16 @@
 module State exposing (init, subscriptions, update)
 
-import Authentication.Essentials as Authentication
 import Browser.Events as Browser
 import Browser.Navigation as Navigation
-import Common exposing (ifThenElse)
+import Common
 import Common.State as Common
 import Debouncer.Messages as Debouncer
 import Debouncing
 import Drive.Item.Inventory
-import Drive.Sidebar
 import Drive.State as Drive
 import FileSystem
 import FileSystem.State as FileSystem
 import Keyboard
-import Maybe.Extra as Maybe
 import Notifications
 import Other.State as Other
 import Ports
@@ -165,8 +162,11 @@ update msg =
         GotFsError a ->
             FileSystem.gotError a
 
-        GotFsItemUtf8 a ->
-            FileSystem.gotItemUtf8 a
+        -----------------------------------------
+        -- Webnative-Elm
+        -----------------------------------------
+        GotWebnativeResponse a ->
+            Drive.gotWebnativeResponse a
 
         -----------------------------------------
         -- 🌏 Common
@@ -252,7 +252,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Ports.fsGotDirectoryList GotFsDirectoryList
-        , Ports.fsGotItemUtf8 GotFsItemUtf8
         , Ports.fsGotError GotFsError
         , Ports.initialise Initialise
         , Ports.lostWindowFocus (always LostWindowFocus)
@@ -265,4 +264,7 @@ subscriptions model =
 
         -- Check every 30 seconds what the current time is
         , Time.every (30 * 1000) SetCurrentTime
+
+        -- Setup webnative
+        , Ports.webnativeResponse GotWebnativeResponse
         ]

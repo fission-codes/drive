@@ -1,13 +1,10 @@
 module Drive.ContextMenu exposing (hamburger, item, selection)
 
-import Authentication.Essentials as Authentication
 import Common
 import ContextMenu exposing (..)
 import Drive.Item exposing (Kind(..))
-import Drive.Sidebar as Sidebar
 import FeatherIcons
 import List.Ext as List
-import Maybe.Extra as Maybe
 import Radix exposing (..)
 import Routing
 

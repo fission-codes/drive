@@ -11,15 +11,13 @@
 
 import "./web_modules/tocca.js"
 import * as wn from "./web_modules/webnative.js"
+import"./web_modules/webnative-elm.js"
 
 import "./custom.js"
 
 import * as analytics from "./analytics.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
-import * as media from "./media.js"
-import { throttle } from "./common.js"
-import { setup } from "./sdk.js"
 
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
@@ -77,14 +75,11 @@ app.ports.redirectToLobby.subscribe(() => {
 })
 
 exe("fsAddContent", "add")
-exe("fsCreateDirectory", "createDirecory", { listParent: true })
 exe("fsListDirectory", "listDirectory")
 exe("fsListPublicDirectory", "listPublicDirectory")
 exe("fsMoveItem", "moveItem", { listParent: true })
 exe("fsRemoveItem", "removeItem", { listParent: true })
-exe("fsWriteItemUtf8", "writeItemUtf8", { listParent: true })
 
-app.ports.fsReadItemUtf8.subscribe(readItemUtf8)
 app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
 
@@ -102,6 +97,8 @@ wn.initialise({ permissions: PERMISSIONS })
   app.ports.initialise.send(
     authenticated ? { newUser, throughLobby, username } : null
   )
+
+  webnativeElm.setup(app, () => state.fs);
 
   // Other things
   analytics.setupOnFissionCodes()
@@ -192,16 +189,6 @@ function exe(port, method, options = {}) {
       reportFileSystemError(e)
 
     }
-  })
-}
-
-
-async function readItemUtf8(path) {
-  const contentUInt8Array = await fs.readItem(path)
-  const decoder = new TextDecoder()
-  app.ports.fsGotItemUtf8.send({
-    pathSegments: path.pathSegments,
-    text: decoder.decode(contentUInt8Array),
   })
 }
 

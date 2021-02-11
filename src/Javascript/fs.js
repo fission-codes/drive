@@ -42,14 +42,6 @@ export async function add({ blobs, pathSegments }) {
 }
 
 
-export async function createDirecory({ pathSegments }) {
-  const path = prefixedPath(pathSegments)
-  await fs.mkdir(path)
-  await fs.publish()
-  return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
-}
-
-
 export async function downloadItem({ pathSegments }) {
   const [ isIpfsPath, path ] =
     pathSegments[1] === "p"
@@ -223,21 +215,6 @@ export async function moveItem({ currentPathSegments, pathSegments }) {
   await fs.mv(currentPath, newPath)
   await fs.publish()
   return await listDirectory({ pathSegments: removePrivatePrefix(pathSegments).slice(0, -1) })
-}
-
-
-export async function readItem({ pathSegments }) {
-  const path = prefixedPath(pathSegments);
-  return await fs.read(path);
-}
-
-
-export async function writeItemUtf8({ pathSegments, text }) {
-  const path = prefixedPath(pathSegments)
-  const encoder = new TextEncoder()
-  await fs.add(path, encoder.encode(text))
-  await fs.publish()
-  return await listDirectory({ pathSegments: pathSegments.slice(0, -1) })
 }
 
 

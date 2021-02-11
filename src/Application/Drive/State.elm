@@ -11,9 +11,8 @@ import Drive.Item.Inventory as Inventory exposing (Inventory)
 import Drive.Modals
 import Drive.Sidebar
 import Drive.State.Sidebar
-import File
-import File.Download
 import FileSystem exposing (Operation(..))
+import FileSystem.Actions
 import List.Ext as List
 import List.Extra as List
 import Notifications
@@ -27,6 +26,8 @@ import Set
 import Task
 import Toasty
 import Url
+import Webnative
+import Wnfs
 
 
 
@@ -117,7 +118,7 @@ createFileOrFolder option model =
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
-                |> (\p -> Ports.fsCreateDirectory { pathSegments = p })
+                |> (\p -> FileSystem.Actions.createDirectory { path = p, tag = CreatedDirectory })
                 |> return
                     ({ model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
                         |> sidebarAddOrCreateClearInput
@@ -166,7 +167,13 @@ createFileOrFolder option model =
                         model.route
                             |> Routing.treePathSegments
                             |> List.add [ fileName ]
-                            |> (\p -> Ports.fsWriteItemUtf8 { pathSegments = p, text = "" })
+                            |> (\p ->
+                                    FileSystem.Actions.writeUtf8
+                                        { path = p
+                                        , tag = CreatedEmptyFile { path = p }
+                                        , content = ""
+                                        }
+                               )
                             |> return (sidebarAddOrCreateClearInput model)
                     )
                 |> Maybe.withDefault (Return.singleton model)
@@ -261,6 +268,39 @@ gotAddCreateInput input model =
                 }
 
         _ ->
+            Return.singleton model
+
+
+gotWebnativeResponse : Webnative.Response -> Manager
+gotWebnativeResponse response model =
+    case FileSystem.Actions.decodeResponse response of
+        -- We don't initialize webnative
+        Webnative.Webnative _ ->
+            Return.singleton model
+
+        Webnative.Wnfs tag artifact ->
+            case tag of
+                SidebarTag sidebarTag ->
+                    updateSidebarTag sidebarTag artifact model
+
+                CreatedEmptyFile { path } ->
+                    -- TODO add loading indicator to button and stop the loading animation here
+                    FileSystem.Actions.publish { tag = UpdatedFileSystem }
+                        |> Return.return model
+
+                CreatedDirectory ->
+                    FileSystem.Actions.publish { tag = UpdatedFileSystem }
+                        |> Return.return model
+
+                UpdatedFileSystem ->
+                    Ports.fsListDirectory { pathSegments = Routing.treePathSegments model.route }
+                        |> Return.return model
+
+        -- TODO Error handling
+        Webnative.WnfsError err ->
+            Return.singleton model
+
+        Webnative.WebnativeError err ->
             Return.singleton model
 
 
@@ -493,9 +533,14 @@ select idx item model =
                         |> Just
         }
         (if showEditor then
-            item
-                |> Item.pathProperties
-                |> Ports.fsReadItemUtf8
+            let
+                path =
+                    .pathSegments (Item.pathProperties item)
+            in
+            FileSystem.Actions.readUtf8
+                { path = path
+                , tag = SidebarTag (Drive.Sidebar.LoadedFile { path = String.join "/" path })
+                }
 
          else
             Cmd.none
@@ -598,6 +643,16 @@ updateSidebar sidebarMsg model =
     case model.sidebar of
         Just sidebar ->
             Drive.State.Sidebar.update sidebarMsg sidebar model
+
+        Nothing ->
+            Return.singleton model
+
+
+updateSidebarTag : Drive.Sidebar.Tag -> Wnfs.Artifact -> Manager
+updateSidebarTag sidebarTag artifact model =
+    case model.sidebar of
+        Just sidebar ->
+            Drive.State.Sidebar.updateTag sidebarTag artifact sidebar model
 
         Nothing ->
             Return.singleton model
