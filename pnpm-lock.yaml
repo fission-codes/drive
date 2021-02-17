@@ -1,7 +1,7 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/768a1384450d0be543152f75d02ffe3dfe90bd4e
-  webnative: 0.21.3
-  webnative-elm: 4.0.0-3_webnative@0.21.3
+  webnative: 0.21.4
+  webnative-elm: 4.0.0-3_webnative@0.21.4
 devDependencies:
   elm-git-install: 0.1.3
   elm-impfix: 1.0.8
@@ -2235,10 +2235,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
-  /err-code/2.0.0:
-    dev: false
-    resolution:
-      integrity: sha512-MsMOijQ4v0xlmrz1fc7lyPEy7jFhoNF7EVaRSP7mPzs20LaFOwG6qNjGRy3Ie85n9DARlcUnB1zbsBv5sJrIvw==
   /err-code/2.0.3:
     dev: false
     resolution:
@@ -4013,7 +4009,7 @@ packages:
   /multihashing-async/2.0.1:
     dependencies:
       blakejs: 1.1.0
-      err-code: 2.0.0
+      err-code: 2.0.3
       js-sha3: 0.8.0
       multihashes: 3.1.0
       murmurhash3js-revisited: 3.0.0
@@ -5877,15 +5873,15 @@ packages:
     dev: false
     resolution:
       integrity: sha512-26wEnRPEFAc5d5lmH1Q/DuvWEYsRF1D2alX2jlKpdmqv7cj+BbANL7Xlcl9r4s72Eg9kItZa9RWVbBMC9dMv4w==
-  /webnative-elm/4.0.0-3_webnative@0.21.3:
+  /webnative-elm/4.0.0-3_webnative@0.21.4:
     dependencies:
-      webnative: 0.21.3
+      webnative: 0.21.4
     dev: false
     peerDependencies:
       webnative: '> 0.0.0'
     resolution:
       integrity: sha512-74y9J2Vj1XEO078GAJEohqroJmJQMyZDbB8MouHEpscLiTxlOstgqlW5JyHNSQ9y2LAVv9Il/lG48QtI4a6LVg==
-  /webnative/0.21.3:
+  /webnative/0.21.4:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -5903,7 +5899,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-kaVLPVoQEnB4/ERoBWkwgk7JGG/lFLNDizSDDxXMsZx/tYVa3xHFQBw61XU9BDgLyfpAanxH3ZCdncIiO8kvgA==
+      integrity: sha512-4fozhQN5QboZRV+lzx5muLuQyeEsjeyrs3XH+cQhlon2wl2M2d5DgcZlyyaTUv9CBckoyNbVRtlUrMo2dw5OqA==
   /which/1.3.1:
     dependencies:
       isexe: 2.0.0
@@ -6144,7 +6140,6 @@ packages:
       npm: '>=3.0.0'
     name: ipfs-message-port-client
     resolution:
-      registry: 'https://registry.npmjs.org/'
       tarball: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-client.tar.gz'
     version: 0.5.0-fission
   '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz':
@@ -6157,7 +6152,6 @@ packages:
       npm: '>=3.0.0'
     name: ipfs-message-port-protocol
     resolution:
-      registry: 'https://registry.npmjs.org/'
       tarball: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
     version: 0.6.0-fission
   github.com/fission-suite/kit/768a1384450d0be543152f75d02ffe3dfe90bd4e:
@@ -6180,7 +6174,7 @@ specifiers:
   postcss-import: ^13.0.0
   tailwindcss: ^1.9.6
   terser-dir: ^1.0.7
-  webnative: ^0.21.3
+  webnative: ^0.21.4
   webnative-elm: ^4.0.0-3
   workbox-cli: ^5.1.4
   workbox-strategies: ^5.1.4
