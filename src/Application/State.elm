@@ -32,7 +32,8 @@ init flags url navKey =
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { authenticated = Nothing
+      { apiDomain = flags.apiDomain
+      , authenticated = Nothing
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
       , directoryList = Ok Drive.Item.Inventory.default

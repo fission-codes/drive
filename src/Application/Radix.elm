@@ -33,7 +33,8 @@ import Webnative
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { currentTime : Int
+    { apiDomain : String
+    , currentTime : Int
     , usersDomain : String
     , viewportSize : { height : Int, width : Int }
     }
@@ -46,7 +47,8 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { authenticated : Maybe Authentication.Essentials
+    { apiDomain : String
+    , authenticated : Maybe Authentication.Essentials
     , currentTime : Time.Posix
     , directoryList : Result String Item.Inventory
     , contextMenu : Maybe (ContextMenu Msg)

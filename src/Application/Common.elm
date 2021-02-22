@@ -65,12 +65,20 @@ base { presentable } model =
                     |> String.append
 
             else
+                let
+                    domain =
+                        if model.apiDomain == "runfission.net" then
+                            "runfission.net"
+
+                        else
+                            "runfission.com"
+                in
                 case model.fileSystemCid of
                     Just _ ->
-                        String.append "https://ipfs.runfission.com/ipfs/"
+                        String.append ("https://ipfs." ++ domain ++ "/ipfs/")
 
                     Nothing ->
-                        String.append "https://ipfs.runfission.com/ipns/"
+                        String.append ("https://ipfs." ++ domain ++ "/ipns/")
            )
 
 

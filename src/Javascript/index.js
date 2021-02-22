@@ -60,6 +60,7 @@ const PERMISSIONS = {
 
 const app = Elm.Main.init({
   flags: {
+    apiDomain: API_ENDPOINT.replace(/^https?:\/\//, ""),
     currentTime: Date.now(),
     usersDomain: DATA_ROOT_DOMAIN,
     viewportSize: { height: window.innerHeight, width: window.innerWidth }
