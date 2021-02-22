@@ -11,9 +11,10 @@
 
 import "./web_modules/tocca.js"
 import * as wn from "./web_modules/webnative.js"
-import"./web_modules/webnative-elm.js"
+import "./web_modules/webnative-elm.js"
 
 import "./custom.js"
+import "./media.js"
 
 import * as analytics from "./analytics.js"
 import * as fs from "./fs.js"
