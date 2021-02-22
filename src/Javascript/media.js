@@ -20,7 +20,6 @@ customElements.define("fission-drive-media",
   class extends HTMLElement {
     constructor() {
       super()
-      console.log("hello")
     }
 
     static get observedAttributes() {
@@ -45,8 +44,6 @@ customElements.define("fission-drive-media",
       const name = this.getAttribute("name")
       const path = this.getAttribute("path")
       const useFS = this.getAttribute("useFS") === "true"
-
-      console.log(path)
 
       if (path) renderIn({ container: this, name, path, useFS })
     }
