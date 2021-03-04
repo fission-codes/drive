@@ -166,6 +166,14 @@ createFileOrFolder option model =
                     (\fileName ->
                         model.route
                             |> Routing.treePathSegments
+                            |> (\path ->
+                                    case path of
+                                        "public" :: rest ->
+                                            "public" :: rest
+
+                                        _ ->
+                                            "private" :: path
+                               )
                             |> List.add [ fileName ]
                             |> (\p ->
                                     FileSystem.Actions.writeUtf8

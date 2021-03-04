@@ -166,4 +166,4 @@ splitPath path =
             { base = Wnfs.Private, path = rest }
 
         _ ->
-            { base = appData, path = path }
+            { base = Wnfs.Private, path = path }
