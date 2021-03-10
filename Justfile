@@ -20,8 +20,10 @@ workbox_config 	:= "workbox.config.cjs"
 @default: dev-build
 	just dev-server & just watch
 
+
 @hot:
 	just hot-server & just watch-hot
+
 
 @apply-config:
 	echo "🎛  Applying config \`config/{{config}}.json\`"
@@ -79,8 +81,8 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/elm-git-install
 
 	# SDK
-	cp node_modules/webnative/index.es5.js web_modules/webnative.js
-	cp node_modules/webnative/index.umd.js web_modules/webnative.umd.js
+	cp node_modules/webnative/dist/index.es5.js web_modules/webnative.js
+	cp node_modules/webnative/dist/index.umd.js web_modules/webnative.umd.js
 	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
