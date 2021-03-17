@@ -1,5 +1,4 @@
 module.exports = {
-  cacheId: "fission-suite/drive",
   clientsClaim: true,
   globDirectory: "build/",
   globPatterns: [ "**/*" ],

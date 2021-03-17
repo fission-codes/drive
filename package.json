@@ -3,7 +3,7 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#768a1384450d0be543152f75d02ffe3dfe90bd4e",
-    "webnative": "0.22.0-alpha-7",
+    "webnative": "0.22.0-alpha-9",
     "webnative-elm": "^4.0.0-3"
   },
   "devDependencies": {
@@ -18,7 +18,7 @@
     "postcss-import": "^13.0.0",
     "tailwindcss": "^1.9.6",
     "terser-dir": "^1.0.7",
-    "workbox-cli": "^5.1.4",
-    "workbox-strategies": "^5.1.4"
+    "workbox-cli": "^6.1.2",
+    "workbox-strategies": "^6.1.2"
   }
 }
