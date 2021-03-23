@@ -215,7 +215,7 @@ workbox_config 	:= "workbox.config.cjs"
 	echo "🛳  Deploying to staging"
 	just staging-build
 	cp fission.yaml.staging fission.yaml
-	{{fission_cmd}} up
+	{{fission_cmd}} up --remote staging
 	rm fission.yaml
 
 
