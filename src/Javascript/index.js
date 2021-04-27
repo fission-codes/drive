@@ -48,8 +48,8 @@ const PERMISSIONS = {
   },
 
   fs: {
-    privatePaths: [ "/" ],
-    publicPaths: [ "/" ]
+    private: { directories: [ "/" ] },
+    public: { directories: [ "/" ] }
   }
 }
 
