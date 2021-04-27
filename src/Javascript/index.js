@@ -48,8 +48,8 @@ const PERMISSIONS = {
   },
 
   fs: {
-    privatePaths: [ "/" ],
-    publicPaths: [ "/" ]
+    private: [ wn.path.root() ],
+    public: [ wn.path.root() ]
   }
 }
 
@@ -100,7 +100,7 @@ wn.initialise({ permissions: PERMISSIONS })
     authenticated ? { newUser, throughLobby, username } : null
   )
 
-  webnativeElm.setup(app, () => state.fs);
+  webnativeElm.setup(app, () => state.fs)
 
   // Other things
   analytics.setupOnFissionCodes()
