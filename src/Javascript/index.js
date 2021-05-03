@@ -100,7 +100,11 @@ wn.initialise({ permissions: PERMISSIONS })
     authenticated ? { newUser, throughLobby, username } : null
   )
 
-  webnativeElm.setup(app, () => state.fs)
+  webnativeElm.setup({
+    app,
+    getFs: () => state.fs,
+    webnative: wn
+  })
 
   // Other things
   analytics.setupOnFissionCodes()

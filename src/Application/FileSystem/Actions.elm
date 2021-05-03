@@ -6,6 +6,7 @@ import Json.Decode
 import Ports
 import Radix exposing (..)
 import Webnative
+import Webnative.Path as Path exposing (Path)
 import Wnfs
 
 
@@ -30,8 +31,8 @@ permissions =
     { app = Just appPermissions
     , fs =
         Just
-            { privatePaths = [ "/" ]
-            , publicPaths = [ "/" ]
+            { private = [ Path.encapsulate Path.root ]
+            , public = [ Path.encapsulate Path.root ]
             }
     }
 
@@ -47,7 +48,7 @@ createDirectory { path, tag } =
             splitPath path
     in
     Wnfs.mkdir resolved.base
-        { path = resolved.path
+        { path = Path.directory resolved.path
         , tag = tagToString tag
         }
         |> Ports.webnativeRequest
@@ -67,7 +68,7 @@ writeUtf8 { path, tag, content } =
             splitPath path
     in
     Wnfs.writeUtf8 resolved.base
-        { path = resolved.path
+        { path = Path.file resolved.path
         , tag = tagToString tag
         }
         content
@@ -81,7 +82,7 @@ readUtf8 { path, tag } =
             splitPath path
     in
     Wnfs.readUtf8 resolved.base
-        { path = resolved.path
+        { path = Path.file resolved.path
         , tag = tagToString tag
         }
         |> Ports.webnativeRequest
@@ -148,7 +149,8 @@ tagToString tag =
 
 tagFromString : String -> Result String Tag
 tagFromString string =
-    Codec.decodeString codecTag string
+    string
+        |> Codec.decodeString codecTag
         |> Result.mapError Json.Decode.errorToString
 
 

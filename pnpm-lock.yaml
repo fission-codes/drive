@@ -1,7 +1,7 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/768a1384450d0be543152f75d02ffe3dfe90bd4e
-  webnative: 0.24.0-alpha-10
-  webnative-elm: 4.0.0-3_webnative@0.24.0-alpha-10
+  webnative: 0.24.0-alpha-12
+  webnative-elm: 4.0.0-3_webnative@0.24.0-alpha-12
 devDependencies:
   elm-git-install: 0.1.3
   elm-impfix: 1.0.8
@@ -5805,15 +5805,15 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative-elm/4.0.0-3_webnative@0.24.0-alpha-10:
+  /webnative-elm/4.0.0-3_webnative@0.24.0-alpha-12:
     dependencies:
-      webnative: 0.24.0-alpha-10
+      webnative: 0.24.0-alpha-12
     dev: false
     peerDependencies:
       webnative: '> 0.0.0'
     resolution:
       integrity: sha512-74y9J2Vj1XEO078GAJEohqroJmJQMyZDbB8MouHEpscLiTxlOstgqlW5JyHNSQ9y2LAVv9Il/lG48QtI4a6LVg==
-  /webnative/0.24.0-alpha-10:
+  /webnative/0.24.0-alpha-12:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -5832,7 +5832,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-QnJk7+b6f+tWKxXLMjAvSrwSSyPYHdit1CapChM9oOsd9nuEJo/73wpigLToV/1qfqn0WkmjdHgwo28Tz1E+Cw==
+      integrity: sha512-YAzIs17cR6KgDxekUYEPwj3W66QSdY5157YnWZwb6FRocgovvpRJ0nhVk+u82tTE4NpAzazAgN+CfjPXTe7nyg==
   /whatwg-url/7.1.0:
     dependencies:
       lodash.sortby: 4.7.0
@@ -6122,7 +6122,7 @@ specifiers:
   postcss-import: ^13.0.0
   tailwindcss: ^1.9.6
   terser-dir: ^1.0.7
-  webnative: 0.24.0-alpha-10
+  webnative: 0.24.0-alpha-12
   webnative-elm: ^4.0.0-3
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2

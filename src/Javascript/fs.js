@@ -31,7 +31,7 @@ export async function add({ blobs, pathSegments }) {
   await blobs.reduce(async (acc, { path, url }) => {
     await acc
     const fileOrBlob = await fetch(url).then(r => r.blob())
-    const fullPath = wn.path.directory(...basePath, path)
+    const fullPath = wn.path.file(...basePath, path)
     const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
     await fs.add(fullPath, blob)
     URL.revokeObjectURL(url)
@@ -72,7 +72,6 @@ export async function listDirectory({ pathSegments }) {
   const rootCid = await fs.root.put()
 
   let path = { directory: prefixedPath(pathSegments) }
-  console.log(path)
 
   // Make a list
   const rawList = await (async _ => {
@@ -126,8 +125,6 @@ export async function listDirectory({ pathSegments }) {
         cid = l.cid || l.pointer
 
       }
-
-      console.log(wn.path.toPosix(wn.path.combine(path, { file: [l.name] })))
 
       return {
         ...l,
@@ -202,7 +199,8 @@ export async function listPublicDirectory({ root, pathSegments }) {
 
 
 export async function removeItem({ pathSegments }) {
-  const path = { directory: prefixedPath(pathSegments) }
+  // TODO: This should actually say the correct item type, but works nonetheless.
+  const path = { file: prefixedPath(pathSegments) }
   await fs.rm(path)
   await fs.publish()
   return await listDirectory({ pathSegments: removePrivatePrefix(pathSegments).slice(0, -1) })
@@ -210,9 +208,9 @@ export async function removeItem({ pathSegments }) {
 
 
 export async function moveItem({ currentPathSegments, pathSegments }) {
-  // TODO
-  const currentPath = prefixedPath(currentPathSegments)
-  const newPath = prefixedPath(pathSegments)
+  // TODO: This should actually say the correct item type, but works nonetheless.
+  const currentPath = { file: prefixedPath(currentPathSegments) }
+  const newPath = { file: prefixedPath(pathSegments) }
 
   await fs.mv(currentPath, newPath)
   await fs.publish()

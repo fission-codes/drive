@@ -110,7 +110,6 @@ class DropZone extends HTMLElement {
         )
 
       ).then(blobs => {
-        console.log(blobs)
         const blobsEvent = new CustomEvent("dropBlobs", { detail: { blobs } })
         this.dispatchEvent(blobsEvent)
 
