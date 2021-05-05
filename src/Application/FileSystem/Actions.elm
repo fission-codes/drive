@@ -31,8 +31,8 @@ permissions =
     { app = Just appPermissions
     , fs =
         Just
-            { private = [ Path.encapsulate Path.root ]
-            , public = [ Path.encapsulate Path.root ]
+            { private = { directories = [ Path.root ], files = [] }
+            , public = { directories = [ Path.root ], files = [] }
             }
     }
 
