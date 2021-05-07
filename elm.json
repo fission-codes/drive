@@ -26,7 +26,7 @@
             "elm-community/maybe-extra": "5.2.0",
             "elm-community/result-extra": "2.4.0",
             "feathericons/elm-feather": "1.4.0",
-            "fission-suite/webnative-elm": "4.0.0",
+            "fission-suite/webnative-elm": "6.0.0",
             "gingko/time-distance": "2.2.1",
             "krisajenkins/remotedata": "6.0.1",
             "miniBill/elm-codec": "2.0.0",

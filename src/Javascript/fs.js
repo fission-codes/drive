@@ -31,7 +31,7 @@ export async function add({ blobs, pathSegments }) {
   await blobs.reduce(async (acc, { path, url }) => {
     await acc
     const fileOrBlob = await fetch(url).then(r => r.blob())
-    const fullPath = (basePath.length ? basePath + "/" : "") + path
+    const fullPath = wn.path.file(...basePath, path)
     const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
     await fs.add(fullPath, blob)
     URL.revokeObjectURL(url)
@@ -51,7 +51,7 @@ export async function downloadItem({ pathSegments }) {
   const blob = new Blob([
     isIpfsPath
       ? await wn.ipfs.catBuf(path)
-      : await fs.cat(path)
+      : await fs.cat({ directory: path })
   ])
 
   const blobUrl = URL.createObjectURL(blob)
@@ -71,7 +71,7 @@ export async function listDirectory({ pathSegments }) {
   const isListingRoot = pathSegments.length === 0
   const rootCid = await fs.root.put()
 
-  let path = prefixedPath(pathSegments)
+  let path = { directory: prefixedPath(pathSegments) }
 
   // Make a list
   const rawList = await (async _ => {
@@ -82,13 +82,13 @@ export async function listDirectory({ pathSegments }) {
       if (err.message === "Can not `ls` a file") {
         // We get an error if try to list a file.
         // This a way around that issue.
-        const bananaSplit = path.split("/")
-        const dir = bananaSplit.slice(0, -1).join("/")
+        const bananaSplit = wn.path.unwrap(path)
+        const dir = bananaSplit.slice(0, -1)
         const file = bananaSplit[bananaSplit.length - 1]
 
-        path = dir
+        path = { directory: dir }
 
-        return Object.values(await fs.ls(dir)).filter(l => {
+        return Object.values(await fs.ls(path)).filter(l => {
           return l.name === file
         })
       } else {
@@ -99,14 +99,12 @@ export async function listDirectory({ pathSegments }) {
   })()
 
   // Adjust list
-  const isListingPublic = path.startsWith("public/") || path === "public"
-  const cleanedPath = path.replace(/^public\/?/, "").replace(/\/$/, "")
+  const isListingPublic = wn.path.isBranch(wn.path.Branch.Public, path)
   const prettyIpfsPath = prefix => {
     return "/ipfs/"
       + rootCid
       + "/" + prefix + "/"
-      + cleanedPath
-      + (cleanedPath.length ? "/" : "")
+      + wn.path.toPosix({ directory: wn.path.unwrap(path).slice(1) })
   }
 
   let results = await Promise.all(
@@ -132,7 +130,7 @@ export async function listDirectory({ pathSegments }) {
         ...l,
 
         cid: cid,
-        path: `${path}/${l.name}`,
+        path: wn.path.toPosix(wn.path.combine(path, { file: [l.name] })),
         size: l.size || 0,
         type: l.isFile ? "file" : "dir"
       }
@@ -201,7 +199,8 @@ export async function listPublicDirectory({ root, pathSegments }) {
 
 
 export async function removeItem({ pathSegments }) {
-  const path = prefixedPath(pathSegments)
+  // TODO: This should actually say the correct item type, but works nonetheless.
+  const path = { file: prefixedPath(pathSegments) }
   await fs.rm(path)
   await fs.publish()
   return await listDirectory({ pathSegments: removePrivatePrefix(pathSegments).slice(0, -1) })
@@ -209,8 +208,9 @@ export async function removeItem({ pathSegments }) {
 
 
 export async function moveItem({ currentPathSegments, pathSegments }) {
-  const currentPath = prefixedPath(currentPathSegments)
-  const newPath = prefixedPath(pathSegments)
+  // TODO: This should actually say the correct item type, but works nonetheless.
+  const currentPath = { file: prefixedPath(currentPathSegments) }
+  const newPath = { file: prefixedPath(pathSegments) }
 
   await fs.mv(currentPath, newPath)
   await fs.publish()
@@ -231,7 +231,7 @@ export function fakeStream(address, options) {
 
 function fakeStreamIterator(address, options) {
   return { async *[Symbol.asyncIterator]() {
-    const typedArray = await fs.cat(address)
+    const typedArray = await fs.cat(wn.path.fromPosix(address))
     const size = typedArray.length
     const start = options.offset || 0
     const end = options.length ? start + options.length : size - 1
@@ -255,8 +255,8 @@ export function isPrefixSegment(s) {
 */
 export function prefixedPath(pathSegments) {
   return isPrefixSegment( pathSegments[0] )
-    ? pathSegments.join("/")
-    : [ "private", ...pathSegments ].join("/")
+    ? pathSegments
+    : [ "private", ...pathSegments ]
 }
 
 
