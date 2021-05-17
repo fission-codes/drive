@@ -157,7 +157,7 @@ workbox_config 	:= "workbox.config.cjs"
 	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
-@insert-version:
+insert-version:
 	#!/usr/bin/env node
 	const fs = require("fs")
 	const work = fs.readFileSync("{{workbox_config}}", { encoding: "utf8" })
