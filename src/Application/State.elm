@@ -41,6 +41,7 @@ init flags url navKey =
       , fileSystemCid = Nothing
       , fileSystemStatus = FileSystem.Ready
       , helpfulNote = Nothing
+      , initialised = False
       , isFocused = False
       , modal = Nothing
       , navKey = navKey
@@ -163,6 +164,9 @@ update msg =
         GotFsError a ->
             FileSystem.gotError a
 
+        FsLoaded ->
+            FileSystem.loaded
+
         -----------------------------------------
         -- Webnative-Elm
         -----------------------------------------
@@ -254,6 +258,7 @@ subscriptions model =
     Sub.batch
         [ Ports.fsGotDirectoryList GotFsDirectoryList
         , Ports.fsGotError GotFsError
+        , Ports.fsLoaded (always FsLoaded)
         , Ports.initialise Initialise
         , Ports.lostWindowFocus (always LostWindowFocus)
 

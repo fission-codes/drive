@@ -54,6 +54,7 @@ type alias Model =
     , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
     , helpfulNote : Maybe { faded : Bool, note : String }
+    , initialised : Bool
     , isFocused : Bool
     , fileSystemCid : Maybe String
     , fileSystemStatus : FileSystem.Status
@@ -123,6 +124,7 @@ type Msg
       -----------------------------------------
     | GotFsDirectoryList Json.Value
     | GotFsError String
+    | FsLoaded
       -----------------------------------------
       -- Webnative-Elm
       -----------------------------------------

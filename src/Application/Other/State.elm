@@ -35,62 +35,20 @@ initialise maybeEssentials model =
     let
         route =
             Routing.routeFromUrl maybeEssentials model.url
-
-        maybeTreeRoot =
-            Routing.treeRoot route
-
-        fileSystemStatus =
-            if Maybe.isJust maybeTreeRoot then
-                FileSystem.InitialListing
-
-            else
-                FileSystem.NotNeeded
-
-        needsRedirect =
-            (Routing.isAuthenticatedTree maybeEssentials route == False)
-                && (List.head (Routing.treePathSegments route) == Just "public")
     in
-    return
-        -----------------------------------------
-        -- Model
-        -----------------------------------------
+    Return.singleton
         { model
             | authenticated = maybeEssentials
-            , fileSystemStatus = fileSystemStatus
+            , fileSystemStatus =
+                if Maybe.isJust maybeEssentials then
+                    FileSystem.Loading
+
+                else
+                    FileSystem.NotNeeded
+            , initialised = True
             , route = route
             , showLoadingOverlay = False
         }
-        -----------------------------------------
-        -- Command
-        -----------------------------------------
-        (if needsRedirect then
-            route
-                |> Routing.treePathSegments
-                |> List.drop 1
-                |> Routing.replaceTreePathSegments route
-                |> Routing.adjustUrl model.url
-                |> Url.toString
-                |> Navigation.pushUrl model.navKey
-
-         else if Routing.isAuthenticatedTree maybeEssentials route then
-            -- List entire file system for the authenticated user
-            Ports.fsListDirectory
-                { pathSegments = Routing.treePathSegments route }
-
-         else if Maybe.isJust maybeTreeRoot then
-            -- List a public filesystem
-            Ports.fsListPublicDirectory
-                { pathSegments =
-                    Routing.treePathSegments route
-                , root =
-                    Common.filesDomainFromTreeRoot
-                        { usersDomain = model.usersDomain }
-                        maybeTreeRoot
-                }
-
-         else
-            Cmd.none
-        )
 
 
 keyboardInteraction : Keyboard.Msg -> Manager

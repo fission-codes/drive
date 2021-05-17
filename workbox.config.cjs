@@ -4,6 +4,7 @@ module.exports = {
   globDirectory: "build/",
   globPatterns: [ "**/*" ],
   inlineWorkboxRuntime: true,
+  maximumFileSizeToCacheInBytes: 5000000,
   navigateFallback: "index.html",
   runtimeCaching: [
     {

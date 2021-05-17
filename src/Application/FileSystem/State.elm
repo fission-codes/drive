@@ -1,6 +1,8 @@
 module FileSystem.State exposing (..)
 
 import Browser.Dom as Dom
+import Browser.Navigation as Navigation
+import Common
 import Debouncing
 import Drive.Item
 import Drive.Item.Inventory as Inventory
@@ -8,11 +10,13 @@ import FileSystem
 import Json.Decode as Json
 import List.Extra as List
 import Maybe.Extra as Maybe
+import Ports
 import Radix exposing (..)
-import Return
+import Return exposing (return)
 import Return.Extra as Return
 import Routing
 import Task
+import Url
 
 
 
@@ -101,3 +105,61 @@ gotError error model =
             | fileSystemCid = Nothing
             , fileSystemStatus = FileSystem.Error error
         }
+
+
+loaded : Manager
+loaded model =
+    let
+        route =
+            model.route
+
+        maybeTreeRoot =
+            Routing.treeRoot route
+
+        fileSystemStatus =
+            if Maybe.isJust maybeTreeRoot then
+                FileSystem.InitialListing
+
+            else
+                FileSystem.NotNeeded
+
+        needsRedirect =
+            (Routing.isAuthenticatedTree model.authenticated route == False)
+                && (List.head (Routing.treePathSegments route) == Just "public")
+    in
+    return
+        -----------------------------------------
+        -- Model
+        -----------------------------------------
+        { model | fileSystemStatus = fileSystemStatus }
+        -----------------------------------------
+        -- Command
+        -----------------------------------------
+        (if needsRedirect then
+            route
+                |> Routing.treePathSegments
+                |> List.drop 1
+                |> Routing.replaceTreePathSegments route
+                |> Routing.adjustUrl model.url
+                |> Url.toString
+                |> Navigation.pushUrl model.navKey
+
+         else if Routing.isAuthenticatedTree model.authenticated route then
+            -- List entire file system for the authenticated user
+            Ports.fsListDirectory
+                { pathSegments = Routing.treePathSegments route }
+
+         else if Maybe.isJust maybeTreeRoot then
+            -- List a public filesystem
+            Ports.fsListPublicDirectory
+                { pathSegments =
+                    Routing.treePathSegments route
+                , root =
+                    Common.filesDomainFromTreeRoot
+                        { usersDomain = model.usersDomain }
+                        maybeTreeRoot
+                }
+
+         else
+            Cmd.none
+        )

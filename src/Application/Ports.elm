@@ -69,6 +69,9 @@ port fsGotDirectoryList : (Json.Value -> msg) -> Sub msg
 port fsGotError : (String -> msg) -> Sub msg
 
 
+port fsLoaded : (() -> msg) -> Sub msg
+
+
 
 -- Webnative-Elm
 

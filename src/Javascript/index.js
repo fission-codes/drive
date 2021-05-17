@@ -85,24 +85,30 @@ exe("fsRemoveItem", "removeItem", { listParent: true })
 app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
 
-wn.initialise({ permissions: PERMISSIONS })
+wn.initialise({ loadFileSystem: false, permissions: PERMISSIONS })
   .then(async state => {
   const { authenticated, newUser, permissions, throughLobby, username } = state
-
-  // File system
-  fs.setInstance(state.fs)
-  ipfs.setInstance(await wn.ipfs.get())
-
-  window.fs = state.fs
 
   // Initialise app, pt. deux
   app.ports.initialise.send(
     authenticated ? { newUser, throughLobby, username } : null
   )
 
+  // Initialise app, pt. trois
+  const fsInstance = authenticated
+    ? await wn.loadFileSystem(PERMISSIONS)
+    : null
+
+  fs.setInstance(fsInstance)
+  ipfs.setInstance(await wn.ipfs.get())
+
+  window.fs = fsInstance
+
+  if (fsInstance) app.ports.fsLoaded.send(null)
+
   webnativeElm.setup({
     app,
-    getFs: () => state.fs,
+    getFs: () => fsInstance,
     webnative: wn
   })
 

@@ -45,10 +45,10 @@ body m =
       case ( Common.shouldShowLoadingAnimation m, m.route ) of
         ( True, _ ) ->
             Common.loadingScreen
-                (if m.fileSystemStatus == FileSystem.Loading then
-                    [ Common.loadingText "Loading filesystem" ]
+                (if not m.initialised then
+                    [ Common.loadingText "Just a moment, loading the application." ]
 
-                 else if m.fileSystemCid == Nothing then
+                 else if m.fileSystemStatus == FileSystem.Loading then
                     [ Common.loadingText "Just a moment, loading the filesystem." ]
 
                  else
