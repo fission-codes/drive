@@ -31,7 +31,7 @@ export async function add({ blobs, pathSegments }) {
   await blobs.reduce(async (acc, { path, url }) => {
     await acc
     const fileOrBlob = await fetch(url).then(r => r.blob())
-    const fullPath = wn.path.file(...basePath, path)
+    const fullPath = wn.path.combine(wn.path.directory(...basePath), wn.path.fromPosix(path))
     const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
     await fs.add(fullPath, blob)
     URL.revokeObjectURL(url)
