@@ -51,7 +51,7 @@ export async function downloadItem({ pathSegments }) {
   const blob = new Blob([
     isIpfsPath
       ? await wn.ipfs.catBuf(path)
-      : await fs.cat({ directory: path })
+      : await fs.cat({ file: path })
   ])
 
   const blobUrl = URL.createObjectURL(blob)
