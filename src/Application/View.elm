@@ -8,6 +8,7 @@ import Common.View.HelpfulNote
 import ContextMenu exposing (ContextMenu)
 import Drive.Item exposing (Kind(..))
 import Drive.View as Drive
+import FileSystem
 import Html exposing (Html)
 import Html.Events as E
 import Html.Events.Ext as E
@@ -43,7 +44,16 @@ body m =
       -----------------------------------------
       case ( Common.shouldShowLoadingAnimation m, m.route ) of
         ( True, _ ) ->
-            Common.loadingScreen []
+            Common.loadingScreen
+                (if m.fileSystemStatus == FileSystem.Loading then
+                    [ Common.loadingText "Loading filesystem" ]
+
+                 else if m.fileSystemCid == Nothing then
+                    [ Common.loadingText "Just a moment, loading the filesystem." ]
+
+                 else
+                    []
+                )
 
         ( _, Routing.Undecided ) ->
             Authentication.notAuthenticated m
@@ -137,8 +147,8 @@ rootAttributes m =
 treeView : Model -> Html Msg
 treeView m =
     if Common.isPreppingTree m then
-        [ Html.text "Just a moment, loading the file system." ]
-            |> Html.div [ T.italic, T.mt_3 ]
+        "Just a moment, loading the directory."
+            |> Common.loadingText
             |> List.singleton
             |> Common.loadingScreen
 

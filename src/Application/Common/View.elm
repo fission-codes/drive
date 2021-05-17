@@ -129,6 +129,13 @@ loadingAnimationWithAttributes attributes { size } =
             )
 
 
+loadingText : String -> Html msg
+loadingText text =
+    Html.div
+        [ T.italic, T.mt_3 ]
+        [ Html.text text ]
+
+
 loadingScreen : List (Html msg) -> Html msg
 loadingScreen additionalNodes =
     Html.div
