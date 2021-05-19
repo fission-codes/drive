@@ -518,14 +518,13 @@ addOrCreateForm addOrCreateModel model =
                             Html.span
                                 [ T.flex
                                 , T.items_center
+                                , T.justify_center
                                 ]
                                 [ Common.loadingAnimationWithAttributes
-                                    [ T.mr_2
-                                    , T.text_opacity_60
+                                    [ T.text_opacity_60
                                     , T.text_white
                                     ]
-                                    { size = 13 }
-                                , Html.text "Creating"
+                                    { size = 16 }
                                 ]
 
                           else
