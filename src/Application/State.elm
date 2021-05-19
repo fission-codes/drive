@@ -119,11 +119,17 @@ update msg =
         GotAddOrCreateInput a ->
             Drive.gotAddCreateInput a
 
-        CreateFileOrFolder a ->
-            Drive.createFileOrFolder a
+        CreateFile ->
+            Drive.createFile
+
+        CreateFolder ->
+            Drive.createFolder
 
         GoUp a ->
             Drive.goUp a
+
+        GotWebnativeResponse a ->
+            Drive.gotWebnativeResponse a
 
         IndividualSelect a b ->
             Drive.individualSelect a b
@@ -139,6 +145,9 @@ update msg =
 
         RenameItem a ->
             Drive.renameItem a
+
+        ReplaceAddOrCreateKind a ->
+            Drive.replaceAddOrCreateKind a
 
         Select a b ->
             Drive.select a b
@@ -166,12 +175,6 @@ update msg =
 
         FsLoaded ->
             FileSystem.loaded
-
-        -----------------------------------------
-        -- Webnative-Elm
-        -----------------------------------------
-        GotWebnativeResponse a ->
-            Drive.gotWebnativeResponse a
 
         -----------------------------------------
         -- 🌏 Common

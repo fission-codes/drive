@@ -123,8 +123,8 @@ plaintextEditor maybeEditor model =
                     , T.bg_transparent
                     , T.flex_grow
                     , T.font_mono
-                    , T.px_8
-                    , T.pt_8
+                    , T.px_5
+                    , T.pt_5
                     , T.resize_none
                     , T.text_gray_100
 
@@ -136,6 +136,11 @@ plaintextEditor maybeEditor model =
                     ---------------
                     , T.appearance_none
                     , T.outline_none
+
+                    -- Responsive
+                    -------------
+                    , T.sm__px_8
+                    , T.sm__py_8
 
                     -- Dark mode
                     ------------
@@ -383,78 +388,149 @@ addOrCreateForm addOrCreateModel model =
                 , T.dark__text_gray_400
                 ]
                 [ Html.text t ]
-
-        addButton icon attributes content =
-            Html.button
-                (List.append attributes
-                    [ T.appearance_none
-                    , T.bg_purple
-                    , T.px_4
-                    , T.mt_5
-                    , T.mr_5
-                    , T.my_auto
-                    , T.h_10
-                    , T.rounded
-                    , T.text_gray_900
-                    , T.text_sm
-                    , T.font_display
-                    , T.flex
-                    , T.flex_row
-                    , T.items_center
-
-                    -- Focus Styles
-                    ---------------
-                    , T.appearance_none
-                    , T.outline_none
-                    , T.focus__shadow_outline
-                    , T.active__bg_purple_shade
-                    ]
-                )
-                ((icon
-                    |> FeatherIcons.withSize 16
-                    |> Common.wrapIcon [ T.mr_2 ]
-                 )
-                    :: content
-                )
     in
     Html.div
-        [ T.px_8
-        , T.py_8
+        [ T.px_5
+        , T.py_5
+
+        -- Responsive
+        -------------
+        , T.sm__px_8
+        , T.sm__py_8
         ]
         [ -----------------------------------------
           -- Create
           -----------------------------------------
-          title "Create a file or folder"
-        , S.textField
-            [ A.placeholder "Magic Box"
-            , E.onInput GotAddOrCreateInput
-            , T.w_full
-            , A.value addOrCreateModel.input
-            ]
-            []
-        , Html.div
+          title "Create a folder or file"
+        , let
+            createMsg =
+                case addOrCreateModel.kind of
+                    Directory ->
+                        CreateFolder
+
+                    _ ->
+                        CreateFile
+          in
+          Html.div
             [ T.flex
-            , T.flex_row
             , T.flex_wrap
+
+            -- Responsive
+            -------------
+            , T.sm__flex_no_wrap
             ]
-            [ addButton FeatherIcons.folderPlus
-                [ E.onClick (CreateFileOrFolder Nothing) ]
-                [ Html.text "New Folder" ]
-            , addButton FeatherIcons.filePlus
-                [ E.onClick (CreateFileOrFolder (Just { extension = "txt" })) ]
-                [ Html.text "New"
-                , Drive.extension [] "TXT"
+            [ Html.div
+                [ T.flex_1
+                , T.relative
                 ]
-            , addButton FeatherIcons.filePlus
-                [ E.onClick (CreateFileOrFolder (Just { extension = "html" })) ]
-                [ Html.text "New"
-                , Drive.extension [] "HTML"
+                [ S.textField
+                    [ E.onEnter createMsg
+                    , E.onInput GotAddOrCreateInput
+                    , A.placeholder "Magic Box"
+                    , A.value addOrCreateModel.input
+
+                    --
+                    , T.w_full
+                    ]
+                    []
+
+                -- Kind selector
+                ----------------
+                , Html.button
+                    [ addOrCreateModel.kind
+                        |> Drive.ContextMenu.kind ContextMenu.TopCenterWithoutOffset
+                        |> ShowContextMenu
+                        |> M.onClick
+
+                    --
+                    , T.absolute
+                    , T.bg_gray_500
+                    , T.cursor_pointer
+                    , T.flex
+                    , T.font_medium
+                    , T.items_center
+                    , T.mr_4
+                    , T.neg_translate_y_1over2
+                    , T.px_2
+                    , T.py_px
+                    , T.right_0
+                    , T.rounded_full
+                    , T.text_gray_300
+                    , T.text_xs
+                    , T.top_1over2
+                    , T.transform
+                    , T.uppercase
+                    , T.z_10
+
+                    -- Focus
+                    --------
+                    , T.focus__outline_none
+                    , T.focus__bg_purple_tint
+                    , T.focus__text_purple_shade
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__bg_gray_200
+                    , T.dark__text_gray_400
+
+                    --
+                    , T.dark__focus__bg_purple_shade
+                    , T.dark__focus__text_purple_tint
+                    ]
+                    [ addOrCreateModel.kind
+                        |> Drive.Item.kindIcon
+                        |> FeatherIcons.withSize 11
+                        |> FeatherIcons.toHtml []
+                        |> List.singleton
+                        |> Html.span [ T.mr_1 ]
+                    , addOrCreateModel.kind
+                        |> Drive.Item.generateExtensionForKindShortDescription
+                        |> Html.text
+                        |> List.singleton
+                        |> Html.span []
+                    ]
                 ]
-            , addButton FeatherIcons.filePlus
-                [ E.onClick (CreateFileOrFolder (Just { extension = "md" })) ]
-                [ Html.text "New"
-                , Drive.extension [] "MD"
-                ]
+
+            -- Button
+            ---------
+            , case String.trim addOrCreateModel.input of
+                "" ->
+                    Html.nothing
+
+                _ ->
+                    S.buttonWithNode
+                        Html.button
+                        [ E.onClick createMsg
+
+                        --
+                        , T.bg_purple
+                        , T.mt_4
+                        , T.text_sm
+                        , T.w_full
+
+                        -- Responsive
+                        -------------
+                        , T.sm__ml_3
+                        , T.sm__mt_0
+                        , T.sm__w_auto
+                        ]
+                        [ if addOrCreateModel.isCreating then
+                            Html.span
+                                [ T.flex
+                                , T.items_center
+                                ]
+                                [ Common.loadingAnimationWithAttributes
+                                    [ T.mr_2
+                                    , T.text_opacity_60
+                                    , T.text_white
+                                    ]
+                                    { size = 13 }
+                                , Html.text "Creating"
+                                ]
+
+                          else
+                            Html.text "Create"
+                        ]
             ]
 
         -----------------------------------------

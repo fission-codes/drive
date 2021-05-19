@@ -9,7 +9,7 @@ import Browser.Navigation as Navigation
 import ContextMenu exposing (ContextMenu)
 import Coordinates exposing (Coordinates)
 import Debouncer.Messages as Debouncer exposing (Debouncer)
-import Drive.Item exposing (Item)
+import Drive.Item as Item exposing (Item)
 import Drive.Item.Inventory as Item
 import Drive.Sidebar
 import FileSystem
@@ -49,9 +49,9 @@ type alias Flags =
 type alias Model =
     { apiDomain : String
     , authenticated : Maybe Authentication.Essentials
+    , contextMenu : Maybe (ContextMenu Msg)
     , currentTime : Time.Posix
     , directoryList : Result String Item.Inventory
-    , contextMenu : Maybe (ContextMenu Msg)
     , dragndropMode : Bool
     , helpfulNote : Maybe { faded : Bool, note : String }
     , initialised : Bool
@@ -62,11 +62,11 @@ type alias Model =
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
     , route : Route
-    , viewportSize : { height : Int, width : Int }
     , showLoadingOverlay : Bool
     , toasties : Toasty.Stack (Notification Msg)
     , url : Url
     , usersDomain : String
+    , viewportSize : { height : Int, width : Int }
 
     -----------------------------------------
     -- Debouncers
@@ -104,16 +104,19 @@ type Msg
     | CloseSidebar
     | CopyPublicUrl { item : Item, presentable : Bool }
     | CopyToClipboard { clip : String, notification : String }
-    | CreateFileOrFolder (Maybe { extension : String })
+    | CreateFile
+    | CreateFolder
     | DigDeeper { directoryName : String }
     | DownloadItem Item
     | GotAddOrCreateInput String
+    | GotWebnativeResponse Webnative.Response
     | GoUp { floor : Int }
     | IndividualSelect Int Item
     | RangeSelect Int Item
     | RemoveItem Item
     | RemoveSelectedItems
     | RenameItem Item
+    | ReplaceAddOrCreateKind Item.Kind
     | Select Int Item
     | ShowRenameItemModal Item
     | ToggleExpandedSidebar
@@ -125,10 +128,6 @@ type Msg
     | GotFsDirectoryList Json.Value
     | GotFsError String
     | FsLoaded
-      -----------------------------------------
-      -- Webnative-Elm
-      -----------------------------------------
-    | GotWebnativeResponse Webnative.Response
       -----------------------------------------
       -- 🌏 Common
       -----------------------------------------

@@ -1,4 +1,4 @@
-module Drive.State.Sidebar exposing (..)
+module Drive.Sidebar.State exposing (..)
 
 import Drive.Item as Item
 import Drive.Sidebar as Sidebar

@@ -9,8 +9,8 @@ import Dict
 import Drive.Item as Item exposing (Item, Kind(..))
 import Drive.Item.Inventory as Inventory exposing (Inventory)
 import Drive.Modals
-import Drive.Sidebar
-import Drive.State.Sidebar
+import Drive.Sidebar as Sidebar
+import Drive.Sidebar.State as Sidebar
 import FileSystem exposing (Operation(..))
 import FileSystem.Actions
 import List.Ext as List
@@ -26,7 +26,7 @@ import Set
 import Task
 import Toasty
 import Url
-import Webnative
+import Webnative exposing (DecodedResponse(..))
 import Wnfs
 
 
@@ -38,7 +38,7 @@ activateSidebarAddOrCreate : Manager
 activateSidebarAddOrCreate model =
     Return.singleton
         { model
-            | sidebar = Just (Drive.Sidebar.AddOrCreate Drive.Sidebar.addOrCreate)
+            | sidebar = Just (Sidebar.AddOrCreate Sidebar.addOrCreate)
             , sidebarExpanded = False
         }
 
@@ -71,7 +71,7 @@ closeSidebar model =
     { model | sidebar = Nothing }
         |> clearDirectoryListSelection
         |> (case model.sidebar of
-                Just (Drive.Sidebar.Details _) ->
+                Just (Sidebar.Details _) ->
                     if Common.isSingleFileView model then
                         goUpOneLevel
 
@@ -111,83 +111,118 @@ copyToClipboard { clip, notification } model =
         |> Return.command (Ports.showNotification notification)
 
 
-createFileOrFolder : Maybe { extension : String } -> Manager
-createFileOrFolder option model =
-    case ( option, sidebarAddOrCreateInput model ) of
-        ( Nothing, Just directoryName ) ->
+createFolder : Manager
+createFolder model =
+    case sidebarAddOrCreateInput model of
+        Just directoryName ->
             model.route
                 |> Routing.treePathSegments
                 |> List.add [ directoryName ]
-                |> (\p -> FileSystem.Actions.createDirectory { path = p, tag = CreatedDirectory })
+                |> (\p ->
+                        FileSystem.Actions.createDirectory
+                            { path = p
+                            , tag = CreatedDirectory
+                            }
+                   )
                 |> return
-                    ({ model | fileSystemStatus = FileSystem.Operation CreatingDirectory }
-                        |> sidebarAddOrCreateClearInput
-                    )
-
-        ( Just { extension }, maybeFileName ) ->
-            let
-                ensureUniqueFileName m fileName =
-                    m.directoryList
-                        |> Result.toMaybe
+                    (model.sidebar
                         |> Maybe.map
-                            (.items
-                                >> List.map .name
-                                >> Set.fromList
-                                >> ensureUnique fileName Nothing
+                            (Sidebar.mapAddOrCreate
+                                (\m -> { m | isCreating = True })
                             )
-
-                makeName prefix maybeSuffixNum =
-                    case maybeSuffixNum of
-                        Just suffixNum ->
-                            prefix ++ " " ++ String.fromInt suffixNum ++ "." ++ extension
-
-                        Nothing ->
-                            prefix ++ "." ++ extension
-
-                ensureUnique prefix maybeSuffix blacklisted =
-                    let
-                        name =
-                            makeName prefix maybeSuffix
-                    in
-                    if Set.member name blacklisted then
-                        maybeSuffix
-                            |> Maybe.map ((+) 1)
-                            |> Maybe.withDefault 2
-                            |> Just
-                            |> (\suff -> ensureUnique prefix suff blacklisted)
-
-                    else
-                        name
-            in
-            maybeFileName
-                |> Maybe.withDefault "Untitled"
-                |> ensureUniqueFileName model
-                |> Maybe.map
-                    (\fileName ->
-                        model.route
-                            |> Routing.treePathSegments
-                            |> (\path ->
-                                    case path of
-                                        "public" :: rest ->
-                                            "public" :: rest
-
-                                        _ ->
-                                            "private" :: path
-                               )
-                            |> List.add [ fileName ]
-                            |> (\p ->
-                                    FileSystem.Actions.writeUtf8
-                                        { path = p
-                                        , tag = CreatedEmptyFile { path = p }
-                                        , content = ""
-                                        }
-                               )
-                            |> return (sidebarAddOrCreateClearInput model)
+                        |> replaceSidebar
+                            { model
+                                | fileSystemStatus =
+                                    FileSystem.Operation CreatingDirectory
+                            }
                     )
-                |> Maybe.withDefault (Return.singleton model)
 
-        ( Nothing, _ ) ->
+        Nothing ->
             Return.singleton model
+
+
+createFile : Manager
+createFile model =
+    let
+        maybeFileName =
+            sidebarAddOrCreateInput model
+
+        ensureUniqueFileName m fileName =
+            m.directoryList
+                |> Result.toMaybe
+                |> Maybe.map
+                    (.items
+                        >> List.map .name
+                        >> Set.fromList
+                        >> ensureUnique fileName Nothing
+                    )
+
+        extension =
+            case model.sidebar of
+                Just (Sidebar.AddOrCreate { kind }) ->
+                    Item.generateExtensionForKind kind
+
+                _ ->
+                    ""
+
+        makeName prefix maybeSuffixNum =
+            case maybeSuffixNum of
+                Just suffixNum ->
+                    prefix ++ " " ++ String.fromInt suffixNum ++ extension
+
+                Nothing ->
+                    prefix ++ extension
+
+        ensureUnique prefix maybeSuffix blacklisted =
+            let
+                name =
+                    makeName prefix maybeSuffix
+            in
+            if Set.member name blacklisted then
+                maybeSuffix
+                    |> Maybe.map ((+) 1)
+                    |> Maybe.withDefault 2
+                    |> Just
+                    |> (\suff -> ensureUnique prefix suff blacklisted)
+
+            else
+                name
+    in
+    maybeFileName
+        |> Maybe.withDefault "Untitled"
+        |> ensureUniqueFileName model
+        |> Maybe.map
+            (\fileName ->
+                model.route
+                    |> Routing.treePathSegments
+                    |> (\path ->
+                            case path of
+                                "public" :: rest ->
+                                    "public" :: rest
+
+                                _ ->
+                                    "private" :: path
+                       )
+                    |> List.add [ fileName ]
+                    |> (\p ->
+                            FileSystem.Actions.writeUtf8
+                                { path = p
+                                , tag = CreatedEmptyFile { path = p }
+                                , content = ""
+                                }
+                       )
+                    |> return
+                        (model.sidebar
+                            |> Maybe.map
+                                (Sidebar.mapAddOrCreate
+                                    (\m -> { m | isCreating = True })
+                                )
+                            |> replaceSidebar
+                                model
+                        )
+            )
+        |> Maybe.withDefault
+            (Return.singleton model)
 
 
 digDeeper : { directoryName : String } -> Manager
@@ -265,46 +300,61 @@ downloadItem item model =
 
 gotAddCreateInput : String -> Manager
 gotAddCreateInput input model =
-    case model.sidebar of
-        Just (Drive.Sidebar.AddOrCreate addOrCreate) ->
-            Return.singleton
-                { model
-                    | sidebar =
-                        { addOrCreate | input = input }
-                            |> Drive.Sidebar.AddOrCreate
-                            |> Just
-                }
-
-        _ ->
-            Return.singleton model
+    model.sidebar
+        |> Maybe.map (Sidebar.mapAddOrCreate (\m -> { m | input = input }))
+        |> replaceSidebar model
+        |> Return.singleton
 
 
 gotWebnativeResponse : Webnative.Response -> Manager
 gotWebnativeResponse response model =
     case FileSystem.Actions.decodeResponse response of
-        -- We don't initialize webnative
-        Webnative.Webnative _ ->
+        -- NOTE: We don't initialize webnative
+        Webnative _ ->
             Return.singleton model
 
-        Webnative.Wnfs tag artifact ->
-            case tag of
-                SidebarTag sidebarTag ->
-                    updateSidebarTag sidebarTag artifact model
+        -----------------------------------------
+        -- WNFS
+        -----------------------------------------
+        Wnfs (SidebarTag sidebarTag) artifact ->
+            updateSidebarTag sidebarTag artifact model
 
-                CreatedEmptyFile { path } ->
-                    -- TODO add loading indicator to button and stop the loading animation here
-                    FileSystem.Actions.publish { tag = UpdatedFileSystem }
-                        |> Return.return model
+        Wnfs (CreatedEmptyFile { path }) _ ->
+            model.sidebar
+                |> Maybe.map
+                    (Sidebar.mapAddOrCreate
+                        (\m -> { m | input = "", isCreating = False })
+                    )
+                |> replaceSidebar
+                    model
+                |> Return.singleton
+                |> Return.command
+                    (FileSystem.Actions.publish
+                        { tag = UpdatedFileSystem }
+                    )
 
-                CreatedDirectory ->
-                    FileSystem.Actions.publish { tag = UpdatedFileSystem }
-                        |> Return.return model
+        Wnfs CreatedDirectory _ ->
+            model.sidebar
+                |> Maybe.map
+                    (Sidebar.mapAddOrCreate
+                        (\m -> { m | input = "", isCreating = False })
+                    )
+                |> replaceSidebar
+                    model
+                |> Return.singleton
+                |> Return.command
+                    (FileSystem.Actions.publish
+                        { tag = UpdatedFileSystem }
+                    )
 
-                UpdatedFileSystem ->
-                    Ports.fsListDirectory { pathSegments = Routing.treePathSegments model.route }
-                        |> Return.return model
+        Wnfs UpdatedFileSystem _ ->
+            { pathSegments = Routing.treePathSegments model.route }
+                |> Ports.fsListDirectory
+                |> return model
 
-        -- TODO Error handling
+        -----------------------------------------
+        -- TODO: Error handling
+        -----------------------------------------
         Webnative.WnfsError err ->
             Return.singleton model
 
@@ -374,7 +424,7 @@ individualSelect idx item model =
                             newInventory
                                 |> Inventory.selectionItems
                                 |> List.map .path
-                                |> Drive.Sidebar.details
+                                |> Sidebar.details
                                 |> Just
                     }
 
@@ -411,7 +461,7 @@ rangeSelect targetIndex item model =
                         newInventory
                             |> Inventory.selectionItems
                             |> List.map .path
-                            |> Drive.Sidebar.details
+                            |> Sidebar.details
                             |> Just
 
                     else
@@ -438,10 +488,10 @@ removeItem item model =
                 | fileSystemStatus = FileSystem.Operation Deleting
                 , sidebar =
                     case model.sidebar of
-                        Just (Drive.Sidebar.Details { paths }) ->
+                        Just (Sidebar.Details { paths }) ->
                             ifThenElse (List.member item.path paths) Nothing model.sidebar
 
-                        Just (Drive.Sidebar.EditPlaintext { path }) ->
+                        Just (Sidebar.EditPlaintext { path }) ->
                             ifThenElse (path == item.path) Nothing model.sidebar
 
                         a ->
@@ -515,6 +565,14 @@ renameItem item model =
             Common.hideModal model
 
 
+replaceAddOrCreateKind : Kind -> Manager
+replaceAddOrCreateKind kind model =
+    model.sidebar
+        |> Maybe.map (Sidebar.mapAddOrCreate (\m -> { m | kind = kind }))
+        |> replaceSidebar model
+        |> Return.singleton
+
+
 select : Int -> Item -> Manager
 select idx item model =
     let
@@ -532,12 +590,12 @@ select idx item model =
                     { path = item.path
                     , editor = Nothing
                     }
-                        |> Drive.Sidebar.EditPlaintext
+                        |> Sidebar.EditPlaintext
                         |> Just
 
                 else
                     [ item.path ]
-                        |> Drive.Sidebar.details
+                        |> Sidebar.details
                         |> Just
         }
         (if showEditor then
@@ -547,7 +605,7 @@ select idx item model =
             in
             FileSystem.Actions.readUtf8
                 { path = path
-                , tag = SidebarTag (Drive.Sidebar.LoadedFile { path = String.join "/" path })
+                , tag = SidebarTag (Sidebar.LoadedFile { path = String.join "/" path })
                 }
 
          else
@@ -595,29 +653,16 @@ showRenameItemModal item model =
 sidebarAddOrCreateInput : Model -> Maybe String
 sidebarAddOrCreateInput model =
     case model.sidebar of
-        Just (Drive.Sidebar.AddOrCreate { input }) ->
+        Just (Sidebar.AddOrCreate { input }) ->
             case String.trim input of
                 "" ->
                     Nothing
 
-                directoryName ->
-                    Just directoryName
+                s ->
+                    Just s
 
         _ ->
             Nothing
-
-
-sidebarAddOrCreateClearInput : Model -> Model
-sidebarAddOrCreateClearInput model =
-    case model.sidebar of
-        Just (Drive.Sidebar.AddOrCreate addOrCreate) ->
-            { addOrCreate | input = "" }
-                |> Drive.Sidebar.AddOrCreate
-                |> Just
-                |> (\newSidebar -> { model | sidebar = newSidebar })
-
-        _ ->
-            model
 
 
 toggleExpandedSidebar : Manager
@@ -631,11 +676,11 @@ toggleExpandedSidebar model =
 toggleSidebarAddOrCreate : Manager
 toggleSidebarAddOrCreate model =
     (case model.sidebar of
-        Just (Drive.Sidebar.AddOrCreate _) ->
+        Just (Sidebar.AddOrCreate _) ->
             Nothing
 
         _ ->
-            Just (Drive.Sidebar.AddOrCreate Drive.Sidebar.addOrCreate)
+            Just (Sidebar.AddOrCreate Sidebar.addOrCreate)
     )
         |> (\newSidebar ->
                 { model
@@ -646,21 +691,21 @@ toggleSidebarAddOrCreate model =
         |> Return.singleton
 
 
-updateSidebar : Drive.Sidebar.Msg -> Manager
+updateSidebar : Sidebar.Msg -> Manager
 updateSidebar sidebarMsg model =
     case model.sidebar of
         Just sidebar ->
-            Drive.State.Sidebar.update sidebarMsg sidebar model
+            Sidebar.update sidebarMsg sidebar model
 
         Nothing ->
             Return.singleton model
 
 
-updateSidebarTag : Drive.Sidebar.Tag -> Wnfs.Artifact -> Manager
+updateSidebarTag : Sidebar.Tag -> Wnfs.Artifact -> Manager
 updateSidebarTag sidebarTag artifact model =
     case model.sidebar of
         Just sidebar ->
-            Drive.State.Sidebar.updateTag sidebarTag artifact sidebar model
+            Sidebar.updateTag sidebarTag artifact sidebar model
 
         Nothing ->
             Return.singleton model
@@ -707,3 +752,8 @@ makeItemSelector indexModifier fallbackIndexFn maybeSelected model =
 
         _ ->
             Return.singleton model
+
+
+replaceSidebar : Model -> Maybe Sidebar.Model -> Model
+replaceSidebar model maybeSidebar =
+    { model | sidebar = maybeSidebar }

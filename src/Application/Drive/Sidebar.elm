@@ -1,5 +1,9 @@
 module Drive.Sidebar exposing (..)
 
+import Drive.Item exposing (Kind(..))
+
+
+
 -- 🧩
 
 
@@ -36,7 +40,9 @@ type alias EditorModel =
 
 
 type alias AddOrCreateModel =
-    { input : String
+    { kind : Kind
+    , input : String
+    , isCreating : Bool
     }
 
 
@@ -44,11 +50,31 @@ type alias AddOrCreateModel =
 -- 🌱
 
 
-details : List String -> Model
-details paths =
-    Details { paths = paths, showPreviewOverlay = False }
-
-
 addOrCreate : AddOrCreateModel
 addOrCreate =
-    { input = "" }
+    { kind = Directory
+    , input = ""
+    , isCreating = False
+    }
+
+
+details : List String -> Model
+details paths =
+    Details
+        { paths = paths
+        , showPreviewOverlay = False
+        }
+
+
+
+-- 🛠
+
+
+mapAddOrCreate : (AddOrCreateModel -> AddOrCreateModel) -> Model -> Model
+mapAddOrCreate fn model =
+    case model of
+        AddOrCreate m ->
+            AddOrCreate (fn m)
+
+        m ->
+            m

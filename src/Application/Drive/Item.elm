@@ -244,6 +244,51 @@ sortingFunction { isGroundFloor } a b =
 -- 🖼
 
 
+generateExtensionForKind : Kind -> String
+generateExtensionForKind kind =
+    case kind of
+        Code ->
+            ".html"
+
+        Other ->
+            ""
+
+        RichText ->
+            ".md"
+
+        Text ->
+            ".txt"
+
+        _ ->
+            ""
+
+
+generateExtensionForKindDescription : Kind -> String
+generateExtensionForKindDescription kind =
+    case kind of
+        RichText ->
+            "Markdown"
+
+        Code ->
+            "HTML"
+
+        Other ->
+            "File without extension"
+
+        _ ->
+            kindName kind
+
+
+generateExtensionForKindShortDescription : Kind -> String
+generateExtensionForKindShortDescription kind =
+    case generateExtensionForKindDescription kind of
+        "File without extension" ->
+            "File w/o ext"
+
+        desc ->
+            desc
+
+
 kindIcon : Kind -> FeatherIcons.Icon
 kindIcon kind =
     case kind of

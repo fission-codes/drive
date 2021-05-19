@@ -95,14 +95,14 @@ export default {
 
   variants: {
 
-    backgroundColor: [ "group-hover", "disabled", "responsive", "active" ],
+    backgroundColor: [ "focus", "group-hover", "hover", "disabled", "responsive", "active" ],
     backgroundOpacity: [ "disabled" ],
     borderColor: [ "first", "focus", "group-hover", "hover", "last", "responsive" ],
     borderWidth: [ "first", "last" ],
     margin: [ "first", "last", "responsive" ],
     opacity: [ "disabled", "group-hover", "responsive" ],
     pointerEvents: [ "group-hover" ],
-    textColor: [ "disabled", "responsive" ],
+    textColor: [ "disabled", "responsive", "focus", "hover", "active" ],
 
   },
 

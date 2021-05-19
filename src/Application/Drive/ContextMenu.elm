@@ -1,4 +1,4 @@
-module Drive.ContextMenu exposing (hamburger, item, selection)
+module Drive.ContextMenu exposing (hamburger, item, kind, selection)
 
 import Common
 import ContextMenu exposing (..)
@@ -277,6 +277,36 @@ downloadItem context =
                 |> DownloadItem
                 |> Just
         }
+
+
+
+-- KIND
+
+
+kind : ContextMenu.Hook -> Kind -> ContextMenu Msg
+kind hook active =
+    [ Directory
+
+    --
+    , Text
+    , RichText
+    , Code
+    , Other
+    ]
+        |> List.map
+            (\k ->
+                Item
+                    { icon = Drive.Item.kindIcon k
+                    , label = Drive.Item.generateExtensionForKindDescription k
+                    , active = active == k
+
+                    --
+                    , href = Nothing
+                    , msg = Just (ReplaceAddOrCreateKind k)
+                    }
+            )
+        |> ContextMenu.build
+            hook
 
 
 
