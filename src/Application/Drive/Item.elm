@@ -122,28 +122,31 @@ fromFileSystem { cid, name, path, posixTime, size, typ } =
                 _ ->
                     nameProperties name
 
+        lowercaseExtension =
+            String.toLower nameProps.extension
+
         kind =
             case typ of
                 "dir" ->
                     Directory
 
                 "file" ->
-                    if List.member nameProps.extension audioFileExtensions then
+                    if List.member lowercaseExtension audioFileExtensions then
                         Audio
 
-                    else if List.member nameProps.extension codeFileExtensions then
+                    else if List.member lowercaseExtension codeFileExtensions then
                         Code
 
-                    else if List.member nameProps.extension imageFileExtensions then
+                    else if List.member lowercaseExtension imageFileExtensions then
                         Image
 
-                    else if List.member nameProps.extension textFileExtensions then
+                    else if List.member lowercaseExtension textFileExtensions then
                         Text
 
-                    else if List.member nameProps.extension richtextFileExtensions then
+                    else if List.member lowercaseExtension richtextFileExtensions then
                         RichText
 
-                    else if List.member nameProps.extension videoFileExtensions then
+                    else if List.member lowercaseExtension videoFileExtensions then
                         Video
 
                     else
