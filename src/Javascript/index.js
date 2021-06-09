@@ -87,34 +87,42 @@ app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 
 wn.initialise({ loadFileSystem: false, permissions: PERMISSIONS })
   .then(async state => {
-  const { authenticated, newUser, permissions, throughLobby, username } = state
+    const { authenticated, newUser, permissions, throughLobby, username } = state
 
-  // Initialise app, pt. deux
-  app.ports.initialise.send(
-    authenticated ? { newUser, throughLobby, username } : null
-  )
+    // Initialise app, pt. deux
+    app.ports.initialise.send(
+      authenticated ? { newUser, throughLobby, username } : null
+    )
 
-  // Initialise app, pt. trois
-  const fsInstance = authenticated
-    ? await wn.loadFileSystem(PERMISSIONS)
-    : null
+    // Initialise app, pt. trois
+    const fsInstance = authenticated
+      ? await wn.loadFileSystem(PERMISSIONS)
+      : null
 
-  fs.setInstance(fsInstance)
-  ipfs.setInstance(await wn.ipfs.get())
+    fs.setInstance(fsInstance)
+    ipfs.setInstance(await wn.ipfs.get())
 
-  window.fs = fsInstance
+    window.fs = fsInstance
 
-  if (fsInstance) app.ports.fsLoaded.send(null)
+    if (fsInstance) app.ports.fsLoaded.send(null)
 
-  webnativeElm.setup({
-    app,
-    getFs: () => fsInstance,
-    webnative: wn
+    webnativeElm.setup({
+      app,
+      getFs: () => fsInstance,
+      webnative: wn
+    })
+
+    // Other things
+    analytics.setupOnFissionCodes()
+
+  }).catch(err => {
+    console.error(err)
+
+    if (err.toString() === "OperationError") {
+      location.search = ""
+    }
+
   })
-
-  // Other things
-  analytics.setupOnFissionCodes()
-})
 
 
 
