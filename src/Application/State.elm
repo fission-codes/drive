@@ -41,7 +41,7 @@ init flags url navKey =
       , fileSystemCid = Nothing
       , fileSystemStatus = FileSystem.Ready
       , helpfulNote = Nothing
-      , initialised = False
+      , initialised = Ok False
       , isFocused = False
       , modal = Nothing
       , navKey = navKey
@@ -173,9 +173,6 @@ update msg =
         GotFsError a ->
             FileSystem.gotError a
 
-        FsLoaded ->
-            FileSystem.loaded
-
         -----------------------------------------
         -- 🌏 Common
         -----------------------------------------
@@ -218,6 +215,9 @@ update msg =
         Focused ->
             Other.focused
 
+        GotInitialisationError a ->
+            Other.gotInitialisationError a
+
         HideWelcomeMessage ->
             Other.hideWelcomeMessage
 
@@ -232,6 +232,9 @@ update msg =
 
         LostWindowFocus ->
             Other.lostWindowFocus
+
+        Ready ->
+            Other.ready
 
         RedirectToLobby ->
             Other.redirectToLobby
@@ -261,9 +264,10 @@ subscriptions model =
     Sub.batch
         [ Ports.fsGotDirectoryList GotFsDirectoryList
         , Ports.fsGotError GotFsError
-        , Ports.fsLoaded (always FsLoaded)
+        , Ports.gotInitialisationError GotInitialisationError
         , Ports.initialise Initialise
         , Ports.lostWindowFocus (always LostWindowFocus)
+        , Ports.ready (always Ready)
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions

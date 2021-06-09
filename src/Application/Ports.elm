@@ -53,10 +53,16 @@ port fsMoveItem : { currentPathSegments : List String, pathSegments : List Strin
 -- 📰
 
 
+port gotInitialisationError : (String -> msg) -> Sub msg
+
+
 port initialise : (Maybe Authentication.Essentials -> msg) -> Sub msg
 
 
 port lostWindowFocus : (() -> msg) -> Sub msg
+
+
+port ready : (() -> msg) -> Sub msg
 
 
 
@@ -69,11 +75,8 @@ port fsGotDirectoryList : (Json.Value -> msg) -> Sub msg
 port fsGotError : (String -> msg) -> Sub msg
 
 
-port fsLoaded : (() -> msg) -> Sub msg
 
-
-
--- Webnative-Elm
+-- WEBNATIVE ELM
 
 
 port webnativeRequest : Webnative.Request -> Cmd msg

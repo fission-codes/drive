@@ -22,6 +22,12 @@ import Url exposing (Url)
 -- 🛠
 
 
+gotInitialisationError : String -> Manager
+gotInitialisationError err model =
+    Return.singleton
+        { model | initialised = Err err }
+
+
 hideWelcomeMessage : Manager
 hideWelcomeMessage model =
     model.authenticated
@@ -45,7 +51,7 @@ initialise maybeEssentials model =
 
                 else
                     FileSystem.NotNeeded
-            , initialised = True
+            , initialised = Ok True
             , route = route
             , showLoadingOverlay = False
         }
@@ -90,6 +96,64 @@ keyboardInteraction msg unmodified =
 lostWindowFocus : Manager
 lostWindowFocus model =
     Return.singleton { model | pressedKeys = [] }
+
+
+ready : Manager
+ready model =
+    let
+        route =
+            model.route
+
+        maybeTreeRoot =
+            Routing.treeRoot route
+
+        fileSystemStatus =
+            if Maybe.isJust maybeTreeRoot then
+                FileSystem.InitialListing
+
+            else
+                FileSystem.NotNeeded
+
+        needsRedirect =
+            (Routing.isAuthenticatedTree model.authenticated route == False)
+                && (List.head (Routing.treePathSegments route) == Just "public")
+    in
+    return
+        -----------------------------------------
+        -- Model
+        -----------------------------------------
+        { model | fileSystemStatus = fileSystemStatus }
+        -----------------------------------------
+        -- Command
+        -----------------------------------------
+        (if needsRedirect then
+            route
+                |> Routing.treePathSegments
+                |> List.drop 1
+                |> Routing.replaceTreePathSegments route
+                |> Routing.adjustUrl model.url
+                |> Url.toString
+                |> Navigation.pushUrl model.navKey
+
+         else if Routing.isAuthenticatedTree model.authenticated route then
+            -- List entire file system for the authenticated user
+            Ports.fsListDirectory
+                { pathSegments = Routing.treePathSegments route }
+
+         else if Maybe.isJust maybeTreeRoot then
+            -- List a public filesystem
+            Ports.fsListPublicDirectory
+                { pathSegments =
+                    Routing.treePathSegments route
+                , root =
+                    Common.filesDomainFromTreeRoot
+                        { usersDomain = model.usersDomain }
+                        maybeTreeRoot
+                }
+
+         else
+            Cmd.none
+        )
 
 
 screenSizeChanged : Int -> Int -> Manager

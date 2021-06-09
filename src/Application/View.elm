@@ -10,6 +10,7 @@ import Drive.Item exposing (Kind(..))
 import Drive.View as Drive
 import FileSystem
 import Html exposing (Html)
+import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Ext as E
 import Html.Events.Extra.Drag as Drag
@@ -44,16 +45,39 @@ body m =
       -----------------------------------------
       case ( Common.shouldShowLoadingAnimation m, m.route ) of
         ( True, _ ) ->
-            Common.loadingScreen
-                (if not m.initialised then
-                    [ Common.loadingText "Just a moment, loading the application." ]
+            case ( m.initialised, m.fileSystemStatus ) of
+                ( Err "UNSUPPORTED_BROWSER", _ ) ->
+                    errorView
+                        [ Html.div
+                            [ T.text_xl, T.text_purple ]
+                            [ Html.text "This browser, or browser mode, is not supported." ]
+                        , Html.div
+                            [ T.mt_2, T.opacity_40, T.text_sm ]
+                            [ Html.text "Maybe "
+                            , Html.a
+                                [ A.href "https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API"
+                                , T.underline
+                                ]
+                                [ Html.text "IndexedDB" ]
+                            , Html.text " is not working here?"
+                            ]
+                        ]
 
-                 else if m.fileSystemStatus == FileSystem.Loading then
-                    [ Common.loadingText "Just a moment, loading the filesystem." ]
+                ( Err err, _ ) ->
+                    errorView
+                        [ Html.text err ]
 
-                 else
-                    []
-                )
+                ( Ok False, _ ) ->
+                    Common.loadingScreen
+                        [ Common.loadingText "Just a moment, loading the application." ]
+
+                ( Ok True, FileSystem.Loading ) ->
+                    Common.loadingScreen
+                        [ Common.loadingText "Just a moment, loading the filesystem." ]
+
+                ( Ok True, _ ) ->
+                    Common.loadingScreen
+                        []
 
         ( _, Routing.Undecided ) ->
             Authentication.notAuthenticated m
@@ -154,6 +178,25 @@ treeView m =
 
     else
         Drive.view m
+
+
+errorView nodes =
+    Html.div
+        [ T.flex
+        , T.flex_col
+        , T.min_h_screen
+        ]
+        [ Html.div
+            [ T.flex
+            , T.flex_auto
+            , T.flex_col
+            , T.items_center
+            , T.justify_center
+            , T.p_8
+            , T.text_center
+            ]
+            nodes
+        ]
 
 
 

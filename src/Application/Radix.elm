@@ -54,7 +54,7 @@ type alias Model =
     , directoryList : Result String Item.Inventory
     , dragndropMode : Bool
     , helpfulNote : Maybe { faded : Bool, note : String }
-    , initialised : Bool
+    , initialised : Result String Bool
     , isFocused : Bool
     , fileSystemCid : Maybe String
     , fileSystemStatus : FileSystem.Status
@@ -127,7 +127,6 @@ type Msg
       -----------------------------------------
     | GotFsDirectoryList Json.Value
     | GotFsError String
-    | FsLoaded
       -----------------------------------------
       -- 🌏 Common
       -----------------------------------------
@@ -147,10 +146,12 @@ type Msg
     | Blurred
     | Focused
     | HideWelcomeMessage
+    | GotInitialisationError String
     | Initialise (Maybe Authentication.Essentials)
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | LostWindowFocus
+    | Ready
     | RedirectToLobby
     | ScreenSizeChanged Int Int
     | SetCurrentTime Time.Posix

@@ -104,7 +104,7 @@ wn.initialise({ loadFileSystem: false, permissions: PERMISSIONS })
 
     window.fs = fsInstance
 
-    if (fsInstance) app.ports.fsLoaded.send(null)
+    app.ports.ready.send(null)
 
     webnativeElm.setup({
       app,
@@ -120,6 +120,8 @@ wn.initialise({ loadFileSystem: false, permissions: PERMISSIONS })
 
     if (err.toString() === "OperationError") {
       location.search = ""
+    } else {
+      app.ports.gotInitialisationError.send(err)
     }
 
   })
