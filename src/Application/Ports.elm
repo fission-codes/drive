@@ -65,6 +65,12 @@ port lostWindowFocus : (() -> msg) -> Sub msg
 port ready : (() -> msg) -> Sub msg
 
 
+port appUpdateAvailable : (() -> msg) -> Sub msg
+
+
+port appUpdateFinished : (() -> msg) -> Sub msg
+
+
 
 -- 📰  ░░  FILE SYSTEM
 

@@ -33,13 +33,13 @@ renameItem item =
             [ E.onClick HideModal
 
             --
-            , T.bg_gray_500
+            , T.bg_base_500
             , T.ml_3
             , T.text_tiny
 
             -- Dark mode
             ------------
-            , T.dark__bg_gray_200
+            , T.dark__bg_base_800
             ]
             [ Html.text "Cancel"
             ]

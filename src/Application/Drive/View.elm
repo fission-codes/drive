@@ -70,7 +70,7 @@ header model =
             List.length segments
     in
     Html.header
-        [ T.bg_gray_600
+        [ T.bg_base_200
         , T.break_all
         , T.left_0
         , T.py_8
@@ -82,7 +82,7 @@ header model =
 
         -- Dark mode
         ------------
-        , T.dark__bg_gray_100
+        , T.dark__bg_base_700
         ]
         [ Html.div
             [ T.container
@@ -193,20 +193,20 @@ header model =
             -----------------------------------------
             -- , Html.div
             --     [ T.border_2
-            --     , T.border_gray_500
+            --     , T.border_base_500
             --     , T.cursor_not_allowed
             --     , T.pl_8
             --     , T.pr_3
             --     , T.py_1
             --     , T.relative
             --     , T.rounded_full
-            --     , T.text_gray_500
+            --     , T.text_base_500
             --     , T.w_48
             --
             --     -- Dark mode
             --     ------------
-            --     , T.dark__border_gray_200
-            --     , T.dark__text_gray_200
+            --     , T.dark__border_base_800
+            --     , T.dark__text_base_800
             --     ]
             --     [ FeatherIcons.search
             --         |> FeatherIcons.withSize 20
@@ -217,13 +217,13 @@ header model =
             --             , T.left_0
             --             , T.ml_2
             --             , T.neg_translate_y_1over2
-            --             , T.text_gray_500
+            --             , T.text_base_500
             --             , T.top_1over2
             --             , T.transform
             --
             --             -- Dark mode
             --             ------------
-            --             , T.dark__text_gray_200
+            --             , T.dark__text_base_800
             --             ]
             --
             --     --
@@ -247,7 +247,7 @@ header model =
 
                         --
                         , T.cursor_pointer
-                        , T.text_gray_300
+                        , T.text_base_500
                         ]
                 ]
             ]
@@ -267,14 +267,14 @@ inactivePathPart floor text =
         --
         , T.cursor_pointer
         , T.pb_px
-        , T.tdc_gray_500
-        , T.text_gray_300
+        , T.tdc_base_300
+        , T.text_base_500
         , T.underline
 
         -- Dark mode
         ------------
-        , T.dark__tdc_gray_200
-        , T.dark__text_gray_400
+        , T.dark__tdc_base_600
+        , T.dark__text_base_400
         ]
         [ namePart floor text ]
 
@@ -291,11 +291,11 @@ pathSeparator =
     Html.span
         [ T.antialiased
         , T.mx_3
-        , T.text_gray_500
+        , T.text_base_300
 
         -- Dark mode
         ------------
-        , T.dark__text_gray_200
+        , T.dark__text_base_600
         ]
         [ Html.text "/" ]
 
@@ -342,14 +342,14 @@ rootPathPart model segments =
                     --
                     , T.cursor_pointer
                     , T.pb_px
-                    , T.tdc_gray_500
-                    , T.text_gray_300
+                    , T.tdc_base_300
+                    , T.text_base_500
                     , T.underline
 
                     -- Dark mode
                     ------------
-                    , T.dark__tdc_gray_200
-                    , T.dark__text_gray_400
+                    , T.dark__tdc_base_600
+                    , T.dark__text_base_400
                     ]
     in
     Html.span
@@ -446,20 +446,20 @@ mainLayout model leftSide =
                     , T.w_full
                     ]
                     [ Html.div
-                        [ T.bg_gray_600
+                        [ T.bg_base_200
                         , T.leading_relaxed
                         , T.max_w_md
                         , T.ml_6
                         , T.p_6
                         , T.relative
                         , T.rounded_l_md
-                        , T.text_gray_300
+                        , T.text_base_500
                         , T.text_sm
 
                         -- Dark mode
                         ------------
-                        , T.dark__bg_darkness_above
-                        , T.dark__text_gray_400
+                        , T.dark__bg_base_800
+                        , T.dark__text_base_500
                         ]
                         [ Html.div
                             []
@@ -586,11 +586,11 @@ errorView route err =
         , T.justify_center
         , T.leading_snug
         , T.text_center
-        , T.text_gray_300
+        , T.text_base_500
 
         -- Dark mode
         ------------
-        , T.dark__text_gray_400
+        , T.dark__text_base_500
         ]
         [ FeatherIcons.zapOff
             |> FeatherIcons.withSize 88
@@ -668,14 +668,14 @@ empty model =
         , T.justify_center
         , T.leading_snug
         , T.text_center
-        , T.text_gray_300
+        , T.text_base_500
 
         --
         , T.md__flex
 
         -- Dark mode
         ------------
-        , T.dark__text_gray_400
+        , T.dark__text_base_500
         ]
         [ if isAuthenticated then
             FeatherIcons.plus
@@ -750,13 +750,13 @@ list model directoryList =
             [ T.antialiased
             , T.font_semibold
             , T.mb_1
-            , T.text_gray_400
+            , T.text_base_400
             , T.text_xs
             , T.tracking_wider
 
             -- Dark mode
             ------------
-            , T.dark__text_gray_300
+            , T.dark__text_base_500
             ]
             [ Html.text "NAME" ]
 
@@ -788,12 +788,12 @@ list model directoryList =
           in
           Html.div
             [ T.mt_8
-            , T.text_gray_400
+            , T.text_base_400
             , T.text_sm
 
             -- Dark mode
             ------------
-            , T.dark__text_gray_300
+            , T.dark__text_base_500
             ]
             [ case amountOfDirs of
                 0 ->
@@ -880,7 +880,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
             )
 
         --
-        , T.border_gray_700
+        , T.border_base_100
         , T.cursor_pointer
         , T.flex
         , T.group
@@ -904,7 +904,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
 
         -- Dark mode
         ------------
-        , T.dark__border_darkness_above
+        , T.dark__border_base_800
 
         --
         , if isSelected then
@@ -965,7 +965,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
         , if loading then
             Common.loadingAnimationWithAttributes
                 [ T.ml_2
-                , T.text_gray_300
+                , T.text_base_500
                 ]
                 { size = S.iconSize }
 

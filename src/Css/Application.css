@@ -1,8 +1,8 @@
 @charset "UTF-8";
 
-@import "fission-kit/fonts/body/fontface.css";
-@import "fission-kit/fonts/display/fontface.css";
-@import "fission-kit/fonts/mono/fontface.css";
+@import "@fission-suite/kit/fonts/body/fontface.css";
+@import "@fission-suite/kit/fonts/display/fontface.css";
+@import "@fission-suite/kit/fonts/mono/fontface.css";
 @import "../Static/Fonts/Nunito/fontface.css";
 
 @tailwind base;
@@ -11,14 +11,14 @@
 
 
 body {
-  @apply font-body min-h-screen text-gray-100;
+  @apply font-body min-h-screen text-base-800;
   text-rendering: optimizeLegibility;
 }
 
 
 @screen dark {
   body {
-    @apply bg-darkness text-gray-500;
+    @apply bg-base-900 text-base-300;
   }
 }
 
@@ -55,13 +55,13 @@ body {
 
 
 .drive-item__preview img {
-  @apply bg-gray-900;
+  @apply bg-base-25;
 }
 
 
 @screen dark {
   .drive-item__preview img {
-    @apply bg-darkness-below;
+    @apply bg-base-900;
   }
 }
 
@@ -72,7 +72,7 @@ body {
 
 input::placeholder,
 textarea::placeholder {
-  @apply text-gray-400 opacity-75;
+  @apply text-base-400 opacity-75;
 }
 
 
@@ -97,7 +97,7 @@ textarea:focus {
 @screen dark {
   input::placeholder,
   textarea::placeholder {
-    @apply text-gray-300 opacity-75;
+    @apply text-base-500 opacity-75;
   }
 
   input:user-invalid,

@@ -70,11 +70,13 @@ const app = Elm.Main.init({
 
 app.ports.copyToClipboard.subscribe(copyToClipboard)
 app.ports.deauthenticate.subscribe(deauthenticate)
+app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 app.ports.showNotification.subscribe(showNotification)
 
 app.ports.redirectToLobby.subscribe(() => {
   wn.redirectToLobby(PERMISSIONS, location.origin + location.pathname)
 })
+
 
 exe("fsAddContent", "add")
 exe("fsListDirectory", "listDirectory")
@@ -82,10 +84,18 @@ exe("fsListPublicDirectory", "listPublicDirectory")
 exe("fsMoveItem", "moveItem", { listParent: true })
 exe("fsRemoveItem", "removeItem", { listParent: true })
 
-app.ports.fsDownloadItem.subscribe(fs.downloadItem)
+
+registerServiceWorker({
+  path: "service-worker.js",
+  onUpdateAvailable: () => app.ports.appUpdateAvailable.send(null),
+  onUpdateFinished: () => app.ports.appUpdateFinished.send(null),
+})
 
 
-wn.initialise({ loadFileSystem: false, permissions: PERMISSIONS })
+wn.initialise({
+    loadFileSystem: false,
+    permissions: PERMISSIONS
+  })
   .then(async state => {
     const { authenticated, newUser, permissions, throughLobby, username } = state
 
@@ -229,4 +239,29 @@ function reportFileSystemError(err) {
   const msg = err.message || err || ""
   console.error(err)
   app.ports.fsGotError.send(msg)
+}
+
+
+function registerServiceWorker({ onUpdateAvailable, onUpdateFinished, path }) {
+  if (!path) throw new Error("Missing required `path` parameter")
+
+  if ("serviceWorker" in navigator) {
+    return navigator.serviceWorker.register("service-worker.js").then(registration => {
+      console.log("registered", registration)
+      registration.onupdatefound = () => {
+        console.log("update found", registration.installing)
+        const i = registration.installing
+        if (!i) return
+
+        onUpdateAvailable()
+
+        i.onstatechange = () => {
+          console.log("state change", i.state)
+          if (i.state === "installed") onUpdateFinished()
+        }
+      }
+    })
+  }
+
+  return Promise.reject("Service workers are not supported in this browser")
 }

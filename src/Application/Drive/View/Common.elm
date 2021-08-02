@@ -51,7 +51,7 @@ sidebarControls { above, controls } =
             , T.mt_px
             , T.px_2
             , T.pt_px
-            , T.text_gray_300
+            , T.text_base_500
             , T.text_sm
             ]
             additionalAttributes
@@ -59,7 +59,7 @@ sidebarControls { above, controls } =
         (Html.div
             [ T.absolute
             , T.border_b
-            , T.border_gray_300
+            , T.border_base_400
             , T.left_0
             , T.opacity_10
             , T.top_full
@@ -142,7 +142,7 @@ extension attributes ext =
     Html.span
         (List.append attributes
             [ T.antialiased
-            , T.bg_gray_600
+            , T.bg_base_200
             , T.font_semibold
             , T.inline_block
             , T.leading_normal
@@ -150,14 +150,14 @@ extension attributes ext =
             , T.pointer_events_none
             , T.px_1
             , T.rounded
-            , T.text_gray_200
+            , T.text_base_600
             , T.text_xs
             , T.uppercase
 
             -- Dark mode
             ------------
-            , T.dark__bg_gray_200
-            , T.dark__text_gray_500
+            , T.dark__bg_base_800
+            , T.dark__text_base_500
             ]
         )
         [ Html.text ext ]

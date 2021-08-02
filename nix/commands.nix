@@ -198,7 +198,7 @@
 
     images = task "images" ''
       echo "⚙️  Copying Images"
-      cp -RT node_modules/fission-kit/images/ ${dist_dir}/images/
+      cp -RT node_modules/@fission-suite/kit/images/ ${dist_dir}/images/
       cp -RT ${src_dir}/Static/Images/ ${dist_dir}/images/
     '';
 
@@ -238,7 +238,7 @@
       cp -RT ${src_dir}/Static/Meta/ ${dist_dir}/
 
       mkdir -p ${dist_dir}/fonts/
-      cp node_modules/fission-kit/fonts/**/*.woff2 ${dist_dir}/fonts/
+      cp node_modules/@fission-suite/kit/fonts/**/*.woff2 ${dist_dir}/fonts/
       cp ${src_dir}/Static/Fonts/Nunito/*.woff2 ${dist_dir}/fonts/
     '';
 

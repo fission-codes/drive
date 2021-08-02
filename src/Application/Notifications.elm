@@ -32,12 +32,12 @@ config =
             , T.z_50
             ]
         |> Toasty.itemAttrs
-            [ T.bg_gray_300
+            [ T.bg_base_600
             , T.mt_3
             , T.p_4
             , T.rounded
             , T.shadow_md
-            , T.text_gray_900
+            , T.text_base_50
             ]
 
 
@@ -53,7 +53,7 @@ loadingIndication text =
         |> List.singleton
         |> Html.div
             [ T.animate_spin
-            , T.text_gray_900
+            , T.text_base_50
             ]
         |> List.singleton
         |> Html.div []

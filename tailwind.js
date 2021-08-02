@@ -1,6 +1,6 @@
 import defaultTheme from "tailwindcss/defaultTheme.js"
 import plugin from "tailwindcss/plugin.js"
-import * as kit from "fission-kit"
+import * as kit from "@fission-suite/kit"
 
 
 export default {
@@ -17,7 +17,7 @@ export default {
     colors: {
       ...kit.dasherizeObjectKeys(kit.colors),
 
-      "white_05": "rgba(255, 255, 255, 0.05)",
+      "white-05": "rgba(255, 255, 255, 0.05)",
 
       "inherit": "inherit",
       "transparent": "transparent"

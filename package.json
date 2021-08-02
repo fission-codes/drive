@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "fission-kit": "fission-suite/kit#768a1384450d0be543152f75d02ffe3dfe90bd4e",
+    "@fission-suite/kit": "1.1.2",
     "webnative": "0.24.0",
     "webnative-elm": "^6.0.0"
   },
