@@ -1,6 +1,5 @@
 module.exports = {
   cacheId: "UNIX_TIMESTAMP",
-  clientsClaim: true,
   globDirectory: "build/",
   globPatterns: [ "**/*" ],
   inlineWorkboxRuntime: true,

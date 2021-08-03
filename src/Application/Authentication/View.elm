@@ -46,7 +46,6 @@ createAccount model =
         [ E.onClick RedirectToLobby
 
         --
-        , T.antialiased
         , T.bg_purple
         , T.mt_8
         , T.text_opacity_90
