@@ -87,8 +87,14 @@ exe("fsRemoveItem", "removeItem", { listParent: true })
 
 registerServiceWorker({
   path: "service-worker.js",
-  onUpdateAvailable: () => app.ports.appUpdateAvailable.send(null),
-  onUpdateFinished: () => app.ports.appUpdateFinished.send(null),
+  onUpdateAvailable: () => {
+    console.log("⚙️ Application update available")
+    app.ports.appUpdateAvailable.send(null)
+  },
+  onUpdateFinished: () => {
+    console.log("⚙️ Application update finished")
+    app.ports.appUpdateFinished.send(null)
+  },
 })
 
 
@@ -247,16 +253,13 @@ function registerServiceWorker({ onUpdateAvailable, onUpdateFinished, path }) {
 
   if ("serviceWorker" in navigator) {
     return navigator.serviceWorker.register("service-worker.js").then(registration => {
-      console.log("registered", registration)
       registration.onupdatefound = () => {
-        console.log("update found", registration.installing)
         const i = registration.installing
         if (!i) return
 
         onUpdateAvailable()
 
         i.onstatechange = () => {
-          console.log("state change", i.state)
           if (i.state === "installed") onUpdateFinished()
         }
       }
