@@ -107,7 +107,7 @@ introText =
 
         -- Dark mode
         ------------
-        , T.dark__text_base_500
+        , T.dark__text_base_400
         ]
 
 

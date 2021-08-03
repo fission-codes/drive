@@ -8,6 +8,7 @@ import Html exposing (Html)
 import Html.Events as E
 import Html.Events.Extra as E
 import Html.Extra as Html
+import Kit.Components
 import Radix exposing (..)
 import Styling as S
 import Tailwind as T
@@ -41,32 +42,16 @@ notAuthenticated model =
 
 createAccount : Model -> Html Msg
 createAccount model =
-    [ Html.span
-        [ T.mr_2
-        , T.opacity_30
-        , T.text_white
-        , T.w_4
-        ]
-        [ Common.View.Svg.icon
-            { gradient = Nothing }
-        ]
+    Kit.Components.signIn
+        [ E.onClick RedirectToLobby
 
-    --
-    , Html.text "Sign in with Fission"
-    ]
-        |> Html.div
-            [ T.flex
-            , T.items_center
-            , T.pt_px
-            ]
-        |> List.singleton
-        |> S.button
-            [ E.onClick RedirectToLobby
-            , T.bg_purple
-            , T.mt_8
-            , T.mx_auto
-            , T.text_sm
-            ]
+        --
+        , T.antialiased
+        , T.bg_purple
+        , T.mt_8
+        , T.text_opacity_90
+        , T.text_white
+        ]
 
 
 
