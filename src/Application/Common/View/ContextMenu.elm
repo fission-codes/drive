@@ -30,14 +30,14 @@ view contextMenu =
         , A.style "min-width" "170px"
 
         --
-        , T.bg_gray_900
+        , T.bg_base_25
         , T.fixed
         , T.leading_relaxed
         , T.overflow_hidden
         , T.rounded
         , T.shadow_md
         , T.select_none
-        , T.text_gray_200
+        , T.text_base_600
         , T.text_tiny
         , T.transform
         , T.z_50
@@ -72,8 +72,8 @@ view contextMenu =
 
         -- Dark mode
         ------------
-        , T.dark__bg_darkness_above
-        , T.dark__text_gray_400
+        , T.dark__bg_base_800
+        , T.dark__text_base_400
         ]
         (List.map
             (\item ->
@@ -83,7 +83,7 @@ view contextMenu =
 
                     Divider ->
                         Html.div
-                            [ T.bg_gray_600
+                            [ T.bg_base_200
                             , T.h_px
                             , T.overflow_hidden
                             , T.pt_px
@@ -139,7 +139,7 @@ itemView { icon, label, href, msg, active } =
 
 itemClasses =
     [ T.border_b
-    , T.border_gray_600
+    , T.border_base_200
     , T.cursor_pointer
     , T.flex
     , T.items_center

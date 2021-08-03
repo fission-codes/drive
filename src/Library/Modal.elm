@@ -26,7 +26,7 @@ type alias Modal msg =
 view : Modal msg -> Html msg
 view modal =
     Html.section
-        [ T.bg_gray_900
+        [ T.bg_base_50
         , T.fixed
         , T.left_1over2
         , T.neg_translate_x_1over2
@@ -40,7 +40,7 @@ view modal =
 
         -- Dark mode
         ------------
-        , T.dark__bg_darkness_above
+        , T.dark__bg_base_800
         ]
         [ -----------------------------------------
           -- Title

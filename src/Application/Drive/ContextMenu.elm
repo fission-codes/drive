@@ -156,7 +156,6 @@ item hook { isGroundFloor } context =
             _ ->
                 List.concat
                     [ [ downloadItem context
-                      , Divider
                       , driveLink context
                       ]
                     , Common.when isPublicPath

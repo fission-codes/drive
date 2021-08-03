@@ -22,6 +22,16 @@ import Url exposing (Url)
 -- 🛠
 
 
+appUpdateAvailable : Manager
+appUpdateAvailable model =
+    Return.singleton { model | appUpdate = Installing }
+
+
+appUpdateFinished : Manager
+appUpdateFinished model =
+    Return.singleton { model | appUpdate = Installed }
+
+
 gotInitialisationError : String -> Manager
 gotInitialisationError err model =
     Return.singleton

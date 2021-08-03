@@ -103,17 +103,17 @@ introText =
     Html.div
         [ T.max_w_xl
         , T.mt_4
-        , T.text_gray_300
+        , T.text_base_500
 
         -- Dark mode
         ------------
-        , T.dark__text_gray_400
+        , T.dark__text_base_500
         ]
 
 
 loadingAnimation : { size : Int } -> Html msg
 loadingAnimation =
-    loadingAnimationWithAttributes [ T.text_gray_300 ]
+    loadingAnimationWithAttributes [ T.text_base_500 ]
 
 
 loadingAnimationWithAttributes : List (Html.Attribute msg) -> { size : Int } -> Html msg

@@ -33,6 +33,7 @@ init flags url navKey =
       -- Model
       -----------------------------------------
       { apiDomain = flags.apiDomain
+      , appUpdate = NotAvailable
       , authenticated = Nothing
       , currentTime = Time.millisToPosix flags.currentTime
       , contextMenu = Nothing
@@ -185,6 +186,9 @@ update msg =
         HideModal ->
             Common.hideModal
 
+        ReloadApplication ->
+            Common.reloadApplication
+
         RemoveContextMenu ->
             Common.removeContextMenu
 
@@ -209,6 +213,12 @@ update msg =
         -----------------------------------------
         -- 🐚 Other
         -----------------------------------------
+        AppUpdateAvailable ->
+            Other.appUpdateAvailable
+
+        AppUpdateFinished ->
+            Other.appUpdateFinished
+
         Blurred ->
             Other.blurred
 
@@ -262,7 +272,9 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Ports.fsGotDirectoryList GotFsDirectoryList
+        [ Ports.appUpdateAvailable (always AppUpdateAvailable)
+        , Ports.appUpdateFinished (always AppUpdateFinished)
+        , Ports.fsGotDirectoryList GotFsDirectoryList
         , Ports.fsGotError GotFsError
         , Ports.gotInitialisationError GotInitialisationError
         , Ports.initialise Initialise

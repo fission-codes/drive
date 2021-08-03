@@ -21,11 +21,11 @@ container_padding =
 
 
 default_light_text_color =
-    T.text_gray_100
+    T.text_base_800
 
 
 default_dark_text_color =
-    T.dark__text_gray_500
+    T.dark__text_base_500
 
 
 default_transition_duration =
@@ -89,14 +89,14 @@ label attributes =
             [ T.block
             , T.font_bold
             , T.pb_1
-            , T.text_gray_200
+            , T.text_base_800
             , T.text_xs
             , T.tracking_wide
             , T.uppercase
 
             -- Dark mode
             ------------
-            , T.dark__text_gray_300
+            , T.dark__text_base_500
             ]
         |> Html.label
 
@@ -108,7 +108,7 @@ textField attributes =
             [ T.appearance_none
             , T.bg_transparent
             , T.border_2
-            , T.border_gray_500
+            , T.border_base_300
             , T.flex_auto
             , T.leading_relaxed
             , T.outline_none
@@ -120,6 +120,6 @@ textField attributes =
 
             -- Dark mode
             ------------
-            , T.dark__border_gray_200
+            , T.dark__border_base_600
             ]
         |> Html.input

@@ -68,7 +68,7 @@ viewSidebar { scrollable, expanded, body } =
         [ A.class "sidebar"
 
         --
-        , T.bg_gray_900
+        , T.bg_base_25
         , T.group
         , T.h_screen
         , T.overflow_x_hidden
@@ -94,7 +94,7 @@ viewSidebar { scrollable, expanded, body } =
 
         -- Dark mode
         ------------
-        , T.dark__bg_darkness_below
+        , T.dark__bg_base_950
         ]
         [ body ]
 
@@ -126,7 +126,7 @@ plaintextEditor maybeEditor model =
                     , T.px_5
                     , T.pt_5
                     , T.resize_none
-                    , T.text_gray_100
+                    , T.text_base_800
 
                     --
                     , T.h_full
@@ -144,7 +144,7 @@ plaintextEditor maybeEditor model =
 
                     -- Dark mode
                     ------------
-                    , T.dark__text_gray_500
+                    , T.dark__text_base_500
                     ]
                     [ Html.text editor.text ]
 
@@ -165,13 +165,13 @@ plaintextEditor maybeEditor model =
                         , T.neg_translate_y_1over2
                         ]
                         [ Common.loadingAnimationWithAttributes
-                            [ T.text_gray_400 ]
+                            [ T.text_base_500 ]
                             { size = 24 }
                         ]
                     ]
         , Html.div
             [ T.border_t
-            , T.border_gray_300
+            , T.border_base_400
             , T.border_opacity_10
             , T.flex
             , T.flex_shrink_0
@@ -196,7 +196,7 @@ editorHeaderItems model =
                     [ T.mx_2
                     , T.my_1
                     , T.pointer_events_none
-                    , T.text_gray_300
+                    , T.text_base_500
                     ]
 
         filename item =
@@ -210,7 +210,7 @@ editorHeaderItems model =
 
                 -- Dark mode
                 ------------
-                , T.dark__border_darkness_above
+                , T.dark__border_base_800
                 , T.dark__text_white
                 ]
                 [ -----------------------------------------
@@ -310,12 +310,12 @@ editorFooterItems editor =
 
         --
         , T.disabled__bg_white
-        , T.disabled__text_gray_400
+        , T.disabled__text_base_400
         , T.focus__shadow_outline
 
         -- Dark mode
         ------------
-        , T.dark__disabled__bg_darkness
+        , T.dark__disabled__bg_base_900
         ]
         [ Common.loadingAnimationWithAttributes
             [ T.mr_2
@@ -334,7 +334,7 @@ editorFooterItems editor =
         , T.px_4
         , T.py_2
         , T.rounded
-        , T.text_gray_400
+        , T.text_base_400
         , T.text_tiny
         , T.tracking_wide
         , T.uppercase
@@ -380,12 +380,12 @@ addOrCreateForm addOrCreateModel model =
                 [ T.font_display
                 , T.font_medium
                 , T.mb_3
-                , T.text_gray_300
+                , T.text_base_500
                 , T.text_lg
 
                 -- Dark mode
                 ------------
-                , T.dark__text_gray_400
+                , T.dark__text_base_400
                 ]
                 [ Html.text t ]
     in
@@ -444,7 +444,7 @@ addOrCreateForm addOrCreateModel model =
 
                     --
                     , T.absolute
-                    , T.bg_gray_500
+                    , T.bg_base_300
                     , T.cursor_pointer
                     , T.flex
                     , T.font_medium
@@ -455,7 +455,7 @@ addOrCreateForm addOrCreateModel model =
                     , T.py_px
                     , T.right_0
                     , T.rounded_full
-                    , T.text_gray_300
+                    , T.text_base_500
                     , T.text_xs
                     , T.top_1over2
                     , T.transform
@@ -470,8 +470,8 @@ addOrCreateForm addOrCreateModel model =
 
                     -- Dark mode
                     ------------
-                    , T.dark__bg_gray_200
-                    , T.dark__text_gray_400
+                    , T.dark__bg_base_600
+                    , T.dark__text_base_400
 
                     --
                     , T.dark__focus__bg_purple_shade
@@ -555,7 +555,7 @@ addOrCreateForm addOrCreateModel model =
                 --
                 , T.border_2
                 , T.border_dashed
-                , T.border_gray_500
+                , T.border_base_300
                 , T.block
                 , T.cursor_pointer
                 , T.h_0
@@ -564,7 +564,7 @@ addOrCreateForm addOrCreateModel model =
 
                 -- Dark mode
                 ------------
-                , T.dark__border_darkness_above
+                , T.dark__border_base_800
                 ]
                 []
 
@@ -581,7 +581,7 @@ addOrCreateForm addOrCreateModel model =
                 , T.neg_translate_y_1over2
                 , T.pointer_events_none
                 , T.px_4
-                , T.text_gray_400
+                , T.text_base_400
                 , T.top_1over2
                 , T.transform
                 , T.truncate
@@ -589,7 +589,7 @@ addOrCreateForm addOrCreateModel model =
 
                 -- Dark mode
                 ------------
-                , T.dark__text_gray_300
+                , T.dark__text_base_500
                 ]
                 [ Html.text "Click to choose, or drop some files"
                 ]

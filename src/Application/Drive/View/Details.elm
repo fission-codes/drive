@@ -99,7 +99,7 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
         --
         , Html.div
             [ T.absolute
-            , T.bg_gray_900
+            , T.bg_base_50
             , T.inset_0
             , T.z_0
 
@@ -113,7 +113,7 @@ overlay isGroundFloor isSingleFileView currentTime expandSidebar showPreviewOver
 
             -- Dark mode
             ------------
-            , T.dark__bg_darkness_below
+            , T.dark__bg_base_950
             ]
             []
 
@@ -200,7 +200,7 @@ overlayContents isGroundFloor currentTime items =
     , Html.div
         [ T.mt_px
         , T.text_center
-        , T.text_gray_300
+        , T.text_base_500
         , T.text_sm
         ]
         [ case items of
@@ -230,10 +230,13 @@ overlayContents isGroundFloor currentTime items =
         , T.mt_5
         ]
         (case items of
+            [] ->
+                []
+
             [ item ] ->
                 overlaySingleItemActions isGroundFloor item
 
-            _ ->
+            _ :: _ ->
                 overlayMultipleItemActions items
         )
     ]
@@ -262,7 +265,7 @@ overlaySingleItemActions isGroundFloor item =
         , T.px_2
         , T.py_1
         , T.rounded
-        , T.text_gray_900
+        , T.text_base_50
         , T.text_sm
         , T.tracking_wider
         , T.uppercase

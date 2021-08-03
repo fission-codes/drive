@@ -49,6 +49,11 @@ hideModal model =
     Return.singleton { model | modal = Nothing }
 
 
+reloadApplication : Manager
+reloadApplication model =
+    return model Navigation.reload
+
+
 removeContextMenu : Manager
 removeContextMenu model =
     Return.singleton { model | contextMenu = Nothing }

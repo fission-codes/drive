@@ -22,12 +22,12 @@ import Url
 view : Model -> Html Msg
 view m =
     Html.footer
-        [ T.bg_gray_900
+        [ T.bg_base_25
         , T.pt_px
 
         -- Dark mode
         ------------
-        , T.dark__bg_darkness_below
+        , T.dark__bg_base_950
         ]
         [ Html.div
             [ T.container
@@ -85,7 +85,7 @@ left =
             , T.font_display
             , T.leading_tight
             , T.ml_2
-            , T.text_gray_400
+            , T.text_base_400
             , T.text_sm
             , T.tracking_wider
             , T.uppercase
@@ -101,7 +101,7 @@ right model =
         , T.items_center
         , T.origin_left
         , T.scale_95
-        , T.text_gray_300
+        , T.text_base_500
         , T.transform
 
         --
@@ -109,7 +109,7 @@ right model =
         ]
         (case model.route of
             Routing.Undecided ->
-                []
+                [ updateAppAction model.appUpdate ]
 
             -----------------------------------------
             -- Tree
@@ -125,7 +125,8 @@ treeActions model =
         isAuthenticatedTree =
             Routing.isAuthenticatedTree model.authenticated model.route
     in
-    [ if Common.isSingleFileView model then
+    [ updateAppAction model.appUpdate
+    , if Common.isSingleFileView model then
         Html.nothing
 
       else if isAuthenticatedTree then
@@ -205,6 +206,33 @@ signIn =
         [ E.onClick RedirectToLobby ]
         FeatherIcons.user
         [ Html.text "Sign in" ]
+
+
+updateAppAction : AppUpdate -> Html Msg
+updateAppAction a =
+    case a of
+        NotAvailable ->
+            Html.text ""
+
+        Installing ->
+            action
+                Button
+                [ T.opacity_75 ]
+                FeatherIcons.loader
+                [ Html.text "Downloading Drive update" ]
+
+        Installed ->
+            action
+                Button
+                [ E.onClick ReloadApplication
+                , T.text_green
+
+                -- Dark mode
+                ------------
+                , T.dark__opacity_80
+                ]
+                FeatherIcons.refreshCw
+                [ Html.text "Reload to update Drive" ]
 
 
 

@@ -48,6 +48,7 @@ type alias Flags =
 -}
 type alias Model =
     { apiDomain : String
+    , appUpdate : AppUpdate
     , authenticated : Maybe Authentication.Essentials
     , contextMenu : Maybe (ContextMenu Msg)
     , currentTime : Time.Posix
@@ -80,6 +81,12 @@ type alias Model =
     , sidebarExpanded : Bool
     , sidebar : Maybe Drive.Sidebar.Model
     }
+
+
+type AppUpdate
+    = NotAvailable
+    | Installing
+    | Installed
 
 
 
@@ -133,6 +140,7 @@ type Msg
     | GoToRoute Route
     | HideHelpfulNote
     | HideModal
+    | ReloadApplication
     | RemoveContextMenu
     | RemoveHelpfulNote
     | Reset Route
@@ -143,6 +151,8 @@ type Msg
       -----------------------------------------
       -- 🐚 Other
       -----------------------------------------
+    | AppUpdateAvailable
+    | AppUpdateFinished
     | Blurred
     | Focused
     | HideWelcomeMessage
