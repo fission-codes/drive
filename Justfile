@@ -207,28 +207,6 @@ insert-version:
 
 
 
-# Deploy
-# ------
-# This assumes .fission.yaml.production
-#              .fission.yaml.staging
-
-@deploy-production:
-	echo "🛳  Deploying to production"
-	just production-build
-	cp fission.yaml.production fission.yaml
-	{{fission_cmd}} up
-	rm fission.yaml
-
-
-@deploy-staging:
-	echo "🛳  Deploying to staging"
-	just staging-build
-	cp fission.yaml.staging fission.yaml
-	{{fission_cmd}} up --remote staging
-	rm fission.yaml
-
-
-
 # Service worker
 # --------------
 
