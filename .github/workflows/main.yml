@@ -43,7 +43,7 @@ jobs:
         run: nix-shell --run "just install-deps"
         
       - name: Build
-        run: nix-shell --run "just staging-build"
+        run: nix-shell --run "just production-build"
         
       - name: Publish to Fission
         uses: fission-suite/publish-action@v1
