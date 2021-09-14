@@ -51,7 +51,7 @@ init flags url navKey =
       , viewportSize = flags.viewportSize
       , showLoadingOverlay = True
       , toasties = Toasty.initialState
-      , url = url
+      , url = { url | query = Nothing }
       , usersDomain = flags.usersDomain
 
       -- Debouncers
