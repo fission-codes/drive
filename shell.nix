@@ -1,35 +1,37 @@
-let
+{ rosetta ? false }:
+  let
+    overrides = if rosetta then { system = "x86_64-darwin"; } else {};
 
-  sources = import ./nix/sources.nix;
-  pkgs    = import sources.nixpkgs {};
+    sources = import ./nix/sources.nix;
+    pkgs    = import sources.nixpkgs overrides;
 
-  commands = import ./nix/commands.nix;
-  tasks = commands {pkgs = pkgs;};
+    commands = import ./nix/commands.nix;
+    tasks = commands {pkgs = pkgs;};
 
-  deps = {
-    tools = [
-      pkgs.curl
-      pkgs.devd
-      pkgs.just
-      pkgs.watchexec
-    ];
+    deps = {
+      tools = [
+        pkgs.curl
+        pkgs.devd
+        pkgs.just
+        pkgs.watchexec
+      ];
 
-    elm = [
-      pkgs.elmPackages.elm
-      pkgs.elmPackages.elm-format
-      pkgs.elmPackages.elm-live
-    ];
+      elm = [
+        pkgs.elmPackages.elm
+        pkgs.elmPackages.elm-format
+        pkgs.elmPackages.elm-live
+      ];
 
-    node = [
-      pkgs.nodejs-14_x
-      pkgs.nodePackages.pnpm
-    ];
+      node = [
+        pkgs.nodejs-14_x
+        pkgs.nodePackages.pnpm
+      ];
 
-    fun = [
-      pkgs.figlet
-      pkgs.lolcat
-    ];
-  };
+      fun = [
+        pkgs.figlet
+        pkgs.lolcat
+      ];
+    };
 
 in
 
