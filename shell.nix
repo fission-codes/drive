@@ -14,6 +14,7 @@
         pkgs.devd
         pkgs.just
         pkgs.watchexec
+        pkgs.niv
       ];
 
       elm = [
