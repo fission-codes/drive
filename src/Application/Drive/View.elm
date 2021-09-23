@@ -479,7 +479,7 @@ mainLayout model leftSide =
                                 [ Html.text "various apps" ]
                             , Html.text ". If you want to make an app yourself, check out the "
                             , Html.a
-                                [ A.href "https://guide.fission.codes/hosting/installation"
+                                [ A.href "https://guide.fission.codes/developers/"
                                 , A.target "_blank"
 
                                 --
@@ -487,7 +487,7 @@ mainLayout model leftSide =
                                 , T.underline_thick
                                 , T.tdc_pink_shade
                                 ]
-                                [ Html.text "Fission CLI" ]
+                                [ Html.text "Fission CLI and developer guide" ]
                             , Html.text "."
                             ]
                         ]
