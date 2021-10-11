@@ -7,8 +7,9 @@ Everything involving the Fission File System.
 */
 
 import "./web_modules/it-to-stream.min.js"
-import * as wn from "./web_modules/webnative.js"
+import "./web_modules/webnative/index.umd.min.js"
 
+const wn = webnative
 
 let fs
 

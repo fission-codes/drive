@@ -70,6 +70,7 @@ workbox_config 	:= "workbox.config.cjs"
 
 	rm -rf web_modules
 	mkdir -p web_modules
+	mkdir -p web_modules/webnative
 
 	# Download other dependencies
 	just download-web-module is-ipfs.js https://unpkg.com/is-ipfs@1.0.3/dist/index.js
@@ -81,8 +82,7 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/elm-git-install
 
 	# SDK
-	cp node_modules/webnative/dist/index.es5.js web_modules/webnative.js
-	cp node_modules/webnative/dist/index.umd.js web_modules/webnative.umd.js
+	cp node_modules/webnative/dist/* web_modules/webnative/
 	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
