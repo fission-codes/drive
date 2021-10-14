@@ -7,7 +7,6 @@ Everything involving IPFS.
 */
 
 import "./web_modules/it-to-stream.min.js"
-import * as wn from "./web_modules/webnative.js"
 
 
 let ipfs
