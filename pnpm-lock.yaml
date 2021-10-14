@@ -1,13 +1,13 @@
 dependencies:
   '@fission-suite/kit': 1.1.2
   webnative: 0.28.1
-  webnative-elm: 6.0.0_webnative@0.28.1
+  webnative-elm: 6.0.0
 devDependencies:
   elm-git-install: 0.1.3
   elm-impfix: 1.0.8
   elm-live: 4.0.2
   elm-tailwind-css: 1.0.1_tailwindcss@1.9.6
-  esbuild: 0.8.13
+  esbuild: 0.12.29
   html-minifier-terser: 5.1.1
   mustache: 4.0.1
   postcss: 8.1.9
@@ -2418,12 +2418,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-HBL8I3mIki5C1Cc9QjKUenHtnG0A5/xA8Q/AllRcfiwl2CZFXGK7ddBiCoRwAix4i2KxcQfjtIVcrVbB3vbmwg==
-  /esbuild/0.8.13:
+  /esbuild/0.12.29:
     dev: true
     hasBin: true
     requiresBuild: true
     resolution:
-      integrity: sha512-2coHQuLEBa87GMgCo8uvBselsd3+QEy7lbOdS6nj6aESu8P01kH3sZPjPktDAXWZToU4eyz4jDGBGOui2IXvnA==
+      integrity: sha512-w/XuoBCSwepyiZtIRsKsetiLDUVGPVw1E/R3VTFSecIy8UR7Cq3SOtwKHJMFoVqqVG36aGkzh4e8BvpO1Fdc7g==
   /escalade/3.1.0:
     dev: true
     engines:
@@ -6311,9 +6311,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative-elm/6.0.0_webnative@0.28.1:
-    dependencies:
-      webnative: 0.28.1
+  /webnative-elm/6.0.0:
     dev: false
     peerDependencies:
       webnative: '> 0.24.0'
@@ -6675,7 +6673,7 @@ specifiers:
   elm-impfix: ^1.0.8
   elm-live: ^4.0.1
   elm-tailwind-css: ^1.0.1
-  esbuild: ^0.8.13
+  esbuild: ^0.12.26
   html-minifier-terser: ^5.1.1
   mustache: ^4.0.1
   postcss: ^8.1.9
