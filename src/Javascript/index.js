@@ -10,7 +10,7 @@
 */
 
 import "./web_modules/tocca.js"
-import * as wn from "./web_modules/webnative.js"
+import "./web_modules/webnative/index.umd.min.js"
 import "./web_modules/webnative-elm.js"
 
 import "./custom.js"
@@ -23,6 +23,7 @@ import * as ipfs from "./ipfs.js"
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
+const wn = webnative
 
 self.wn = wn
 
