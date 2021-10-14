@@ -82,7 +82,8 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/elm-git-install
 
 	# SDK
-	cp node_modules/webnative/dist/* web_modules/webnative/
+	cp -RT node_modules/webnative/lib/ web_modules/webnative/
+	cp -RT node_modules/webnative/dist/ web_modules/webnative/
 	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
