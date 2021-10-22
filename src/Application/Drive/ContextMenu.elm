@@ -200,6 +200,7 @@ contentLink context =
 
 
 copyCid context =
+    -- TODO: Add replacement for symlinks
     Item
         { icon = FeatherIcons.hash
         , label = "Copy CID"
@@ -208,7 +209,7 @@ copyCid context =
         --
         , href = Nothing
         , msg =
-            { clip = context.cid
+            { clip = context.id
             , notification = "Copied CID to clipboard."
             }
                 |> CopyToClipboard

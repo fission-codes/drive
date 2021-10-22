@@ -8,7 +8,7 @@ import Time
 -- 🧩
 
 
-type alias Item =
+type alias HardLinkAlias =
     { cid : String
     , name : String
     , path : String
@@ -16,6 +16,18 @@ type alias Item =
     , size : Int
     , typ : String
     }
+
+
+type alias SoftLinkAlias =
+    { ipns : String
+    , name : String
+    , path : String
+    }
+
+
+type Item
+    = HardLink HardLinkAlias
+    | SoftLink SoftLinkAlias
 
 
 type Status
@@ -42,8 +54,25 @@ type Operation
 
 itemDecoder : Json.Decoder Item
 itemDecoder =
+    Json.oneOf
+        [ Json.map HardLink hardLinkDecoder
+        , Json.map SoftLink softLinkDecoder
+        ]
+
+
+softLinkDecoder : Json.Decoder SoftLinkAlias
+softLinkDecoder =
+    Json.map3
+        SoftLinkAlias
+        (Json.field "ipns" Json.string)
+        (Json.field "name" Json.string)
+        (Json.field "path" Json.string)
+
+
+hardLinkDecoder : Json.Decoder HardLinkAlias
+hardLinkDecoder =
     Json.map6
-        Item
+        HardLinkAlias
         (Json.field "cid" Json.string)
         (Json.field "name" Json.string)
         (Json.field "path" Json.string)
@@ -59,3 +88,17 @@ itemDecoder =
 convertTime : Int -> Time.Posix
 convertTime int =
     Time.millisToPosix (int // 1000)
+
+
+
+-- 🛠
+
+
+name : Item -> String
+name item =
+    case item of
+        HardLink h ->
+            h.name
+
+        SoftLink s ->
+            s.name

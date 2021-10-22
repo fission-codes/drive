@@ -112,26 +112,40 @@ export async function listDirectory({ pathSegments }) {
     rawList.map(async l => {
       let cid
 
-      if (isListingPublic) {
+      if (l.ipns) {
+        // Carry on
 
+      } else if (isListingPublic) {
         try {
           cid = await ipfs.files.stat(prettyIpfsPath("p") + l.name)
+          cid = cid.cid.toString()
         } catch (e) {
-          cid = await ipfs.files.stat(prettyIpfsPath("pretty") + l.name)
+          try {
+            cid = await ipfs.files.stat(prettyIpfsPath("pretty") + l.name)
+            cid = cid.cid.toString()
+          } catch (e) {
+            cid = l.cid || l.pointer
+          }
         }
-
-        cid = cid.cid.toString()
 
       } else {
         cid = l.cid || l.pointer
 
       }
 
+      const itemPath = wn.path.toPosix(wn.path.combine(path, { file: [l.name] }))
+
+      if (l.ipns) return {
+        ...l,
+
+        path: itemPath
+      }
+
       return {
         ...l,
 
         cid: cid,
-        path: wn.path.toPosix(wn.path.combine(path, { file: [l.name] })),
+        path: itemPath,
         size: l.size || 0,
         type: l.isFile ? "file" : "dir"
       }
