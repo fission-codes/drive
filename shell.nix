@@ -24,7 +24,7 @@
       ];
 
       node = [
-        pkgs.nodejs-14_x
+        pkgs.nodejs-16_x
         pkgs.nodePackages.pnpm
       ];
 
