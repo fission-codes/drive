@@ -82,17 +82,16 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/elm-git-install
 
 	# SDK
-	cp -RT node_modules/webnative/lib/ web_modules/webnative/
 	cp -RT node_modules/webnative/dist/ web_modules/webnative/
 	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
 @production-build:
-	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-minify javascript-nomodule html-minify production-service-worker
+	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
 
 
 @staging-build:
-	just clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-minify javascript-nomodule html-minify production-service-worker
+	just clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
 
 
 
@@ -176,17 +175,6 @@ insert-version:
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
 	cp -RT web_modules {{dist_dir}}/web_modules/
-
-
-@javascript-minify:
-	echo "⚙️  Minifying Javascript Files"
-	{{node_bin}}/terser-dir \
-		{{dist_dir}} \
-		--each --extension .js \
-		--patterns "**/*.js, !**/*.min.js" \
-		--pseparator ", " \
-		--output {{dist_dir}} \
-		-- --compress --mangle
 
 
 @javascript-nomodule:
