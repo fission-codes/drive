@@ -12,15 +12,15 @@ specifiers:
   postcss: ^8.1.9
   postcss-import: ^13.0.0
   tailwindcss: ^1.9.6
-  webnative: ^0.29.1
+  webnative: ^0.30.0-alpha5
   webnative-elm: ^6.0.0
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
 
 dependencies:
   '@fission-suite/kit': 1.1.2
-  webnative: 0.29.3
-  webnative-elm: 6.0.0_webnative@0.29.3
+  webnative: 0.30.0-alpha5
+  webnative-elm: 6.0.0_webnative@0.30.0-alpha5
 
 devDependencies:
   elm-git-install: 0.1.3
@@ -5439,16 +5439,16 @@ packages:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: true
 
-  /webnative-elm/6.0.0_webnative@0.29.3:
+  /webnative-elm/6.0.0_webnative@0.30.0-alpha5:
     resolution: {integrity: sha512-J3awU3m6LsGDhWg0MGVe8WltQhcRSdz57sMYtoIgDteDePhfG1l7B0HUnzWCotyXs8j7HDVHCGlR+B33vEW/fQ==}
     peerDependencies:
       webnative: '> 0.24.0'
     dependencies:
-      webnative: 0.29.3
+      webnative: 0.30.0-alpha5
     dev: false
 
-  /webnative/0.29.3:
-    resolution: {integrity: sha512-x59GbYH3v5YGAJ0iuVr7Esq+hA5jQ3PuCUxBxlZXYyUNBzUpQ24EghsEazHZ6fbznIWr1mmN6RAWu7cQ9pY6Ag==}
+  /webnative/0.30.0-alpha5:
+    resolution: {integrity: sha512-1s3lvGwjvB3XYaJnsLu5Cpwt6mjFRfpy3wf0NydzTElZOWpj3FJ3rdOxQQpJqV2yAD2IH43ZYTFI/d1TLaN1dw==}
     engines: {node: '>=15'}
     dependencies:
       '@ipld/dag-pb': 2.1.13
