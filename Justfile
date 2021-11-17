@@ -87,11 +87,15 @@ workbox_config 	:= "workbox.config.cjs"
 
 
 @production-build:
-	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
+	just config=production build
 
 
 @staging-build:
-	just clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
+	just config=default build
+
+
+@build:
+	just config={{config}} clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
 
 
 
