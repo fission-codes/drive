@@ -433,5 +433,10 @@ nameIconForBasename basename =
         "Pictures" ->
             Just FeatherIcons.image
 
+        --
+        "Shared with me" ->
+            Just FeatherIcons.users
+
+        --
         _ ->
             Nothing
