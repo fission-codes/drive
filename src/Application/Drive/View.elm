@@ -856,6 +856,9 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
           else if kind == Directory then
             E.onTap (DigDeeper { directoryName = name })
 
+          else if kind == SymLink then
+            E.onTap Bypass
+
           else
             E.onTap (Select idx item)
 

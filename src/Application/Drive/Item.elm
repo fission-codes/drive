@@ -1,7 +1,7 @@
 module Drive.Item exposing (..)
 
 import FeatherIcons
-import FileSystem
+import FileSystem exposing (Item(..))
 import List.Extra as List
 import Murmur3
 import String.Ext as String
@@ -15,6 +15,7 @@ import Url
 
 type Kind
     = Directory
+    | SymLink
       --
     | Audio
     | Code
@@ -30,7 +31,6 @@ type alias Item =
     { id : String
 
     --
-    , cid : String
     , kind : Kind
     , loading : Bool
     , name : String
@@ -85,6 +85,9 @@ canRenderKind kind =
         Directory ->
             False
 
+        SymLink ->
+            False
+
         --
         Audio ->
             True
@@ -110,11 +113,22 @@ canRenderKind kind =
 
 
 fromFileSystem : FileSystem.Item -> Item
-fromFileSystem { cid, name, path, posixTime, size, typ } =
+fromFileSystem item =
     let
+        name =
+            FileSystem.name item
+
+        typ =
+            case item of
+                HardLink h ->
+                    Just h.typ
+
+                SoftLink _ ->
+                    Nothing
+
         nameProps =
             case typ of
-                "dir" ->
+                Just "dir" ->
                     { base = name
                     , extension = ""
                     }
@@ -127,10 +141,10 @@ fromFileSystem { cid, name, path, posixTime, size, typ } =
 
         kind =
             case typ of
-                "dir" ->
+                Just "dir" ->
                     Directory
 
-                "file" ->
+                Just "file" ->
                     if List.member lowercaseExtension audioFileExtensions then
                         Audio
 
@@ -153,23 +167,39 @@ fromFileSystem { cid, name, path, posixTime, size, typ } =
                         Other
 
                 _ ->
-                    Other
-    in
-    { id =
-        path
-            |> Murmur3.hashString 0
-            |> String.fromInt
+                    case item of
+                        SoftLink _ ->
+                            SymLink
 
-    --
-    , cid = cid
-    , kind = kind
-    , loading = False
-    , name = name
-    , nameProperties = nameProps
-    , path = path
-    , posixTime = posixTime
-    , size = size
-    }
+                        _ ->
+                            Other
+    in
+    case item of
+        HardLink { cid, path, posixTime, size } ->
+            { id = cid
+
+            --
+            , kind = kind
+            , loading = False
+            , name = name
+            , nameProperties = nameProps
+            , path = path
+            , posixTime = posixTime
+            , size = size
+            }
+
+        SoftLink { ipns, path } ->
+            { id = ipns
+
+            --
+            , kind = kind
+            , loading = False
+            , name = name
+            , nameProperties = nameProps
+            , path = path
+            , posixTime = Nothing
+            , size = 0
+            }
 
 
 nameProperties : String -> NameProperties
@@ -221,6 +251,9 @@ sortingFunction { isGroundFloor } a b =
             ( a.name == "public"
             , b.name == "public"
             )
+
+        compareName c d =
+            compare (String.toLower c.name) (String.toLower d.name)
     in
     case ( a.kind, b.kind, isGroundFloor && (aIsPublic || bIsPublic) ) of
         ( _, _, True ) ->
@@ -231,7 +264,7 @@ sortingFunction { isGroundFloor } a b =
                 GT
 
         ( Directory, Directory, _ ) ->
-            compare (String.toLower a.name) (String.toLower b.name)
+            compareName a b
 
         ( Directory, _, _ ) ->
             LT
@@ -240,7 +273,7 @@ sortingFunction { isGroundFloor } a b =
             GT
 
         ( _, _, _ ) ->
-            compare (String.toLower a.name) (String.toLower b.name)
+            compareName a b
 
 
 
@@ -298,6 +331,9 @@ kindIcon kind =
         Directory ->
             FeatherIcons.folder
 
+        SymLink ->
+            FeatherIcons.link
+
         --
         Audio ->
             FeatherIcons.music
@@ -327,6 +363,9 @@ kindName kind =
     case kind of
         Directory ->
             "Directory"
+
+        SymLink ->
+            "Symlink"
 
         --
         Audio ->
@@ -394,5 +433,10 @@ nameIconForBasename basename =
         "Pictures" ->
             Just FeatherIcons.image
 
+        --
+        "Shared with me" ->
+            Just FeatherIcons.users
+
+        --
         _ ->
             Nothing
