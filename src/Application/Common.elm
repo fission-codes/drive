@@ -8,6 +8,8 @@ import Round
 import Routing
 import String.Ext as String
 import Url
+import Webnative.Path as Path
+import Webnative.Path.Extra as Path
 
 
 
@@ -67,7 +69,7 @@ base { presentable } model =
             else
                 let
                     domain =
-                        if model.apiDomain == "runfission.net" then
+                        if model.apiEndpoint == "https://runfission.net" then
                             "runfission.net"
 
                         else
@@ -124,7 +126,11 @@ isSingleFileView model =
         |> Result.toMaybe
         |> Maybe.andThen (.items >> List.head)
         |> Maybe.map .path
-        |> (==) (Just <| Routing.treePath model.route)
+        |> (==)
+            (model.route
+                |> Routing.treePath
+                |> Maybe.map Path.ensureDefaultBranch
+            )
 
 
 sizeInWords : Int -> String
@@ -149,14 +155,6 @@ sizeInWords sizeInBytes =
 humanReadableFloat : Float -> String
 humanReadableFloat =
     Round.round 2 >> String.chopEnd ".00"
-
-
-lookupItem : Model -> String -> Maybe Item
-lookupItem model path =
-    model.directoryList
-        |> Result.map .items
-        |> Result.withDefault []
-        |> List.find (.path >> (==) path)
 
 
 isGroundFloor : Model -> Bool

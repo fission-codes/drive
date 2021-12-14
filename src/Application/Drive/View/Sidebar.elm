@@ -25,7 +25,7 @@ import Result.Extra as Result
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
-import Url.Builder
+import Webnative.Path exposing (Encapsulated, Path)
 
 
 
@@ -601,7 +601,7 @@ addOrCreateForm addOrCreateModel model =
 -- DETAILS
 
 
-detailsForSelection : { paths : List String, showPreviewOverlay : Bool } -> Model -> Html Msg
+detailsForSelection : { paths : List (Path Encapsulated), showPreviewOverlay : Bool } -> Model -> Html Msg
 detailsForSelection { showPreviewOverlay } model =
     Html.div
         [ T.flex
@@ -639,15 +639,15 @@ onCtrlS : msg -> Html.Attribute msg
 onCtrlS message =
     let
         ensureEquals value decoder =
-            decoder
-                |> Decode.andThen
-                    (\val ->
-                        if val == value then
-                            Decode.succeed ()
+            Decode.andThen
+                (\val ->
+                    if val == value then
+                        Decode.succeed ()
 
-                        else
-                            Decode.fail "Unexpecated value"
-                    )
+                    else
+                        Decode.fail "Unexpecated value"
+                )
+                decoder
     in
     E.custom "keydown"
         (Decode.map2

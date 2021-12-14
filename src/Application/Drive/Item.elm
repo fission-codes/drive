@@ -2,11 +2,12 @@ module Drive.Item exposing (..)
 
 import FeatherIcons
 import FileSystem exposing (Item(..))
+import Json.Encode as Json
 import List.Extra as List
-import Murmur3
 import String.Ext as String
 import Time
 import Url
+import Webnative.Path as Path exposing (Encapsulated, Path)
 
 
 
@@ -35,7 +36,7 @@ type alias Item =
     , loading : Bool
     , name : String
     , nameProperties : NameProperties
-    , path : String
+    , path : Path Encapsulated
     , posixTime : Maybe Time.Posix
     , size : Int
     }
@@ -45,6 +46,10 @@ type alias NameProperties =
     { base : String
     , extension : String
     }
+
+
+type alias PortablePath =
+    { path : Json.Value }
 
 
 
@@ -183,7 +188,7 @@ fromFileSystem item =
             , loading = False
             , name = name
             , nameProperties = nameProps
-            , path = path
+            , path = Path.fromPosix path
             , posixTime = posixTime
             , size = size
             }
@@ -196,7 +201,7 @@ fromFileSystem item =
             , loading = False
             , name = name
             , nameProperties = nameProps
-            , path = path
+            , path = Path.fromPosix path
             , posixTime = Nothing
             , size = 0
             }
@@ -223,14 +228,9 @@ nameProperties name =
     }
 
 
-pathProperties : Item -> { pathSegments : List String }
-pathProperties item =
-    { pathSegments = pathSegments item.path }
-
-
-pathSegments : String -> List String
-pathSegments path =
-    String.split "/" path
+portablePath : Item -> PortablePath
+portablePath item =
+    { path = Path.encode item.path }
 
 
 publicUrl : String -> Item -> String
@@ -278,6 +278,11 @@ sortingFunction { isGroundFloor } a b =
 
 
 -- 🖼
+
+
+canBeOpenedWithEditor : Item -> Bool
+canBeOpenedWithEditor item =
+    item.kind == Code || item.kind == Text
 
 
 generateExtensionForKind : Kind -> String

@@ -3,10 +3,13 @@ module FileSystem.Actions exposing (..)
 import Codec exposing (Codec)
 import Drive.Sidebar
 import Json.Decode
+import Maybe.Extra as Maybe
 import Ports
 import Radix exposing (..)
 import Webnative
-import Webnative.Path as Path exposing (Path)
+import Webnative.Path as Path exposing (Directory, Encapsulated, File, Path)
+import Webnative.Path.Encapsulated as Path
+import Webnative.Path.Extra as Path
 import Wnfs
 
 
@@ -41,14 +44,14 @@ permissions =
 -- Actions
 
 
-createDirectory : { path : List String, tag : Tag } -> Cmd Msg
+createDirectory : { path : Path Directory, tag : Tag } -> Cmd Msg
 createDirectory { path, tag } =
     let
         resolved =
             splitPath path
     in
     Wnfs.mkdir resolved.base
-        { path = Path.directory resolved.path
+        { path = resolved.path
         , tag = tagToString tag
         }
         |> Ports.webnativeRequest
@@ -61,28 +64,28 @@ publish { tag } =
         |> Ports.webnativeRequest
 
 
-writeUtf8 : { path : List String, tag : Tag, content : String } -> Cmd Msg
+writeUtf8 : { path : Path File, tag : Tag, content : String } -> Cmd Msg
 writeUtf8 { path, tag, content } =
     let
         resolved =
             splitPath path
     in
     Wnfs.writeUtf8 resolved.base
-        { path = Path.file resolved.path
+        { path = resolved.path
         , tag = tagToString tag
         }
         content
         |> Ports.webnativeRequest
 
 
-readUtf8 : { path : List String, tag : Tag } -> Cmd Msg
+readUtf8 : { path : Path File, tag : Tag } -> Cmd Msg
 readUtf8 { path, tag } =
     let
         resolved =
             splitPath path
     in
     Wnfs.readUtf8 resolved.base
-        { path = Path.file resolved.path
+        { path = resolved.path
         , tag = tagToString tag
         }
         |> Ports.webnativeRequest
@@ -120,20 +123,54 @@ codecTag =
                         Drive.Sidebar.LoadedFile a ->
                             cLoadedFile a
                 )
-                |> Codec.variant1 "SavedFile" Drive.Sidebar.SavedFile (codecPathRecord Codec.string)
-                |> Codec.variant1 "LoadedFile" Drive.Sidebar.LoadedFile (codecPathRecord Codec.string)
+                |> Codec.variant1 "SavedFile" Drive.Sidebar.SavedFile (codecPathRecord codecFilePath)
+                |> Codec.variant1 "LoadedFile" Drive.Sidebar.LoadedFile (codecPathRecord codecFilePath)
                 |> Codec.buildCustom
             )
-        |> Codec.variant1 "CreatedEmptyFile" CreatedEmptyFile (codecPathRecord (Codec.list Codec.string))
+        |> Codec.variant1 "CreatedEmptyFile" CreatedEmptyFile (codecPathRecord codecPath)
         |> Codec.variant0 "CreatedDirectory" CreatedDirectory
         |> Codec.variant0 "UpdatedFileSystem" UpdatedFileSystem
         |> Codec.buildCustom
 
 
+codecPath : Codec (Path Encapsulated)
+codecPath =
+    Codec.build
+        Path.encode
+        Path.decoder
+
+
+codecDirectoryPath : Codec (Path Directory)
+codecDirectoryPath =
+    Codec.andThen
+        (\v ->
+            Maybe.unwrap
+                (Codec.fail "Path was not a directory path")
+                Codec.succeed
+                (Path.toDirectory v)
+        )
+        Path.encapsulate
+        codecPath
+
+
+codecFilePath : Codec (Path File)
+codecFilePath =
+    Codec.andThen
+        (\v ->
+            Maybe.unwrap
+                (Codec.fail "Path was not a file path")
+                Codec.succeed
+                (Path.toFile v)
+        )
+        Path.encapsulate
+        codecPath
+
+
 codecPathRecord : Codec a -> Codec { path : a }
-codecPathRecord codecPath =
-    Codec.object (\path -> { path = path })
-        |> Codec.field "path" .path codecPath
+codecPathRecord pathCodec =
+    (\path -> { path = path })
+        |> Codec.object
+        |> Codec.field "path" .path pathCodec
         |> Codec.buildObject
 
 
@@ -158,14 +195,14 @@ tagFromString string =
 -- Utilities
 
 
-splitPath : List String -> { base : Wnfs.Base, path : List String }
+splitPath : Path t -> { base : Wnfs.Base, path : Path t }
 splitPath path =
-    case path of
+    case Path.unwrap path of
         "public" :: rest ->
-            { base = Wnfs.Public, path = rest }
+            { base = Wnfs.Public, path = Path.map (always rest) path }
 
         "private" :: rest ->
-            { base = Wnfs.Private, path = rest }
+            { base = Wnfs.Private, path = Path.map (always rest) path }
 
         _ ->
             { base = Wnfs.Private, path = path }

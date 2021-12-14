@@ -61,7 +61,7 @@ const PERMISSIONS = {
 
 const app = Elm.Main.init({
   flags: {
-    apiDomain: API_ENDPOINT.replace(/^https?:\/\//, ""),
+    apiEndpoint: API_ENDPOINT,
     currentTime: Date.now(),
     usersDomain: DATA_ROOT_DOMAIN,
     viewportSize: { height: window.innerHeight, width: window.innerWidth }
@@ -73,6 +73,16 @@ app.ports.copyToClipboard.subscribe(copyToClipboard)
 app.ports.deauthenticate.subscribe(deauthenticate)
 app.ports.fsDownloadItem.subscribe(fs.downloadItem)
 app.ports.showNotification.subscribe(showNotification)
+
+
+app.ports.fsShareItem.subscribe(args => {
+  fs.shareItem(args).then(shareLink => {
+    app.ports.fsGotShareLink.send(shareLink)
+  }).catch(err => {
+    app.ports.fsGotShareError.send(err.message || err.toString())
+  })
+})
+
 
 app.ports.redirectToLobby.subscribe(() => {
   wn.redirectToLobby(PERMISSIONS, location.origin + location.pathname)
@@ -210,15 +220,18 @@ window.addEventListener("blur", event => {
 
 function exe(port, method, options = {}) {
   app.ports[port].subscribe(async a => {
-    let args = { pathSegments: [], ...a, ...options }
+    let args = { path: wn.path.root(), ...a, ...options }
 
     try {
       const { results, rootCid } = (await fs[method](args)) || {}
       if (!results) return
 
       app.ports.fsGotDirectoryList.send({
-        pathSegments: fs.removePrivatePrefix(
-          args.pathSegments.slice(0, options.listParent ? -1 : undefined)
+        path: fs.removePrivatePrefix(
+          wn.path.map(
+            p => p.slice(0, options.listParent ? -1 : undefined),
+            args.path
+          )
         ),
         results,
         rootCid

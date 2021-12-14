@@ -20,7 +20,7 @@ import Styling as S
 import Tailwind as T
 import Time
 import Time.Distance
-import Url.Builder
+import Webnative.Path as Path exposing (Encapsulated, Path)
 
 
 
@@ -411,7 +411,7 @@ extra item =
 -- Custom Element (see media.js)
 
 
-fissionDriveMedia : { name : String, path : String, useFS : Bool } -> List (Html.Attribute msg) -> List (Html msg) -> Html msg
+fissionDriveMedia : { name : String, path : Path Encapsulated, useFS : Bool } -> List (Html.Attribute msg) -> List (Html msg) -> Html msg
 fissionDriveMedia { name, path, useFS } attributes children =
     let
         stringFromBool b =
@@ -424,7 +424,7 @@ fissionDriveMedia { name, path, useFS } attributes children =
     Html.node "fission-drive-media"
         (List.append
             [ A.attribute "name" name
-            , A.attribute "path" path
+            , A.attribute "path" (Path.toPosix path)
             , A.attribute "useFS" (stringFromBool useFS)
             ]
             attributes

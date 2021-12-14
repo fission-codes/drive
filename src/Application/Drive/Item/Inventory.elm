@@ -2,6 +2,7 @@ module Drive.Item.Inventory exposing (..)
 
 import Drive.Item exposing (Item)
 import List.Extra as List
+import Webnative.Path as Path exposing (Encapsulated, Path)
 
 
 
@@ -33,13 +34,13 @@ default =
     { floor = 1, items = [], selection = [] }
 
 
-autoSelectOnSingleFileView : List String -> Inventory -> Inventory
-autoSelectOnSingleFileView pathSegments ({ items } as inventory) =
+autoSelectOnSingleFileView : Path Encapsulated -> Inventory -> Inventory
+autoSelectOnSingleFileView path ({ items } as inventory) =
     { inventory
         | selection =
             case items of
                 [ item ] ->
-                    if Just item.name == List.last pathSegments then
+                    if Just item.name == List.last (Path.unwrap path) then
                         [ { index = 0, isFirst = True } ]
 
                     else

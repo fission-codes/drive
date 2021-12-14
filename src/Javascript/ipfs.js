@@ -21,7 +21,6 @@ export function setInstance(i) {
 
 
 export function stream(address, opts) {
-  console.log(address)
   const a = ipfs.cat(address, opts)
   return itToStream.readable(a)
 }

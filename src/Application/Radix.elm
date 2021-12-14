@@ -24,6 +24,7 @@ import Time
 import Toasty
 import Url exposing (Url)
 import Webnative
+import Webnative.Path exposing (Encapsulated, Path)
 
 
 
@@ -33,7 +34,7 @@ import Webnative
 {-| Flags passed initializing the application.
 -}
 type alias Flags =
-    { apiDomain : String
+    { apiEndpoint : String
     , currentTime : Int
     , usersDomain : String
     , viewportSize : { height : Int, width : Int }
@@ -47,7 +48,7 @@ type alias Flags =
 {-| Model of our UI state.
 -}
 type alias Model =
-    { apiDomain : String
+    { apiEndpoint : String
     , appUpdate : AppUpdate
     , authenticated : Maybe Authentication.Essentials
     , contextMenu : Maybe (ContextMenu Msg)
@@ -74,6 +75,7 @@ type alias Model =
     -----------------------------------------
     , loadingDebouncer : Debouncer Msg
     , notificationsDebouncer : Debouncer Msg
+    , usernameLookupDebouncer : Debouncer Msg
 
     -----------------------------------------
     -- Sidebar
@@ -102,6 +104,7 @@ type Msg
       -----------------------------------------
     | LoadingDebouncerMsg (Debouncer.Msg Msg)
     | NotificationsDebouncerMsg (Debouncer.Msg Msg)
+    | UsernameLookupDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
       -- Drive
       -----------------------------------------
@@ -126,14 +129,23 @@ type Msg
     | ReplaceAddOrCreateKind Item.Kind
     | Select Int Item
     | ShowRenameItemModal Item
+    | SidebarMsg Drive.Sidebar.Msg
     | ToggleExpandedSidebar
     | ToggleSidebarAddOrCreate
-    | SidebarMsg Drive.Sidebar.Msg
       -----------------------------------------
       -- File System
       -----------------------------------------
     | GotFsDirectoryList Json.Value
     | GotFsError String
+      -----------------------------------------
+      -- Sharing
+      -----------------------------------------
+    | CheckUsernameExistanceForSharingWhenSettled String
+    | CheckUsernameExistanceForSharing String
+    | GotFsShareError String
+    | GotFsShareLink String
+    | ShareItem Item
+    | ShowShareItemModal Item
       -----------------------------------------
       -- 🌏 Common
       -----------------------------------------
@@ -155,8 +167,8 @@ type Msg
     | AppUpdateFinished
     | Blurred
     | Focused
-    | HideWelcomeMessage
     | GotInitialisationError String
+    | HideWelcomeMessage
     | Initialise (Maybe Authentication.Essentials)
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
@@ -185,6 +197,6 @@ to the Elm side.
 -}
 type Tag
     = SidebarTag Drive.Sidebar.Tag
-    | CreatedEmptyFile { path : List String }
+    | CreatedEmptyFile { path : Path Encapsulated }
     | CreatedDirectory
     | UpdatedFileSystem

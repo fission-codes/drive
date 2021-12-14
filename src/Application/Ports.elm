@@ -1,6 +1,7 @@
 port module Ports exposing (..)
 
 import Authentication.Essentials as Authentication
+import Drive.Item exposing (PortablePath)
 import Json.Decode as Json
 import Webnative
 
@@ -27,26 +28,27 @@ port showNotification : String -> Cmd msg
 
 port fsAddContent :
     { blobs : List { path : String, url : String }
-    , pathSegments : List String
+    , toPath : Json.Value
     }
     -> Cmd msg
 
 
-port fsDownloadItem : { pathSegments : List String } -> Cmd msg
+port fsDownloadItem : PortablePath -> Cmd msg
 
 
-port fsListDirectory : { pathSegments : List String } -> Cmd msg
+port fsListDirectory : PortablePath -> Cmd msg
 
 
-port fsListPublicDirectory : { pathSegments : List String, root : String } -> Cmd msg
+port fsListPublicDirectory : { path : Json.Value, root : String } -> Cmd msg
 
 
-port fsRemoveItem : { pathSegments : List String } -> Cmd msg
+port fsRemoveItem : PortablePath -> Cmd msg
 
 
-{-| `pathSegments` refers to the new path.
--}
-port fsMoveItem : { currentPathSegments : List String, pathSegments : List String } -> Cmd msg
+port fsMoveItem : { fromPath : Json.Value, toPath : Json.Value } -> Cmd msg
+
+
+port fsShareItem : { path : Json.Value, shareWith : String } -> Cmd msg
 
 
 
@@ -79,6 +81,12 @@ port fsGotDirectoryList : (Json.Value -> msg) -> Sub msg
 
 
 port fsGotError : (String -> msg) -> Sub msg
+
+
+port fsGotShareError : (String -> msg) -> Sub msg
+
+
+port fsGotShareLink : (String -> msg) -> Sub msg
 
 
 
