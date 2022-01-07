@@ -67,6 +67,28 @@ export async function downloadItem({ path }) {
 }
 
 
+export async function followItem({ path }) {
+  // If the symlinks resolves to a file, list the parent directory
+  // and replace the symlink item with the resolved one.
+  // If it resolves to a directory, list that directory.
+
+  const resolved = await fs.get(path)
+  const name = wn.path.terminus(path)
+
+  console.log(resolved)
+
+  if (resolved.header.metadata.isFile) {
+    //
+
+  } else {
+    // We need to change the URL/fragment too,
+    // so we'll do that and that in turn will trigger a directory listing.
+    self.location = location.hash + name + "/"
+
+  }
+}
+
+
 export async function listDirectory(args) {
   const ipfs = await wn.ipfs.get()
   const isListingRoot = wn.path.unwrap(args.path).length === 0

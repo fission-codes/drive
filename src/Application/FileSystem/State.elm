@@ -1,6 +1,7 @@
 module FileSystem.State exposing (..)
 
 import Browser.Dom as Dom
+import Browser.Navigation as Navigation
 import Debouncing
 import Drive.Item as Item exposing (Kind(..))
 import Drive.Item.Inventory as Inventory
@@ -11,10 +12,11 @@ import Json.Decode as Json
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Radix exposing (..)
-import Return
+import Return exposing (return)
 import Return.Extra as Return
 import Routing
 import Task
+import Url
 import Webnative.Path as Path exposing (Encapsulated, Path)
 import Webnative.Path.Encapsulated as Path
 import Webnative.Path.Extra as Path
@@ -57,6 +59,16 @@ gotDirectoryList_ path floor json model =
                             |> Json.decodeValue (Json.field "rootCid" Json.string)
                             |> Result.toMaybe
                             |> Maybe.orElse model.fileSystemCid
+
+                    readOnly =
+                        json
+                            |> Json.decodeValue (Json.field "readOnly" Json.bool)
+                            |> Result.withDefault False
+
+                    replaceSymlink =
+                        json
+                            |> Json.decodeValue (Json.field "replaceSymlink" Path.decoder)
+                            |> Result.toMaybe
                 in
                 result
                     |> Result.map
@@ -66,10 +78,30 @@ gotDirectoryList_ path floor json model =
                         )
                     |> Result.map
                         (\items ->
-                            { floor = floor
-                            , items = items
-                            , selection = []
-                            }
+                            case replaceSymlink of
+                                Just symlinkPath ->
+                                    model.directoryList
+                                        |> Result.map
+                                            (\d ->
+                                                -- TODO
+                                                d.items
+                                            )
+                                        |> Result.withDefault
+                                            items
+                                        |> (\i ->
+                                                { floor = floor
+                                                , items = i
+                                                , readOnly = readOnly
+                                                , selection = []
+                                                }
+                                           )
+
+                                Nothing ->
+                                    { floor = floor
+                                    , items = items
+                                    , readOnly = readOnly
+                                    , selection = []
+                                    }
                         )
                     |> Result.andThen
                         (\inventory ->

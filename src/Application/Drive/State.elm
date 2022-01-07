@@ -307,6 +307,14 @@ downloadItem item model =
         |> return model
 
 
+followSymlink : Item -> Manager
+followSymlink item model =
+    item
+        |> Item.portablePath
+        |> Ports.fsFollowItem
+        |> return model
+
+
 gotAddCreateInput : String -> Manager
 gotAddCreateInput input model =
     model.sidebar

@@ -90,6 +90,7 @@ app.ports.redirectToLobby.subscribe(() => {
 
 
 exe("fsAddContent", "add")
+exe("fsFollowItem", "followItem")
 exe("fsListDirectory", "listDirectory")
 exe("fsListPublicDirectory", "listPublicDirectory")
 exe("fsMoveItem", "moveItem", { listParent: true })
@@ -223,18 +224,17 @@ function exe(port, method, options = {}) {
     let args = { path: wn.path.root(), ...a, ...options }
 
     try {
-      const { results, rootCid } = (await fs[method](args)) || {}
-      if (!results) return
+      const feedback = (await fs[method](args)) || {}
+      if (!feedback.results) return
 
       app.ports.fsGotDirectoryList.send({
+        ...feedback,
         path: fs.removePrivatePrefix(
           wn.path.map(
             p => p.slice(0, options.listParent ? -1 : undefined),
-            args.path
+            feedback.path || args.path
           )
         ),
-        results,
-        rootCid
       })
 
     } catch (e) {

@@ -36,6 +36,9 @@ port fsAddContent :
 port fsDownloadItem : PortablePath -> Cmd msg
 
 
+port fsFollowItem : PortablePath -> Cmd msg
+
+
 port fsListDirectory : PortablePath -> Cmd msg
 
 
