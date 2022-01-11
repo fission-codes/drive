@@ -307,10 +307,11 @@ downloadItem item model =
         |> return model
 
 
-followSymlink : Item -> Manager
-followSymlink item model =
-    item
-        |> Item.portablePath
+followSymlink : Int -> Item -> Manager
+followSymlink idx item model =
+    { index = idx
+    , path = Path.encode item.path
+    }
         |> Ports.fsFollowItem
         |> return model
 

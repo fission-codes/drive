@@ -67,21 +67,38 @@ export async function downloadItem({ path }) {
 }
 
 
-export async function followItem({ path }) {
+export async function followItem({ index, path }) {
   // If the symlinks resolves to a file, list the parent directory
   // and replace the symlink item with the resolved one.
   // If it resolves to a directory, list that directory.
-
   const resolved = await fs.get(path)
   const name = wn.path.terminus(path)
 
-  console.log(resolved)
 
   if (resolved.header.metadata.isFile) {
-    //
+    const parentPath = wn.path.parent(path)
+    const listing = await listDirectory({ path: parentPath })
+
+    return {
+      ...listing,
+      index,
+      results: listing.results.map(l => {
+        if (l.name === name) return {
+          name,
+          cid: resolved.cid || resolved.header.content,
+          isFile: resolved.header.metadata.isFile,
+          path: wn.path.toPosix({ file: wn.path.unwrap(path) }),
+          size: resolved.header.metadata.size || 0,
+          type: "file"
+        }
+        return l
+      }),
+      path: parentPath,
+      replaceSymlink: path
+    }
 
   } else {
-    // We need to change the URL/fragment too,
+    // We need to change the URL/fragment,
     // so we'll do that and that in turn will trigger a directory listing.
     self.location = location.hash + name + "/"
 
@@ -150,7 +167,7 @@ export async function listDirectory(args) {
       }
 
       const itemPath = wn.path.toPosix(
-        wn.path.combine(path, { [l.isFile ? "file" : "directory"]: [l.name ] })
+        wn.path.combine(path, { [l.isFile ? "file" : "directory"]: [ l.name ] })
       )
 
       if (l.ipns) return {

@@ -36,7 +36,7 @@ port fsAddContent :
 port fsDownloadItem : PortablePath -> Cmd msg
 
 
-port fsFollowItem : PortablePath -> Cmd msg
+port fsFollowItem : { index : Int, path : Json.Value } -> Cmd msg
 
 
 port fsListDirectory : PortablePath -> Cmd msg
