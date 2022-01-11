@@ -195,7 +195,7 @@ addCreateAction model =
 myDrive username =
     action
         Button
-        [ E.onClick (GoToRoute <| Routing.Tree { root = username } []) ]
+        [ E.onClick (GoToRoute <| Routing.treeRootTopLevel username) ]
         FeatherIcons.hardDrive
         [ Html.text "My Drive" ]
 

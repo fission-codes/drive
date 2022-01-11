@@ -16,6 +16,7 @@ import Return.Extra as Return
 import Routing exposing (Route(..))
 import Time
 import Url exposing (Url)
+import Webnative.Path as Path
 
 
 
@@ -136,33 +137,39 @@ ready model =
         -----------------------------------------
         -- Command
         -----------------------------------------
-        (if needsRedirect then
-            route
-                |> Routing.treePathSegments
-                |> List.drop 1
-                |> Routing.replaceTreePathSegments route
-                |> Routing.adjustUrl model.url
-                |> Url.toString
-                |> Navigation.pushUrl model.navKey
+        (case Routing.treePath route of
+            Just currentPath ->
+                if needsRedirect then
+                    -- Needs a redirect when looking at another's public
+                    -- folder, and the path starts with `public/`
+                    currentPath
+                        |> Path.map (List.drop 1)
+                        |> Routing.replaceTreePath route
+                        |> Routing.routeToUrl model.url
+                        |> Url.toString
+                        |> Navigation.pushUrl model.navKey
 
-         else if Routing.isAuthenticatedTree model.authenticated route then
-            -- List entire file system for the authenticated user
-            Ports.fsListDirectory
-                { pathSegments = Routing.treePathSegments route }
+                else if Routing.isAuthenticatedTree model.authenticated route then
+                    -- List entire file system for the authenticated user
+                    Ports.fsListDirectory
+                        { path = Path.encode currentPath }
 
-         else if Maybe.isJust maybeTreeRoot then
-            -- List a public filesystem
-            Ports.fsListPublicDirectory
-                { pathSegments =
-                    Routing.treePathSegments route
-                , root =
-                    Common.filesDomainFromTreeRoot
-                        { usersDomain = model.usersDomain }
-                        maybeTreeRoot
-                }
+                else if Maybe.isJust maybeTreeRoot then
+                    -- List a public filesystem
+                    Ports.fsListPublicDirectory
+                        { path =
+                            Path.encode currentPath
+                        , root =
+                            Common.filesDomainFromTreeRoot
+                                { usersDomain = model.usersDomain }
+                                maybeTreeRoot
+                        }
 
-         else
-            Cmd.none
+                else
+                    Cmd.none
+
+            Nothing ->
+                Cmd.none
         )
 
 
@@ -277,21 +284,26 @@ urlChanged url old =
                     Return.singleton new
 
                 else if isTreeRoute && old.route /= new.route then
-                    if Routing.isAuthenticatedTree new.authenticated new.route then
-                        { pathSegments = Routing.treePathSegments new.route }
-                            |> Ports.fsListDirectory
-                            |> return new
+                    case Routing.treePath new.route of
+                        Just newPath ->
+                            if Routing.isAuthenticatedTree new.authenticated new.route then
+                                { path = Path.encode newPath }
+                                    |> Ports.fsListDirectory
+                                    |> return new
 
-                    else
-                        { pathSegments =
-                            Routing.treePathSegments new.route
-                        , root =
-                            Common.filesDomainFromTreeRoot
-                                { usersDomain = new.usersDomain }
-                                newRoot
-                        }
-                            |> Ports.fsListPublicDirectory
-                            |> return new
+                            else
+                                { path =
+                                    Path.encode newPath
+                                , root =
+                                    Common.filesDomainFromTreeRoot
+                                        { usersDomain = new.usersDomain }
+                                        newRoot
+                                }
+                                    |> Ports.fsListPublicDirectory
+                                    |> return new
+
+                        Nothing ->
+                            Return.singleton new
 
                 else
                     Return.singleton new

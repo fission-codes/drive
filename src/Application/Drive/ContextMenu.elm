@@ -7,6 +7,7 @@ import FeatherIcons
 import List.Ext as List
 import Radix exposing (..)
 import Routing
+import Webnative.Path as Path
 
 
 
@@ -78,7 +79,7 @@ distractedBurgers username =
 
         --
         , href = Nothing
-        , msg = Just (GoToRoute <| Routing.Tree { root = username } [])
+        , msg = Just (GoToRoute <| Routing.treeRootTopLevel username)
         }
     ]
 
@@ -128,13 +129,18 @@ item : ContextMenu.Hook -> { isGroundFloor : Bool } -> Drive.Item.Item -> Contex
 item hook { isGroundFloor } context =
     let
         isPublicPath =
-            String.startsWith "public/" context.path
-                || (context.path
-                        |> String.split "/"
-                        |> List.drop 1
-                        |> List.head
-                        |> (==) (Just "p")
-                   )
+            case Path.unwrap context.path of
+                "public" :: _ ->
+                    True
+
+                _ :: "p" :: _ ->
+                    True
+
+                _ ->
+                    False
+
+        isPrivatePath =
+            not isPublicPath
     in
     ContextMenu.build
         hook
@@ -142,6 +148,8 @@ item hook { isGroundFloor } context =
             Directory ->
                 List.concat
                     [ [ driveLink context ]
+                    , Common.when isPrivatePath
+                        [ share context ]
                     , Common.when isPublicPath
                         [ contentLink context
                         , copyCid context
@@ -158,6 +166,8 @@ item hook { isGroundFloor } context =
                     [ [ downloadItem context
                       , driveLink context
                       ]
+                    , Common.when isPrivatePath
+                        [ share context ]
                     , Common.when isPublicPath
                         [ contentLink context
                         , copyCid context
@@ -275,6 +285,21 @@ downloadItem context =
         , msg =
             context
                 |> DownloadItem
+                |> Just
+        }
+
+
+share context =
+    Item
+        { icon = FeatherIcons.share
+        , label = "Share with Fission user"
+        , active = False
+
+        --
+        , href = Nothing
+        , msg =
+            context
+                |> ShowShareItemModal
                 |> Just
         }
 

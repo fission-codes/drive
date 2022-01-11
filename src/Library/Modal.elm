@@ -11,8 +11,8 @@ import Tailwind as T
 
 
 type alias Modal msg =
-    { confirmationButtons : List (Html msg)
-    , content : List (Html msg)
+    { confirmationButtons : Dict String String -> List (Html msg)
+    , content : Dict String String -> List (Html msg)
     , onSubmit : msg
     , state : Dict String String
     , title : String
@@ -60,7 +60,7 @@ view modal =
             [ E.onSubmit modal.onSubmit ]
             [ Html.div
                 []
-                modal.content
+                (modal.content modal.state)
 
             -- Confirmation Buttons
             -----------------------
@@ -69,7 +69,8 @@ view modal =
                 , T.items_center
                 , T.justify_center
                 , T.mt_5
+                , T.space_x_3
                 ]
-                modal.confirmationButtons
+                (modal.confirmationButtons modal.state)
             ]
         ]

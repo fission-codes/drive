@@ -25,7 +25,7 @@ import Url
 goToRoute : Route -> Manager
 goToRoute route model =
     route
-        |> Routing.adjustUrl model.url
+        |> Routing.routeToUrl model.url
         |> Url.toString
         |> Navigation.pushUrl model.navKey
         |> return model

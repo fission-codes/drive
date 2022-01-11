@@ -27,6 +27,9 @@ import Task
 import Toasty
 import Url
 import Webnative exposing (DecodedResponse(..))
+import Webnative.Path as Path exposing (Path)
+import Webnative.Path.Encapsulated as Path
+import Webnative.Path.Extra as Path
 import Wnfs
 
 
@@ -45,17 +48,23 @@ activateSidebarAddOrCreate model =
 
 addFiles : { blobs : List { path : String, url : String } } -> Manager
 addFiles { blobs } model =
-    { blobs = blobs
-    , pathSegments = Routing.treePathSegments model.route
-    }
-        |> Ports.fsAddContent
-        |> return { model | fileSystemStatus = FileSystem.Operation AddingFiles }
-        -- Notification
-        |> Toasty.addConditionalToast
-            (\m -> m.fileSystemStatus == FileSystem.Operation AddingFiles)
-            Notifications.config
-            ToastyMsg
-            (Notifications.loadingIndication "Uploading files")
+    case Routing.treeDirectory model.route of
+        Just path ->
+            { blobs = blobs
+            , toPath = Path.encode path
+            }
+                |> Ports.fsAddContent
+                |> return { model | fileSystemStatus = FileSystem.Operation AddingFiles }
+                -- Notification
+                |> Toasty.addConditionalToast
+                    (\m -> m.fileSystemStatus == FileSystem.Operation AddingFiles)
+                    Notifications.config
+                    ToastyMsg
+                    (Notifications.loadingIndication "Uploading files")
+
+        Nothing ->
+            -- Invalid scenario
+            Return.singleton model
 
 
 clearSelection : Manager
@@ -71,6 +80,13 @@ closeSidebar model =
     { model | sidebar = Nothing }
         |> clearDirectoryListSelection
         |> (case model.sidebar of
+                Just (Sidebar.EditPlaintext _) ->
+                    if Common.isSingleFileView model then
+                        goUpOneLevel
+
+                    else
+                        Return.singleton
+
                 Just (Sidebar.Details _) ->
                     if Common.isSingleFileView model then
                         goUpOneLevel
@@ -113,11 +129,10 @@ copyToClipboard { clip, notification } model =
 
 createFolder : Manager
 createFolder model =
-    case sidebarAddOrCreateInput model of
-        Just directoryName ->
-            model.route
-                |> Routing.treePathSegments
-                |> List.add [ directoryName ]
+    case ( sidebarAddOrCreateInput model, Routing.treeDirectory model.route ) of
+        ( Just directoryName, Just currentPath ) ->
+            currentPath
+                |> Path.endWith directoryName
                 |> (\p ->
                         FileSystem.Actions.createDirectory
                             { path = p
@@ -137,7 +152,7 @@ createFolder model =
                             }
                     )
 
-        Nothing ->
+        _ ->
             Return.singleton model
 
 
@@ -191,23 +206,14 @@ createFile model =
     maybeFileName
         |> Maybe.withDefault "Untitled"
         |> ensureUniqueFileName model
-        |> Maybe.map
-            (\fileName ->
-                model.route
-                    |> Routing.treePathSegments
+        |> Maybe.map2
+            (\currentPath fileName ->
+                currentPath
+                    |> Path.addFile fileName
                     |> (\path ->
-                            case path of
-                                "public" :: rest ->
-                                    "public" :: rest
-
-                                _ ->
-                                    "private" :: path
-                       )
-                    |> List.add [ fileName ]
-                    |> (\p ->
                             FileSystem.Actions.writeUtf8
-                                { path = p
-                                , tag = CreatedEmptyFile { path = p }
+                                { path = path
+                                , tag = CreatedEmptyFile { path = Path.encapsulate path }
                                 , content = ""
                                 }
                        )
@@ -221,50 +227,53 @@ createFile model =
                                 model
                         )
             )
+            (Routing.treeDirectory model.route)
         |> Maybe.withDefault
             (Return.singleton model)
 
 
 digDeeper : { directoryName : String } -> Manager
 digDeeper { directoryName } model =
-    let
-        items =
-            model.directoryList
-                |> Result.map .items
-                |> Result.withDefault []
+    case Routing.treePath model.route of
+        Just currentPath ->
+            let
+                items =
+                    model.directoryList
+                        |> Result.map .items
+                        |> Result.withDefault []
 
-        currentPathSegments =
-            Routing.treePathSegments model.route
+                path =
+                    case model.fileSystemStatus of
+                        FileSystem.AdditionalListing ->
+                            Path.init currentPath
 
-        pathSegments =
-            case model.fileSystemStatus of
-                FileSystem.AdditionalListing ->
-                    Maybe.withDefault [] (List.init currentPathSegments)
+                        _ ->
+                            currentPath
 
-                _ ->
-                    currentPathSegments
+                updatedItems =
+                    List.map
+                        (\i ->
+                            if i.name == directoryName then
+                                { i | loading = True }
 
-        updatedItems =
-            List.map
-                (\i ->
-                    if i.name == directoryName then
-                        { i | loading = True }
+                            else
+                                { i | loading = False }
+                        )
+                        items
 
-                    else
-                        { i | loading = False }
-                )
-                items
+                updatedDirectoryList =
+                    Result.map (\l -> { l | items = updatedItems }) model.directoryList
+            in
+            path
+                |> Path.endWith directoryName
+                |> Routing.replaceTreePath model.route
+                |> Routing.routeToUrl model.url
+                |> Url.toString
+                |> Navigation.pushUrl model.navKey
+                |> Return.return { model | directoryList = updatedDirectoryList }
 
-        updatedDirectoryList =
-            Result.map (\l -> { l | items = updatedItems }) model.directoryList
-    in
-    [ directoryName ]
-        |> List.append pathSegments
-        |> Routing.replaceTreePathSegments model.route
-        |> Routing.adjustUrl model.url
-        |> Url.toString
-        |> Navigation.pushUrl model.navKey
-        |> Return.return { model | directoryList = updatedDirectoryList }
+        Nothing ->
+            Return.singleton model
 
 
 digDeeperUsingSelection : Manager
@@ -293,7 +302,7 @@ digDeeperUsingSelection model =
 downloadItem : Item -> Manager
 downloadItem item model =
     item
-        |> Item.pathProperties
+        |> Item.portablePath
         |> Ports.fsDownloadItem
         |> return model
 
@@ -348,9 +357,14 @@ gotWebnativeResponse response model =
                     )
 
         Wnfs UpdatedFileSystem _ ->
-            { pathSegments = Routing.treePathSegments model.route }
-                |> Ports.fsListDirectory
-                |> return model
+            case Routing.treePath model.route of
+                Just path ->
+                    { path = Path.encode path }
+                        |> Ports.fsListDirectory
+                        |> return model
+
+                Nothing ->
+                    Return.singleton model
 
         -----------------------------------------
         -- TODO: Error handling
@@ -364,28 +378,24 @@ gotWebnativeResponse response model =
 
 goUp : { floor : Int } -> Manager
 goUp { floor } model =
-    if floor >= 0 then
-        (case floor of
-            0 ->
-                []
+    case Routing.treePath model.route of
+        Just currentPath ->
+            currentPath
+                |> Path.map (List.take <| max 0 <| floor - 1)
+                |> Routing.replaceTreePath model.route
+                |> Routing.routeToUrl model.url
+                |> Url.toString
+                |> Navigation.pushUrl model.navKey
+                |> Return.return (clearDirectoryListSelection model)
+                |> Return.command
+                    ({ on = True }
+                        |> ToggleLoadingOverlay
+                        |> Debouncing.loading.provideInput
+                        |> Return.task
+                    )
 
-            x ->
-                List.take (x - 1) (Routing.treePathSegments model.route)
-        )
-            |> Routing.replaceTreePathSegments model.route
-            |> Routing.adjustUrl model.url
-            |> Url.toString
-            |> Navigation.pushUrl model.navKey
-            |> Return.return (clearDirectoryListSelection model)
-            |> Return.command
-                ({ on = True }
-                    |> ToggleLoadingOverlay
-                    |> Debouncing.loading.provideInput
-                    |> Return.task
-                )
-
-    else
-        Return.singleton model
+        _ ->
+            Return.singleton model
 
 
 goUpOneLevel : Manager
@@ -481,7 +491,7 @@ rangeSelect targetIndex item model =
 removeItem : Item -> Manager
 removeItem item model =
     item
-        |> Item.pathProperties
+        |> Item.portablePath
         |> Ports.fsRemoveItem
         |> return
             { model
@@ -492,7 +502,7 @@ removeItem item model =
                             ifThenElse (List.member item.path paths) Nothing model.sidebar
 
                         Just (Sidebar.EditPlaintext { path }) ->
-                            ifThenElse (path == item.path) Nothing model.sidebar
+                            ifThenElse (Path.encapsulate path == item.path) Nothing model.sidebar
 
                         a ->
                             a
@@ -517,8 +527,12 @@ removeSelectedItems model =
 
 renameItem : Item -> Manager
 renameItem item model =
-    case Maybe.andThen (.state >> Dict.get "name") model.modal of
-        Just rawNewName ->
+    case
+        ( Maybe.andThen (.state >> Dict.get "name") model.modal
+        , Routing.treeDirectory model.route
+        )
+    of
+        ( Just rawNewName, Just currentPath ) ->
             let
                 newName =
                     rawNewName
@@ -554,14 +568,14 @@ renameItem item model =
                         (\a -> { a | items = newDirectoryListItems })
                         model.directoryList
             in
-            { currentPathSegments = String.split "/" item.path
-            , pathSegments = Routing.treePathSegments model.route ++ [ newName ]
+            { fromPath = Path.encode item.path
+            , toPath = Path.encode (Path.addFile newName currentPath)
             }
                 |> Ports.fsMoveItem
                 |> return { model | directoryList = newDirectoryList }
                 |> andThen Common.hideModal
 
-        Nothing ->
+        _ ->
             Common.hideModal model
 
 
@@ -577,7 +591,7 @@ select : Int -> Item -> Manager
 select idx item model =
     let
         showEditor =
-            item.kind == Code || item.kind == Text
+            Item.canBeOpenedWithEditor item
     in
     return
         { model
@@ -587,29 +601,33 @@ select idx item model =
                     model.directoryList
             , sidebar =
                 if showEditor then
-                    { path = item.path
-                    , editor = Nothing
-                    }
-                        |> Sidebar.EditPlaintext
-                        |> Just
+                    Maybe.map
+                        (\filePath ->
+                            Sidebar.EditPlaintext
+                                { path = filePath
+                                , editor = Nothing
+                                }
+                        )
+                        (Path.toFile item.path)
 
                 else
                     [ item.path ]
                         |> Sidebar.details
                         |> Just
         }
-        (if showEditor then
-            let
-                path =
-                    .pathSegments (Item.pathProperties item)
-            in
-            FileSystem.Actions.readUtf8
-                { path = path
-                , tag = SidebarTag (Sidebar.LoadedFile { path = String.join "/" path })
-                }
+        (case ( showEditor, Path.toFile item.path ) of
+            ( True, Just filePath ) ->
+                FileSystem.Actions.readUtf8
+                    { path =
+                        filePath
+                    , tag =
+                        { path = filePath }
+                            |> Sidebar.LoadedFile
+                            |> SidebarTag
+                    }
 
-         else
-            Cmd.none
+            _ ->
+                Cmd.none
         )
 
 

@@ -1,9 +1,13 @@
 module Routing exposing (..)
 
 import Authentication.Essentials as Authentication
+import Maybe.Extra as Maybe
 import String.Ext as String
 import Url exposing (Url)
 import Url.Parser as Url exposing (..)
+import Webnative.Path as Path exposing (Directory, Encapsulated, Path)
+import Webnative.Path.Encapsulated as Path
+import Webnative.Path.Extra as Path
 
 
 
@@ -12,7 +16,7 @@ import Url.Parser as Url exposing (..)
 
 type Route
     = Undecided
-    | Tree { root : String } (List String)
+    | Tree { root : String } (Path Encapsulated)
 
 
 
@@ -25,7 +29,7 @@ routeFromUrl maybeAuth url =
         "" ->
             case maybeAuth of
                 Just a ->
-                    Tree { root = a.username } []
+                    treeRootTopLevel a.username
 
                 Nothing ->
                     Undecided
@@ -34,27 +38,36 @@ routeFromUrl maybeAuth url =
         -- Tree
         -----------------------------------------
         path ->
-            case String.split "/" (String.chop "/" path) of
-                root :: rest ->
-                    Tree { root = root } rest
+            case Path.uncons (Path.fromPosix path) of
+                Just ( username, remainingPath ) ->
+                    Tree { root = username } remainingPath
 
-                _ ->
+                Nothing ->
                     Undecided
 
 
-adjustUrl : Url -> Route -> Url
-adjustUrl url route =
-    { url | fragment = routeFragment route }
+routeToUrl : Url -> Route -> Url
+routeToUrl url route =
+    { url | fragment = Just (toString route) }
 
 
-routeFragment : Route -> Maybe String
-routeFragment route =
+toString : Route -> String
+toString route =
     case route of
         Undecided ->
-            Nothing
+            "/"
 
-        Tree { root } pathSegments ->
-            Just ("/" ++ String.join "/" (root :: pathSegments))
+        Tree { root } path ->
+            path
+                |> Path.map ((::) root)
+                |> Path.toPosix
+                |> (\p ->
+                        if p == "/" then
+                            p
+
+                        else
+                            "/" ++ p
+                   )
 
 
 
@@ -63,51 +76,41 @@ routeFragment route =
 
 basePath : Url -> String
 basePath url =
-    let
-        path =
-            Maybe.withDefault "" url.fragment
-    in
-    path
-        |> String.chop "/"
-        |> String.split "/"
-        |> List.map (\s -> Url.percentDecode s |> Maybe.withDefault s)
-        |> String.join "/"
+    url.fragment
+        |> Maybe.withDefault ""
+        |> String.chopStart "/"
+        |> (\s -> Url.percentDecode s |> Maybe.withDefault s)
 
 
 
 -- TREE
 
 
-treePath : Route -> String
-treePath =
-    treePathSegments >> String.join "/"
+treePath : Route -> Maybe (Path Encapsulated)
+treePath route =
+    case route of
+        Tree _ path ->
+            Just path
+
+        _ ->
+            Nothing
+
+
+treeDirectory : Route -> Maybe (Path Directory)
+treeDirectory =
+    treePath >> Maybe.andThen Path.toDirectory
 
 
 treePathSegments : Route -> List String
-treePathSegments route =
-    case route of
-        Tree _ pathSegments ->
-            pathSegments
-
-        _ ->
-            []
+treePathSegments =
+    treePath >> Maybe.unwrap [] Path.unwrap
 
 
-addTreePathSegments : Route -> List String -> Route
-addTreePathSegments route segments =
-    case route of
-        Tree attributes pathSegments ->
-            Tree attributes (List.append pathSegments segments)
-
-        _ ->
-            route
-
-
-replaceTreePathSegments : Route -> List String -> Route
-replaceTreePathSegments route segments =
+replaceTreePath : Route -> Path Encapsulated -> Route
+replaceTreePath route path =
     case route of
         Tree attributes _ ->
-            Tree attributes segments
+            Tree attributes path
 
         _ ->
             route
@@ -121,6 +124,11 @@ treeRoot route =
 
         _ ->
             Nothing
+
+
+treeRootTopLevel : String -> Route
+treeRootTopLevel root =
+    Tree { root = root } (Path.encapsulate Path.root)
 
 
 isAuthenticatedTree : Maybe Authentication.Essentials -> Route -> Bool

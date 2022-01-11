@@ -17,6 +17,7 @@ import Ports
 import Radix exposing (..)
 import Return
 import Routing
+import Sharing.State as Sharing
 import Task
 import Time
 import Toasty
@@ -32,7 +33,7 @@ init flags url navKey =
     ( -----------------------------------------
       -- Model
       -----------------------------------------
-      { apiDomain = flags.apiDomain
+      { apiEndpoint = flags.apiEndpoint
       , appUpdate = NotAvailable
       , authenticated = Nothing
       , currentTime = Time.millisToPosix flags.currentTime
@@ -58,6 +59,7 @@ init flags url navKey =
       -------------
       , loadingDebouncer = Debouncing.loading.debouncer
       , notificationsDebouncer = Debouncing.notifications.debouncer
+      , usernameLookupDebouncer = Debouncing.usernameLookup.debouncer
 
       -- Sidebar
       ----------
@@ -90,6 +92,9 @@ update msg =
         NotificationsDebouncerMsg a ->
             Debouncer.update update Debouncing.notifications.updateConfig a
 
+        UsernameLookupDebouncerMsg a ->
+            Debouncer.update update Debouncing.usernameLookup.updateConfig a
+
         -----------------------------------------
         -- Drive
         -----------------------------------------
@@ -111,6 +116,12 @@ update msg =
         CopyToClipboard a ->
             Drive.copyToClipboard a
 
+        CreateFile ->
+            Drive.createFile
+
+        CreateFolder ->
+            Drive.createFolder
+
         DigDeeper a ->
             Drive.digDeeper a
 
@@ -119,12 +130,6 @@ update msg =
 
         GotAddOrCreateInput a ->
             Drive.gotAddCreateInput a
-
-        CreateFile ->
-            Drive.createFile
-
-        CreateFolder ->
-            Drive.createFolder
 
         GoUp a ->
             Drive.goUp a
@@ -173,6 +178,27 @@ update msg =
 
         GotFsError a ->
             FileSystem.gotError a
+
+        -----------------------------------------
+        -- Sharing
+        -----------------------------------------
+        CheckUsernameExistanceForSharingWhenSettled a ->
+            Sharing.checkUsernameExistanceForSharingWhenSettled a
+
+        CheckUsernameExistanceForSharing a ->
+            Sharing.checkUsernameExistanceForSharing a
+
+        GotFsShareError a ->
+            Sharing.gotFsShareError a
+
+        GotFsShareLink a ->
+            Sharing.gotFsShareLink a
+
+        ShareItem a ->
+            Sharing.shareItem a
+
+        ShowShareItemModal a ->
+            Sharing.showShareItemModal a
 
         -----------------------------------------
         -- 🌏 Common
@@ -276,6 +302,8 @@ subscriptions model =
         , Ports.appUpdateFinished (always AppUpdateFinished)
         , Ports.fsGotDirectoryList GotFsDirectoryList
         , Ports.fsGotError GotFsError
+        , Ports.fsGotShareError GotFsShareError
+        , Ports.fsGotShareLink GotFsShareLink
         , Ports.gotInitialisationError GotInitialisationError
         , Ports.initialise Initialise
         , Ports.lostWindowFocus (always LostWindowFocus)

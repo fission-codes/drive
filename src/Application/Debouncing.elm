@@ -31,6 +31,17 @@ notifications =
         }
 
 
+usernameLookup =
+    makeConfig
+        { getter = .usernameLookupDebouncer
+        , setter = \debouncer model -> { model | usernameLookupDebouncer = debouncer }
+
+        --
+        , msg = UsernameLookupDebouncerMsg
+        , settleAfter = fromSeconds 1.5
+        }
+
+
 
 -- CANCELLING
 

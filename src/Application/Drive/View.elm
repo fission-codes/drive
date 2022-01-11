@@ -27,7 +27,7 @@ import Radix exposing (..)
 import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
-import Url.Builder
+import Webnative.Path as Path
 
 
 
@@ -133,10 +133,10 @@ header model =
                             Just <| rootPathPart model segments
 
                         else if showEntirePath then
-                            Just <| inactivePathPart (amountOfSegments - idx + 1) segment
+                            Just <| inactivePathPart model (amountOfSegments - idx + 1) segment
 
                         else if idx == 1 then
-                            Just <| inactivePathPart (amountOfSegments - idx + 1) "…"
+                            Just <| inactivePathPart model (amountOfSegments - idx + 1) "…"
 
                         else
                             Nothing
@@ -169,7 +169,7 @@ header model =
                             Just <| activePathPart (amountOfSegments - idx + 1) segment
 
                         else if idx == 1 then
-                            Just <| inactivePathPart (amountOfSegments - idx + 1) "…"
+                            Just <| inactivePathPart model (amountOfSegments - idx + 1) "…"
 
                         else
                             Nothing
@@ -254,15 +254,11 @@ header model =
         ]
 
 
-inactivePathPart : Int -> String -> Html Msg
-inactivePathPart floor text =
-    Html.span
+inactivePathPart : Model -> Int -> String -> Html Msg
+inactivePathPart model floor text =
+    Html.a
         [ A.class "underline-thick"
-
-        --
-        , { floor = floor }
-            |> GoUp
-            |> E.onClick
+        , A.href (floorHref model.route floor)
 
         --
         , T.cursor_pointer
@@ -333,11 +329,7 @@ rootPathPart model segments =
 
                 _ ->
                     [ A.class "underline-thick"
-
-                    --
-                    , { floor = 0 }
-                        |> GoUp
-                        |> E.onClick
+                    , A.href (floorHref model.route 0)
 
                     --
                     , T.cursor_pointer
@@ -352,7 +344,7 @@ rootPathPart model segments =
                     , T.dark__text_base_400
                     ]
     in
-    Html.span
+    Html.a
         (if isTooLong then
             Common.fadeOutLeft :: attributes
 
@@ -392,6 +384,20 @@ breadcrumbIcon icon =
         |> FeatherIcons.toHtml []
         |> List.singleton
         |> Html.div [ A.style "vertical-align" "sub", T.inline_block ]
+
+
+floorHref : Route -> Int -> String
+floorHref route floor =
+    route
+        |> Routing.treePath
+        |> Maybe.withDefault (Path.encapsulate Path.root)
+        |> Path.unwrap
+        |> List.take (max 0 <| floor - 1)
+        |> Path.directory
+        |> Path.encapsulate
+        |> Routing.replaceTreePath route
+        |> Routing.toString
+        |> String.append "#"
 
 
 
@@ -619,12 +625,15 @@ errorView route err =
                 A.href "#/"
 
               else
-                []
-                    |> Routing.replaceTreePathSegments route
-                    |> Routing.routeFragment
-                    |> Maybe.withDefault "/"
-                    |> String.append "#"
-                    |> A.href
+                route
+                    |> Routing.treeRoot
+                    |> Maybe.map
+                        (Routing.treeRootTopLevel
+                            >> Routing.toString
+                            >> String.append "#"
+                            >> A.href
+                        )
+                    |> Maybe.withDefault (A.attribute "" "")
 
             --
             , T.bg_purple

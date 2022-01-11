@@ -1,6 +1,7 @@
 module Drive.Sidebar exposing (..)
 
 import Drive.Item exposing (Kind(..))
+import Webnative.Path exposing (Encapsulated, File, Path)
 
 
 
@@ -14,18 +15,18 @@ type Msg
 
 
 type Tag
-    = SavedFile { path : String }
-    | LoadedFile { path : String }
+    = SavedFile { path : Path File }
+    | LoadedFile { path : Path File }
 
 
 type Model
     = AddOrCreate AddOrCreateModel
     | Details
-        { paths : List String
+        { paths : List (Path Encapsulated)
         , showPreviewOverlay : Bool
         }
     | EditPlaintext
-        { path : String
+        { path : Path File
 
         -- Nothing means Loading
         , editor : Maybe EditorModel
@@ -58,7 +59,7 @@ addOrCreate =
     }
 
 
-details : List String -> Model
+details : List (Path Encapsulated) -> Model
 details paths =
     Details
         { paths = paths
