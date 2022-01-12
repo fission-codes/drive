@@ -253,7 +253,7 @@ digDeeper { directoryName } model =
                 updatedItems =
                     List.map
                         (\i ->
-                            if i.name == directoryName then
+                            if i.name == directoryName && i.kind == Directory then
                                 { i | loading = True }
 
                             else
@@ -309,11 +309,32 @@ downloadItem item model =
 
 followSymlink : Int -> Item -> Manager
 followSymlink idx item model =
-    { index = idx
-    , path = Path.encode item.path
-    }
-        |> Ports.fsFollowItem
-        |> return model
+    model.directoryList
+        |> Result.map
+            (\dl ->
+                dl.items
+                    |> List.map
+                        (\i ->
+                            if i.id == item.id then
+                                { i | loading = True }
+
+                            else
+                                i
+                        )
+                    |> (\l ->
+                            { dl | items = l }
+                       )
+            )
+        |> (\res ->
+                { model | directoryList = res }
+           )
+        |> Return.singleton
+        |> Return.command
+            (Ports.fsFollowItem
+                { index = idx
+                , path = Path.encode item.path
+                }
+            )
 
 
 gotAddCreateInput : String -> Manager

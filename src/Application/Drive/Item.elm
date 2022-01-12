@@ -194,7 +194,7 @@ fromFileSystem item =
             }
 
         SoftLink { ipns, path } ->
-            { id = ipns
+            { id = ipns ++ "/" ++ path
 
             --
             , kind = kind
