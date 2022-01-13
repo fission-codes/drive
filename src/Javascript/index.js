@@ -227,13 +227,14 @@ function exe(port, method, options = {}) {
       const feedback = (await fs[method](args)) || {}
       if (!feedback.results) return
 
+      const path = feedback.path || args.path
+
       app.ports.fsGotDirectoryList.send({
         ...feedback,
         path: fs.removePrivatePrefix(
-          wn.path.map(
-            p => p.slice(0, options.listParent ? -1 : undefined),
-            feedback.path || args.path
-          )
+          options.listParent
+            ? wn.path.directory(...wn.path.unwrap(path).slice(0, -1))
+            : path
         ),
       })
 
