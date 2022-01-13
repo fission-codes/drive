@@ -253,7 +253,7 @@ digDeeper { directoryName } model =
                 updatedItems =
                     List.map
                         (\i ->
-                            if i.name == directoryName then
+                            if i.name == directoryName && i.kind == Directory then
                                 { i | loading = True }
 
                             else
@@ -305,6 +305,36 @@ downloadItem item model =
         |> Item.portablePath
         |> Ports.fsDownloadItem
         |> return model
+
+
+followSymlink : Int -> Item -> Manager
+followSymlink idx item model =
+    model.directoryList
+        |> Result.map
+            (\dl ->
+                dl.items
+                    |> List.map
+                        (\i ->
+                            if i.id == item.id then
+                                { i | loading = True }
+
+                            else
+                                i
+                        )
+                    |> (\l ->
+                            { dl | items = l }
+                       )
+            )
+        |> (\res ->
+                { model | directoryList = res }
+           )
+        |> Return.singleton
+        |> Return.command
+            (Ports.fsFollowItem
+                { index = idx
+                , path = Path.encode item.path
+                }
+            )
 
 
 gotAddCreateInput : String -> Manager
@@ -591,7 +621,15 @@ select : Int -> Item -> Manager
 select idx item model =
     let
         showEditor =
-            Item.canBeOpenedWithEditor item
+            case Result.map .readOnly model.directoryList of
+                Ok True ->
+                    False
+
+                Ok False ->
+                    Item.canBeOpenedWithEditor item
+
+                Err _ ->
+                    False
     in
     return
         { model

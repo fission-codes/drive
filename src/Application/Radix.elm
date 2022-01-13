@@ -118,6 +118,7 @@ type Msg
     | CreateFolder
     | DigDeeper { directoryName : String }
     | DownloadItem Item
+    | FollowSymlink Int Item
     | GotAddOrCreateInput String
     | GotWebnativeResponse Webnative.Response
     | GoUp { floor : Int }

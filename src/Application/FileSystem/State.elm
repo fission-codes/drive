@@ -2,16 +2,17 @@ module FileSystem.State exposing (..)
 
 import Browser.Dom as Dom
 import Debouncing
-import Drive.Item as Item exposing (Kind(..))
+import Drive.Item as Item exposing (Item, Kind(..))
 import Drive.Item.Inventory as Inventory
 import Drive.Sidebar as Sidebar
+import Drive.State as Drive
 import FileSystem
 import FileSystem.Actions
 import Json.Decode as Json
 import List.Extra as List
 import Maybe.Extra as Maybe
 import Radix exposing (..)
-import Return
+import Return exposing (return)
 import Return.Extra as Return
 import Routing
 import Task
@@ -52,11 +53,28 @@ gotDirectoryList_ path floor json model =
         |> Result.mapError Json.errorToString
         |> (\result ->
                 let
+                    maybeIndex =
+                        -- We might need to automatically select a specific file in the tree
+                        json
+                            |> Json.decodeValue (Json.field "index" Json.int)
+                            |> Result.toMaybe
+
                     maybeRootCid =
                         json
                             |> Json.decodeValue (Json.field "rootCid" Json.string)
                             |> Result.toMaybe
                             |> Maybe.orElse model.fileSystemCid
+
+                    readOnly =
+                        json
+                            |> Json.decodeValue (Json.field "readOnly" Json.bool)
+                            |> Result.withDefault False
+
+                    replaceSymlinkPath =
+                        -- Path of the symlink we need to replace
+                        json
+                            |> Json.decodeValue (Json.field "replaceSymlink" Path.decoder)
+                            |> Result.toMaybe
                 in
                 result
                     |> Result.map
@@ -66,10 +84,27 @@ gotDirectoryList_ path floor json model =
                         )
                     |> Result.map
                         (\items ->
-                            { floor = floor
-                            , items = items
-                            , selection = []
-                            }
+                            case replaceSymlinkPath of
+                                Just symlinkPath ->
+                                    model.directoryList
+                                        |> Result.map
+                                            (.items >> replaceSymlink items symlinkPath)
+                                        |> Result.withDefault
+                                            items
+                                        |> (\i ->
+                                                { floor = floor
+                                                , items = i
+                                                , readOnly = readOnly
+                                                , selection = []
+                                                }
+                                           )
+
+                                Nothing ->
+                                    { floor = floor
+                                    , items = items
+                                    , readOnly = readOnly
+                                    , selection = []
+                                    }
                         )
                     |> Result.andThen
                         (\inventory ->
@@ -114,8 +149,20 @@ gotDirectoryList_ path floor json model =
                                             False
                             }
                        )
+                    |> (case maybeIndex of
+                            Just index ->
+                                \newModel ->
+                                    model.directoryList
+                                        |> Result.map .items
+                                        |> Result.withDefault []
+                                        |> List.getAt index
+                                        |> Maybe.map (\item -> Drive.select index item newModel)
+                                        |> Maybe.withDefault (Return.singleton newModel)
+
+                            Nothing ->
+                                Return.singleton
+                       )
            )
-        |> Return.singleton
         |> Return.andThen Debouncing.cancelLoading
         |> Return.effect_
             -- Might need to load content for sidebar editor
@@ -153,6 +200,30 @@ gotError error model =
 
 
 -- 🛠
+
+
+replaceSymlink : List Item -> Path Encapsulated -> List Item -> List Item
+replaceSymlink newList symlinkPath currentList =
+    let
+        unwrappedPath =
+            Path.unwrap symlinkPath
+    in
+    currentList
+        |> List.foldr
+            (\item ( acc, new ) ->
+                if item.path == symlinkPath then
+                    case List.partition (.path >> Path.unwrap >> (==) unwrappedPath) new of
+                        ( n :: _, subset ) ->
+                            ( { n | readOnly = True } :: acc, subset )
+
+                        _ ->
+                            ( item :: acc, new )
+
+                else
+                    ( item :: acc, new )
+            )
+            ( [], newList )
+        |> Tuple.first
 
 
 sidebarForDirectoryList directoryList paths =

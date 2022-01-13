@@ -13,6 +13,7 @@ type alias HardLinkAlias =
     , name : String
     , path : String
     , posixTime : Maybe Time.Posix
+    , readOnly : Bool
     , size : Int
     , typ : String
     }
@@ -22,6 +23,7 @@ type alias SoftLinkAlias =
     { ipns : String
     , name : String
     , path : String
+    , readOnly : Bool
     }
 
 
@@ -62,16 +64,17 @@ itemDecoder =
 
 softLinkDecoder : Json.Decoder SoftLinkAlias
 softLinkDecoder =
-    Json.map3
+    Json.map4
         SoftLinkAlias
         (Json.field "ipns" Json.string)
         (Json.field "name" Json.string)
         (Json.field "path" Json.string)
+        readOnlyDecoder
 
 
 hardLinkDecoder : Json.Decoder HardLinkAlias
 hardLinkDecoder =
-    Json.map6
+    Json.map7
         HardLinkAlias
         (Json.field "cid" Json.string)
         (Json.field "name" Json.string)
@@ -81,6 +84,7 @@ hardLinkDecoder =
             |> Json.maybe
             |> Json.map (Maybe.map convertTime)
         )
+        readOnlyDecoder
         (Json.field "size" Json.int)
         (Json.field "type" Json.string)
 
@@ -88,6 +92,14 @@ hardLinkDecoder =
 convertTime : Int -> Time.Posix
 convertTime int =
     Time.millisToPosix (int // 1000)
+
+
+readOnlyDecoder : Json.Decoder Bool
+readOnlyDecoder =
+    Json.bool
+        |> Json.field "readOnly"
+        |> Json.maybe
+        |> Json.map (Maybe.withDefault False)
 
 
 

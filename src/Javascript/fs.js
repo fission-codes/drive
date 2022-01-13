@@ -67,6 +67,45 @@ export async function downloadItem({ path }) {
 }
 
 
+export async function followItem({ index, path }) {
+  // If the symlinks resolves to a file, list the parent directory
+  // and replace the symlink item with the resolved one.
+  // If it resolves to a directory, list that directory.
+  const resolved = await fs.get(path)
+  const name = wn.path.terminus(path)
+
+
+  if (resolved.header.metadata.isFile) {
+    const parentPath = wn.path.parent(path)
+    const listing = await listDirectory({ path: parentPath })
+
+    return {
+      ...listing,
+      index,
+      results: listing.results.map(l => {
+        if (l.name === name) return {
+          name,
+          cid: resolved.cid || resolved.header.content,
+          isFile: resolved.header.metadata.isFile,
+          path: wn.path.toPosix({ file: wn.path.unwrap(path) }),
+          size: resolved.header.metadata.size || 0,
+          type: "file"
+        }
+        return l
+      }),
+      path: parentPath,
+      replaceSymlink: path
+    }
+
+  } else {
+    // We need to change the URL/fragment,
+    // so we'll do that and that in turn will trigger a directory listing.
+    self.location = location.hash + name + "/"
+
+  }
+}
+
+
 export async function listDirectory(args) {
   const ipfs = await wn.ipfs.get()
   const isListingRoot = wn.path.unwrap(args.path).length === 0
@@ -94,6 +133,7 @@ export async function listDirectory(args) {
   }
 
   // Adjust list
+  const readOnly = await fs.get(path).then(a => a.readOnly)
   const isListingPublic = wn.path.isBranch(wn.path.Branch.Public, path)
   const prettyIpfsPath = prefix => {
     return "/ipfs/"
@@ -128,7 +168,7 @@ export async function listDirectory(args) {
       }
 
       const itemPath = wn.path.toPosix(
-        wn.path.combine(path, { [l.isFile ? "file" : "directory"]: [l.name ] })
+        wn.path.combine(path, { [l.isFile ? "file" : "directory"]: [ l.name ] })
       )
 
       if (l.ipns) return {
@@ -142,6 +182,7 @@ export async function listDirectory(args) {
 
         cid: cid,
         path: itemPath,
+        readOnly: readOnly ? true : undefined,
         size: l.size || 0,
         type: l.isFile ? "file" : "dir"
       }
@@ -160,6 +201,7 @@ export async function listDirectory(args) {
         name: "public",
         cid: publicCid,
         path: `${publicCid}/public`,
+        readOnly: readOnly ? true : undefined,
         size: 0,
         type: "dir"
       },
@@ -170,6 +212,7 @@ export async function listDirectory(args) {
 
   // Default return
   return {
+    readOnly,
     rootCid,
     results
   }

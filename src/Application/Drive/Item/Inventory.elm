@@ -12,6 +12,7 @@ import Webnative.Path as Path exposing (Encapsulated, Path)
 type alias Inventory =
     { floor : Int
     , items : List Item
+    , readOnly : Bool
     , selection : Selection
     }
 
@@ -31,7 +32,7 @@ clearSelection inventory =
 
 default : Inventory
 default =
-    { floor = 1, items = [], selection = [] }
+    { floor = 1, items = [], readOnly = False, selection = [] }
 
 
 autoSelectOnSingleFileView : Path Encapsulated -> Inventory -> Inventory
