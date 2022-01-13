@@ -38,6 +38,7 @@ type alias Item =
     , nameProperties : NameProperties
     , path : Path Encapsulated
     , posixTime : Maybe Time.Posix
+    , readOnly : Bool
     , size : Int
     }
 
@@ -180,7 +181,7 @@ fromFileSystem item =
                             Other
     in
     case item of
-        HardLink { cid, path, posixTime, size } ->
+        HardLink { cid, path, posixTime, readOnly, size } ->
             { id = cid
 
             --
@@ -190,10 +191,11 @@ fromFileSystem item =
             , nameProperties = nameProps
             , path = Path.fromPosix path
             , posixTime = posixTime
+            , readOnly = readOnly
             , size = size
             }
 
-        SoftLink { ipns, path } ->
+        SoftLink { ipns, path, readOnly } ->
             { id = ipns ++ "/" ++ path
 
             --
@@ -203,6 +205,7 @@ fromFileSystem item =
             , nameProperties = nameProps
             , path = Path.fromPosix path
             , posixTime = Nothing
+            , readOnly = readOnly
             , size = 0
             }
 

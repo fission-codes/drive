@@ -214,7 +214,7 @@ replaceSymlink newList symlinkPath currentList =
                 if item.path == symlinkPath then
                     case List.partition (.path >> Path.unwrap >> (==) unwrappedPath) new of
                         ( n :: _, subset ) ->
-                            ( n :: acc, subset )
+                            ( { n | readOnly = True } :: acc, subset )
 
                         _ ->
                             ( item :: acc, new )

@@ -133,6 +133,7 @@ export async function listDirectory(args) {
   }
 
   // Adjust list
+  const readOnly = await fs.get(path).then(a => a.readOnly)
   const isListingPublic = wn.path.isBranch(wn.path.Branch.Public, path)
   const prettyIpfsPath = prefix => {
     return "/ipfs/"
@@ -181,6 +182,7 @@ export async function listDirectory(args) {
 
         cid: cid,
         path: itemPath,
+        readOnly: readOnly ? true : undefined,
         size: l.size || 0,
         type: l.isFile ? "file" : "dir"
       }
@@ -199,6 +201,7 @@ export async function listDirectory(args) {
         name: "public",
         cid: publicCid,
         path: `${publicCid}/public`,
+        readOnly: readOnly ? true : undefined,
         size: 0,
         type: "dir"
       },
@@ -209,6 +212,7 @@ export async function listDirectory(args) {
 
   // Default return
   return {
+    readOnly,
     rootCid,
     results
   }

@@ -621,7 +621,15 @@ select : Int -> Item -> Manager
 select idx item model =
     let
         showEditor =
-            Item.canBeOpenedWithEditor item
+            case Result.map .readOnly model.directoryList of
+                Ok True ->
+                    False
+
+                Ok False ->
+                    Item.canBeOpenedWithEditor item
+
+                Err _ ->
+                    False
     in
     return
         { model

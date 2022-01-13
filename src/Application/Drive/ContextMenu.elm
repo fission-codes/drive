@@ -6,6 +6,7 @@ import Drive.Item exposing (Kind(..))
 import FeatherIcons
 import List.Ext as List
 import Radix exposing (..)
+import Result.Extra as Result
 import Routing
 import Webnative.Path as Path
 
@@ -32,8 +33,12 @@ hamburger model =
 
 
 yourBurgers model =
+    let
+        isReadOnlyDirectory =
+            Result.unwrap False .readOnly model.directoryList
+    in
     List.append
-        (if Common.isSingleFileView model then
+        (if Common.isSingleFileView model || isReadOnlyDirectory then
             []
 
          else
@@ -148,13 +153,22 @@ item hook { isGroundFloor } context =
             Directory ->
                 List.concat
                     [ [ driveLink context ]
+
+                    --
                     , Common.when isPrivatePath
                         [ share context ]
+
+                    --
                     , Common.when isPublicPath
                         [ contentLink context
                         , copyCid context
                         ]
-                    , Common.when (not (isGroundFloor && context.name == "public"))
+
+                    --
+                    , Common.when
+                        (not (isGroundFloor && context.name == "public")
+                            && not context.readOnly
+                        )
                         [ Divider
                         , renameItem context
                         , removeItem context
@@ -166,16 +180,24 @@ item hook { isGroundFloor } context =
                     [ [ downloadItem context
                       , driveLink context
                       ]
+
+                    --
                     , Common.when isPrivatePath
                         [ share context ]
+
+                    --
                     , Common.when isPublicPath
                         [ contentLink context
                         , copyCid context
                         ]
-                    , [ Divider ]
-                    , [ renameItem context
-                      , removeItem context
-                      ]
+
+                    --
+                    , Common.when
+                        (not context.readOnly)
+                        [ Divider
+                        , renameItem context
+                        , removeItem context
+                        ]
                     ]
         )
 

@@ -9,6 +9,7 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Radix exposing (..)
+import Result.Extra as Result
 import Routing
 import Styling as S
 import Tailwind as T
@@ -124,13 +125,20 @@ treeActions model =
     let
         isAuthenticatedTree =
             Routing.isAuthenticatedTree model.authenticated model.route
+
+        isMutableDirectory =
+            not (Result.unwrap False .readOnly model.directoryList)
     in
     [ updateAppAction model.appUpdate
     , if Common.isSingleFileView model then
         Html.nothing
 
       else if isAuthenticatedTree then
-        addCreateAction model
+        if isMutableDirectory then
+            addCreateAction model
+
+        else
+            Html.nothing
 
       else
         case model.authenticated of
