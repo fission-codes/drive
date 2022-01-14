@@ -167,7 +167,10 @@ insert-version:
 	const work = fs.readFileSync("{{workbox_config}}", { encoding: "utf8" })
 	const timestamp = Math.floor(Date.now() / 1000).toString()
 
-	fs.writeFileSync("{{dist_dir}}/{{workbox_config}}", work.replace("UNIX_TIMESTAMP", timestamp))
+	fs.writeFileSync(
+		"{{dist_dir}}/{{workbox_config}}",
+		work.replace("UNIX_TIMESTAMP", timestamp)
+	)
 
 
 @javascript:
@@ -205,12 +208,12 @@ insert-version:
 
 @service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=development pnpx workbox generateSW {{workbox_config}}
+	NODE_ENV=development pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 @production-service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=production pnpx workbox generateSW {{workbox_config}}
+	NODE_ENV=production pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 
