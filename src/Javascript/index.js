@@ -93,8 +93,8 @@ exe("fsAddContent", "add")
 exe("fsFollowItem", "followItem")
 exe("fsListDirectory", "listDirectory")
 exe("fsListPublicDirectory", "listPublicDirectory")
-exe("fsMoveItem", "moveItem", { listParent: true })
-exe("fsRemoveItem", "removeItem", { listParent: true })
+exe("fsMoveItem", "moveItem")
+exe("fsRemoveItem", "removeItem")
 
 
 registerServiceWorker({
@@ -221,7 +221,7 @@ window.addEventListener("blur", event => {
 
 function exe(port, method, options = {}) {
   app.ports[port].subscribe(async a => {
-    let args = { path: wn.path.root(), ...a, ...options }
+    let args = { ...a, ...options }
 
     try {
       const feedback = (await fs[method](args)) || {}
@@ -231,11 +231,7 @@ function exe(port, method, options = {}) {
 
       app.ports.fsGotDirectoryList.send({
         ...feedback,
-        path: fs.removePrivatePrefix(
-          options.listParent
-            ? wn.path.directory(...wn.path.unwrap(path).slice(0, -1))
-            : path
-        ),
+        path: fs.removePrivatePrefix(path),
       })
 
     } catch (e) {

@@ -340,7 +340,7 @@ followSymlink idx item model =
 gotAddCreateInput : String -> Manager
 gotAddCreateInput input model =
     model.sidebar
-        |> Maybe.map (Sidebar.mapAddOrCreate (\m -> { m | input = input }))
+        |> Maybe.map (Sidebar.mapAddOrCreate (\m -> { m | input = Item.cleanName input }))
         |> replaceSidebar model
         |> Return.singleton
 
@@ -397,13 +397,21 @@ gotWebnativeResponse response model =
                     Return.singleton model
 
         -----------------------------------------
-        -- TODO: Error handling
+        -- Error handling
         -----------------------------------------
         Webnative.WnfsError err ->
-            Return.singleton model
+            Toasty.addToast
+                Notifications.config
+                ToastyMsg
+                (Notifications.text <| Wnfs.error err)
+                (Return.singleton model)
 
         Webnative.WebnativeError err ->
-            Return.singleton model
+            Toasty.addToast
+                Notifications.config
+                ToastyMsg
+                (Notifications.text <| Webnative.error err)
+                (Return.singleton model)
 
 
 goUp : { floor : Int } -> Manager
@@ -565,10 +573,7 @@ renameItem item model =
         ( Just rawNewName, Just currentPath ) ->
             let
                 newName =
-                    rawNewName
-                        |> String.replace "../" ""
-                        |> String.replace "./" ""
-                        |> String.replace "/" "-"
+                    Item.cleanName rawNewName
 
                 newNameProps =
                     case item.kind of
@@ -599,7 +604,7 @@ renameItem item model =
                         model.directoryList
             in
             { fromPath = Path.encode item.path
-            , toPath = Path.encode (Path.addFile newName currentPath)
+            , toPath = Path.encode (Path.endWith newName <| Path.init item.path)
             }
                 |> Ports.fsMoveItem
                 |> return { model | directoryList = newDirectoryList }

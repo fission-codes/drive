@@ -118,6 +118,14 @@ canRenderKind kind =
             False
 
 
+cleanName : String -> String
+cleanName name =
+    name
+        |> String.replace "../" ""
+        |> String.replace "./" ""
+        |> String.replace "/" "-"
+
+
 fromFileSystem : FileSystem.Item -> Item
 fromFileSystem item =
     let

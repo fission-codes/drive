@@ -39,6 +39,7 @@ export async function add({ blobs, toPath }) {
   }, Promise.resolve(null))
 
   await fs.publish()
+
   return await listDirectory({ path: toPath })
 }
 
@@ -212,6 +213,7 @@ export async function listDirectory(args) {
 
   // Default return
   return {
+    path,
     readOnly,
     rootCid,
     results

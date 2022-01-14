@@ -58,7 +58,7 @@ renameItem item =
             [ S.textField
                 [ A.id "modal__rename-item__input"
                 , A.placeholder "Name"
-                , A.value item.name
+                , A.value (Maybe.withDefault item.name <| Dict.get "name" state)
                 , E.onInput (SetModalState "name")
 
                 --

@@ -1,7 +1,8 @@
-module Notifications exposing (..)
+module Notifications exposing (Notification, config, loadingIndication, text, view)
 
 import FeatherIcons
 import Html exposing (Html)
+import Html.Attributes as A
 import Tailwind as T
 import Toasty
 
@@ -21,7 +22,7 @@ type Notification msg
 config : Toasty.Config msg
 config =
     Toasty.config
-        |> Toasty.transitionOutDuration 300
+        |> Toasty.transitionOutDuration 350
         |> Toasty.containerAttrs
             [ T.bottom_0
             , T.fixed
@@ -32,13 +33,13 @@ config =
             , T.z_50
             ]
         |> Toasty.itemAttrs
-            [ T.bg_base_600
-            , T.mt_3
-            , T.p_4
-            , T.rounded
-            , T.shadow_md
-            , T.text_base_50
+            [ A.style "opacity" "1"
+            , T.block
+            , T.duration_300
+            , T.transition_opacity
             ]
+        |> Toasty.transitionOutAttrs
+            [ A.style "opacity" "0" ]
 
 
 
@@ -46,7 +47,7 @@ config =
 
 
 loadingIndication : String -> Notification msg
-loadingIndication text =
+loadingIndication string =
     [ FeatherIcons.loader
         |> FeatherIcons.withSize 14
         |> FeatherIcons.toHtml []
@@ -61,9 +62,16 @@ loadingIndication text =
     --
     , Html.div
         [ T.ml_2 ]
-        [ Html.text text ]
+        [ Html.text string ]
     ]
         |> Html.div [ T.flex, T.items_center ]
+        |> Indication
+
+
+text : String -> Notification msg
+text string =
+    string
+        |> Html.text
         |> Indication
 
 
@@ -75,4 +83,14 @@ view : Notification msg -> Html msg
 view notification =
     case notification of
         Indication html ->
-            html
+            Html.div
+                [ T.bg_base_600
+                , T.text_base_50
+
+                --
+                , T.mt_3
+                , T.p_4
+                , T.rounded
+                , T.shadow_md
+                ]
+                [ html ]
