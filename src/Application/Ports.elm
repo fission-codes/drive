@@ -36,9 +36,6 @@ port fsAddContent :
 port fsDownloadItem : PortablePath -> Cmd msg
 
 
-port fsFollowItem : { index : Int, path : Json.Value } -> Cmd msg
-
-
 port fsListDirectory : PortablePath -> Cmd msg
 
 
@@ -46,6 +43,9 @@ port fsListPublicDirectory : { path : Json.Value, root : String } -> Cmd msg
 
 
 port fsRemoveItem : PortablePath -> Cmd msg
+
+
+port fsResolveItem : { follow : Bool, index : Int, path : Json.Value } -> Cmd msg
 
 
 port fsMoveItem : { fromPath : Json.Value, toPath : Json.Value } -> Cmd msg

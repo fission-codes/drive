@@ -128,8 +128,8 @@ update msg =
         DownloadItem a ->
             Drive.downloadItem a
 
-        FollowSymlink a b ->
-            Drive.followSymlink a b
+        ResolveSymlink a b c ->
+            Drive.resolveSymlink a b c
 
         GotAddOrCreateInput a ->
             Drive.gotAddCreateInput a

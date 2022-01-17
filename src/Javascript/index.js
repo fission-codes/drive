@@ -90,11 +90,11 @@ app.ports.redirectToLobby.subscribe(() => {
 
 
 exe("fsAddContent", "add")
-exe("fsFollowItem", "followItem")
 exe("fsListDirectory", "listDirectory")
 exe("fsListPublicDirectory", "listPublicDirectory")
 exe("fsMoveItem", "moveItem")
 exe("fsRemoveItem", "removeItem")
+exe("fsResolveItem", "resolveItem")
 
 
 registerServiceWorker({

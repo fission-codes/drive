@@ -307,36 +307,6 @@ downloadItem item model =
         |> return model
 
 
-followSymlink : Int -> Item -> Manager
-followSymlink idx item model =
-    model.directoryList
-        |> Result.map
-            (\dl ->
-                dl.items
-                    |> List.map
-                        (\i ->
-                            if i.id == item.id then
-                                { i | loading = True }
-
-                            else
-                                i
-                        )
-                    |> (\l ->
-                            { dl | items = l }
-                       )
-            )
-        |> (\res ->
-                { model | directoryList = res }
-           )
-        |> Return.singleton
-        |> Return.command
-            (Ports.fsFollowItem
-                { index = idx
-                , path = Path.encode item.path
-                }
-            )
-
-
 gotAddCreateInput : String -> Manager
 gotAddCreateInput input model =
     model.sidebar
@@ -622,6 +592,37 @@ replaceAddOrCreateKind kind model =
         |> Return.singleton
 
 
+resolveSymlink : { follow : Bool } -> Int -> Item -> Manager
+resolveSymlink { follow } idx item model =
+    model.directoryList
+        |> Result.map
+            (\dl ->
+                dl.items
+                    |> List.map
+                        (\i ->
+                            if i.id == item.id then
+                                { i | loading = True }
+
+                            else
+                                i
+                        )
+                    |> (\l ->
+                            { dl | items = l }
+                       )
+            )
+        |> (\res ->
+                { model | directoryList = res }
+           )
+        |> Return.singleton
+        |> Return.command
+            (Ports.fsResolveItem
+                { follow = follow
+                , index = idx
+                , path = Path.encode item.path
+                }
+            )
+
+
 select : Int -> Item -> Manager
 select idx item model =
     let
@@ -790,6 +791,15 @@ clearDirectoryListSelection model =
 
 makeItemSelector : (Int -> Int) -> (List Item -> Int) -> Maybe { index : Int, isFirst : Bool } -> Manager
 makeItemSelector indexModifier fallbackIndexFn maybeSelected model =
+    let
+        map idx item =
+            case item.kind of
+                SymLink ->
+                    resolveSymlink { follow = False } idx item model
+
+                _ ->
+                    select idx item model
+    in
     case ( model.directoryList, maybeSelected ) of
         ( Ok { items }, Just { index } ) ->
             let
@@ -798,7 +808,7 @@ makeItemSelector indexModifier fallbackIndexFn maybeSelected model =
             in
             items
                 |> List.getAt idx
-                |> Maybe.map (\item -> select idx item model)
+                |> Maybe.map (map idx)
                 |> Maybe.withDefault (Return.singleton model)
 
         ( Ok { items }, Nothing ) ->
@@ -808,7 +818,7 @@ makeItemSelector indexModifier fallbackIndexFn maybeSelected model =
             in
             items
                 |> List.getAt idx
-                |> Maybe.map (\item -> select idx item model)
+                |> Maybe.map (map idx)
                 |> Maybe.withDefault (Return.singleton model)
 
         _ ->

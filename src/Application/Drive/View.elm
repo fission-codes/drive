@@ -866,7 +866,7 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
             E.onTap (DigDeeper { directoryName = name })
 
           else if kind == SymLink then
-            E.onTap (FollowSymlink idx item)
+            E.onTap (ResolveSymlink { follow = True } idx item)
 
           else
             E.onTap (Select idx item)

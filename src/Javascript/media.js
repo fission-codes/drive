@@ -108,6 +108,7 @@ function renderIn({ container, name, path, useFS }) {
 // -
 
 function forceRedraw(node) {
+  if (!node) return
   node.parentNode.style["min-height"] = node.parentNode.offsetHeight + "px"
   node.style.display = "none"
   node.offsetHeight

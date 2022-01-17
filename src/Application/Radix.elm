@@ -118,7 +118,6 @@ type Msg
     | CreateFolder
     | DigDeeper { directoryName : String }
     | DownloadItem Item
-    | FollowSymlink Int Item
     | GotAddOrCreateInput String
     | GotWebnativeResponse Webnative.Response
     | GoUp { floor : Int }
@@ -128,6 +127,7 @@ type Msg
     | RemoveSelectedItems
     | RenameItem Item
     | ReplaceAddOrCreateKind Item.Kind
+    | ResolveSymlink { follow : Bool } Int Item
     | Select Int Item
     | ShowRenameItemModal Item
     | SidebarMsg Drive.Sidebar.Msg

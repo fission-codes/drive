@@ -68,29 +68,30 @@ export async function downloadItem({ path }) {
 }
 
 
-export async function followItem({ index, path }) {
-  // If the symlinks resolves to a file, list the parent directory
-  // and replace the symlink item with the resolved one.
-  // If it resolves to a directory, list that directory.
+export async function resolveItem({ follow, index, path }) {
+  // If the symlinks resolves to a file, or follow is set to false,
+  // list the parent directory and replace the symlink item with the resolved one.
+  // If it resolves to a directory and follow is set to true, list that directory.
+
   const resolved = await fs.get(path)
   const name = wn.path.terminus(path)
 
-
-  if (resolved.header.metadata.isFile) {
+  if (!follow || resolved.header.metadata.isFile) {
     const parentPath = wn.path.parent(path)
     const listing = await listDirectory({ path: parentPath })
+    const kind = resolved.header.metadata.isFile ? "file" : "directory"
 
     return {
       ...listing,
       index,
-      results: listing.results.map(l => {
-        if (l.name === name) return {
-          name,
-          cid: resolved.cid || resolved.header.content,
+      results: listing.results.map((l, idx) => {
+        if (idx === index) return {
+          name: l.name,
+          cid: resolved.cid || resolved.header.content || resolved.header.bareNameFilter,
           isFile: resolved.header.metadata.isFile,
-          path: wn.path.toPosix({ file: wn.path.unwrap(path) }),
+          path: wn.path.toPosix({ [kind]: wn.path.unwrap(path) }),
           size: resolved.header.metadata.size || 0,
-          type: "file"
+          type: resolved.header.metadata.isFile ? "file" : "dir"
         }
         return l
       }),
