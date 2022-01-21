@@ -637,42 +637,45 @@ select idx item model =
                 Err _ ->
                     False
     in
-    return
-        { model
-            | directoryList =
-                Result.map
-                    (\d -> { d | selection = [ { index = idx, isFirst = True } ] })
-                    model.directoryList
-            , sidebar =
-                if showEditor then
-                    Maybe.map
-                        (\filePath ->
-                            Sidebar.EditPlaintext
-                                { path = filePath
-                                , editor = Nothing
-                                }
-                        )
-                        (Path.toFile item.path)
+    { model
+        | directoryList =
+            Result.map
+                (\d -> { d | selection = [ { index = idx, isFirst = True } ] })
+                model.directoryList
+        , sidebar =
+            if showEditor then
+                Maybe.map
+                    (\filePath ->
+                        Sidebar.EditPlaintext
+                            { path = filePath
+                            , editor = Nothing
+                            }
+                    )
+                    (Path.toFile item.path)
 
-                else
-                    [ item.path ]
-                        |> Sidebar.details
-                        |> Just
-        }
-        (case ( showEditor, Path.toFile item.path ) of
-            ( True, Just filePath ) ->
-                FileSystem.Actions.readUtf8
-                    { path =
-                        filePath
-                    , tag =
-                        { path = filePath }
-                            |> Sidebar.LoadedFile
-                            |> SidebarTag
-                    }
+            else
+                [ item.path ]
+                    |> Sidebar.details
+                    |> Just
+    }
+        |> Return.singleton
+        |> Return.command
+            (case ( showEditor, Path.toFile item.path ) of
+                ( True, Just filePath ) ->
+                    FileSystem.Actions.readUtf8
+                        { path =
+                            filePath
+                        , tag =
+                            { path = filePath }
+                                |> Sidebar.LoadedFile
+                                |> SidebarTag
+                        }
 
-            _ ->
-                Cmd.none
-        )
+                _ ->
+                    Cmd.none
+            )
+        |> Return.command
+            (Ports.blurActiveElement ())
 
 
 selectNextItem : Manager

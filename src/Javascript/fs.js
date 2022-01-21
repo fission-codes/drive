@@ -182,7 +182,7 @@ export async function listDirectory(args) {
       return {
         ...l,
 
-        cid: cid,
+        cid: cid.toString(),
         path: itemPath,
         readOnly: readOnly ? true : undefined,
         size: l.size || 0,
@@ -201,7 +201,7 @@ export async function listDirectory(args) {
     results = [
       {
         name: "public",
-        cid: publicCid,
+        cid: publicCid.toString(),
         path: `${publicCid}/public`,
         readOnly: readOnly ? true : undefined,
         size: 0,

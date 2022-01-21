@@ -44,7 +44,7 @@ init flags url navKey =
       , fileSystemStatus = FileSystem.Ready
       , helpfulNote = Nothing
       , initialised = Ok False
-      , isFocused = False
+      , isFocusedOnInput = False
       , modal = Nothing
       , navKey = navKey
       , route = Routing.Undecided
@@ -248,11 +248,11 @@ update msg =
         AppUpdateFinished ->
             Other.appUpdateFinished
 
-        Blurred ->
-            Other.blurred
+        Blurred a ->
+            Other.blurred a
 
-        Focused ->
-            Other.focused
+        Focused a ->
+            Other.focused a
 
         GotInitialisationError a ->
             Other.gotInitialisationError a

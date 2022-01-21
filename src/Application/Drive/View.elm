@@ -28,6 +28,7 @@ import Routing exposing (Route(..))
 import Styling as S
 import Tailwind as T
 import Webnative.Path as Path
+import Webnative.Path.Extra as Path
 
 
 
@@ -773,7 +774,7 @@ list model directoryList =
         -- Tree
         -----------------------------------------
         , directoryList.items
-            |> List.indexedMap (listItem isGroundFloor directoryList.selection model.pressedKeys)
+            |> List.indexedMap (listItem isGroundFloor directoryList.selection model.pressedKeys model.route)
             |> Html.div []
 
         -----------------------------------------
@@ -833,8 +834,8 @@ list model directoryList =
         ]
 
 
-listItem : Bool -> Selection -> List Keyboard.Key -> Int -> Item -> Html Msg
-listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, nameProperties, path } as item) =
+listItem : Bool -> Selection -> List Keyboard.Key -> Route -> Int -> Item -> Html Msg
+listItem isGroundFloor selection pressedKeys route idx ({ kind, loading, name, nameProperties, path } as item) =
     let
         isSelected =
             List.any (.index >> (==) idx) selection
@@ -855,7 +856,12 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
                     { isGroundFloor = isGroundFloor }
                     item
     in
-    Html.div
+    (if kind == Directory then
+        Html.a
+
+     else
+        Html.button
+    )
         [ if List.member Keyboard.Shift pressedKeys then
             E.onTap (RangeSelect idx item)
 
@@ -863,7 +869,15 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
             E.onTap (IndividualSelect idx item)
 
           else if kind == Directory then
-            E.onTap (DigDeeper { directoryName = name })
+            route
+                |> Routing.treePathSegments
+                |> Path.directory
+                |> Path.endWith item.name
+                |> Path.encapsulate
+                |> Routing.replaceTreePath route
+                |> Routing.toString
+                |> String.append "#"
+                |> A.href
 
           else if kind == SymLink then
             E.onTap (ResolveSymlink { follow = True } idx item)
@@ -892,13 +906,18 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
             )
 
         --
+        , T.appearance_none
+        , T.bg_transparent
         , T.border_base_100
         , T.cursor_pointer
         , T.flex
         , T.group
         , T.items_center
         , T.mt_px
+        , T.outline_none
         , T.py_4
+        , T.text_left
+        , T.w_full
 
         --
         , if isPublicRootDir then
@@ -914,6 +933,10 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
           else
             T.text_inherit
 
+        -- Focus
+        , T.focus__border_base_300
+        , T.focus__outline_none
+
         -- Dark mode
         ------------
         , T.dark__border_base_800
@@ -924,6 +947,9 @@ listItem isGroundFloor selection pressedKeys idx ({ kind, loading, name, namePro
 
           else
             T.dark__text_inherit
+
+        -- Focus
+        , T.dark__focus__border_base_600
         ]
         [ -----------------------------------------
           -- Icon

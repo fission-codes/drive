@@ -14,6 +14,7 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Events.Ext as E
 import Html.Events.Extra.Drag as Drag
+import Html.Ext as Html
 import Html.Extra as Html
 import Html.Lazy as Lazy
 import Json.Decode as Decode
@@ -163,8 +164,8 @@ rootAttributes m =
             Nothing ->
                 []
         )
-        [ E.on "focusout" (Decode.succeed Blurred)
-        , E.on "focusin" (Decode.succeed Focused)
+        [ E.on "focusout" (Decode.map Blurred <| Decode.at [ "target" ] Html.elementIdentifiersDecoder)
+        , E.on "focusin" (Decode.map Focused <| Decode.at [ "target" ] Html.elementIdentifiersDecoder)
         ]
 
 

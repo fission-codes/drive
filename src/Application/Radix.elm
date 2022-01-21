@@ -14,6 +14,7 @@ import Drive.Item.Inventory as Item
 import Drive.Sidebar
 import FileSystem
 import Html.Events.Extra.Mouse as Mouse
+import Html.Ext as Html
 import Json.Decode as Json
 import Keyboard
 import Management
@@ -57,7 +58,7 @@ type alias Model =
     , dragndropMode : Bool
     , helpfulNote : Maybe { faded : Bool, note : String }
     , initialised : Result String Bool
-    , isFocused : Bool
+    , isFocusedOnInput : Bool
     , fileSystemCid : Maybe String
     , fileSystemStatus : FileSystem.Status
     , modal : Maybe (Modal Msg)
@@ -166,8 +167,8 @@ type Msg
       -----------------------------------------
     | AppUpdateAvailable
     | AppUpdateFinished
-    | Blurred
-    | Focused
+    | Blurred Html.ElementIdentifiers
+    | Focused Html.ElementIdentifiers
     | GotInitialisationError String
     | HideWelcomeMessage
     | Initialise (Maybe Authentication.Essentials)

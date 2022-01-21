@@ -3,8 +3,8 @@
   "type": "module",
   "dependencies": {
     "@fission-suite/kit": "1.1.2",
-    "webnative": "0.30.0-alpha11",
-    "webnative-elm": "^6.1.0"
+    "webnative": "0.30.0-alpha14",
+    "webnative-elm": "^7.0.0"
   },
   "devDependencies": {
     "elm-git-install": "^0.1.3",

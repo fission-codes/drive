@@ -7,6 +7,7 @@ import Common
 import Common.State as Common
 import Drive.State as Drive
 import FileSystem
+import Html.Ext as Html
 import Keyboard
 import Maybe.Extra as Maybe
 import Ports
@@ -70,7 +71,7 @@ initialise maybeEssentials model =
 
 keyboardInteraction : Keyboard.Msg -> Manager
 keyboardInteraction msg unmodified =
-    (if unmodified.isFocused then
+    (if unmodified.isFocusedOnInput then
         []
 
      else
@@ -199,16 +200,24 @@ setCurrentTime time model =
 
 {-| Some element has lost focus.
 -}
-blurred : Manager
-blurred model =
-    Return.singleton { model | isFocused = False }
+blurred : Html.ElementIdentifiers -> Manager
+blurred e model =
+    if Html.isInputElement e then
+        Return.singleton { model | isFocusedOnInput = False }
+
+    else
+        Return.singleton model
 
 
 {-| Some element has received focus.
 -}
-focused : Manager
-focused model =
-    Return.singleton { model | isFocused = True }
+focused : Html.ElementIdentifiers -> Manager
+focused e model =
+    if Html.isInputElement e then
+        Return.singleton { model | isFocusedOnInput = True }
+
+    else
+        Return.singleton model
 
 
 

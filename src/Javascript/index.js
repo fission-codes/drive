@@ -69,6 +69,7 @@ const app = Elm.Main.init({
 })
 
 
+app.ports.blurActiveElement.subscribe(blurActiveElement)
 app.ports.copyToClipboard.subscribe(copyToClipboard)
 app.ports.deauthenticate.subscribe(deauthenticate)
 app.ports.fsDownloadItem.subscribe(fs.downloadItem)
@@ -158,6 +159,11 @@ wn.initialise({
 
 // Ports
 // =====
+
+function blurActiveElement() {
+  if (document.activeElement) document.activeElement.blur()
+}
+
 
 function copyToClipboard(text) {
   // Insert a textarea element

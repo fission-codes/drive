@@ -10,6 +10,9 @@ import Webnative
 -- 📣
 
 
+port blurActiveElement : () -> Cmd msg
+
+
 port copyToClipboard : String -> Cmd msg
 
 
