@@ -86,6 +86,9 @@ workbox_config 	:= "workbox.config.cjs"
 	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
+@old-drive-build:
+	just config=old-drive clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
+
 @production-build:
 	just config=production clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
 
