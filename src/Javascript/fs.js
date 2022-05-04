@@ -80,6 +80,7 @@ export async function resolveItem({ follow, index, path }) {
     const parentPath = wn.path.parent(path)
     const listing = await listDirectory({ path: parentPath })
     const kind = resolved.header.metadata.isFile ? "file" : "directory"
+    const cid = resolved.cid || resolved.header.content || resolved.header.bareNameFilter
 
     return {
       ...listing,
@@ -87,7 +88,7 @@ export async function resolveItem({ follow, index, path }) {
       results: listing.results.map((l, idx) => {
         if (idx === index) return {
           name: l.name,
-          cid: resolved.cid || resolved.header.content || resolved.header.bareNameFilter,
+          cid: cid.toString(),
           isFile: resolved.header.metadata.isFile,
           path: wn.path.toPosix({ [kind]: wn.path.unwrap(path) }),
           size: resolved.header.metadata.size || 0,
