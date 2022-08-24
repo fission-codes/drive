@@ -46,7 +46,7 @@ workbox_config 	:= "workbox.config.cjs"
 
 @dev-server:
 	echo "🤵  Start a web server at http://localhost:8000"
-	simple-http-server --port 8000 --try-file {{dist_dir}}/index.html --cors --index --nocache --silent -- build
+	simple-http-server --port 8000 --try-file {{dist_dir}}/index.html --cors --index --nocache --silent -- {{dist_dir}}
 
 
 @download-web-module filename url:
