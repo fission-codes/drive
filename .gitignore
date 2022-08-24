@@ -1,3 +1,4 @@
+/.direnv/
 /.vscode/
 /build
 /elm-stuff

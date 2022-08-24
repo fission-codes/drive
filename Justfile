@@ -18,7 +18,7 @@ workbox_config 	:= "workbox.config.cjs"
 # -----
 
 @default: dev-build
-	just dev-server & just watch
+	just dev-server # & just watch
 
 
 @hot:
@@ -46,7 +46,7 @@ workbox_config 	:= "workbox.config.cjs"
 
 @dev-server:
 	echo "🤵  Start a web server at http://localhost:8000"
-	devd --quiet build --port=8000 --all
+	simple-http-server --port 8000 --try-file {{dist_dir}}/index.html --cors --index --nocache --silent -- build
 
 
 @download-web-module filename url:
@@ -82,7 +82,7 @@ workbox_config 	:= "workbox.config.cjs"
 	{{node_bin}}/elm-git-install
 
 	# SDK
-	cp -RT node_modules/webnative/dist/ web_modules/webnative/
+	rsync -r node_modules/webnative/dist/ web_modules/webnative/
 	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
@@ -104,7 +104,7 @@ workbox_config 	:= "workbox.config.cjs"
 
 @css-large:
 	echo "⚙️  Compiling CSS & Elm Tailwind Module"
-	pnpx etc {{src_dir}}/Css/Application.css \
+	npx etc {{src_dir}}/Css/Application.css \
 	  --config tailwind.js \
 	  --elm-path {{src_dir}}/Library/Tailwind.elm \
 	  --output {{dist_dir}}/application.css \
@@ -113,7 +113,7 @@ workbox_config 	:= "workbox.config.cjs"
 
 @css-small:
 	echo "⚙️  Compiling Minified CSS"
-	NODE_ENV=production pnpx etc {{src_dir}}/Css/Application.css \
+	NODE_ENV=production npx etc {{src_dir}}/Css/Application.css \
 	  --config tailwind.js \
 	  --output {{dist_dir}}/application.css \
 		--post-plugin-before postcss-import \
@@ -157,8 +157,8 @@ workbox_config 	:= "workbox.config.cjs"
 
 @images:
 	echo "⚙️  Copying Images"
-	cp -RT node_modules/@fission-suite/kit/images/ {{dist_dir}}/images/
-	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
+	rsync -r node_modules/@fission-suite/kit/images/ {{dist_dir}}/images/
+	rsync -r {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
 insert-version:
@@ -181,7 +181,7 @@ insert-version:
 
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
-	cp -RT web_modules {{dist_dir}}/web_modules/
+	rsync -r web_modules/ {{dist_dir}}/web_modules/
 
 
 @javascript-nomodule:
@@ -195,7 +195,7 @@ insert-version:
 
 @static:
 	echo "⚙️  Copying more static files"
-	cp -RT {{src_dir}}/Static/Meta/ {{dist_dir}}/
+	rsync -r {{src_dir}}/Static/Meta/ {{dist_dir}}/
 
 	mkdir -p {{dist_dir}}/fonts/
 	cp node_modules/@fission-suite/kit/fonts/**/*.woff2 {{dist_dir}}/fonts/
@@ -208,12 +208,12 @@ insert-version:
 
 @service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=development pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
+	NODE_ENV=development npx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 @production-service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=production pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
+	NODE_ENV=production npx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 
