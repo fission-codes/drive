@@ -18,7 +18,7 @@ workbox_config 	:= "workbox.config.cjs"
 # -----
 
 @default: dev-build
-	just dev-server # & just watch
+	just dev-server & just watch
 
 
 @hot:
