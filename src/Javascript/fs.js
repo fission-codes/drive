@@ -7,9 +7,8 @@ Everything involving the Fission File System.
 */
 
 import "./web_modules/it-to-stream.min.js"
-import "./web_modules/webnative/index.umd.min.js"
+import * as wn from "./web_modules/webnative/index.js"
 
-const wn = webnative
 
 let fs
 
@@ -90,7 +89,7 @@ export async function resolveItem({ follow, index, path }) {
           name: l.name,
           cid: cid.toString(),
           isFile: resolved.header.metadata.isFile,
-          path: wn.path.toPosix({ [kind]: wn.path.unwrap(path) }),
+          path: wn.path.toPosix({ [ kind ]: wn.path.unwrap(path) }),
           size: resolved.header.metadata.size || 0,
           type: resolved.header.metadata.isFile ? "file" : "dir"
         }
@@ -122,7 +121,7 @@ export async function listDirectory(args) {
   if (wn.path.isFile(path)) {
     const pathSegments = wn.path.unwrap(path)
     const dirname = pathSegments.slice(0, -1)
-    const filename = pathSegments[pathSegments.length - 1]
+    const filename = pathSegments[ pathSegments.length - 1 ]
 
     path = { directory: dirname }
 
@@ -171,7 +170,7 @@ export async function listDirectory(args) {
       }
 
       const itemPath = wn.path.toPosix(
-        wn.path.combine(path, { [l.isFile ? "file" : "directory"]: [ l.name ] })
+        wn.path.combine(path, { [ l.isFile ? "file" : "directory" ]: [ l.name ] })
       )
 
       if (l.ipns) return {
@@ -240,15 +239,15 @@ export async function listPublicDirectory({ root, path }) {
   const cid = stats.cid.toString()
 
   const results = isFile
-    ? [{
-        ...stats,
-        cid: cid,
-        name: filename(path),
-        path: prettifiedPath
-      }]
+    ? [ {
+      ...stats,
+      cid: cid,
+      name: filename(path),
+      path: prettifiedPath
+    } ]
     : Object
-        .values(await wn.ipfs.ls(cid))
-        .map(a => ({ ...a, cid: a.cid.toString() }))
+      .values(await wn.ipfs.ls(cid))
+      .map(a => ({ ...a, cid: a.cid.toString() }))
 
   return {
     rootCid,
@@ -300,14 +299,16 @@ export function fakeStream(address, options) {
 
 
 function fakeStreamIterator(address, options) {
-  return { async *[Symbol.asyncIterator]() {
-    const typedArray = await fs.cat(wn.path.fromPosix(address))
-    const size = typedArray.length
-    const start = options.offset || 0
-    const end = options.length ? start + options.length : size - 1
+  return {
+    async *[ Symbol.asyncIterator ]() {
+      const typedArray = await fs.cat(wn.path.fromPosix(address))
+      const size = typedArray.length
+      const start = options.offset || 0
+      const end = options.length ? start + options.length : size - 1
 
-    yield typedArray.slice(start, end)
-  }}
+      yield typedArray.slice(start, end)
+    }
+  }
 }
 
 
@@ -317,7 +318,7 @@ function fakeStreamIterator(address, options) {
 
 export function filename(path) {
   const unwrapped = wn.path.unwrap(path)
-  return unwrapped[unwrapped.length - 1]
+  return unwrapped[ unwrapped.length - 1 ]
 }
 
 
@@ -326,7 +327,7 @@ export function filename(path) {
 */
 export function prefixedPath(path) {
   return wn.path.isBranch(wn.path.Branch.Public, path) ||
-         wn.path.isBranch(wn.path.Branch.Private, path)
+    wn.path.isBranch(wn.path.Branch.Private, path)
     ? path
     : wn.path.map(a => [ wn.path.Branch.Private, ...a ], path)
 }

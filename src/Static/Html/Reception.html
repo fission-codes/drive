@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
 
   <base href="../" />
@@ -19,6 +20,7 @@
   <link rel="stylesheet" href="application.css" />
 
 </head>
+
 <body>
 
 
@@ -30,15 +32,16 @@
   <!-- Scripts -->
   <script src="loaders.js"></script>
   <script>if (document.body.querySelector("noscript")) addLoader(document.body, "Redirecting")</script>
-  <script src="web_modules/webnative/index.umd.min.js"></script>
-  <script>
-    webnative.setup.endpoints({
+  <script type="module">
+    import * as wn from "./web_modules/webnative/index.js"
+
+    wn.setup.endpoints({
       api: "{{{API_ENDPOINT}}}",
       lobby: "{{{LOBBY}}}",
       user: "{{{DATA_ROOT_DOMAIN}}}"
     })
 
-    webnative.redirectToLobby({
+    wn.redirectToLobby({
       app: {
         name: "Drive",
         creator: "Fission"
@@ -53,4 +56,5 @@
 
 
 </body>
+
 </html>

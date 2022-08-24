@@ -10,7 +10,6 @@
 */
 
 import "./web_modules/tocca.js"
-import "./web_modules/webnative/index.umd.min.js"
 import "./web_modules/webnative-elm.js"
 
 import "./custom.js"
@@ -19,11 +18,11 @@ import "./media.js"
 import * as analytics from "./analytics.js"
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
+import * as wn from "./web_modules/webnative/index.js"
 
 
 // | (• ◡•)| (❍ᴥ❍ʋ)
 
-const wn = webnative
 
 self.wn = wn
 
@@ -110,11 +109,13 @@ registerServiceWorker({
   },
 })
 
-
-wn.initialise({
+wn.ipfs.pkgFromBundle()
+  .then(wn.ipfs.nodeWithPkg)
+  .then(wn.ipfs.set)
+  .then(() => wn.initialise({
     loadFileSystem: false,
     permissions: PERMISSIONS
-  })
+  }))
   .then(async state => {
     const { authenticated, newUser, permissions, throughLobby, username } = state
 
@@ -226,11 +227,11 @@ window.addEventListener("blur", event => {
 // --
 
 function exe(port, method, options = {}) {
-  app.ports[port].subscribe(async a => {
+  app.ports[ port ].subscribe(async a => {
     let args = { ...a, ...options }
 
     try {
-      const feedback = (await fs[method](args)) || {}
+      const feedback = (await fs[ method ](args)) || {}
       if (!feedback.results) return
 
       const path = feedback.path || args.path
