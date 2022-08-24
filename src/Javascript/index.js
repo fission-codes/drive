@@ -109,11 +109,13 @@ registerServiceWorker({
   },
 })
 
-
-wn.initialise({
-  loadFileSystem: false,
-  permissions: PERMISSIONS
-})
+wn.ipfs.pkgFromBundle()
+  .then(wn.ipfs.nodeWithPkg)
+  .then(wn.ipfs.set)
+  .then(() => wn.initialise({
+    loadFileSystem: false,
+    permissions: PERMISSIONS
+  }))
   .then(async state => {
     const { authenticated, newUser, permissions, throughLobby, username } = state
 
