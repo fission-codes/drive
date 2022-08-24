@@ -11,7 +11,7 @@
       just
       rsync
       simple-http-server
-      watchexec
+      # watchexec
     ];
 
     languages = [

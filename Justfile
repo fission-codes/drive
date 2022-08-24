@@ -95,7 +95,7 @@ workbox_config 	:= "workbox.config.cjs"
 
 
 @build:
-	just config={{config}} clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small javascript-nomodule html-minify production-service-worker
+	just config={{config}} clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small html-minify production-service-worker
 
 
 
@@ -176,21 +176,11 @@ insert-version:
 @javascript:
 	echo "⚙️  Copying Javascript"
 	cp {{src_dir}}/Javascript/* {{dist_dir}}/
-	touch {{dist_dir}}/nomodule.min.js
 
 
 @javascript-dependencies:
 	echo "⚙️  Copying Javascript Dependencies"
 	rsync -r web_modules/ {{dist_dir}}/web_modules/
-
-
-@javascript-nomodule:
-	echo "⚙️  Creating a nomodule build"
-	{{node_bin}}/esbuild \
-		--bundle \
-		--minify \
-		--outfile={{dist_dir}}/nomodule.min.js \
-		{{dist_dir}}/index.js
 
 
 @static:
