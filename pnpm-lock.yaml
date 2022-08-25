@@ -12,15 +12,15 @@ specifiers:
   postcss: ^8.1.9
   postcss-import: ^13.0.0
   tailwindcss: ^1.9.6
-  webnative: 0.34.0-alpha-4
+  webnative: ^0.34.0
   webnative-elm: ^7.0.0
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
 
 dependencies:
   '@fission-suite/kit': 1.1.2
-  webnative: 0.34.0-alpha-4
-  webnative-elm: 7.0.0_webnative@0.34.0-alpha-4
+  webnative: 0.34.0
+  webnative-elm: 7.0.0_webnative@0.34.0
 
 devDependencies:
   elm-git-install: 0.1.3
@@ -1165,7 +1165,7 @@ packages:
       '@libp2p/interface-peer-id': 1.0.4
       err-code: 3.0.1
       multiformats: 9.6.4
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
     dev: false
 
   /@multiformats/base-x/4.0.1:
@@ -1180,7 +1180,7 @@ packages:
       err-code: 3.0.1
       is-ip: 4.0.0
       multiformats: 9.6.4
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
       varint: 6.0.0
     transitivePeerDependencies:
       - supports-color
@@ -1313,7 +1313,7 @@ packages:
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 14.11.8
+      '@types/node': 18.7.13
     dev: true
 
   /@types/long/4.0.2:
@@ -1334,7 +1334,6 @@ packages:
 
   /@types/node/18.7.13:
     resolution: {integrity: sha512-46yIhxSe5xEaJZXWdIBP7GU4HDTG8/eo0qd9atdiL+lFpA03y8KS+lkTN834TWJj5767GbWv4n/P6efyTFt1Dw==}
-    dev: false
 
   /@types/normalize-package-data/2.4.0:
     resolution: {integrity: sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==}
@@ -1348,7 +1347,7 @@ packages:
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 14.11.8
+      '@types/node': 18.7.13
     dev: true
 
   /abstract-level/1.0.3:
@@ -1887,7 +1886,7 @@ packages:
       multibase: 4.0.6
       multicodec: 3.2.1
       multihashes: 4.0.3
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
     dev: false
 
   /class-utils/0.3.6:
@@ -2165,7 +2164,7 @@ packages:
       it-pipe: 2.0.4
       it-pushable: 3.1.0
       it-take: 1.0.2
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -2218,6 +2217,7 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
+    dev: true
 
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -3365,7 +3365,7 @@ packages:
     dependencies:
       interface-store: 3.0.0
       nanoid: 3.1.18
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
     dev: false
 
   /interface-ipld-format/1.0.1:
@@ -3450,7 +3450,7 @@ packages:
       multiaddr: 10.0.1
       multiformats: 9.6.4
       protobufjs: 7.0.0
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
       varint: 6.0.0
     transitivePeerDependencies:
       - node-fetch
@@ -3465,7 +3465,7 @@ packages:
       bytes: 3.1.0
       cborg: 1.9.1
       datastore-core: 8.0.1
-      debug: 4.3.1
+      debug: 4.3.4
       err-code: 3.0.1
       interface-blockstore: 3.0.0
       interface-datastore: 7.0.0
@@ -3486,7 +3486,7 @@ packages:
       p-queue: 7.3.0
       proper-lockfile: 4.1.2
       sort-keys: 5.0.0
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
     transitivePeerDependencies:
       - node-fetch
       - supports-color
@@ -4011,7 +4011,7 @@ packages:
     dependencies:
       localforage: 1.10.0
       one-webcrypto: 1.0.3
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
     dev: false
 
   /keyv/3.1.0:
@@ -4402,7 +4402,7 @@ packages:
       err-code: 3.0.1
       is-ip: 3.1.0
       multiformats: 9.6.4
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
       varint: 6.0.0
     transitivePeerDependencies:
       - node-fetch
@@ -4421,7 +4421,7 @@ packages:
     resolution: {integrity: sha512-+expTPftro8VAW8kfvcuNNNBgb9gPeNYV9dn+z1kJRWF2vih+/S79f2RVeIwmrJBUJ6NT9IUPWnZDQvegEh5pw==}
     deprecated: This module has been superseded by the multiformats module
     dependencies:
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
       varint: 6.0.0
     dev: false
 
@@ -4447,7 +4447,7 @@ packages:
       js-sha3: 0.8.0
       multihashes: 4.0.3
       murmurhash3js-revisited: 3.0.0
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
     dev: false
 
   /murmurhash3js-revisited/3.0.0:
@@ -6082,12 +6082,6 @@ packages:
       multiformats: 9.6.4
     dev: false
 
-  /uint8arrays/3.0.0:
-    resolution: {integrity: sha512-HRCx0q6O9Bfbp+HHSfQQKD7wU70+lydKVt4EghkdOvlK/NlrF90z+eXV34mUd48rNvVJXwkrMSPpCATkct8fJA==}
-    dependencies:
-      multiformats: 9.6.4
-    dev: false
-
   /uint8arrays/3.1.0:
     resolution: {integrity: sha512-ei5rfKtoRO8OyOIor2Rz5fhzjThwIHJZ3uyDPnDHTXbP0aMQ1RN/6AI5B5d9dBxJOU+BvOAk7ZQ1xphsX8Lrog==}
     dependencies:
@@ -6243,16 +6237,16 @@ packages:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: true
 
-  /webnative-elm/7.0.0_webnative@0.34.0-alpha-4:
+  /webnative-elm/7.0.0_webnative@0.34.0:
     resolution: {integrity: sha512-i52PkbknlbPAXPrW9ygPMhM8GK5TOHdLsGK0HmzB7qPdPbP2hzL3td574KKiWcF3esf/thuKCc6L+Qx2j2nwFw==}
     peerDependencies:
       webnative: '> 0.24.0'
     dependencies:
-      webnative: 0.34.0-alpha-4
+      webnative: 0.34.0
     dev: false
 
-  /webnative/0.34.0-alpha-4:
-    resolution: {integrity: sha512-VwsA9qXT8168Kv7E+3OTJo7ZNkyzyVdH2i0TzTRaraoQ3Fi2dWmd24avi6ZfbknZ91tR80R6mBA/7XI+s0CfbQ==}
+  /webnative/0.34.0:
+    resolution: {integrity: sha512-BS5pgHx9+sIzZ3NYA9Q76QQOctHFuyZ9p/LC4U4+gWTjycj0efWl0Z2jlsaUyGfqBkFLReyDeTb3ldHkD2PgbA==}
     engines: {node: '>=15'}
     dependencies:
       '@ipld/dag-cbor': 7.0.2
@@ -6275,7 +6269,7 @@ packages:
       one-webcrypto: 1.0.3
       throttle-debounce: 3.0.1
       tweetnacl: 1.0.3
-      uint8arrays: 3.0.0
+      uint8arrays: 3.1.0
       wnfs: 0.1.7-alpha5
     transitivePeerDependencies:
       - node-fetch
