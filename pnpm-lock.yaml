@@ -12,15 +12,15 @@ specifiers:
   postcss: ^8.1.9
   postcss-import: ^13.0.0
   tailwindcss: ^1.9.6
-  webnative: ^0.34.0
+  webnative: ^0.34.1
   webnative-elm: ^7.0.0
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
 
 dependencies:
   '@fission-suite/kit': 1.1.2
-  webnative: 0.34.0
-  webnative-elm: 7.0.0_webnative@0.34.0
+  webnative: 0.34.1
+  webnative-elm: 7.0.0_webnative@0.34.1
 
 devDependencies:
   elm-git-install: 0.1.3
@@ -983,7 +983,7 @@ packages:
       '@babel/helper-split-export-declaration': 7.11.0
       '@babel/parser': 7.11.5
       '@babel/types': 7.11.5
-      debug: 4.3.1
+      debug: 4.3.4
       globals: 11.12.0
       lodash: 4.17.20
     transitivePeerDependencies:
@@ -1328,10 +1328,6 @@ packages:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
     dev: false
 
-  /@types/node/14.11.8:
-    resolution: {integrity: sha512-KPcKqKm5UKDkaYPTuXSx8wEP7vE9GnuaXIZKijwRYcePpZFDVuy2a57LarFKiORbHOuTOOwYzxVxcUzsh2P2Pw==}
-    dev: true
-
   /@types/node/18.7.13:
     resolution: {integrity: sha512-46yIhxSe5xEaJZXWdIBP7GU4HDTG8/eo0qd9atdiL+lFpA03y8KS+lkTN834TWJj5767GbWv4n/P6efyTFt1Dw==}
 
@@ -1341,7 +1337,7 @@ packages:
   /@types/resolve/1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 14.11.8
+      '@types/node': 18.7.13
     dev: true
 
   /@types/responselike/1.0.0:
@@ -2229,7 +2225,6 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
-    dev: false
 
   /decamelize-keys/1.1.0:
     resolution: {integrity: sha1-0XGoeTMlKAfrPLYdwcFEXQeN8tk=}
@@ -3941,7 +3936,7 @@ packages:
     resolution: {integrity: sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 14.11.8
+      '@types/node': 18.7.13
       merge-stream: 2.0.0
       supports-color: 7.1.0
     dev: true
@@ -6237,16 +6232,16 @@ packages:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: true
 
-  /webnative-elm/7.0.0_webnative@0.34.0:
+  /webnative-elm/7.0.0_webnative@0.34.1:
     resolution: {integrity: sha512-i52PkbknlbPAXPrW9ygPMhM8GK5TOHdLsGK0HmzB7qPdPbP2hzL3td574KKiWcF3esf/thuKCc6L+Qx2j2nwFw==}
     peerDependencies:
       webnative: '> 0.24.0'
     dependencies:
-      webnative: 0.34.0
+      webnative: 0.34.1
     dev: false
 
-  /webnative/0.34.0:
-    resolution: {integrity: sha512-BS5pgHx9+sIzZ3NYA9Q76QQOctHFuyZ9p/LC4U4+gWTjycj0efWl0Z2jlsaUyGfqBkFLReyDeTb3ldHkD2PgbA==}
+  /webnative/0.34.1:
+    resolution: {integrity: sha512-FCY00dBUUHWEdabkLV3INTxnkNVlRQfmiNfe4M+Pg85rppLTHP0WU/MAbPHan5NMdH2j09KPeFmxLD2qbqszHQ==}
     engines: {node: '>=15'}
     dependencies:
       '@ipld/dag-cbor': 7.0.2
