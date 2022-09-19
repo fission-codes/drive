@@ -3,7 +3,7 @@
   "type": "module",
   "dependencies": {
     "@fission-suite/kit": "1.1.2",
-    "webnative": "^0.34.1",
+    "webnative": "^0.34.2",
     "webnative-elm": "^7.0.0"
   },
   "devDependencies": {
