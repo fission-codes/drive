@@ -6,7 +6,7 @@ Everything involving IPFS.
 
 */
 
-import "./web_modules/it-to-stream.min.js"
+import itToStream from "it-to-stream"
 
 
 let ipfs

@@ -93,13 +93,3 @@ port fsGotShareError : (String -> msg) -> Sub msg
 
 
 port fsGotShareLink : (String -> msg) -> Sub msg
-
-
-
--- WEBNATIVE ELM
-
-
-port webnativeRequest : Webnative.Request -> Cmd msg
-
-
-port webnativeResponse : (Webnative.Response -> msg) -> Sub msg

@@ -120,7 +120,6 @@ type Msg
     | DigDeeper { directoryName : String }
     | DownloadItem Item
     | GotAddOrCreateInput String
-    | GotWebnativeResponse Webnative.Response
     | GoUp { floor : Int }
     | IndividualSelect Int Item
     | RangeSelect Int Item

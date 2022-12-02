@@ -41,7 +41,7 @@ workbox_config 	:= "workbox.config.cjs"
 	mkdir -p {{dist_dir}}
 
 
-@dev-build: clean css-large html apply-config elm-dev javascript-dependencies javascript images static service-worker (_report "Build success")
+@dev-build: clean css-large html apply-config elm-dev javascript images static service-worker (_report "Build success")
 
 
 @dev-server:
@@ -66,24 +66,10 @@ workbox_config 	:= "workbox.config.cjs"
 
 
 @install-deps: (_report "Installing required dependencies")
-	pnpm install
-
-	rm -rf web_modules
-	mkdir -p web_modules
-	mkdir -p web_modules/webnative
-
-	# Download other dependencies
-	just download-web-module is-ipfs.js https://unpkg.com/is-ipfs@1.0.3/dist/index.js
-	just download-web-module tocca.js https://unpkg.com/tocca@2.0.9/Tocca.js
-	just download-web-module it-to-stream.min.js https://bundle.run/it-to-stream@0.1.2
-	just download-web-module render-media.min.js https://bundle.run/render-media@4.1.0
+	npm install
 
 	# Elm git dependencies
 	{{node_bin}}/elm-git-install
-
-	# SDK
-	rsync -r node_modules/webnative/dist/ web_modules/webnative/
-	cp node_modules/webnative-elm/src/funnel.js web_modules/webnative-elm.js
 
 
 @production-build:
@@ -95,7 +81,7 @@ workbox_config 	:= "workbox.config.cjs"
 
 
 @build:
-	just config={{config}} clean css-large html apply-config elm-production javascript-dependencies javascript images static css-small html-minify production-service-worker
+	just config={{config}} clean css-large html apply-config elm-production javascript images static css-small html-minify production-service-worker
 
 
 
@@ -175,12 +161,11 @@ insert-version:
 
 @javascript:
 	echo "⚙️  Copying Javascript"
-	cp {{src_dir}}/Javascript/* {{dist_dir}}/
-
-
-@javascript-dependencies:
-	echo "⚙️  Copying Javascript Dependencies"
-	rsync -r web_modules/ {{dist_dir}}/web_modules/
+	{{node_bin}}/esbuild \
+		--bundle \
+		--format=esm \
+		--outfile={{dist_dir}}/index.min.js \
+		{{src_dir}}/Javascript/index.ts
 
 
 @static:

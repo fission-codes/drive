@@ -1,11 +1,10 @@
 module Drive.Sidebar.State exposing (..)
 
-import Drive.Item as Item
 import Drive.Sidebar as Sidebar
 import FileSystem.Actions
 import Radix exposing (..)
 import Return exposing (return)
-import Wnfs
+import Webnative.FileSystem as Wnfs
 
 
 update : Sidebar.Msg -> Sidebar.Model -> Manager
