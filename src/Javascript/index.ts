@@ -58,7 +58,10 @@ app.ports.showNotification.subscribe(showNotification)
 
 
 app.ports.fsShareItem.subscribe(args => {
-  if (!program) return
+  if (!program) {
+    console.error("Webnative Program not available.")
+    return
+  }
 
   fs.shareItem(args, program).then(shareLink => {
     app.ports.fsGotShareLink.send(shareLink)
@@ -129,6 +132,7 @@ Webnative
     analytics.setupOnFissionCodes()
 
   }).catch(err => {
+    if (!err) return
     console.error(err)
 
     if (err.toString() === "OperationError") {
