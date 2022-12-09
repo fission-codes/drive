@@ -8,16 +8,22 @@ import Common.State as Common
 import Drive.State as Drive
 import FileSystem
 import Html.Ext as Html
+import Json.Decode as Json
 import Keyboard
 import Maybe.Extra as Maybe
+import Notifications
 import Ports
 import Radix exposing (..)
 import Return exposing (return)
 import Return.Extra as Return
 import Routing exposing (Route(..))
 import Time
+import Toasty
 import Url exposing (Url)
+import Webnative.Error as Webnative
+import Webnative.FileSystem
 import Webnative.Path as Path
+import Webnative.Program
 
 
 
@@ -40,10 +46,28 @@ gotInitialisationError err model =
         { model | initialised = Err err }
 
 
+handleWebnativeError : Webnative.Error -> Manager
+handleWebnativeError error model =
+    Toasty.addToast
+        Notifications.config
+        ToastyMsg
+        (case error of
+            Webnative.InsecureContext ->
+                Notifications.text "Drive does not work in a insecure context, maybe switch to HTTPS?"
+
+            Webnative.UnsupportedBrowser ->
+                Notifications.text "Drive does not support this browser."
+
+            Webnative.JavascriptError err ->
+                Notifications.text err
+        )
+        (Return.singleton model)
+
+
 hideWelcomeMessage : Manager
 hideWelcomeMessage model =
     model.authenticated
-        |> Maybe.map (\a -> { a | newUser = False })
+        -- |> Maybe.map (\a -> { a | newUser = False })
         |> (\a -> { model | authenticated = a })
         |> Return.singleton
 
@@ -110,8 +134,8 @@ lostWindowFocus model =
     Return.singleton { model | pressedKeys = [] }
 
 
-ready : Manager
-ready model =
+ready : { fileSystem : Maybe Json.Value, program : Json.Value } -> Manager
+ready refs model =
     let
         route =
             model.route
@@ -134,7 +158,18 @@ ready model =
         -----------------------------------------
         -- Model
         -----------------------------------------
-        { model | fileSystemStatus = fileSystemStatus }
+        { model
+            | fileSystemRef =
+                refs.fileSystem
+                    |> Maybe.map (Json.decodeValue Webnative.FileSystem.decoder)
+                    |> Maybe.andThen Result.toMaybe
+            , fileSystemStatus =
+                fileSystemStatus
+            , program =
+                refs.program
+                    |> Json.decodeValue Webnative.Program.decoder
+                    |> Result.toMaybe
+        }
         -----------------------------------------
         -- Command
         -----------------------------------------

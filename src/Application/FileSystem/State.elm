@@ -16,6 +16,7 @@ import Return exposing (return)
 import Return.Extra as Return
 import Routing
 import Task
+import Webnative
 import Webnative.Path as Path exposing (Encapsulated, Path)
 import Webnative.Path.Encapsulated as Path
 import Webnative.Path.Extra as Path
@@ -167,16 +168,14 @@ gotDirectoryList_ path floor json model =
         |> Return.effect_
             -- Might need to load content for sidebar editor
             (\newModel ->
-                case newModel.sidebar of
-                    Just (Sidebar.EditPlaintext props) ->
-                        FileSystem.Actions.readUtf8
-                            { path =
-                                props.path
-                            , tag =
-                                { path = props.path }
-                                    |> Sidebar.LoadedFile
-                                    |> SidebarTag
-                            }
+                case ( newModel.sidebar, newModel.fileSystemRef ) of
+                    ( Just (Sidebar.EditPlaintext props), Just fs ) ->
+                        props.path
+                            |> FileSystem.Actions.readUtf8 fs
+                            |> Webnative.attemptTask
+                                { ok = SidebarMsg << Sidebar.LoadedFile { path = props.path }
+                                , error = HandleWebnativeError
+                                }
 
                     _ ->
                         Cmd.none

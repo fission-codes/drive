@@ -41,12 +41,14 @@ init flags url navKey =
       , directoryList = Ok Drive.Item.Inventory.default
       , dragndropMode = False
       , fileSystemCid = Nothing
+      , fileSystemRef = Nothing
       , fileSystemStatus = FileSystem.Ready
       , helpfulNote = Nothing
       , initialised = Ok False
       , isFocusedOnInput = False
       , modal = Nothing
       , navKey = navKey
+      , program = Nothing
       , route = Routing.Undecided
       , pressedKeys = []
       , viewportSize = flags.viewportSize
@@ -136,9 +138,6 @@ update msg =
 
         GoUp a ->
             Drive.goUp a
-
-        GotWebnativeResponse a ->
-            Drive.gotWebnativeResponse a
 
         IndividualSelect a b ->
             Drive.individualSelect a b
@@ -257,6 +256,9 @@ update msg =
         GotInitialisationError a ->
             Other.gotInitialisationError a
 
+        HandleWebnativeError a ->
+            Other.handleWebnativeError a
+
         HideWelcomeMessage ->
             Other.hideWelcomeMessage
 
@@ -272,8 +274,8 @@ update msg =
         LostWindowFocus ->
             Other.lostWindowFocus
 
-        Ready ->
-            Other.ready
+        Ready a ->
+            Other.ready a
 
         RedirectToLobby ->
             Other.redirectToLobby
@@ -310,7 +312,7 @@ subscriptions model =
         , Ports.gotInitialisationError GotInitialisationError
         , Ports.initialise Initialise
         , Ports.lostWindowFocus (always LostWindowFocus)
-        , Ports.ready (always Ready)
+        , Ports.ready Ready
 
         -- Keep track of which keyboard keys are pressed
         , Sub.map KeyboardInteraction Keyboard.subscriptions
@@ -320,7 +322,4 @@ subscriptions model =
 
         -- Check every 30 seconds what the current time is
         , Time.every (30 * 1000) SetCurrentTime
-
-        -- Setup webnative
-        , Ports.webnativeResponse GotWebnativeResponse
         ]

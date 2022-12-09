@@ -24,8 +24,9 @@ import Routing exposing (Route)
 import Time
 import Toasty
 import Url exposing (Url)
-import Webnative
-import Webnative.Path exposing (Encapsulated, Path)
+import Webnative.Error as Webnative
+import Webnative.FileSystem exposing (FileSystem)
+import Webnative.Program exposing (Program)
 
 
 
@@ -56,14 +57,16 @@ type alias Model =
     , currentTime : Time.Posix
     , directoryList : Result String Item.Inventory
     , dragndropMode : Bool
+    , fileSystemCid : Maybe String
+    , fileSystemRef : Maybe FileSystem
+    , fileSystemStatus : FileSystem.Status
     , helpfulNote : Maybe { faded : Bool, note : String }
     , initialised : Result String Bool
     , isFocusedOnInput : Bool
-    , fileSystemCid : Maybe String
-    , fileSystemStatus : FileSystem.Status
     , modal : Maybe (Modal Msg)
     , navKey : Navigation.Key
     , pressedKeys : List Keyboard.Key
+    , program : Maybe Program
     , route : Route
     , showLoadingOverlay : Bool
     , toasties : Toasty.Stack (Notification Msg)
@@ -169,12 +172,13 @@ type Msg
     | Blurred Html.ElementIdentifiers
     | Focused Html.ElementIdentifiers
     | GotInitialisationError String
+    | HandleWebnativeError Webnative.Error
     | HideWelcomeMessage
     | Initialise (Maybe Authentication.Essentials)
     | KeyboardInteraction Keyboard.Msg
     | LinkClicked Browser.UrlRequest
     | LostWindowFocus
-    | Ready
+    | Ready { fileSystem : Maybe Json.Value, program : Json.Value }
     | RedirectToLobby
     | ScreenSizeChanged Int Int
     | SetCurrentTime Time.Posix
@@ -191,13 +195,3 @@ type alias Organizer model =
 
 type alias Manager =
     Organizer Model
-
-
-{-| Type for communicating responses from webnative back
-to the Elm side.
--}
-type Tag
-    = SidebarTag Drive.Sidebar.Tag
-    | CreatedEmptyFile { path : Path Encapsulated }
-    | CreatedDirectory
-    | UpdatedFileSystem

@@ -6,17 +6,24 @@ Everything involving the Fission File System.
 
 */
 
-import itToStream from "it-to-stream"
 import * as wn from "webnative"
+import { DistinctivePath, FilePath } from "webnative/path/index"
+
+import itAll from "it-all"
+import itToStream from "it-to-stream"
+
+import * as DriveIpfs from "./ipfs.js"
+import { shareLink } from "webnative/components/auth/implementation/fission/index"
+import { ENDPOINTS } from "./webnative.js"
 
 
-let fs
+let fs: wn.FileSystem
 
 
 // 🚀
 
 
-export function setInstance(fileSystem) {
+export function setInstance(fileSystem: wn.FileSystem) {
   fs = fileSystem
 }
 
@@ -32,8 +39,8 @@ export async function add({ blobs, toPath }) {
     await acc
     const fileOrBlob = await fetch(url).then(r => r.blob())
     const fullPath = wn.path.combine(basePath, wn.path.fromPosix(path))
-    const blob = fileOrBlob.name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
-    await fs.add(fullPath, blob)
+    const blob = (fileOrBlob as any).name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
+    await fs.add(fullPath, new Uint8Array(await blob.arrayBuffer()))
     URL.revokeObjectURL(url)
   }, Promise.resolve(null))
 
@@ -44,21 +51,22 @@ export async function add({ blobs, toPath }) {
 
 
 export async function downloadItem({ path }) {
+  const ipfs = DriveIpfs.getInstance()
   const [ isIpfsPath, pathWithPrefix ] =
-    wn.path.isBranch("p", path)
+    wn.path.isBranch(wn.path.Branch.Pretty, path)
       ? [ true, path ]
       : [ false, prefixedPath(path) ]
 
   const blob = new Blob([
     isIpfsPath
-      ? await wn.ipfs.catBuf(wn.path.toPosix(pathWithPrefix))
+      ? await itAll(ipfs.cat(wn.path.toPosix(pathWithPrefix))).then(a => a[ 0 ])
       : await fs.cat(pathWithPrefix)
   ])
 
   const blobUrl = URL.createObjectURL(blob)
 
   const a = document.createElement("a")
-  a.style = "display: none"
+  a.style.display = "none"
   document.body.appendChild(a)
   a.href = blobUrl
   a.download = filename(path)
@@ -72,7 +80,7 @@ export async function resolveItem({ follow, index, path }) {
   // list the parent directory and replace the symlink item with the resolved one.
   // If it resolves to a directory and follow is set to true, list that directory.
 
-  const resolved = await fs.get(path)
+  const resolved: any = await fs.get(path)
   const name = wn.path.terminus(path)
 
   if (!follow || resolved.header.metadata.isFile) {
@@ -89,7 +97,7 @@ export async function resolveItem({ follow, index, path }) {
           name: l.name,
           cid: cid.toString(),
           isFile: resolved.header.metadata.isFile,
-          path: wn.path.toPosix({ [ kind ]: wn.path.unwrap(path) }),
+          path: wn.path.toPosix({ [ kind ]: wn.path.unwrap(path) } as DistinctivePath),
           size: resolved.header.metadata.size || 0,
           type: resolved.header.metadata.isFile ? "file" : "dir"
         }
@@ -102,14 +110,14 @@ export async function resolveItem({ follow, index, path }) {
   } else {
     // We need to change the URL/fragment,
     // so we'll do that and that in turn will trigger a directory listing.
-    self.location = location.hash + name + "/"
+    self.location.href = location.hash + name + "/"
 
   }
 }
 
 
 export async function listDirectory(args) {
-  const ipfs = await wn.ipfs.get()
+  const ipfs = DriveIpfs.getInstance()
   const isListingRoot = wn.path.unwrap(args.path).length === 0
   const rootCid = await fs.root.put()
 
@@ -135,7 +143,7 @@ export async function listDirectory(args) {
   }
 
   // Adjust list
-  const readOnly = await fs.get(path).then(a => a.readOnly)
+  const readOnly = await fs.get(path).then(a => a ? (a as any).readOnly : false)
   const isListingPublic = wn.path.isBranch(wn.path.Branch.Public, path)
   const prettyIpfsPath = prefix => {
     return "/ipfs/"
@@ -170,6 +178,7 @@ export async function listDirectory(args) {
       }
 
       const itemPath = wn.path.toPosix(
+        // @ts-ignore
         wn.path.combine(path, { [ l.isFile ? "file" : "directory" ]: [ l.name ] })
       )
 
@@ -196,7 +205,7 @@ export async function listDirectory(args) {
   if (isListingRoot) {
     const publicCid = fs.root.links.public
       ? fs.root.links.public.cid
-      : await fs.publicTree.put()
+      : await fs.root.publicTree.put()
 
     results = [
       {
@@ -225,14 +234,14 @@ export async function listDirectory(args) {
 /**
  * More specifically, listing other people's public filesystems.
  */
-export async function listPublicDirectory({ root, path }) {
-  const rootCid = await wn.dns.lookupDnsLink(root)
+export async function listPublicDirectory({ root, path }, program: wn.Program) {
+  const rootCid = await program.components.reference.dns.lookupDnsLink(root)
 
   if (!rootCid) throw new Error(
     "Couldn't find this filesystem"
   )
 
-  const ipfs = await wn.ipfs.get()
+  const ipfs = DriveIpfs.getInstance()
   const prettifiedPath = prettyPath(rootCid, path)
   const stats = await ipfs.files.stat(`/ipfs/${prettifiedPath}`)
   const isFile = stats.type === "file"
@@ -246,7 +255,7 @@ export async function listPublicDirectory({ root, path }) {
       path: prettifiedPath
     } ]
     : Object
-      .values(await wn.ipfs.ls(cid))
+      .values(await ipfs.ls(cid))
       .map(a => ({ ...a, cid: a.cid.toString() }))
 
   return {
@@ -281,8 +290,9 @@ export async function moveItem({ fromPath, toPath }) {
 }
 
 
-export async function shareItem({ path, shareWith }) {
-  return wn.lobby.shareLink(
+export async function shareItem({ path, shareWith }, program: wn.Program) {
+  return shareLink(
+    ENDPOINTS,
     await fs.sharePrivate([ path ], { shareWith })
   )
 }
@@ -301,7 +311,7 @@ export function fakeStream(address, options) {
 function fakeStreamIterator(address, options) {
   return {
     async *[ Symbol.asyncIterator ]() {
-      const typedArray = await fs.cat(wn.path.fromPosix(address))
+      const typedArray = await fs.cat(wn.path.fromPosix(address) as FilePath)
       const size = typedArray.length
       const start = options.offset || 0
       const end = options.length ? start + options.length : size - 1

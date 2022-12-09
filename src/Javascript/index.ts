@@ -9,12 +9,12 @@
 
 */
 
-
+// @ts-ignore
+import * as TaskPort from "elm-taskport"
 import * as webnativeElm from "webnative-elm"
 import * as wn from "webnative"
 
-import { Taskport } from "elm-taskport"
-import tocca from "tocca"
+import "tocca"
 
 import "./custom.js"
 import "./media.js"
@@ -37,7 +37,7 @@ globalThis.wn = wn
 let program: wn.Program | null = null
 
 
-Taskport.install()
+TaskPort.install()
 
 
 const app = globalThis.Elm.Main.init({
@@ -58,7 +58,9 @@ app.ports.showNotification.subscribe(showNotification)
 
 
 app.ports.fsShareItem.subscribe(args => {
-  fs.shareItem(args).then(shareLink => {
+  if (!program) return
+
+  fs.shareItem(args, program).then(shareLink => {
     app.ports.fsGotShareLink.send(shareLink)
   }).catch(err => {
     app.ports.fsGotShareError.send(err.message || err.toString())
@@ -109,13 +111,19 @@ Webnative
       ? await program.loadFileSystem(session.username)
       : null
 
-    fs.setInstance(fsInstance)
-
+    if (fsInstance) fs.setInstance(fsInstance)
     globalThis.fs = fsInstance
 
-    app.ports.ready.send(null)
+    app.ports.ready.send({
+      fileSystem: fsInstance ? webnativeElm.fileSystemRef(fsInstance) : null,
+      program: webnativeElm.programRef(program)
+    })
 
-    webnativeElm.init()
+    webnativeElm.init({
+      fileSystems: fsInstance ? [ fsInstance ] : [],
+      programs: [ program ],
+      TaskPort
+    })
 
     // Other things
     analytics.setupOnFissionCodes()
@@ -126,7 +134,7 @@ Webnative
     if (err.toString() === "OperationError") {
       location.search = ""
     } else {
-      app.ports.gotInitialisationError.send(err)
+      app.ports.gotInitialisationError.send(err.toString())
     }
 
   })
@@ -211,7 +219,7 @@ function exe(port, method, options = {}) {
     let args = { ...a, ...options }
 
     try {
-      const feedback = (await fs[ method ](args)) || {}
+      const feedback = (await fs[ method ](args, program)) || {}
       if (!feedback.results) return
 
       const path = feedback.path || args.path
@@ -233,7 +241,7 @@ function exe(port, method, options = {}) {
 // 🛠
 // ==
 
-tocca({
+globalThis.tocca({
   dbltapThreshold: 400,
   tapThreshold: 250
 })

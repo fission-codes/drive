@@ -160,12 +160,9 @@ insert-version:
 
 
 @javascript:
-	echo "⚙️  Copying Javascript"
-	{{node_bin}}/esbuild \
-		--bundle \
-		--format=esm \
-		--outfile={{dist_dir}}/index.min.js \
-		{{src_dir}}/Javascript/index.ts
+	echo "⚙️  Compiling Javascript"
+	cp {{src_dir}}/Javascript/loaders.js {{dist_dir}}/loaders.js
+	node scripts/build.js
 
 
 @static:
@@ -235,7 +232,7 @@ insert-version:
 
 
 @watch-js:
-	watchexec -p -w {{src_dir}} -e "js" -- just javascript
+	watchexec -p -w {{src_dir}} -e "js,ts" -- just javascript
 
 
 
