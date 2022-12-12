@@ -11,8 +11,8 @@
     "render-media": "^4.1.0",
     "tocca": "^2.0.9",
     "uint8arrays": "^4.0.2",
-    "webnative": "../webnative",
-    "webnative-elm": "../webnative-elm"
+    "webnative": "0.35.0-alpha-6",
+    "webnative-elm": "8.0.0-alpha"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
@@ -30,5 +30,10 @@
     "tailwindcss": "^1.9.6",
     "workbox-cli": "^6.1.2",
     "workbox-strategies": "^6.1.2"
+  },
+  "overrides": {
+    "webnative-elm": {
+      "webnative": "$webnative"
+    }
   }
 }

@@ -69,7 +69,7 @@ export async function program(): Promise<Webnative.Program> {
   const storage = Webnative.defaultStorageComponent(CONFIG)
 
   // Depot
-  const [ ipfs, repo ] = await Ipfs.nodeWithPkg(
+  const { ipfs, repo } = await Ipfs.nodeWithPkg(
     { storage },
     await Ipfs.pkgFromCDN(Ipfs.DEFAULT_CDN_URL),
     `${ENDPOINTS.server}/ipfs/peers`,
@@ -77,7 +77,7 @@ export async function program(): Promise<Webnative.Program> {
     false
   )
 
-  const depot = await IpfsBase.implementation(ipfs, repo)
+  const depot = await IpfsBase.implementation(async () => ({ ipfs, repo }))
 
   DriveIpfs.setInstance(ipfs)
 

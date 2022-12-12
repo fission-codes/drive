@@ -1,7 +1,7 @@
 {
     "type": "application",
     "source-directories": [
-        "../webnative-elm/src",
+        "elm-stuff/gitdeps/github.com/fission-codes/webnative-elm.git/src",
         "elm-stuff/gitdeps/github.com/malinoff/toasty.git/src",
         "src/Application",
         "src/Library"
