@@ -53,10 +53,10 @@ handleWebnativeError error model =
         ToastyMsg
         (case error of
             Webnative.InsecureContext ->
-                Notifications.text "Drive does not work in a insecure context, maybe switch to HTTPS?"
+                Notifications.text "Drive does not work in an insecure context. Can you try switching to HTTPS?"
 
             Webnative.UnsupportedBrowser ->
-                Notifications.text "Drive does not support this browser."
+                Notifications.text "This browser does not support features required for Drive to work."
 
             Webnative.JavascriptError err ->
                 Notifications.text err
