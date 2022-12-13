@@ -255,7 +255,7 @@ export async function listPublicDirectory({ root, path }, program: wn.Program) {
       path: prettifiedPath
     } ]
     : Object
-      .values(await ipfs.ls(cid))
+      .values(await itAll(ipfs.ls(cid)))
       .map(a => ({ ...a, cid: a.cid.toString() }))
 
   return {
