@@ -190,7 +190,7 @@ function copyToClipboard(text) {
 
 async function deauthenticate() {
   const session = await program?.auth.session()
-  if (session) session.destroy()
+  if (session) await session.destroy()
 }
 
 
