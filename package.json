@@ -33,7 +33,7 @@
   },
   "overrides": {
     "webnative-elm": {
-      "webnative": "$webnative"
+      "webnative": "^0.35.0"
     }
   }
 }
