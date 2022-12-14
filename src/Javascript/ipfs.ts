@@ -6,7 +6,8 @@ Everything involving IPFS.
 
 */
 
-import "./web_modules/it-to-stream.min.js"
+import { IPFS } from "ipfs-core-types"
+import itToStream from "it-to-stream"
 
 
 let ipfs
@@ -15,7 +16,12 @@ let ipfs
 // 🛠
 
 
-export function setInstance(i) {
+export function getInstance(): IPFS {
+  return ipfs
+}
+
+
+export function setInstance(i: IPFS) {
   ipfs = i
 }
 

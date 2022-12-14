@@ -440,128 +440,9 @@ mainLayout model leftSide =
         , T.z_0
         ]
         [ -----------------------------------------
-          -- Welcome message
+          -- Default content
           -----------------------------------------
-          case Maybe.map .newUser model.authenticated of
-            Just True ->
-                Html.div
-                    [ T.container
-                    , T.flex
-                    , T.justify_start
-                    , T.mt_8
-                    , T.mx_auto
-                    , T.w_full
-                    ]
-                    [ Html.div
-                        [ T.bg_base_200
-                        , T.leading_relaxed
-                        , T.max_w_md
-                        , T.ml_6
-                        , T.p_6
-                        , T.relative
-                        , T.rounded_l_md
-                        , T.text_base_500
-                        , T.text_sm
-
-                        -- Dark mode
-                        ------------
-                        , T.dark__bg_base_800
-                        , T.dark__text_base_500
-                        ]
-                        [ Html.div
-                            []
-                            [ Html.strong
-                                [ T.font_semibold ]
-                                [ Html.text "Welcome to your Drive!" ]
-                            , Html.text " Here you can browse through your entire filesystem. This filesystem holds all your public and private data, which you can take with you to "
-                            , Html.a
-                                [ A.href "https://fission.codes/apps"
-                                , A.target "_blank"
-
-                                --
-                                , T.underline
-                                , T.underline_thick
-                                , T.tdc_pink_shade
-                                ]
-                                [ Html.text "various apps" ]
-                            , Html.text ". If you want to make an app yourself, check out the "
-                            , Html.a
-                                [ A.href "https://guide.fission.codes/developers/"
-                                , A.target "_blank"
-
-                                --
-                                , T.underline
-                                , T.underline_thick
-                                , T.tdc_pink_shade
-                                ]
-                                [ Html.text "Fission CLI and developer guide" ]
-                            , Html.text "."
-                            ]
-                        ]
-
-                    -------------------
-                    -- Close button bar
-                    -------------------
-                    , Html.div
-                        [ A.title "Hide"
-                        , E.onClick HideWelcomeMessage
-
-                        --
-                        , T.bg_red
-                        , T.bg_opacity_25
-                        , T.cursor_pointer
-                        , T.flex_shrink_0
-                        , T.mr_6
-                        , T.relative
-                        , T.rounded_r_md
-                        , T.text_pink_shade
-                        , T.w_8
-                        ]
-                        [ Html.div
-                            [ T.absolute
-                            , T.flex
-                            , T.items_center
-                            , T.left_1over2
-                            , T.neg_translate_x_1over2
-                            , T.neg_translate_y_1over2
-                            , T.rotate_90
-                            , T.transform
-                            , T.top_1over2
-                            ]
-                            [ FeatherIcons.x
-                                |> FeatherIcons.withSize 15
-                                |> Common.wrapIcon [ T.mt_px ]
-                            , Html.span
-                                [ T.inline_block
-                                , T.ml_1
-                                , T.text_xs
-                                , T.tracking_wider
-                                ]
-                                [ Html.text "CLOSE" ]
-                            ]
-                        ]
-
-                    --
-                    , Html.div
-                        [ A.class "drive-bg-pattern"
-                        , T.flex_auto
-                        , T.opacity_40
-                        , T.rounded_md
-
-                        -- Dark mode
-                        ------------
-                        , T.dark__opacity_20
-                        ]
-                        []
-                    ]
-
-            _ ->
-                Html.nothing
-
-        -----------------------------------------
-        -- Default content
-        -----------------------------------------
-        , Html.div
+          Html.div
             [ T.container
             , S.container_padding
             , T.flex
@@ -1024,3 +905,121 @@ listItem isGroundFloor selection pressedKeys route idx ({ kind, loading, name, n
 sidebarOpen : Model -> Bool
 sidebarOpen model =
     Maybe.isJust model.sidebar
+
+
+
+-- WELCOME
+
+
+welcomeMessage : Html Msg
+welcomeMessage =
+    Html.div
+        [ T.container
+        , T.flex
+        , T.justify_start
+        , T.mt_8
+        , T.mx_auto
+        , T.w_full
+        ]
+        [ Html.div
+            [ T.bg_base_200
+            , T.leading_relaxed
+            , T.max_w_md
+            , T.ml_6
+            , T.p_6
+            , T.relative
+            , T.rounded_l_md
+            , T.text_base_500
+            , T.text_sm
+
+            -- Dark mode
+            ------------
+            , T.dark__bg_base_800
+            , T.dark__text_base_500
+            ]
+            [ Html.div
+                []
+                [ Html.strong
+                    [ T.font_semibold ]
+                    [ Html.text "Welcome to your Drive!" ]
+                , Html.text " Here you can browse through your entire filesystem. This filesystem holds all your public and private data, which you can take with you to "
+                , Html.a
+                    [ A.href "https://fission.codes/apps"
+                    , A.target "_blank"
+
+                    --
+                    , T.underline
+                    , T.underline_thick
+                    , T.tdc_pink_shade
+                    ]
+                    [ Html.text "various apps" ]
+                , Html.text ". If you want to make an app yourself, check out the "
+                , Html.a
+                    [ A.href "https://guide.fission.codes/developers/"
+                    , A.target "_blank"
+
+                    --
+                    , T.underline
+                    , T.underline_thick
+                    , T.tdc_pink_shade
+                    ]
+                    [ Html.text "Fission CLI and developer guide" ]
+                , Html.text "."
+                ]
+            ]
+
+        -------------------
+        -- Close button bar
+        -------------------
+        , Html.div
+            [ A.title "Hide"
+            , E.onClick HideWelcomeMessage
+
+            --
+            , T.bg_red
+            , T.bg_opacity_25
+            , T.cursor_pointer
+            , T.flex_shrink_0
+            , T.mr_6
+            , T.relative
+            , T.rounded_r_md
+            , T.text_pink_shade
+            , T.w_8
+            ]
+            [ Html.div
+                [ T.absolute
+                , T.flex
+                , T.items_center
+                , T.left_1over2
+                , T.neg_translate_x_1over2
+                , T.neg_translate_y_1over2
+                , T.rotate_90
+                , T.transform
+                , T.top_1over2
+                ]
+                [ FeatherIcons.x
+                    |> FeatherIcons.withSize 15
+                    |> Common.wrapIcon [ T.mt_px ]
+                , Html.span
+                    [ T.inline_block
+                    , T.ml_1
+                    , T.text_xs
+                    , T.tracking_wider
+                    ]
+                    [ Html.text "CLOSE" ]
+                ]
+            ]
+
+        --
+        , Html.div
+            [ A.class "drive-bg-pattern"
+            , T.flex_auto
+            , T.opacity_40
+            , T.rounded_md
+
+            -- Dark mode
+            ------------
+            , T.dark__opacity_20
+            ]
+            []
+        ]

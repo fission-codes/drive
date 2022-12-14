@@ -26,11 +26,10 @@ import Set
 import Task
 import Toasty
 import Url
-import Webnative exposing (DecodedResponse(..))
+import Webnative
 import Webnative.Path as Path exposing (Path)
 import Webnative.Path.Encapsulated as Path
 import Webnative.Path.Extra as Path
-import Wnfs
 
 
 
@@ -129,15 +128,18 @@ copyToClipboard { clip, notification } model =
 
 createFolder : Manager
 createFolder model =
-    case ( sidebarAddOrCreateInput model, Routing.treeDirectory model.route ) of
-        ( Just directoryName, Just currentPath ) ->
+    case ( sidebarAddOrCreateInput model, Routing.treeDirectory model.route, model.fileSystemRef ) of
+        ( Just directoryName, Just currentPath, Just fs ) ->
             currentPath
                 |> Path.endWith directoryName
-                |> (\p ->
-                        FileSystem.Actions.createDirectory
-                            { path = p
-                            , tag = CreatedDirectory
-                            }
+                |> (\path ->
+                        path
+                            |> FileSystem.Actions.createDirectory fs
+                            |> Task.andThen (\_ -> FileSystem.Actions.publish fs)
+                            |> Webnative.attemptTask
+                                { ok = always (SidebarMsg Sidebar.ClearAddOrCreateInput)
+                                , error = HandleWebnativeError
+                                }
                    )
                 |> return
                     (model.sidebar
@@ -206,16 +208,18 @@ createFile model =
     maybeFileName
         |> Maybe.withDefault "Untitled"
         |> ensureUniqueFileName model
-        |> Maybe.map2
-            (\currentPath fileName ->
+        |> Maybe.map3
+            (\currentPath fs fileName ->
                 currentPath
                     |> Path.addFile fileName
                     |> (\path ->
-                            FileSystem.Actions.writeUtf8
-                                { path = path
-                                , tag = CreatedEmptyFile { path = Path.encapsulate path }
-                                , content = ""
-                                }
+                            ""
+                                |> FileSystem.Actions.writeUtf8 fs path
+                                |> Task.andThen (\_ -> FileSystem.Actions.publish fs)
+                                |> Webnative.attemptTask
+                                    { ok = always (SidebarMsg Sidebar.ClearAddOrCreateInput)
+                                    , error = HandleWebnativeError
+                                    }
                        )
                     |> return
                         (model.sidebar
@@ -228,6 +232,7 @@ createFile model =
                         )
             )
             (Routing.treeDirectory model.route)
+            model.fileSystemRef
         |> Maybe.withDefault
             (Return.singleton model)
 
@@ -313,75 +318,6 @@ gotAddCreateInput input model =
         |> Maybe.map (Sidebar.mapAddOrCreate (\m -> { m | input = Item.cleanName input }))
         |> replaceSidebar model
         |> Return.singleton
-
-
-gotWebnativeResponse : Webnative.Response -> Manager
-gotWebnativeResponse response model =
-    case FileSystem.Actions.decodeResponse response of
-        -- NOTE: We don't initialize webnative
-        Webnative _ ->
-            Return.singleton model
-
-        -----------------------------------------
-        -- WNFS
-        -----------------------------------------
-        Wnfs (SidebarTag sidebarTag) artifact ->
-            updateSidebarTag sidebarTag artifact model
-
-        Wnfs (CreatedEmptyFile { path }) _ ->
-            model.sidebar
-                |> Maybe.map
-                    (Sidebar.mapAddOrCreate
-                        (\m -> { m | input = "", isCreating = False })
-                    )
-                |> replaceSidebar
-                    model
-                |> Return.singleton
-                |> Return.command
-                    (FileSystem.Actions.publish
-                        { tag = UpdatedFileSystem }
-                    )
-
-        Wnfs CreatedDirectory _ ->
-            model.sidebar
-                |> Maybe.map
-                    (Sidebar.mapAddOrCreate
-                        (\m -> { m | input = "", isCreating = False })
-                    )
-                |> replaceSidebar
-                    model
-                |> Return.singleton
-                |> Return.command
-                    (FileSystem.Actions.publish
-                        { tag = UpdatedFileSystem }
-                    )
-
-        Wnfs UpdatedFileSystem _ ->
-            case Routing.treePath model.route of
-                Just path ->
-                    { path = Path.encode path }
-                        |> Ports.fsListDirectory
-                        |> return model
-
-                Nothing ->
-                    Return.singleton model
-
-        -----------------------------------------
-        -- Error handling
-        -----------------------------------------
-        Webnative.WnfsError err ->
-            Toasty.addToast
-                Notifications.config
-                ToastyMsg
-                (Notifications.text <| Wnfs.error err)
-                (Return.singleton model)
-
-        Webnative.WebnativeError err ->
-            Toasty.addToast
-                Notifications.config
-                ToastyMsg
-                (Notifications.text <| Webnative.error err)
-                (Return.singleton model)
 
 
 goUp : { floor : Int } -> Manager
@@ -660,16 +596,14 @@ select idx item model =
     }
         |> Return.singleton
         |> Return.command
-            (case ( showEditor, Path.toFile item.path ) of
-                ( True, Just filePath ) ->
-                    FileSystem.Actions.readUtf8
-                        { path =
-                            filePath
-                        , tag =
-                            { path = filePath }
-                                |> Sidebar.LoadedFile
-                                |> SidebarTag
-                        }
+            (case ( showEditor, Path.toFile item.path, model.fileSystemRef ) of
+                ( True, Just filePath, Just fs ) ->
+                    filePath
+                        |> FileSystem.Actions.readUtf8 fs
+                        |> Webnative.attemptTask
+                            { ok = SidebarMsg << Sidebar.LoadedFile { path = filePath }
+                            , error = HandleWebnativeError
+                            }
 
                 _ ->
                     Cmd.none
@@ -761,16 +695,6 @@ updateSidebar sidebarMsg model =
     case model.sidebar of
         Just sidebar ->
             Sidebar.update sidebarMsg sidebar model
-
-        Nothing ->
-            Return.singleton model
-
-
-updateSidebarTag : Sidebar.Tag -> Wnfs.Artifact -> Manager
-updateSidebarTag sidebarTag artifact model =
-    case model.sidebar of
-        Just sidebar ->
-            Sidebar.updateTag sidebarTag artifact sidebar model
 
         Nothing ->
             Return.singleton model

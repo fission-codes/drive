@@ -6,8 +6,7 @@ Everything involving media.
 
 */
 
-import "./web_modules/it-to-stream.min.js"
-import "./web_modules/render-media.min.js"
+import renderMedia from "render-media"
 
 import * as fs from "./fs.js"
 import * as ipfs from "./ipfs.js"
@@ -109,9 +108,9 @@ function renderIn({ container, name, path, useFS }) {
 
 function forceRedraw(node) {
   if (!node) return
-  node.parentNode.style["min-height"] = node.parentNode.offsetHeight + "px"
+  node.parentNode.style[ "min-height" ] = node.parentNode.offsetHeight + "px"
   node.style.display = "none"
   node.offsetHeight
   node.style.display = ""
-  setTimeout(_ => node.parentNode.style["min-height"] = "", 0)
+  setTimeout(_ => node.parentNode.style[ "min-height" ] = "", 0)
 }

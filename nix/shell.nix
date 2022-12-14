@@ -11,7 +11,7 @@
       just
       rsync
       simple-http-server
-      # watchexec
+      watchexec
     ];
 
     languages = [
@@ -19,7 +19,6 @@
       elmPackages.elm-format
       elmPackages.elm-live
       nodejs-18_x
-      nodePackages.pnpm
     ];
 
   };

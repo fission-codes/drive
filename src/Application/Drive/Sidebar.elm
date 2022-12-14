@@ -9,14 +9,12 @@ import Webnative.Path exposing (Encapsulated, File, Path)
 
 
 type Msg
-    = DetailsShowPreviewOverlay
+    = ClearAddOrCreateInput
+    | DetailsShowPreviewOverlay
+    | LoadedFile { path : Path File } String
     | PlaintextEditorInput String
     | PlaintextEditorSave
-
-
-type Tag
-    = SavedFile { path : Path File }
-    | LoadedFile { path : Path File }
+    | SavedFile { path : Path File }
 
 
 type Model

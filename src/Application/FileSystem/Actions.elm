@@ -1,16 +1,15 @@
 module FileSystem.Actions exposing (..)
 
-import Codec exposing (Codec)
-import Drive.Sidebar
-import Json.Decode
-import Maybe.Extra as Maybe
-import Ports
 import Radix exposing (..)
+import Task
 import Webnative
-import Webnative.Path as Path exposing (Directory, Encapsulated, File, Path)
+import Webnative.AppInfo as Webnative
+import Webnative.FileSystem as Wnfs exposing (FileSystem)
+import Webnative.Path as Path exposing (Directory, File, Path)
 import Webnative.Path.Encapsulated as Path
 import Webnative.Path.Extra as Path
-import Wnfs
+import Webnative.Permissions as Webnative
+import Webnative.Task as Webnative
 
 
 
@@ -22,7 +21,7 @@ appData =
     Wnfs.AppData appPermissions
 
 
-appPermissions : Webnative.AppPermissions
+appPermissions : Webnative.AppInfo
 appPermissions =
     { creator = "Fission"
     , name = "Drive"
@@ -44,151 +43,36 @@ permissions =
 -- Actions
 
 
-createDirectory : { path : Path Directory, tag : Tag } -> Cmd Msg
-createDirectory { path, tag } =
+createDirectory : FileSystem -> Path Directory -> Webnative.Task ()
+createDirectory fs path =
     let
         resolved =
             splitPath path
     in
-    Wnfs.mkdir resolved.base
-        { path = resolved.path
-        , tag = tagToString tag
-        }
-        |> Ports.webnativeRequest
+    Wnfs.mkdir fs resolved.base resolved.path
 
 
-publish : { tag : Tag } -> Cmd Msg
-publish { tag } =
-    Wnfs.publish
-        { tag = tagToString tag }
-        |> Ports.webnativeRequest
+publish : FileSystem -> Webnative.Task ()
+publish =
+    Task.map (\_ -> ()) << Wnfs.publish
 
 
-writeUtf8 : { path : Path File, tag : Tag, content : String } -> Cmd Msg
-writeUtf8 { path, tag, content } =
+readUtf8 : FileSystem -> Path File -> Webnative.Task String
+readUtf8 fs path =
     let
         resolved =
             splitPath path
     in
-    Wnfs.writeUtf8 resolved.base
-        { path = resolved.path
-        , tag = tagToString tag
-        }
-        content
-        |> Ports.webnativeRequest
+    Wnfs.readUtf8 fs resolved.base resolved.path
 
 
-readUtf8 : { path : Path File, tag : Tag } -> Cmd Msg
-readUtf8 { path, tag } =
+writeUtf8 : FileSystem -> Path File -> String -> Webnative.Task ()
+writeUtf8 fs path content =
     let
         resolved =
             splitPath path
     in
-    Wnfs.readUtf8 resolved.base
-        { path = resolved.path
-        , tag = tagToString tag
-        }
-        |> Ports.webnativeRequest
-
-
-
--- Codecs
-
-
-codecTag : Codec Tag
-codecTag =
-    Codec.custom
-        (\cSidebarTag cCreatedEmptyFile cCreatedDirectory cUpdatedFileSystem value ->
-            case value of
-                SidebarTag a ->
-                    cSidebarTag a
-
-                CreatedEmptyFile a ->
-                    cCreatedEmptyFile a
-
-                CreatedDirectory ->
-                    cCreatedDirectory
-
-                UpdatedFileSystem ->
-                    cUpdatedFileSystem
-        )
-        |> Codec.variant1 "SidebarTag"
-            SidebarTag
-            (Codec.custom
-                (\cSavedFile cLoadedFile value ->
-                    case value of
-                        Drive.Sidebar.SavedFile a ->
-                            cSavedFile a
-
-                        Drive.Sidebar.LoadedFile a ->
-                            cLoadedFile a
-                )
-                |> Codec.variant1 "SavedFile" Drive.Sidebar.SavedFile (codecPathRecord codecFilePath)
-                |> Codec.variant1 "LoadedFile" Drive.Sidebar.LoadedFile (codecPathRecord codecFilePath)
-                |> Codec.buildCustom
-            )
-        |> Codec.variant1 "CreatedEmptyFile" CreatedEmptyFile (codecPathRecord codecPath)
-        |> Codec.variant0 "CreatedDirectory" CreatedDirectory
-        |> Codec.variant0 "UpdatedFileSystem" UpdatedFileSystem
-        |> Codec.buildCustom
-
-
-codecPath : Codec (Path Encapsulated)
-codecPath =
-    Codec.build
-        Path.encode
-        Path.decoder
-
-
-codecDirectoryPath : Codec (Path Directory)
-codecDirectoryPath =
-    Codec.andThen
-        (\v ->
-            Maybe.unwrap
-                (Codec.fail "Path was not a directory path")
-                Codec.succeed
-                (Path.toDirectory v)
-        )
-        Path.encapsulate
-        codecPath
-
-
-codecFilePath : Codec (Path File)
-codecFilePath =
-    Codec.andThen
-        (\v ->
-            Maybe.unwrap
-                (Codec.fail "Path was not a file path")
-                Codec.succeed
-                (Path.toFile v)
-        )
-        Path.encapsulate
-        codecPath
-
-
-codecPathRecord : Codec a -> Codec { path : a }
-codecPathRecord pathCodec =
-    (\path -> { path = path })
-        |> Codec.object
-        |> Codec.field "path" .path pathCodec
-        |> Codec.buildObject
-
-
-decodeResponse : Webnative.Response -> Webnative.DecodedResponse Tag
-decodeResponse =
-    Webnative.decodeResponse tagFromString
-
-
-tagToString : Tag -> String
-tagToString tag =
-    Codec.encodeToString 0 codecTag tag
-
-
-tagFromString : String -> Result String Tag
-tagFromString string =
-    string
-        |> Codec.decodeString codecTag
-        |> Result.mapError Json.Decode.errorToString
+    Wnfs.writeUtf8 fs resolved.base resolved.path content
 
 
 

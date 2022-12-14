@@ -1,16 +1,29 @@
 module Drive.Sidebar.State exposing (..)
 
-import Drive.Item as Item
 import Drive.Sidebar as Sidebar
 import FileSystem.Actions
+import Ports
 import Radix exposing (..)
 import Return exposing (return)
-import Wnfs
+import Routing
+import Task
+import Webnative
+import Webnative.Path as Path
 
 
 update : Sidebar.Msg -> Sidebar.Model -> Manager
 update msg sidebar model =
     case ( sidebar, msg ) of
+        -----------------------------------------
+        -- Add or create
+        -----------------------------------------
+        ( Sidebar.AddOrCreate addOrCreate, Sidebar.ClearAddOrCreateInput ) ->
+            { addOrCreate | input = "", isCreating = False }
+                |> Sidebar.AddOrCreate
+                |> Just
+                |> (\newSidebar -> { model | sidebar = newSidebar })
+                |> refreshDirectory
+
         -----------------------------------------
         -- Editor
         -----------------------------------------
@@ -32,19 +45,16 @@ update msg sidebar model =
                     Return.singleton model
 
         ( Sidebar.EditPlaintext editPlaintext, Sidebar.PlaintextEditorSave ) ->
-            case editPlaintext.editor of
-                Just editorModel ->
+            case ( editPlaintext.editor, model.fileSystemRef ) of
+                ( Just editorModel, Just fs ) ->
                     if editorModel.text /= editorModel.originalText then
-                        { path =
-                            editPlaintext.path
-                        , tag =
-                            { path = editPlaintext.path }
-                                |> Sidebar.SavedFile
-                                |> SidebarTag
-                        , content =
-                            editorModel.text
-                        }
-                            |> FileSystem.Actions.writeUtf8
+                        editorModel.text
+                            |> FileSystem.Actions.writeUtf8 fs editPlaintext.path
+                            |> Task.andThen (\_ -> FileSystem.Actions.publish fs)
+                            |> Webnative.attemptTask
+                                { ok = always (SidebarMsg <| Sidebar.SavedFile { path = editPlaintext.path })
+                                , error = HandleWebnativeError
+                                }
                             |> return
                                 ({ editorModel
                                     | originalText = editorModel.text
@@ -64,6 +74,49 @@ update msg sidebar model =
                     Return.singleton model
 
         -----------------------------------------
+        -- Editor → Loaded File
+        -----------------------------------------
+        ( Sidebar.EditPlaintext editPlaintext, Sidebar.LoadedFile { path } text ) ->
+            if path /= editPlaintext.path then
+                Return.singleton model
+
+            else
+                { text = text
+                , originalText = text
+                , isSaving = False
+                }
+                    |> Just
+                    |> (\newEditor -> { editPlaintext | editor = newEditor })
+                    |> Sidebar.EditPlaintext
+                    |> Just
+                    |> (\newSidebar -> { model | sidebar = newSidebar })
+                    |> Return.singleton
+
+        -----------------------------------------
+        -- Editor → Saved File
+        -----------------------------------------
+        ( Sidebar.EditPlaintext editPlaintext, Sidebar.SavedFile { path } ) ->
+            if path /= editPlaintext.path then
+                Return.singleton model
+
+            else
+                case editPlaintext.editor of
+                    Just editorModel ->
+                        { editorModel
+                            | isSaving = False
+                            , originalText = editorModel.text
+                        }
+                            |> Just
+                            |> (\newEditor -> { editPlaintext | editor = newEditor })
+                            |> Sidebar.EditPlaintext
+                            |> Just
+                            |> (\newSidebar -> { model | sidebar = newSidebar })
+                            |> Return.singleton
+
+                    Nothing ->
+                        Return.singleton model
+
+        -----------------------------------------
         -- Details
         -----------------------------------------
         ( Sidebar.Details detailsModel, Sidebar.DetailsShowPreviewOverlay ) ->
@@ -80,69 +133,17 @@ update msg sidebar model =
             Return.singleton model
 
 
-updateTag : Sidebar.Tag -> Wnfs.Artifact -> Sidebar.Model -> Manager
-updateTag tag artifact sidebarModel model =
-    case ( sidebarModel, tag, artifact ) of
-        -----------------------------------------
-        -- Editor → Saved File
-        -----------------------------------------
-        ( Sidebar.EditPlaintext editPlaintext, Sidebar.SavedFile { path }, _ ) ->
-            (if path /= editPlaintext.path then
-                Return.singleton model
 
-             else
-                case editPlaintext.editor of
-                    Just editorModel ->
-                        { editorModel
-                            | isSaving = False
-                            , originalText = editorModel.text
-                        }
-                            |> Just
-                            |> (\newEditor -> { editPlaintext | editor = newEditor })
-                            |> Sidebar.EditPlaintext
-                            |> Just
-                            |> (\newSidebar -> { model | sidebar = newSidebar })
-                            |> Return.singleton
+-- 🛠
 
-                    Nothing ->
-                        Return.singleton model
-            )
-                |> Return.command (FileSystem.Actions.publish { tag = UpdatedFileSystem })
 
-        ( _, Sidebar.SavedFile _, _ ) ->
-            FileSystem.Actions.publish { tag = UpdatedFileSystem }
-                |> Return.return model
+refreshDirectory : Manager
+refreshDirectory model =
+    case Routing.treePath model.route of
+        Just path ->
+            { path = Path.encode path }
+                |> Ports.fsListDirectory
+                |> return model
 
-        -----------------------------------------
-        -- Editor → Loaded File
-        -----------------------------------------
-        ( Sidebar.EditPlaintext editPlaintext, Sidebar.LoadedFile { path }, Wnfs.Utf8Content text ) ->
-            if path /= editPlaintext.path then
-                Return.singleton model
-
-            else
-                { text = text
-                , originalText = text
-                , isSaving = False
-                }
-                    |> Just
-                    |> (\newEditor -> { editPlaintext | editor = newEditor })
-                    |> Sidebar.EditPlaintext
-                    |> Just
-                    |> (\newSidebar -> { model | sidebar = newSidebar })
-                    |> Return.singleton
-
-        ( Sidebar.EditPlaintext _, Sidebar.LoadedFile _, _ ) ->
-            Return.singleton model
-
-        -----------------------------------------
-        -- Details
-        -----------------------------------------
-        ( Sidebar.Details _, _, _ ) ->
-            Return.singleton model
-
-        -----------------------------------------
-        -- Add or create
-        -----------------------------------------
-        ( Sidebar.AddOrCreate _, _, _ ) ->
+        Nothing ->
             Return.singleton model

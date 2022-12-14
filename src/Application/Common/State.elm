@@ -79,7 +79,7 @@ reset route model =
                 | authenticated = Nothing
                 , directoryList = Ok Drive.Item.Inventory.default
                 , fileSystemStatus = FileSystem.NotNeeded
-                , showLoadingOverlay = True
+                , showLoadingOverlay = False
                 , sidebar = Nothing
             }
         |> andThen

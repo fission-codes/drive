@@ -3,7 +3,6 @@ port module Ports exposing (..)
 import Authentication.Essentials as Authentication
 import Drive.Item exposing (PortablePath)
 import Json.Decode as Json
-import Webnative
 
 
 
@@ -70,7 +69,7 @@ port initialise : (Maybe Authentication.Essentials -> msg) -> Sub msg
 port lostWindowFocus : (() -> msg) -> Sub msg
 
 
-port ready : (() -> msg) -> Sub msg
+port ready : ({ fileSystem : Maybe Json.Value, program : Json.Value } -> msg) -> Sub msg
 
 
 port appUpdateAvailable : (() -> msg) -> Sub msg
@@ -93,13 +92,3 @@ port fsGotShareError : (String -> msg) -> Sub msg
 
 
 port fsGotShareLink : (String -> msg) -> Sub msg
-
-
-
--- WEBNATIVE ELM
-
-
-port webnativeRequest : Webnative.Request -> Cmd msg
-
-
-port webnativeResponse : (Webnative.Response -> msg) -> Sub msg
