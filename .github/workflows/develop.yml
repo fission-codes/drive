@@ -27,6 +27,8 @@ jobs:
           path: ~/.elm
           key: ${{ runner.os }}-elm-home-${{ hashFiles('**/elm.json') }}
 
+      - run: npm cache clean
+
       - name: Install Dependencies
         run: nix-shell --run "just install-deps"
 
