@@ -11,11 +11,11 @@
     "render-media": "^4.1.0",
     "tocca": "^2.0.9",
     "uint8arrays": "^4.0.2",
-    "webnative": "^0.35.0",
-    "webnative-elm": "^8.0.0-alpha"
+    "webnative": "^0.36.0",
+    "webnative-elm": "^8.1.0"
   },
   "devDependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "elm-git-install": "^0.1.4",
     "elm-impfix": "^1.0.8",
     "elm-live": "^4.0.1",

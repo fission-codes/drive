@@ -1,7 +1,6 @@
 {
     "git-dependencies": {
         "direct": {
-            "https://github.com/fission-codes/webnative-elm.git": "205a64fcc94fe5020d030a50be45572ed4038788",
             "https://github.com/malinoff/toasty.git": "e387b045a6677e96e22f369305c411c2de882ecd"
         },
         "indirect": {}

@@ -111,7 +111,7 @@ Webnative
 
     // Initialise app, pt. trois
     const fsInstance = session
-      ? await program.loadFileSystem(session.username)
+      ? await program.fileSystem.load(session.username)
       : null
 
     if (fsInstance) fs.setInstance(fsInstance)
