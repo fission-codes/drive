@@ -1,7 +1,6 @@
 {
     "type": "application",
     "source-directories": [
-        "elm-stuff/gitdeps/github.com/fission-codes/webnative-elm.git/src",
         "elm-stuff/gitdeps/github.com/malinoff/toasty.git/src",
         "src/Application",
         "src/Library"
@@ -31,6 +30,7 @@
             "elm-community/result-extra": "2.4.0",
             "feathericons/elm-feather": "1.5.0",
             "fission-codes/kit": "1.0.0",
+            "fission-codes/webnative-elm": "3.0.0",
             "gingko/time-distance": "2.3.0",
             "krisajenkins/remotedata": "6.0.1",
             "lobanov/elm-taskport": "2.0.1",

@@ -104,6 +104,14 @@ Webnative
 
     const { session } = program
 
+    program.fileSystem.on("local-change", ({ root, path }) => {
+      console.log("changed", root, path)
+    })
+
+    program.fileSystem.on("publish", ({ root }) => {
+      console.log("published", root)
+    })
+
     // Initialise app, pt. deux
     app.ports.initialise.send(
       session ? { username: session.username } : null
@@ -111,7 +119,7 @@ Webnative
 
     // Initialise app, pt. trois
     const fsInstance = session
-      ? await program.loadFileSystem(session.username)
+      ? await program.fileSystem.load(session.username)
       : null
 
     if (fsInstance) fs.setInstance(fsInstance)

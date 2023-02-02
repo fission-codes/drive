@@ -7,7 +7,7 @@ Everything involving the Fission File System.
 */
 
 import * as wn from "webnative"
-import { DistinctivePath, FilePath } from "webnative/path/index"
+import { DistinctivePath, DirectoryPath, FilePath, Partitioned, PartitionedNonEmpty, Partition } from "webnative/path/index"
 
 import itAll from "it-all"
 import itToStream from "it-to-stream"
@@ -40,7 +40,7 @@ export async function add({ blobs, toPath }) {
     const fileOrBlob = await fetch(url).then(r => r.blob())
     const fullPath = wn.path.combine(basePath, wn.path.fromPosix(path))
     const blob = (fileOrBlob as any).name ? fileOrBlob.slice(0, undefined, fileOrBlob.type) : fileOrBlob
-    await fs.add(fullPath, new Uint8Array(await blob.arrayBuffer()))
+    await fs.write(fullPath, new Uint8Array(await blob.arrayBuffer()))
     URL.revokeObjectURL(url)
   }, Promise.resolve(null))
 
@@ -53,14 +53,14 @@ export async function add({ blobs, toPath }) {
 export async function downloadItem({ path }) {
   const ipfs = DriveIpfs.getInstance()
   const [ isIpfsPath, pathWithPrefix ] =
-    wn.path.isBranch(wn.path.Branch.Pretty, path)
+    wn.path.isOnRootBranch(wn.path.RootBranch.Pretty, path)
       ? [ true, path ]
       : [ false, prefixedPath(path) ]
 
   const blob = new Blob([
     isIpfsPath
       ? await itAll(ipfs.cat(wn.path.toPosix(pathWithPrefix))).then(a => a[ 0 ])
-      : await fs.cat(pathWithPrefix)
+      : await fs.read(pathWithPrefix)
   ])
 
   const blobUrl = URL.createObjectURL(blob)
@@ -75,7 +75,11 @@ export async function downloadItem({ path }) {
 }
 
 
-export async function resolveItem({ follow, index, path }) {
+export async function resolveItem({ follow, index, path }: {
+  follow: boolean,
+  index: number,
+  path: DistinctivePath<PartitionedNonEmpty<Partition>>
+}) {
   // If the symlinks resolves to a file, or follow is set to false,
   // list the parent directory and replace the symlink item with the resolved one.
   // If it resolves to a directory and follow is set to true, list that directory.
@@ -84,7 +88,9 @@ export async function resolveItem({ follow, index, path }) {
   const name = wn.path.terminus(path)
 
   if (!follow || resolved.header.metadata.isFile) {
-    const parentPath = wn.path.parent(path)
+    const parentPath = wn.path.parent(path) as DirectoryPath<Partitioned<Partition>>
+    if (!parentPath) throw new Error(`'${path}' does not have a parent path`)
+
     const listing = await listDirectory({ path: parentPath })
     const kind = resolved.header.metadata.isFile ? "file" : "directory"
     const cid = resolved.cid || resolved.header.content || resolved.header.bareNameFilter
@@ -97,7 +103,7 @@ export async function resolveItem({ follow, index, path }) {
           name: l.name,
           cid: cid.toString(),
           isFile: resolved.header.metadata.isFile,
-          path: wn.path.toPosix({ [ kind ]: wn.path.unwrap(path) } as DistinctivePath),
+          path: wn.path.toPosix({ [ kind ]: wn.path.unwrap(path) } as DistinctivePath<PartitionedNonEmpty<Partition>>),
           size: resolved.header.metadata.size || 0,
           type: resolved.header.metadata.isFile ? "file" : "dir"
         }
@@ -116,7 +122,7 @@ export async function resolveItem({ follow, index, path }) {
 }
 
 
-export async function listDirectory(args) {
+export async function listDirectory(args: { path: DirectoryPath<Partitioned<Partition>> }) {
   const ipfs = DriveIpfs.getInstance()
   const isListingRoot = wn.path.unwrap(args.path).length === 0
   const rootCid = await fs.root.put()
@@ -128,12 +134,10 @@ export async function listDirectory(args) {
 
   if (wn.path.isFile(path)) {
     const pathSegments = wn.path.unwrap(path)
-    const dirname = pathSegments.slice(0, -1)
+    const dir = wn.path.parent(path)
     const filename = pathSegments[ pathSegments.length - 1 ]
 
-    path = { directory: dirname }
-
-    listing = Object.values(await fs.ls(path)).filter(l => {
+    listing = Object.values(await fs.ls(dir)).filter(l => {
       return l.name === filename
     })
 
@@ -144,7 +148,7 @@ export async function listDirectory(args) {
 
   // Adjust list
   const readOnly = await fs.get(path).then(a => a ? (a as any).readOnly : false)
-  const isListingPublic = wn.path.isBranch(wn.path.Branch.Public, path)
+  const isListingPublic = wn.path.isOnRootBranch(wn.path.RootBranch.Public, path)
   const prettyIpfsPath = prefix => {
     return "/ipfs/"
       + rootCid
@@ -308,10 +312,20 @@ export function fakeStream(address, options) {
 }
 
 
-function fakeStreamIterator(address, options) {
+function fakeStreamIterator(address: string, options) {
   return {
     async *[ Symbol.asyncIterator ]() {
-      const typedArray = await fs.cat(wn.path.fromPosix(address) as FilePath)
+      const path = wn.path.fromPosix(address)
+      const unwrapped = wn.path.unwrap(path)
+
+      if (
+        unwrapped[ 0 ] !== "private" && unwrapped[ 0 ] !== "public" &&
+        unwrapped.length < 2
+      ) {
+        throw new Error("Invalid path")
+      }
+
+      const typedArray = await fs.read(path as wn.path.FilePath<wn.path.PartitionedNonEmpty<wn.path.Partition>>)
       const size = typedArray.length
       const start = options.offset || 0
       const end = options.length ? start + options.length : size - 1
@@ -326,7 +340,7 @@ function fakeStreamIterator(address, options) {
 // ⚗️
 
 
-export function filename(path) {
+export function filename(path: FilePath<wn.path.SegmentsNonEmpty>): string {
   const unwrapped = wn.path.unwrap(path)
   return unwrapped[ unwrapped.length - 1 ]
 }
@@ -335,11 +349,18 @@ export function filename(path) {
 /* Drive doesn't show a "private" root directory, only a "public" one.
    So we need to prefix with "private" when necessary.
 */
-export function prefixedPath(path) {
-  return wn.path.isBranch(wn.path.Branch.Public, path) ||
-    wn.path.isBranch(wn.path.Branch.Private, path)
-    ? path
-    : wn.path.map(a => [ wn.path.Branch.Private, ...a ], path)
+export function prefixedPath(path: DirectoryPath<wn.path.SegmentsNonEmpty>): DirectoryPath<PartitionedNonEmpty<Partition>> {
+  if (
+    wn.path.isOnRootBranch(wn.path.RootBranch.Public, path) ||
+    wn.path.isOnRootBranch(wn.path.RootBranch.Private, path)
+  ) {
+    return path as DirectoryPath<PartitionedNonEmpty<Partition>>
+  } else {
+    return wn.path.withPartition(
+      wn.path.RootBranch.Private,
+      path
+    )
+  }
 }
 
 
@@ -349,7 +370,7 @@ export function prettyPath(rootCid, path) {
 
 
 export function removePrivatePrefix(path) {
-  return wn.path.isBranch(wn.path.Branch.Private, path)
-    ? wn.path.removeBranch(path)
+  return wn.path.isOnRootBranch(wn.path.RootBranch.Private, path)
+    ? wn.path.removePartition(path)
     : path
 }
