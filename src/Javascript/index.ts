@@ -104,14 +104,6 @@ Webnative
 
     const { session } = program
 
-    program.fileSystem.on("local-change", ({ root, path }) => {
-      console.log("changed", root, path)
-    })
-
-    program.fileSystem.on("publish", ({ root }) => {
-      console.log("published", root)
-    })
-
     // Initialise app, pt. deux
     app.ports.initialise.send(
       session ? { username: session.username } : null
