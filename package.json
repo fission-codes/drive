@@ -11,7 +11,7 @@
     "render-media": "^4.1.0",
     "tocca": "^2.0.9",
     "uint8arrays": "^4.0.2",
-    "webnative": "^0.36.0",
+    "webnative": "^0.36.1",
     "webnative-elm": "^8.1.0"
   },
   "devDependencies": {
